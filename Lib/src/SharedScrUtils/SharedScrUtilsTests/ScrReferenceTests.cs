@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------------------
-#region // Copyright (c) 2003, SIL International. All Rights Reserved.
-// <copyright from='2003' to='2003' company='SIL International'>
-//		Copyright (c) 2003, SIL International. All Rights Reserved.
+#region // Copyright (c) 2011, SIL International. All Rights Reserved.
+// <copyright from='2003' to='2011' company='SIL International'>
+//		Copyright (c) 2011, SIL International. All Rights Reserved.
 //
 //		Distributable under the terms of either the Common Public License or the
 //		GNU Lesser General Public License, as specified in the LICENSING.txt file.
@@ -9,17 +9,11 @@
 #endregion
 //
 // File: ScrReferenceTests.cs
-// Responsibility: TE Team
 // --------------------------------------------------------------------------------------------
 using System;
-using System.IO;
-using System.Reflection;
 using NUnit.Framework;
-using Microsoft.Win32;
-using SILUBS.SharedScrUtils;
-using SIL.FieldWorks.Test.TestUtils;
 
-namespace SIL.FieldWorks.Common.ScriptureUtils
+namespace SILUBS.SharedScrUtils
 {
 	#region ScrReferenceTests
 	/// ----------------------------------------------------------------------------------------
@@ -28,7 +22,7 @@ namespace SIL.FieldWorks.Common.ScriptureUtils
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
 	[TestFixture]
-	public class ScrReferenceTests: BaseTest
+	public class ScrReferenceTests
 	{
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -47,9 +41,8 @@ namespace SIL.FieldWorks.Common.ScriptureUtils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[TestFixtureSetUp]
-		public override void FixtureSetup()
+		public void FixtureSetup()
 		{
-			base.FixtureSetup();
 			InitializeScrReferenceForTests();
 		}
 
@@ -289,7 +282,7 @@ namespace SIL.FieldWorks.Common.ScriptureUtils
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
 	[TestFixture]
-	public class ParseChapterVerseNumberTests: BaseTest
+	public class ScrReference_ParseChapterVerseNumberTests
 	{
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -297,9 +290,8 @@ namespace SIL.FieldWorks.Common.ScriptureUtils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[TestFixtureSetUp]
-		public override void FixtureSetup()
+		public void FixtureSetup()
 		{
-			base.FixtureSetup();
 			ScrReferenceTests.InitializeScrReferenceForTests();
 		}
 

@@ -17,6 +17,7 @@
 // </remarks>
 // --------------------------------------------------------------------------------------------
 using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace SIL.Utils
@@ -36,19 +37,13 @@ namespace SIL.Utils
 	/// This displays the wait cursor inside of the using block.
 	/// </example>
 	/// ----------------------------------------------------------------------------------------
-	public class WaitCursor : IFWDisposable
+	public class WaitCursor : IDisposable
 	{
+		static int s_depth = 0;		// counter used for debugging/tracing nested uses.
 		private Cursor m_oldCursor;
 		private Control m_parent;
 		private bool m_fOldWaitCursor;
 		private delegate void VoidMethodWithBool(bool f);
-
-		// We used to keep track of nested wait cursor calls.
-		// This didn't work as expected because the variable was decremented
-		// in Dispose() which gets called directly (at the end of the using block)
-		// and from the finalizer.
-		// We can always restore the old cursor because if we are nested
-		// the parent.Cursor is already the wait cursor, so we can restore that.
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -100,7 +95,7 @@ namespace SIL.Utils
 				return;
 			}
 
-			if (m_parent != null || showBusyCursor)
+			if (m_parent != null)
 			{
 				m_oldCursor = m_parent.Cursor;
 				m_parent.Cursor = showBusyCursor ? Cursors.AppStarting : Cursors.WaitCursor;
@@ -109,7 +104,13 @@ namespace SIL.Utils
 			{
 				m_fOldWaitCursor = Application.UseWaitCursor;
 				Application.UseWaitCursor = true;
+				// A comment on the web indicates that the following triggers the cursor to actually change.
+				// This appears to be true.  (A related post used the Win32 API SendMessage to achieve this.)
+				Cursor.Position = Cursor.Position;
 			}
+			++s_depth;
+			Debug.WriteLine(String.Format("{0}: WaitCursor.Create({1}): m_parent={2}; m_oldCursor={3}; m_fOldWaitCursor={4}",
+				s_depth, showBusyCursor, m_parent, m_oldCursor, m_fOldWaitCursor));
 		}
 
 		#region IDisposable & Co. implementation
@@ -225,10 +226,20 @@ namespace SIL.Utils
 				return;
 			}
 
+			Debug.WriteLine(String.Format("{0}: WaitCursor.Dispose(): m_parent={1}; m_oldCursor={2}; m_fOldWaitCursor={3}",
+				s_depth, m_parent, m_oldCursor, m_fOldWaitCursor));
+			--s_depth;
 			if (m_oldCursor != null)
+			{
 				m_parent.Cursor = m_oldCursor;
+			}
 			else
+			{
 				Application.UseWaitCursor = m_fOldWaitCursor;
+				// A comment on the web indicates that the following helps trigger the cursor to actually change.
+				// This appears to be true.  (A related post used the Win32 API SendMessage to achieve this.)
+				Cursor.Position = Cursor.Position;
+			}
 		}
 	}
 }

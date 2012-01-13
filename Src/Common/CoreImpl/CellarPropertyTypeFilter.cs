@@ -8,126 +8,13 @@
 // </copyright>
 #endregion
 //
-// File: CellarPropertyType.cs
+// File: CellarPropertyTypeFilter.cs
 // Responsibility: TE Team
 // ---------------------------------------------------------------------------------------------
 using System;
-using SIL.FieldWorks.Common.COMInterfaces;
 
 namespace SIL.CoreImpl
 {
-	/// ----------------------------------------------------------------------------------------
-	/// <summary>
-	/// Types of properties in "Cellar" database. The underlying values still come from
-	/// CmTypes.h, but that file can be retired if/when these values are no longer needed in
-	/// C++ code.
-	/// </summary>
-	/// ----------------------------------------------------------------------------------------
-	public enum CellarPropertyType : int
-	{
-		/// <summary>
-		///
-		/// </summary>
-		Nil = CellarModuleDefns.kcptNil,
-		/// <summary>
-		///
-		/// </summary>
-		Boolean = CellarModuleDefns.kcptBoolean,
-		/// <summary>
-		///
-		/// </summary>
-		Integer = CellarModuleDefns.kcptInteger,
-		/// <summary>
-		///
-		/// </summary>
-		Numeric = CellarModuleDefns.kcptNumeric,
-		/// <summary>
-		///
-		/// </summary>
-		Float = CellarModuleDefns.kcptFloat,
-		/// <summary>
-		///
-		/// </summary>
-		Time = CellarModuleDefns.kcptTime,
-		/// <summary>
-		///
-		/// </summary>
-		Guid = CellarModuleDefns.kcptGuid,
-		/// <summary>
-		///
-		/// </summary>
-		Image = CellarModuleDefns.kcptImage,
-		/// <summary>
-		///
-		/// </summary>
-		GenDate = CellarModuleDefns.kcptGenDate,
-		/// <summary>
-		///
-		/// </summary>
-		Binary = CellarModuleDefns.kcptBinary,
-
-		/// <summary>
-		///
-		/// </summary>
-		String = CellarModuleDefns.kcptString,
-		/// <summary>
-		///
-		/// </summary>
-		MultiString = CellarModuleDefns.kcptMultiString,
-		/// <summary>
-		///
-		/// </summary>
-		Unicode = CellarModuleDefns.kcptUnicode,
-		/// <summary>
-		///
-		/// </summary>
-		MultiUnicode = CellarModuleDefns.kcptMultiUnicode,
-		/// <summary>
-		///
-		/// </summary>
-		BigString = CellarModuleDefns.kcptBigString,
-		/// <summary>
-		///
-		/// </summary>
-		MultiBigString = CellarModuleDefns.kcptMultiBigString,
-		/// <summary>
-		///
-		/// </summary>
-		BigUnicode = CellarModuleDefns.kcptBigUnicode,
-		/// <summary>
-		///
-		/// </summary>
-		MultiBigUnicode = CellarModuleDefns.kcptMultiBigUnicode,
-
-		/// <summary>
-		///
-		/// </summary>
-		OwningAtomic = CellarModuleDefns.kcptOwningAtom, // 23
-		/// <summary>
-		///
-		/// </summary>
-		ReferenceAtomic = CellarModuleDefns.kcptReferenceAtom, // 24
-		/// <summary>
-		///
-		/// </summary>
-		OwningCollection = CellarModuleDefns.kcptOwningCollection, // 25
-		/// <summary>
-		///
-		/// </summary>
-		ReferenceCollection = CellarModuleDefns.kcptReferenceCollection, // 26
-		/// <summary>
-		///
-		/// </summary>
-		OwningSequence = CellarModuleDefns.kcptOwningSequence, // 27
-		/// <summary>
-		///
-		/// </summary>
-		ReferenceSequence = CellarModuleDefns.kcptReferenceSequence, // 28
-
-		/// <summary>The first object type (non-basic)</summary>
-		MinObj = 23,
-	}
-
 	/// <summary>
 	/// Types of fields that can be stored in a meta-data cache. These values are 1 shifted
 	/// to the left the number of bits equal to the corresponding CellarPropertyType value.

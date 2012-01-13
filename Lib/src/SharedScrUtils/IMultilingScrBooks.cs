@@ -1,12 +1,25 @@
+// --------------------------------------------------------------------------------------------
+#region // Copyright (c) 2011, SIL International. All Rights Reserved.
+// <copyright from='2008' to='2011' company='SIL International'>
+//		Copyright (c) 2011, SIL International. All Rights Reserved.
+//
+//		Distributable under the terms of either the Common Public License or the
+//		GNU Lesser General Public License, as specified in the LICENSING.txt file.
+// </copyright>
+#endregion
+//
+// File: MultilingScrBooks.cs
+// --------------------------------------------------------------------------------------------
 using System.Collections.Generic;
-using SIL.FieldWorks.Common.COMInterfaces;
 
-namespace SIL.FieldWorks.Common.ScriptureUtils
+namespace SILUBS.SharedScrUtils
 {
-	#region Embedded Objects
+	#region class BookLabel
+	/// ----------------------------------------------------------------------------------------
 	/// <summary>
-	/// BookLabel structure is for GetBookNames() below
+	/// Class to associate a book label (name or abbreviation) with a canonical book number.
 	/// </summary>
+	/// ----------------------------------------------------------------------------------------
 	public class BookLabel
 	{
 		/// <summary></summary>
@@ -14,21 +27,27 @@ namespace SIL.FieldWorks.Common.ScriptureUtils
 		/// <summary></summary>
 		public int BookNum;
 
+		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		///
+		/// Constructor
 		/// </summary>
-		/// <param name="sLabel"></param>
-		/// <param name="nBookNum"></param>
+		/// <param name="sLabel">The s label.</param>
+		/// <param name="nBookNum">The n book num.</param>
+		/// ------------------------------------------------------------------------------------
 		public BookLabel(string sLabel, int nBookNum)
 		{
 			Label = sLabel;
 			BookNum = nBookNum;
 		}
 
+		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		///
+		/// Returns a <see cref="System.String"/> that represents this instance.
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>
+		/// A <see cref="System.String"/> that represents this instance.
+		/// </returns>
+		/// ------------------------------------------------------------------------------------
 		public override string ToString()
 		{
 			return Label;
@@ -36,12 +55,14 @@ namespace SIL.FieldWorks.Common.ScriptureUtils
 	}
 	#endregion
 
+	/// ----------------------------------------------------------------------------------------
 	/// <summary>
 	/// Interface for FieldWorks' MultilingScrBooks
 	/// A MultilingScrBooks object may be implemented to represent either
 	/// a) a full list of scripture book names in many languages, or
 	/// b) book names and book contents present in a scripture database, e.g. FW
 	/// </summary>
+	/// ----------------------------------------------------------------------------------------
 	public interface IMultilingScrBooks
 	{
 		#region Properties
@@ -51,10 +72,9 @@ namespace SIL.FieldWorks.Common.ScriptureUtils
 		/// The first writing system in the array is called the primary
 		/// writing system by the spec. The array may also optionally include a list of secondary
 		/// encodings, which are used by MultilingScrBooks if the primary writing system does not
-		/// suffice for some reason. The caller must ensure that the UI writing system is included
-		/// in the array.
+		/// suffice for some reason. Typically the UI writing system should be included in the array.
 		/// </summary>
-		List<int> RequestedEncodings { get;set;}
+		List<string> RequestedEncodings { get;set;}
 
 		/// <summary>
 		/// ProcessDeuteroCanonical property
@@ -80,9 +100,6 @@ namespace SIL.FieldWorks.Common.ScriptureUtils
 		#endregion
 
 		#region Methods
-
-		// SetBookNames(ws, BookNameInfo[] bniNames);
-
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Determines whether or not the reference string is a valid canonical scripture
@@ -105,20 +122,6 @@ namespace SIL.FieldWorks.Common.ScriptureUtils
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Returns false, if hooked to a scr database and the book text does not exist.
-		/// </summary>
-		/// <param name="nBook">one-based index of the book (Genesis = 1).</param>
-		/// <returns>In implementation (a): always return true.
-		/// In implementation (b) (hooked to a scr database): return true if book text exists.</returns>
-		/// ------------------------------------------------------------------------------------
-		bool IsBookAvailableInDb(int nBook);
-
-		// AreNamesAvailableForEnc
-		//  true if any names are available in given writing system
-	//	bool AreNamesAvailableForEnc(int ws);
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
 		/// Get the book name for a given book number.
 		/// </summary>
 		/// <param name="nBook">one-based index of the book (Genesis = 1).</param>
@@ -138,15 +141,12 @@ namespace SIL.FieldWorks.Common.ScriptureUtils
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// If name of one book is not available in the first (primary) writing system,
-		/// the info in the next available (secondary) writing system is substituted.
-		/// If not available in any given writing system, the 3-letter SIL/UBS book code is returned.
+		/// Gets an array of book labels for the books represented by this instance.
 		/// </summary>
-		/// <param name="fAvailable">The output array only includes available books if fAvailable is true.</param>
 		/// <returns>An array of BookLabel objects in the requested primary writing system,
 		/// as far as possible.</returns>
 		/// ------------------------------------------------------------------------------------
-		BookLabel[] GetBookNames(bool fAvailable);
+		BookLabel[] BookLabels { get; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -177,16 +177,6 @@ namespace SIL.FieldWorks.Common.ScriptureUtils
 		/// <returns>The generated text string reference.</returns>
 		/// ------------------------------------------------------------------------------------
 		string GetRefString(ScrReference scRef);
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Initialize the object with the proper writing system factory, which also initializes
-		/// some standard writing system ids.
-		/// </summary>
-		/// <param name="wsf">the writing system factory</param>
-		/// <returns>nothing</returns>
-		/// ------------------------------------------------------------------------------------
-		void InitializeWritingSystems(ILgWritingSystemFactory wsf);
 		#endregion
 	}
 }
