@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------
 #region // Copyright (c) 2013, SIL International. All Rights Reserved.
 // <copyright from='2013' to='2013' company='SIL International'>
 //		Copyright (c) 2013, SIL International. All Rights Reserved.
@@ -10,34 +10,36 @@
 // ---------------------------------------------------------------------------------------------
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using SIL.Utils;
 using Microsoft.Win32;
 
-namespace SIL.FieldWorks.FDO
+namespace SIL.FieldWorks.FDO.FDOTests
 {
 	/// <summary>
-	/// Silent implementation of FdoUserAction with reasonable defaults for
-	/// actions which should not require user intervention
+	/// Dummy implementation of FdoUserAction for unit tests
 	/// </summary>
-	public class SilentFdoUserAction : IFdoUserAction
+	[SuppressMessage("Gendarme.Rules.Design", "TypesWithDisposableFieldsShouldBeDisposableRule",
+		Justification="m_threadHelper is a singleton and disposed by the SingletonsContainer")]
+	public class DummyFdoUserAction : IFdoUserAction
 	{
-		private readonly ISynchronizeInvoke m_synchronizeInvoke;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="SilentFdoUserAction"/> class.
-		/// </summary>
-		/// <param name="synchronizeInvoke">The synchronize invoke.</param>
-		public SilentFdoUserAction(ISynchronizeInvoke synchronizeInvoke)
-		{
-			m_synchronizeInvoke = synchronizeInvoke;
-		}
+		private readonly ThreadHelper m_threadHelper = SingletonsContainer.Get<ThreadHelper>();
 
 		/// <summary>
 		/// Gets the object that is used to invoke methods on the main UI thread.
 		/// </summary>
 		public ISynchronizeInvoke SynchronizeInvoke
 		{
-			get { return m_synchronizeInvoke; }
+			get { return m_threadHelper; }
 		}
+
+		/// <summary>
+		/// Gets the error message.
+		/// </summary>
+		/// <value>
+		/// The error message.
+		/// </value>
+		public string ErrorMessage { get; private set; }
 
 		/// <summary>
 		/// Check with user regarding conflicting changes
@@ -45,8 +47,7 @@ namespace SIL.FieldWorks.FDO
 		/// <returns>True if user wishes to revert to saved state. False otherwise.</returns>
 		public bool ConflictingSave()
 		{
-			// Assume saved data is correct data
-			return true;
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -55,8 +56,7 @@ namespace SIL.FieldWorks.FDO
 		/// <returns>True if user wishes to attempt reconnect.  False otherwise.</returns>
 		public bool ConnectionLost()
 		{
-			// Assume we don't to continue to attempt to reconnect endlessly
-			return false;
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -73,8 +73,7 @@ namespace SIL.FieldWorks.FDO
 		/// <returns></returns>
 		public FileSelection ChooseFilesToUse()
 		{
-			// Assume newer files are correct files
-			return FileSelection.OkKeepNewer;
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -83,8 +82,7 @@ namespace SIL.FieldWorks.FDO
 		/// <returns>True if user wishes to restore linked files in project folder. False to leave them in the original location.</returns>
 		public bool RestoreLinkedFilesInProjectFolder()
 		{
-			// Assume linked files go in project folder
-			return true;
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -94,8 +92,7 @@ namespace SIL.FieldWorks.FDO
 		/// <returns>OkYes to restore to project folder, OkNo to skip restoring linked files, Cancel otherwise</returns>
 		public YesNoCancel CannotRestoreLinkedFilesToOriginalLocation()
 		{
-			// Assume linked files go in project folder
-			return YesNoCancel.OkYes;
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -103,7 +100,7 @@ namespace SIL.FieldWorks.FDO
 		/// </summary>
 		public void MessageBox()
 		{
-			// Informational only
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -116,6 +113,8 @@ namespace SIL.FieldWorks.FDO
 		/// false otherwise.</returns>
 		public bool ReportException(Exception error, bool isLethal)
 		{
+			// Store the message so we can check it later
+			ErrorMessage = error.Message;
 			return isLethal;
 		}
 
@@ -127,7 +126,7 @@ namespace SIL.FieldWorks.FDO
 		/// <param name="errorText">The error text.</param>
 		public void ReportDuplicateGuids(RegistryKey applicationKey, string emailAddress, string errorText)
 		{
-			// Informational only
+			throw new NotImplementedException();
 		}
 	}
 }
