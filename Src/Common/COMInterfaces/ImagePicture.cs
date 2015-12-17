@@ -2,38 +2,23 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 //
-// File: IPicture.cs
-// Responsibility: Linux Team
-
 using System;
 using System.Drawing;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using SIL.Utils.ComTypes;
+using SIL.Utils;
 
-namespace SIL.Utils
+namespace SIL.FieldWorks.Common.COMInterfaces
 {
-	/// <summary/>
-	[ComImport()]
-	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	[Guid("CA9AAF91-4C34-4c6a-8E07-97C1A7B3486A")]
-	public interface IComDisposable
-	{
-
-		/// <summary> </summary>
-		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-		void Dispose();
-	}
 
 	/// <summary>
 	/// A IPicture Implementation using C# image class (mainly for use on Linux)
 	/// </summary>
 	/// <remarks>NOTE: only the methods that are currently used are implemented.</remarks>
 	//[ComImport()]
-	[Guid("1bd4d91c-124b-11de-96cb-0019dbf4566e"),
-	ClassInterface(ClassInterfaceType.None),
-	TypeLibType(TypeLibTypeFlags.FCanCreate)]
+	[Guid("1bd4d91c-124b-11de-96cb-0019dbf4566e")]
+	[ClassInterface(ClassInterfaceType.None)]
+	[TypeLibType(TypeLibTypeFlags.FCanCreate)]
 	public class ImagePicture : IPicture, IDisposable, IPictureDisp, IComDisposable
 	{
 		/// <summary>

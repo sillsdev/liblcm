@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Resources;
 
-namespace SIL.Utils
+namespace SIL.CoreImpl
 {
 	///-----------------------------------------------------------------------------------------
 	/// <summary>

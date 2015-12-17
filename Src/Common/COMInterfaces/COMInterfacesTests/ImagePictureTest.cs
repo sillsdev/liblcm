@@ -1,15 +1,12 @@
 // Copyright (c) 2009-2013 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
-//
-// File: IPicture.cs
-// Responsibility: FW Team
-// ---------------------------------------------------------------------------------------------
 
 using System.Drawing;
 using NUnit.Framework;
+using SIL.Utils;
 
-namespace SIL.Utils
+namespace SIL.FieldWorks.Common.COMInterfaces
 {
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>
