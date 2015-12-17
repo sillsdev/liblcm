@@ -8,8 +8,9 @@
 using System;
 using System.Drawing;
 using NUnit.Framework;
+using SIL.CoreImpl;
 
-namespace SIL.Utils
+namespace SIL.FieldWorks.Common.FwUtils
 {
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>

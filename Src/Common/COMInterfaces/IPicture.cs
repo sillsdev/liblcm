@@ -9,7 +9,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace SIL.Utils.ComTypes
+namespace SIL.FieldWorks.Common.COMInterfaces
 {
 	/// <summary>
 	/// IPicture interface (as found in stdole)

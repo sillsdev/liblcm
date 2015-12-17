@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SIL.Utils {
+namespace SIL.CoreImpl {
 	using System;
 
 
@@ -39,7 +39,7 @@ namespace SIL.Utils {
 		internal static global::System.Resources.ResourceManager ResourceManager {
 			get {
 				if (object.ReferenceEquals(resourceMan, null)) {
-					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SIL.Utils.ColorStrings", typeof(ColorStrings).Assembly);
+					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SIL.CoreImpl.ColorStrings", typeof(ColorStrings).Assembly);
 					resourceMan = temp;
 				}
 				return resourceMan;
