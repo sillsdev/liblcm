@@ -71,40 +71,6 @@ namespace SIL.CoreImpl.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-        ///&lt;strings inheritPath=&quot;..&quot;&gt;
-        ///  &lt;string id=&quot;orange&quot; txt=&quot;orng&quot;/&gt;
-        ///&lt;/strings&gt;
-        ///.
-        /// </summary>
-        internal static string food__fruit__citrus__strings_DASH_en_xml {
-            get {
-                return ResourceManager.GetString("food__fruit__citrus__strings_DASH_en_xml", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-        ///&lt;strings&gt;
-        ///	&lt;string id=&quot;passion fruit&quot; txt=&quot;pssnfrt&quot;/&gt;
-        ///	&lt;string id=&quot;papaya&quot; txt=&quot;ppy&quot;/&gt;
-        ///	&lt;!-- this one demonstrates that omiting the txt attribute just means that we should return the id value --&gt;
-        ///	&lt;string id=&quot;Banana&quot;/&gt;
-        ///	&lt;group id=&quot;InPng&quot;&gt;
-        ///		&lt;group id=&quot;InMyYard&quot;&gt;
-        ///			&lt;string id=&quot;MyPapaya&quot; txt=&quot;ppy&quot;/&gt;
-        ///			&lt;string id=&quot;MyPineapple&quot; txt=&quot;pnppl&quot;/&gt;
-        ///		&lt;/group&gt;
-        ///	&lt;/group&gt;
-        ///&lt;/strings&gt;.
-        /// </summary>
-        internal static string food__fruit__strings_DASH_en_xml {
-            get {
-                return ResourceManager.GetString("food__fruit__strings_DASH_en_xml", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] lxx {
