@@ -1,0 +1,53 @@
+# This file lists dependencies
+# It can be edited with the BuildDependencyManager application.
+# See https://github.com/ermshiperete/BuildDependency for more information.
+
+[[TC]]
+Type=TeamCity
+Url=http://build.palaso.org
+
+[TC::bt223]
+Name=palaso-win32-libpalaso-3.1 Continuous
+RevisionName=lastSuccessful
+RevisionValue=latest.lastSuccessful
+Condition=Windows
+Path=SIL.Core.dll => downloads/
+SIL.Core.pdb => downloads/
+SIL.Lexicon.dll => downloads/
+SIL.Lexicon.pdb => downloads/
+SIL.WritingSystems.dll => downloads/
+SIL.WritingSystems.pdb => downloads/
+SIL.TestUtilities.dll => downloads/
+Newtonsoft.Json.dll => downloads/
+icu.net.dll => downloads/
+Spart.dll => downloads/
+
+
+[TC::bt322]
+Name=palaso-linux64-libpalaso-3.1 Continuous
+RevisionName=lastSuccessful
+RevisionValue=latest.lastSuccessful
+Condition=Linux
+Path=SIL.Core.dll => downloads/
+SIL.Core.dll.mdb => downloads/
+SIL.Lexicon.dll => downloads/
+SIL.Lexicon.dll.mdb => downloads/
+SIL.WritingSystems.dll => downloads/
+SIL.WritingSystems.dll.mdb => downloads/
+SIL.TestUtilities.dll => downloads/
+Newtonsoft.Json.dll => downloads/
+icu.net.dll => downloads/
+Spart.dll => downloads/
+
+
+[TC::Libraries_Icu4cWin32FieldWorksContinuous]
+Name=icu4c-win32-FieldWorks Continuous
+RevisionName=lastSuccessful
+RevisionValue=latest.lastSuccessful
+Condition=Windows
+Path=gennorm2.exe => downloads/
+icudt54.dll => downloads/
+icuin54.dll => downloads/
+icutu54.dll => downloads/
+icuuc54.dll => downloads/
+

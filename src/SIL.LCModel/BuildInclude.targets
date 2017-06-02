@@ -8,13 +8,13 @@
 
 	<ItemGroup>
 		<GeneratedFiles Include="GeneratedConstants.cs" />
-	  <GeneratedFiles Include="GeneratedInterfaces.cs" />
-	  <GeneratedFiles Include="GeneratedFactoryInterfaces.cs" />
-	  <GeneratedFiles Include="GeneratedRepositoryInterfaces.cs" />
-	  <GeneratedFiles Include="DomainImpl/GeneratedClasses.cs" />
+		<GeneratedFiles Include="GeneratedInterfaces.cs" />
+		<GeneratedFiles Include="GeneratedFactoryInterfaces.cs" />
+		<GeneratedFiles Include="GeneratedRepositoryInterfaces.cs" />
+		<GeneratedFiles Include="DomainImpl/GeneratedClasses.cs" />
 		<GeneratedFiles Include="DomainImpl/GeneratedFactoryImplementations.cs" />
 		<GeneratedFiles Include="Infrastructure/Impl/GeneratedRepositoryImplementations.cs" />
-	  <GeneratedFiles Include="Infrastructure/Impl/GeneratedBackendProvider.cs" />
+		<GeneratedFiles Include="Infrastructure/Impl/GeneratedBackendProvider.cs" />
 		<GeneratedFiles Include="IOC/GeneratedServiceLocatorBootstrapper.cs" />
 	</ItemGroup>
 
@@ -24,7 +24,7 @@
 
 	<Target Name="GenerateModel" Inputs="MasterLCModel.xml" Outputs="@(GeneratedFiles)">
 		<!-- Call the LcmGenerate task from SIL.LCModel.Build.Tasks in a separate msbuild process,
-		so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
+		     so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
 		<Exec Command="$(MsbuildCommand) GenerateModel.proj /p:Configuration=$(Configuration) /p:OutDir=$(OutDir)" />
 	</Target>
 

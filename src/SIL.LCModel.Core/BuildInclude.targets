@@ -18,7 +18,8 @@
 	</ItemGroup>
 
 	<Target Name="GenerateKernelCs" Inputs="@(KernelInputs)" Outputs="@(KernelOutputs)">
-		<!-- Call the IdlImp task from FdoBuildTasks in a separate msbuild process, so it doesn't lock the FdoBuildTasks.dll in VS. -->
+		<!-- Call the IdlImp task from SIL.LCModel.Build.Tasks in a separate msbuild process,
+		     so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
 		<Exec Command="$(MsbuildCommand) GenerateKernelCs.proj /p:Configuration=$(Configuration) /p:OutDir=$(OutDir) /p:IntermediateOutputPath=$(IntermediateOutputPath)" />
 	</Target>
 
@@ -37,12 +38,12 @@
 	<Target Name="GenerateIcuData" Inputs="@(IcuDataInputs)" Outputs="@(IcuDataOutputs)">
 		<MakeDir Directories="$(OutDir)IcuData/icudt$(IcuVersion)l" />
 		<PropertyGroup>
-			<gennorm2 Condition="'$(OS)'=='Windows_NT'">$(OutDir)gennorm2.exe</gennorm2>
+			<gennorm2 Condition="'$(OS)'=='Windows_NT'">../../lib/downloads/gennorm2.exe</gennorm2>
 			<gennorm2 Condition="'$(OS)'=='Unix'">/usr/lib/fieldworks/icu-bin/gennorm2</gennorm2>
 		</PropertyGroup>
 		<Exec Command='"$(gennorm2)" -o "$(OutDir)IcuData/icudt$(IcuVersion)l/nfc_fw.nrm" "IcuData/nfc.txt" "IcuData/nfcHebrew.txt" "IcuData/nfcOverrides.txt"' />
 		<Exec Command='"$(gennorm2)" -o "$(OutDir)IcuData/icudt$(IcuVersion)l/nfkc_fw.nrm" "IcuData/nfc.txt" "IcuData/nfcHebrew.txt" "IcuData/nfkc.txt" "IcuData/nfcOverrides.txt" "IcuData/nfkcOverrides.txt"' />
-	  <Copy SourceFiles="IcuData/UnicodeDataOverrides.txt" DestinationFolder="$(OutDir)IcuData" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
+		<Copy SourceFiles="IcuData/UnicodeDataOverrides.txt" DestinationFolder="$(OutDir)IcuData" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
 	</Target>
 
 	<Target Name="AfterClean">

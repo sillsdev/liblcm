@@ -34,14 +34,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="SIL.Core">
-      <HintPath>..\..\..\..\..\Downloads\SIL.Core.dll</HintPath>
+    <Reference Include="SIL.Core, Version=3.1.0.0, Culture=neutral, PublicKeyToken=cab3c8c5232dfcf2, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\downloads\SIL.Core.dll</HintPath>
     </Reference>
-    <Reference Include="SIL.Lexicon">
-      <HintPath>..\..\..\..\..\Downloads\SIL.Lexicon.dll</HintPath>
+    <Reference Include="SIL.Lexicon, Version=3.1.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\downloads\SIL.Lexicon.dll</HintPath>
     </Reference>
-    <Reference Include="SIL.WritingSystems">
-      <HintPath>..\..\..\..\..\Downloads\SIL.WritingSystems.dll</HintPath>
+    <Reference Include="SIL.WritingSystems, Version=3.1.0.0, Culture=neutral, PublicKeyToken=cab3c8c5232dfcf2, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\downloads\SIL.WritingSystems.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -199,23 +202,19 @@
     <None Include="Phonology\PhonEnvError.dtd" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\..\..\..\Downloads\gennorm2.exe" Condition="'$(OS)'=='Windows_NT'">
-      <Link>gennorm2.exe</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\..\..\..\Downloads\icudt54.dll" Condition="'$(OS)'=='Windows_NT'">
+    <Content Include="..\..\lib\downloads\icudt54.dll" Condition="'$(OS)'=='Windows_NT'">
       <Link>icudt54.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\..\..\..\Downloads\icuin54.dll" Condition="'$(OS)'=='Windows_NT'">
+    <Content Include="..\..\lib\downloads\icuin54.dll" Condition="'$(OS)'=='Windows_NT'">
       <Link>icuin54.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\..\..\..\Downloads\icutu54.dll" Condition="'$(OS)'=='Windows_NT'">
+    <Content Include="..\..\lib\downloads\icutu54.dll" Condition="'$(OS)'=='Windows_NT'">
       <Link>icutu54.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\..\..\..\Downloads\icuuc54.dll" Condition="'$(OS)'=='Windows_NT'">
+    <Content Include="..\..\lib\downloads\icuuc54.dll" Condition="'$(OS)'=='Windows_NT'">
       <Link>icuuc54.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
