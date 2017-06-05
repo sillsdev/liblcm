@@ -1,8 +1,6 @@
-// Copyright (c) 2010-2013 SIL International
+// Copyright (c) 2010-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
-//
-// File: IActionHandlerTests.cs
 
 using System;
 using System.Collections.Generic;
@@ -1697,7 +1695,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 		public void UndoRedoRemoveScrBookWithChildObjects()
 		{
 			var lp = Cache.LanguageProject;
-			IText text = null;
 			IStText stText = null;
 			IStTxtPara para = null;
 			IScrBook book = null;

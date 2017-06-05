@@ -25,7 +25,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void DataMigration7000024Test()
 		{
-			int count = 0;
 			var dtos = DataMigrationTestServices.ParseProjectFile("DataMigration7000024Tests.xml");
 
 			// Set up mock MDC.
@@ -218,7 +217,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void DataMigration7000024Test1()
 		{
-			int count = 0;
 			var dtos = DataMigrationTestServices.ParseProjectFile("DataMigration7000024Tests1.xml");
 
 			// Set up mock MDC.

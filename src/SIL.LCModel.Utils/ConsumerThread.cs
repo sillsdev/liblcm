@@ -112,7 +112,6 @@ namespace SIL.LCModel.Utils
 		private readonly PriorityQueue<P, T> m_queue;
 		private readonly Action m_initHandler;
 		private readonly Action<IQueueAccessor<P, T>> m_workHandler;
-		private bool m_fWaitForNextRequest;
 		private bool m_hasWork;
 		private bool m_isIdle = true;
 		private Exception m_unhandledException;

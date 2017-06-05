@@ -2726,7 +2726,6 @@ namespace SIL.LCModel.DomainServices
 			ParagraphAnnotatorForParagraphBuilder tapb = new ParagraphAnnotatorForParagraphBuilder(pb);
 			XmlNode paraDef0 = pb.ParagraphDefinition.CloneNode(true);
 
-			XmlNode paraDef_afterJoin1_2;
 			pb.ParseParagraph();
 			// xxxpus xxxyalola xxxnihimbilira. xxxpus xxxyalola [xxxhesyla xxxnihimbilira]. xxxpus xxxyalola xxxnihimbilira
 			tapb.MergeAdjacentAnnotations(1, 2, secondaryPathsToJoinWords, secondaryPathsToBreakPhrases);
@@ -2994,7 +2993,6 @@ namespace SIL.LCModel.DomainServices
 			ParagraphAnnotatorForParagraphBuilder tapb = new ParagraphAnnotatorForParagraphBuilder(pb);
 			ParagraphParser.ParseParagraph(pb.ActualParagraph);
 			// Create a new lexical entry and sense.
-			int clsidForm;
 			string formLexEntry = "xnihimbilira";
 			var morphTypeRepository = Cache.ServiceLocator.GetInstance<IMoMorphTypeRepository>();
 			var rootMorphType = morphTypeRepository. GetObject(MoMorphTypeTags.kguidMorphRoot);

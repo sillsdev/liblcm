@@ -29,7 +29,6 @@ namespace SIL.LCModel.DomainImpl
 	/// ----------------------------------------------------------------------------------------
 	internal partial class LangProject
 	{
-		private int m_srsFlid;
 		private WritingSystemCollection m_analysisWritingSystems;
 		private WritingSystemCollection m_vernacularWritingSystems;
 		private WritingSystemList m_currentAnalysisWritingSystems;

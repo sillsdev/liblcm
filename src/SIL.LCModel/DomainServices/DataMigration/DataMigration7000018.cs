@@ -536,7 +536,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					continue;
 				if (dto.XmlBytes.IndexOfSubArray(rgbRun) < 0)
 					continue;
-				bool fChanged = false;
 				XElement xeObj = XElement.Parse(dto.Xml);
 				bool fUpdate = false;
 				if (dto.Classname == "PhEnvironment")
@@ -544,7 +543,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				foreach (XElement xe in xeObj.Descendants("Run"))
 				{
 					string sNormDirectFmt = GetDirectStringFormats(xe);
-					if (String.IsNullOrEmpty(sNormDirectFmt))
+					if (string.IsNullOrEmpty(sNormDirectFmt))
 						continue;
 					DomainObjectDTO dtoStyle = GetMatchingStyle(sNormDirectFmt, "<Type val=\"1\"/>");
 					ReplaceRunDirectFmts(xe, GetStyleName(dtoStyle.Xml));

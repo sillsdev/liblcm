@@ -1503,17 +1503,10 @@ namespace SIL.LCModel.DomainServices
 				return;
 
 			string[] wsIds = wsIdsStr.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-			var sb = new StringBuilder();
-			bool first = true;
 			if (wsIds.Contains(newWsId, StringComparer.OrdinalIgnoreCase))
-			{
 				wsIds = wsIds.Where(item => !item.Equals(origWsId, StringComparison.OrdinalIgnoreCase)).ToArray();
-			}
 			else
-			{
-				wsIds =
-					(from item in wsIds select (item.Equals(origWsId, StringComparison.OrdinalIgnoreCase) ? newWsId : item)).ToArray();
-			}
+				wsIds = (from item in wsIds select item.Equals(origWsId, StringComparison.OrdinalIgnoreCase) ? newWsId : item).ToArray();
 			var newVal = string.Join(" ", wsIds.Where(x => x != null));
 			cache.DomainDataByFlid.set_UnicodeProp(obj.Hvo, flid, newVal.Length == 0 ? null : newVal);
 		}

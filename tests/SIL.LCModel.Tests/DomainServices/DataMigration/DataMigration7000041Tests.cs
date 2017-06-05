@@ -91,7 +91,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				foreach (var xObj in cfElements)
 				{	// there must be 1 to 1 map of objsur's in hasDoNotShow and xPubist
 					string pubGuid = xObj.Attribute("guid").Value;
-					int n = 0;
 					foreach (var yObj in noShows)
 					{
 						if (pubGuid == yObj.Attribute("guid").Value)

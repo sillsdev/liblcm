@@ -474,10 +474,6 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		private class ManagementObjectHelper
 		{
-			private ulong m_Memory;
-			private ulong m_DiskFree;
-			private ulong m_DiskSize;
-			private int m_DriveCount;
 #if !__MonoCS__
 			private EventWaitHandle m_waitHandle;
 #endif
@@ -501,10 +497,7 @@ namespace SIL.LCModel.Utils
 			/// </summary>
 			/// <value>The memory.</value>
 			/// --------------------------------------------------------------------------------
-			public ulong Memory
-			{
-				get { return m_Memory; }
-			}
+			public ulong Memory { get; private set; }
 
 #if !__MonoCS__
 			/// --------------------------------------------------------------------------------
@@ -515,7 +508,7 @@ namespace SIL.LCModel.Utils
 			/// --------------------------------------------------------------------------------
 			public void GetPhysicalMemoryBytes(object stateInfo)
 			{
-				m_Memory = 0;
+				Memory = 0;
 				try
 				{
 					using (var searcher = new ManagementObjectSearcher("select * from Win32_PhysicalMemory"))
@@ -524,7 +517,7 @@ namespace SIL.LCModel.Utils
 						{
 							foreach (ManagementObject mem in objColl)
 							{
-								m_Memory += (ulong) mem.GetPropertyValue("Capacity");
+								Memory += (ulong) mem.GetPropertyValue("Capacity");
 								mem.Dispose();
 							}
 						}
@@ -537,36 +530,6 @@ namespace SIL.LCModel.Utils
 				m_waitHandle.Set();
 			}
 #endif
-
-			/// --------------------------------------------------------------------------------
-			/// <summary>
-			/// Gets the number of local disk drives.
-			/// </summary>
-			/// --------------------------------------------------------------------------------
-			public int DriveCount
-			{
-				get { return m_DriveCount; }
-			}
-
-			/// --------------------------------------------------------------------------------
-			/// <summary>
-			/// Gets the total size of all local disk drives.
-			/// </summary>
-			/// --------------------------------------------------------------------------------
-			public ulong DiskSize
-			{
-				get { return m_DiskSize; }
-			}
-
-			/// --------------------------------------------------------------------------------
-			/// <summary>
-			/// Gets the total available free space of all local disk drives.
-			/// </summary>
-			/// --------------------------------------------------------------------------------
-			public ulong DiskFree
-			{
-				get { return m_DiskFree; }
-			}
 
 		}
 		#endregion

@@ -244,7 +244,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 		private static void DeleteCcwgWithGuidIndex(IDomainObjectDTORepository dtoRepos)
 		{
-			const int kLongIntLength = 10;
 			var goners = new List<DomainObjectDTO>();
 			var ccwgs = dtoRepos.AllInstancesSansSubclasses("ConstChartWordGroup");
 			foreach (var dto in ccwgs)
@@ -256,15 +255,14 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					continue; // Hopefully this isn't a problem!
 				var sBegAnalysisIndexValue = ebBegIndex.GetAttributeValue(s_valAttr);
 				var sEndAnalysisIndexValue = ebEndIndex.GetAttributeValue(s_valAttr);
-				if (!Int32.TryParse(sBegAnalysisIndexValue, out dummy) ||
-					!Int32.TryParse(sEndAnalysisIndexValue, out dummy))
+				if (!int.TryParse(sBegAnalysisIndexValue, out dummy) ||
+					!int.TryParse(sEndAnalysisIndexValue, out dummy))
 				{
 					// Found something that needs fixing!
 					// There's likely a guid instead of an integer, due to an unresolved
 					// reference where the wfic it used to refer to has been deleted
 					// for some (valid) reason.
 					goners.Add(dto);
-					continue;
 				}
 			}
 			// need to remove goners from dtoRepos and make sure that empty rows get deleted too.

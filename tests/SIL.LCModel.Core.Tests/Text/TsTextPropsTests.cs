@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016 SIL International
+﻿// Copyright (c) 2016-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -102,7 +102,7 @@ namespace SIL.LCModel.Core.Text
 		public void GetStrProp_IndexOutOfRange_Throws()
 		{
 			TsTextProps tps = TsTextProps.EmptyProps;
-			int tpt, var;
+			int tpt;
 			Assert.That(() => tps.GetStrProp(0, out tpt), Throws.InstanceOf<ArgumentOutOfRangeException>());
 		}
 

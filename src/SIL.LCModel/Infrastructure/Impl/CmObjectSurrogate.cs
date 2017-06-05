@@ -1,4 +1,4 @@
-// Copyright (c) 2015 SIL International
+// Copyright (c) 2015-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -522,7 +522,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 										rtElement,
 										((IServiceLocatorInternal) m_cache.ServiceLocator).LoadingServices);
 								}
-								catch (InvalidOperationException ioe)
+								catch (InvalidOperationException)
 								{   // Asserting just so developers know that this is happening
 									Debug.Assert(false, "See LT-13574: something is corrupt in this database.");
 									// LT-13574 had a m_classname that was different from the that in rtElement.

@@ -246,7 +246,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 		private void LogMessage(string sMsg)
 		{
 			Debug.Assert(m_wrtrLog != null);
-			Debug.Assert(!String.IsNullOrEmpty(sMsg));
+			Debug.Assert(!string.IsNullOrEmpty(sMsg));
 			m_wrtrLog.WriteLine(sMsg);
 		}
 
@@ -258,7 +258,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 		/// ------------------------------------------------------------------------------------
 		public void ImportData(TextReader rdr, TextWriter wrtrLog, IProgress progress)
 		{
-			bool fRetVal = true;
 			m_progress = progress;
 			m_rdrInput = rdr;
 			m_wrtrLog = wrtrLog;
@@ -299,8 +298,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			}
 			finally
 			{
-				if (xrdr != null)
-					xrdr.Close();
+				xrdr?.Close();
 				m_cache.MainCacheAccessor.EndNonUndoableTask();
 			}
 		}
@@ -3220,7 +3218,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 
 		Dictionary<WsString, IReversalIndexEntry> m_mapFormReversal = null;
 		IReversalIndexRepository m_repoIndex;
-		ICmPossibilityListFactory m_factList;
 		IReversalIndexEntryFactory m_factRevEntry;
 
 		/// <summary>

@@ -327,7 +327,7 @@ namespace SIL.LCModel.DomainServices
 			return let;
 		}
 
-		static internal ILexEntryType LookupLexEntryTypeByName(ILcmServiceLocator sl, string variantTypeName, CoreWritingSystemDefinition ws)
+		internal static ILexEntryType LookupLexEntryTypeByName(ILcmServiceLocator sl, string variantTypeName, CoreWritingSystemDefinition ws)
 		{
 			var eng = sl.WritingSystemManager.UserWritingSystem;
 			var letRepo = sl.GetInstance<ILexEntryTypeRepository>();
@@ -337,13 +337,13 @@ namespace SIL.LCModel.DomainServices
 			return let;
 		}
 
-		static internal ILexEntryType LookupLexEntryType(ILcmServiceLocator sl, Guid guidVariantType)
+		internal static ILexEntryType LookupLexEntryType(ILcmServiceLocator sl, Guid guidVariantType)
 		{
 			var letRepo = sl.GetInstance<ILexEntryInflTypeRepository>();
 			return letRepo.GetObject(guidVariantType);
 		}
 
-		static internal void SetupLexEntryVariant(LcmCache cache, string morphForm, IVariantComponentLexeme componentLexeme, ILexEntryType let, out ILexEntryRef lef)
+		internal static void SetupLexEntryVariant(LcmCache cache, string morphForm, IVariantComponentLexeme componentLexeme, ILexEntryType let, out ILexEntryRef lef)
 		{
 			ITsString mf = TsStringUtils.MakeString(morphForm, cache.DefaultVernWs);
 			lef = componentLexeme.CreateVariantEntryAndBackRef(let, mf);
@@ -352,8 +352,8 @@ namespace SIL.LCModel.DomainServices
 		private void SetupBoundStemAndMainEntryWithVariant()
 		{
 			ILexEntry newBoundStem;
-			ILexEntry newDummyEntry; ILexSense newDummySense;
-			var msaStem = new SandboxGenericMSA() {MsaType = MsaType.kStem};
+			ILexSense newDummySense;
+			var msaStem = new SandboxGenericMSA {MsaType = MsaType.kStem};
 			MatchingMorphsLogicTests.SetupMatchingMorphs.SetupLexEntryAndSense(Cache, "boundStem", "boundStemSense", msaStem, out newBoundStem, out newDummySense);
 			newBoundStem.LexemeFormOA.MorphTypeRA = Cache.ServiceLocator.GetInstance<IMoMorphTypeRepository>().GetObject(MoMorphTypeTags.kguidMorphBoundStem);
 			var newMainEntry = GetNewMainEntry();
@@ -367,7 +367,7 @@ namespace SIL.LCModel.DomainServices
 
 		private static void AddVariantOf(ILexEntryRef newLer, IVariantComponentLexeme newMainEntryOrSense, ILexEntryType letIrrInflVariantType)
 		{
-			var newVariant = newLer.Owner as ILexEntry;
+			var newVariant = (ILexEntry) newLer.Owner;
 			newVariant.MakeVariantOf(newMainEntryOrSense, letIrrInflVariantType);
 		}
 
@@ -475,7 +475,6 @@ namespace SIL.LCModel.DomainServices
 		private ILexEntry GetNewMainEntry(string mainEntryForm = "mainEntry", string mainEntrySenseGloss = "mainEntrySense1")
 		{
 			ILexEntry newMainEntry;
-			ILexEntry newDummyEntry;
 			ILexSense newDummySense;
 			var msaStem = new SandboxGenericMSA();
 			msaStem.MsaType = MsaType.kStem;
@@ -483,7 +482,6 @@ namespace SIL.LCModel.DomainServices
 			MatchingMorphsLogicTests.SetupMatchingMorphs.AddAllomorph<IMoStemAllomorphFactory, IMoStemAllomorph>(newMainEntry, "mainEntryAllomorph1", newMainEntry.LexemeFormOA.MorphTypeRA);
 			return newMainEntry;
 		}
-
 
 		/// <summary>
 		///

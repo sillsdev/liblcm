@@ -6,7 +6,6 @@
 // Implementation of:
 //		CmObject : Object
 // </remarks>
-// --------------------------------------------------------------------------------------------
 
 using System;
 using System.Collections;
@@ -3557,7 +3556,7 @@ namespace SIL.LCModel.DomainImpl
 				{
 					objrepo.EnsureCompleteIncomingRefsFrom(flid);
 				}
-				catch (LcmInvalidFieldException e)
+				catch (LcmInvalidFieldException)
 				{
 					// This could happen if the (custom) flid was deleted during this session.
 					// Go to the next flid.

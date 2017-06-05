@@ -1,4 +1,4 @@
-// Copyright (c) 2008-2013 SIL International
+// Copyright (c) 2008-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -300,7 +300,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 				var goners = new HashSet<ICmObjectId>();
 
 				GatherChanges(newbies, dirtballs, goners);
-				bool fWaitForCommitLock = false;
 				if (newbies.Count != 0 || dirtballs.Count != 0 || goners.Count != 0)
 				{
 					// raise the OnSave event: something nontrivial is being saved.

@@ -276,7 +276,7 @@ namespace SIL.LCModel
 				return rootOfPath.ToLowerInvariant()
 					+ path.Substring(rootOfPath.Length, path.Length - rootOfPath.Length);
 			}
-			catch (ArgumentException e)
+			catch (ArgumentException)
 			{
 				return path.ToLowerInvariant();
 			}

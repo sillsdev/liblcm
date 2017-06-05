@@ -1285,7 +1285,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			if (string.IsNullOrEmpty(code))
 				throw new ArgumentNullException("code");
 
-			Version19ScriptSubtag subtag;
 			return new Version19ScriptSubtag(code, null, !StandardSubtags.RegisteredScripts.Contains(code));
 		}
 
@@ -1299,7 +1298,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			if (string.IsNullOrEmpty(code))
 				throw new ArgumentNullException("code");
 
-			Version19RegionSubtag subtag;
 			return new Version19RegionSubtag(code, null, !StandardSubtags.RegisteredRegions.Contains(code));
 		}
 
@@ -1313,7 +1311,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			if (string.IsNullOrEmpty(code))
 				throw new ArgumentNullException("code");
 
-			Version19VariantSubtag subtag;
 			return new Version19VariantSubtag(code, null,
 				!StandardSubtags.IsValidRegisteredVariantCode(code) && !s_specialNonPrivateVariants.Contains(code), null);
 		}

@@ -235,7 +235,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 								reader.MoveToAttribute("class");
 								cfi.m_classname = reader.Value;
 								if (reader.MoveToAttribute("destclass"))
-									cfi.m_destinationClass = Int32.Parse(reader.Value);
+									cfi.m_destinationClass = int.Parse(reader.Value);
 								if (reader.MoveToAttribute("helpString"))
 									cfi.m_fieldHelp = reader.Value;
 								if (reader.MoveToAttribute("label"))
@@ -247,7 +247,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 								reader.MoveToAttribute("type");
 								cfi.m_fieldType = GetFlidTypeFromString(reader.Value);
 								if (reader.MoveToAttribute("wsSelector"))
-									cfi.m_fieldWs = Int32.Parse(reader.Value);
+									cfi.m_fieldWs = int.Parse(reader.Value);
 								reader.MoveToElement();
 								cfiList.Add(cfi);
 							}
@@ -313,22 +313,17 @@ namespace SIL.LCModel.Infrastructure.Impl
 		{
 			using (var reader = File.OpenText(path))
 			{
-				var foundStart = false;
 				var line = reader.ReadLine();
 				while (line != null)
 				{
-					if (line.Contains("<languageproject"))
-					{
-						foundStart = true;
-					}
-					else
+					if (!line.Contains("<languageproject"))
 					{
 						line = reader.ReadLine();
 						continue;
 					}
-					var idx = line.IndexOf("version");
+					var idx = line.IndexOf("version", StringComparison.Ordinal);
 					if (idx > -1)
-						return Int32.Parse(line.Substring(idx + 9, 7));
+						return int.Parse(line.Substring(idx + 9, 7));
 					line = reader.ReadLine();
 				}
 			}
@@ -844,7 +839,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 		private int[] m_bufferLengths = new int[kbufCount]; // length of useful data in each buffer; only meaningful if state is being-processed
 		private IAsyncResult[] m_tokens = new IAsyncResult[kbufCount]; // token from BeginRead to pass to EndRead when we need the data.
 		private int m_nextReadBuffer;  // The buffer we will next read into.
-		private int m_currentProcessBuffer; // the buffer we are currently processing
 		private Action<byte[]> m_outputHandler;
 		private byte[] m_previousBuffer; // the buffer we previously read
 		private byte[] m_currentBuffer; // one of m_buffers, that contains data we are currently reading.

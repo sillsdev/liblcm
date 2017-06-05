@@ -1,9 +1,6 @@
-// Copyright (c) 2016 SIL International
+// Copyright (c) 2016-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
-//
-// File: CircularRefBreakerService.cs
-// Responsibility:
 
 using System;
 using System.Collections.Generic;
@@ -23,15 +20,12 @@ namespace SIL.LCModel.DomainServices
 	/// </summary>
 	public class CircularRefBreakerService
 	{
-		private static HashSet<Guid> m_entriesEncountered = new HashSet<Guid>();
-		private static List<ILexEntryRef> m_refsProcessed = new List<ILexEntryRef>();
-		private int m_count;
-		private int m_circular;
-		private string m_report;
+		private static readonly HashSet<Guid> EntriesEncountered = new HashSet<Guid>();
+		private static readonly List<ILexEntryRef> RefsProcessed = new List<ILexEntryRef>();
 
-		public static void ReferenceBreaker(LcmCache cache, out int m_count, out int m_circular, out string m_report)
+		public static void ReferenceBreaker(LcmCache cache, out int count, out int circular, out string report)
 		{
-			m_count = cache.ServiceLocator.GetInstance<ILexEntryRefRepository>().AllInstances().Count(r => r.RefType == LexEntryRefTags.krtComplexForm);
+			count = cache.ServiceLocator.GetInstance<ILexEntryRefRepository>().AllInstances().Count(r => r.RefType == LexEntryRefTags.krtComplexForm);
 			var list = cache.ServiceLocator.GetInstance<ILexEntryRefRepository>().AllInstances().Where(r => r.RefType == LexEntryRefTags.krtComplexForm);
 			var bldr = new StringBuilder();
 			var circularRef = 0;
@@ -41,34 +35,34 @@ namespace SIL.LCModel.DomainServices
 					{
 						if (!ler.IsValidObject)
 							continue;	// we can remove LexEntryRef objects during processing, making them invalid.
-						m_refsProcessed.Clear();
-						m_entriesEncountered.Clear();
+						RefsProcessed.Clear();
+						EntriesEncountered.Clear();
 						if (CheckForCircularRef(ler))
 						{
 							#if DEBUG
-							Debug.Assert(m_refsProcessed.Count > 1);
+							Debug.Assert(RefsProcessed.Count > 1);
 							ShowFullProcessedRefs();
 							#endif
 							++circularRef;
-							var lim = m_refsProcessed.Count - 1;
-							var entry1 = m_refsProcessed[0].OwningEntry;
-							var entry2 = m_refsProcessed[lim].OwningEntry;
+							var lim = RefsProcessed.Count - 1;
+							var entry1 = RefsProcessed[0].OwningEntry;
+							var entry2 = RefsProcessed[lim].OwningEntry;
 							// Assume that the entry with the longer headword is probably the actual complex form, so remove that one
 							// from the references owned by the other entry.  If this assumption is somehow wrong, at least the user
 							// is going to be notified of what happened.
 							if (entry1.HeadWord.Text.Length > entry2.HeadWord.Text.Length)
-								RemoveEntryFromLexEntryRef(m_refsProcessed[lim], entry1, bldr);
+								RemoveEntryFromLexEntryRef(RefsProcessed[lim], entry1, bldr);
 							else
-								RemoveEntryFromLexEntryRef(m_refsProcessed[0], entry2, bldr);
+								RemoveEntryFromLexEntryRef(RefsProcessed[0], entry2, bldr);
 							bldr.AppendLine();
 						}
 					}
 				});
 			if (bldr.Length > 0)
 				bldr.Insert(0, Environment.NewLine);
-			m_circular = circularRef;
-			bldr.Insert(0, String.Format(Strings.ksFoundNCircularReferences, m_circular, m_count));
-			m_report = bldr.ToString();
+			circular = circularRef;
+			bldr.Insert(0, String.Format(Strings.ksFoundNCircularReferences, circular, count));
+			report = bldr.ToString();
 		}
 
 		/// <summary>
@@ -117,12 +111,12 @@ namespace SIL.LCModel.DomainServices
 		/// </summary>
 		private static bool CheckForCircularRef(ILexEntryRef ler)
 		{
-			m_entriesEncountered.Add(ler.OwningEntry.Guid);
-			m_refsProcessed.Add(ler);
+			EntriesEncountered.Add(ler.OwningEntry.Guid);
+			RefsProcessed.Add(ler);
 			foreach (var item in ler.PrimaryLexemesRS)
 			{
 				var entry = item as ILexEntry ?? ((ILexSense)item).Entry;
-				if (m_entriesEncountered.Contains(entry.Guid))
+				if (EntriesEncountered.Contains(entry.Guid))
 					return true;
 				foreach (var leref in entry.ComplexFormEntryRefs)
 				{
@@ -130,8 +124,8 @@ namespace SIL.LCModel.DomainServices
 						return true;
 				}
 			}
-			m_refsProcessed.RemoveAt(m_refsProcessed.Count - 1);
-			m_entriesEncountered.Remove(ler.OwningEntry.Guid);
+			RefsProcessed.RemoveAt(RefsProcessed.Count - 1);
+			EntriesEncountered.Remove(ler.OwningEntry.Guid);
 			return false;
 		}
 
@@ -139,7 +133,7 @@ namespace SIL.LCModel.DomainServices
 		private static void ShowFullProcessedRefs()
 		{
 			var bldr = new StringBuilder();
-			foreach (var ler in m_refsProcessed)
+			foreach (var ler in RefsProcessed)
 			{
 				bldr.AppendFormat("LexEntryRef<{0}>[Owner=\"{1}\"]:", ler.Hvo, ler.OwningEntry.HeadWord.Text);
 				foreach (var item in ler.PrimaryLexemesRS)

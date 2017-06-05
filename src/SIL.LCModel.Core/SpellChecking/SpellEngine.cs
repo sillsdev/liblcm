@@ -1,4 +1,4 @@
-// Copyright (c) 2015 SIL International
+// Copyright (c) 2015-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -132,12 +132,8 @@ namespace SIL.LCModel.Core.SpellChecking
 					while ((line = reader.ReadLine()) != null)
 					{
 						var item = line;
-						bool correct = true;
 						if (item.Length > 0 && item[0] == '*')
-						{
-							correct = false;
 							item = item.Substring(1);
-						}
 						// If we already got it, or the current line is before the word, just copy the line to the output.
 						if (insertedLineForWord || String.Compare(item, word, System.StringComparison.Ordinal) < 0)
 						{

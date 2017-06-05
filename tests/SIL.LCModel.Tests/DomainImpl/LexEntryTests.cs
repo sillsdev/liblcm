@@ -1,12 +1,6 @@
-// Copyright (c) 2009-2013 SIL International
+// Copyright (c) 2009-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
-//
-// File: LexEntryTests.cs
-// Responsibility: GordonM
-//
-// <remarks>
-// </remarks>
 
 using System;
 using System.Collections.Generic;
@@ -507,9 +501,8 @@ namespace SIL.LCModel.DomainImpl
 		{
 			ILexEntry star = null;
 			ILexEntry all = null;
-			ILexEntry allStar = null;
+			ILexEntry allStar;
 			ILexEntryRef allStarComponents = null;
-			ILexEntryRef allStarCastComponents = null;
 			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor,
 				() =>
 				{
@@ -1583,12 +1576,10 @@ namespace SIL.LCModel.DomainImpl
 		public void AllomorphsHaveCorrectMorphTypes()
 		{
 			ILexEntry oldEntry = null;
-			ILexSense complexSense = null;
-			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor,
-										() =>
-											{
-												oldEntry = MakeEntryWithLexemeFormAndAlternateForm();
-											});
+			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor, () =>
+				{
+					oldEntry = MakeEntryWithLexemeFormAndAlternateForm();
+				});
 			Assert.AreEqual(oldEntry.LexemeFormOA.MorphTypeRA, oldEntry.AlternateFormsOS[0].MorphTypeRA, "The morphType of the allomorph should match that of the Lexical Entry.");
 			Assert.AreNotEqual(oldEntry.LexemeFormOA.MorphTypeRA, oldEntry.AlternateFormsOS[1].MorphTypeRA, "The morphType of the allomorph should match that of the Lexical Entry.");
 		}

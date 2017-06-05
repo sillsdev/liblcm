@@ -9,7 +9,7 @@ if "%1"=="" (
 if "%2"=="" (
     SET TARGET=Build
 ) else (
-    SET TARGET=%1
+    SET TARGET=%2
 )
 
 msbuild /t:%TARGET% /p:Configuration=%CONFIG% /p:Platform=x86 LCM.sln

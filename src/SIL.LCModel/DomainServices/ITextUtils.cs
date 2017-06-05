@@ -14,7 +14,6 @@ using SIL.LCModel.Core.Text;
 using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.DomainImpl;
 using SIL.LCModel.Utils;
-using SegmentFactory = SIL.LCModel.DomainImpl.SegmentFactory;
 
 namespace SIL.LCModel.DomainServices
 {
@@ -88,8 +87,6 @@ namespace SIL.LCModel.DomainServices
 	/// </summary>
 	public class ParagraphParser : IDisposable
 	{
-		int m_hvoText = 0; // set if processing whole text.
-		int m_cparas = -1; // set if processing whole text.
 		/// <summary> The paragraph to be parsed. </summary>
 		protected IStTxtPara m_para;
 		private ITsString m_tssPara;
@@ -107,7 +104,6 @@ namespace SIL.LCModel.DomainServices
 		// If not null, list of existing annotation objects not yet reused.
 		// When one is reused, it is changed to zero.
 		Dictionary<string, HashSet<ITsString>> m_possiblePhrases;
-		static LcmCache s_cacheForRealPhrases = null;
 		bool m_fSegmentFormCollectionMode;  // used to collect (and restore state of ParagraphParser).
 		// NB: Order is important to these three lists.
 		readonly List<IAnalysis> m_preExistingAnalyses = new List<IAnalysis>();

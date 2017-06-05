@@ -566,21 +566,15 @@ namespace SIL.LCModel
 		private static void ImportLocalizedLists(LcmCache cache, string templateDir, IThreadedProgress progress)
 		{
 			var filePrefix = XmlTranslatedLists.LocalizedListPrefix;
-			var rgsAnthroFiles = new List<string>();
 			var rgsXmlFiles = Directory.GetFiles(templateDir, filePrefix + "*.zip", SearchOption.TopDirectoryOnly);
-			string sFile;
-			for (var i = 0; i < rgsXmlFiles.Length; ++i)
+			foreach (string xmlFile in rgsXmlFiles)
 			{
-				string fileName = Path.GetFileNameWithoutExtension(rgsXmlFiles[i]);
+				string fileName = Path.GetFileNameWithoutExtension(xmlFile);
 				string wsId = fileName.Substring(filePrefix.Length);
 				if (!IsWritingSystemInProject(wsId, cache))
 					continue;
 				NonUndoableUnitOfWorkHelper.DoUsingNewOrCurrentUOW(cache.ActionHandlerAccessor,
-					() => ImportTranslatedLists(progress, new object[] {
-																		  rgsXmlFiles[i],
-																		  cache
-																	   }
-												));
+					() => ImportTranslatedLists(progress, new object[] {xmlFile, cache}));
 			}
 		}
 

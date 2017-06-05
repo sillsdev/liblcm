@@ -746,9 +746,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 			IThreadedProgress progressDlg)
 		{
 			ProjectId = projectId;
-			int m_count;
-			int m_circular;
-			string m_report = string.Empty;
 
 			try
 			{
@@ -758,12 +755,15 @@ namespace SIL.LCModel.Infrastructure.Impl
 					BootstrapExtantSystem();
 				if (fMigrationNeeded)
 				{
-					CircularRefBreakerService.ReferenceBreaker(m_cache, out m_count, out m_circular, out m_report);
-					if(m_circular > 0)
-						m_ui.DisplayCircularRefBreakerReport(m_report, Strings.ksCircularRefsFixed);
+					int count;
+					int circular;
+					string report;
+					CircularRefBreakerService.ReferenceBreaker(m_cache, out count, out circular, out report);
+					if (circular > 0)
+						m_ui.DisplayCircularRefBreakerReport(report, Strings.ksCircularRefsFixed);
 				}
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				// If anything unexpected goes wrong give BEP change to release any resources.
 				ShutdownInternal();

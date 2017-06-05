@@ -1,9 +1,6 @@
-// Copyright (c) 2010-2013 SIL International
+// Copyright (c) 2010-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
-//
-// File: ProjectRestoreService.cs
-// Responsibility: FW team
 
 using System;
 using System.Collections.Generic;
@@ -26,7 +23,7 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 	{
 		#region Data members
 		private readonly RestoreProjectSettings m_restoreSettings;
-		private String m_tempBackupFolder;
+		private string m_tempBackupFolder;
 		private bool m_fRestoreOverProject;
 		private string m_sLinkDirChangedTo;
 		private readonly ILcmUI m_ui;
@@ -119,7 +116,7 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 				string projFile;
 				importSuccessful = importer.Import(fileSettings.File, m_restoreSettings.ProjectName, m_restoreSettings.ProjectsRootFolder, out projFile);
 			}
-			catch (CannotConvertException e)
+			catch (CannotConvertException)
 			{
 				FailedImportCleanUp(importer);
 				throw;
@@ -358,7 +355,7 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 					{
 						Directory.CreateDirectory(proposedDestinationLinkedFilesPath);
 					}
-					catch (Exception error)
+					catch (Exception)
 					{
 						CouldNotRestoreLinkedFilesToOriginalLocation(linkedFilesPathInZip, filesContainedInLinkdFilesFolder);
 						return;
@@ -406,7 +403,7 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 					UncompressLinkedFiles(filesContainedInLinkdFilesFolder, proposedDestinationLinkedFilesPath,
 						linkedFilesPathPersisted);
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				CouldNotRestoreLinkedFilesToOriginalLocation(linkedFilesPathPersisted, filesContainedInLinkdFilesFolder);
 			}

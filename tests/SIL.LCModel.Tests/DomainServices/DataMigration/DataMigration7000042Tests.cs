@@ -193,7 +193,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					var xaGuid = objsur.Attribute("guid");
 					Assert.IsNotNull(xaGuid, "objsur elements should always have a guid attribute.");
 					var guid = xaGuid.Value;
-					string name;
 					DomainObjectDTO dtoPoss;
 					Assert.IsTrue(repoDto.TryGetValue(guid, out dtoPoss), "Possibility Lists should point to valid objects.");
 					VerifySubpossibilities(repoDto, dtoPoss);
@@ -209,7 +208,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				var xaGuid = objsur.Attribute("guid");
 				Assert.IsNotNull(xaGuid, "objsur elements should always have a guid attribute.");
 				var guid = xaGuid.Value;
-				string name;
 				DomainObjectDTO dtoSub;
 				Assert.IsTrue(repoDto.TryGetValue(guid, out dtoSub), "SubPossibility Lists should point to valid objects.");
 				VerifySubpossibilities(repoDto, dtoSub);

@@ -304,7 +304,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 			//Setup
 			const string searchString = "atmos";
 			const string expectedNum = "1.1"; // group3 match
-			const string expectedName = "Sky";
 
 			// SUT
 			var result = m_semdomRepo.FindDomainsThatMatch(searchString);

@@ -4063,7 +4063,6 @@ namespace SIL.LCModel.DomainImpl
 			ILexEntry leSaved = null; // saved entry to merge into (from previous iteration)
 			bool fSavedIsOld = false; // true if leSaved is old (and non-null).
 			fGotExactMatch = false; // true if we find a match for cf AND defn.
-			bool fCurrentIsNew = false;
 			var ourEntry = OwningEntry;
 			foreach (ILexEntry leCurrent in rgEntries)
 			{
