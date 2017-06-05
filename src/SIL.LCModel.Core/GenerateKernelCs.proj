@@ -3,11 +3,9 @@
 	<UsingTask TaskName="IdlImp" AssemblyFile="$(OutDir)SIL.LCModel.Build.Tasks.dll" />
 	<PropertyGroup Condition="'$(OS)'=='Windows_NT'">
 		<PreprocessCommand>"$(MSBuildProgramFiles32)\Microsoft Visual Studio $(MSBuildToolsVersion)\VC\bin\cl.exe" /E</PreprocessCommand>
-		<Defines Condition="'$(Configuration)'=='Debug'">/DDEBUG</Defines>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(OS)'=='Unix'">
 		<PreprocessCommand>gcc -E -x c</PreprocessCommand>
-		<Defines Condition="'$(Configuration)'=='Debug'">-DDEBUG</Defines>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -22,7 +20,7 @@
 		<UsingNamespaces Include="SIL.LCModel.Utils" />
 	</ItemGroup>
 	<Target Name="GenerateKernelCs">
-		<Exec Command="$(PreprocessCommand) $(Defines) $(KernelIdl) > $(PreprocessedKernelIdl)" />
+		<Exec Command="$(PreprocessCommand) $(KernelIdl) > $(PreprocessedKernelIdl)" />
 		<IdlImp Output="KernelInterfaces/Kernel.cs"
 				Namespace="SIL.LCModel.Core.KernelInterfaces"
 				Sources="$(PreprocessedKernelIdl)"

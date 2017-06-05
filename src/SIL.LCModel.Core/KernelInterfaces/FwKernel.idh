@@ -1502,8 +1502,6 @@ typedef [v1_enum] enum PropChangeType
 	kpctNotifyAllButMe,
 } PropChangeType;
 
-
-#ifdef DEBUG
 /*----------------------------------------------------------------------------------------------
 	Report type
 ----------------------------------------------------------------------------------------------*/
@@ -1580,8 +1578,6 @@ DeclareInterface(DebugReport, Unknown, 3D6A0880-D17D-4e4a-9DE9-861A85CA4046)
 	// Sets the DebugReport sink object to NULL
 	HRESULT ClearSink();
 };
-
-#endif // DEBUG
 
 /*******************************************************************************************
 	Interface IComDisposable
