@@ -39,14 +39,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				var rtElement = XElement.Parse(dto.Xml);
 				// Removes all current child nodes (class level),
 				// and replaces them with the old property nodes (if any).
-#if !__MonoCS__
 				rtElement.ReplaceNodes(rtElement.Elements().Elements());
 				dto.Xml = rtElement.ToString();
-#else // FWNX-165: work around mono bug https://bugzilla.novell.com/show_bug.cgi?id=592435
-				var copy = new XElement(rtElement);
-				copy.ReplaceNodes(rtElement.Elements().Elements());
-				dto.Xml = copy.ToString();
-#endif
 				domainObjectDtoRepository.Update(dto);
 			}
 

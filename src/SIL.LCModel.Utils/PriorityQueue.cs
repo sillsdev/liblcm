@@ -321,21 +321,13 @@ namespace SIL.LCModel.Utils
 				throw new ArgumentNullException("array");
 			if (arrayIndex < 0)
 				throw new ArgumentOutOfRangeException("arrayIndex");
-#if !__MonoCS__ // TODO-Linux FWNX-163: workaround non thread safety.
 			if (arrayIndex >= array.Length || Count > array.Length - arrayIndex)
 				throw new ArgumentException("arrayIndex");
-#endif
 			if (array.Rank > 1)
 				throw new ArgumentException("array");
 
-			foreach (var item in this)
-			{
-#if __MonoCS__ // TODO-Linux FWNX-163: workaround non thread safety.
-				if (arrayIndex >= array.Length)
-					break;
-#endif
+			foreach (T item in this)
 				array[arrayIndex++] = item;
-			}
 		}
 
 		/// <summary>

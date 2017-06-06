@@ -9,10 +9,7 @@ using System.Text;
 using System.Threading;
 using NUnit.Framework;
 using SIL.IO;
-
-#if __MonoCS__
 using Mono.Unix.Native;
-#endif
 
 namespace SIL.LCModel.Utils
 {
@@ -1717,15 +1714,16 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		private void RemoveExecuteBit(string path)
 		{
-			#if __MonoCS__
-			var fileStat = new Mono.Unix.Native.Stat();
-			Mono.Unix.Native.Syscall.stat(path, out fileStat);
+			if (MiscUtils.IsWindows)
+				return;
+
+			Stat fileStat;
+			Syscall.stat(path, out fileStat);
 			var originalMode = fileStat.st_mode;
 			var xModeBits = FilePermissions.S_IXUSR | FilePermissions.S_IXGRP |
 				FilePermissions.S_IXOTH;
 			var modeWithoutX = originalMode & ~xModeBits;
-			Mono.Unix.Native.Syscall.chmod(path, modeWithoutX);
-			#endif
+			Syscall.chmod(path, modeWithoutX);
 		}
 
 		/// <summary>

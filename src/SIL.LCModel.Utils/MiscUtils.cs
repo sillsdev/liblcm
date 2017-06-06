@@ -207,6 +207,11 @@ namespace SIL.LCModel.Utils
 			}
 		}
 
+		/// <summary>
+		/// Returns <c>true</c> if we're running on Windows, otherwise <c>false</c>.
+		/// </summary>
+		public static bool IsWindows => Environment.OSVersion.Platform == PlatformID.Win32NT;
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Returns <c>true</c> if we're running on Unix, otherwise <c>false</c>.
@@ -421,7 +426,14 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		public static ulong GetPhysicalMemoryBytes()
 		{
-#if !__MonoCS__
+			if (IsMono)
+			{
+				using (var pc = new PerformanceCounter("Mono Memory", "Total Physical Memory"))
+				{
+					return (ulong) pc.RawValue;
+				}
+			}
+
 			using (var waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset))
 			{
 				var helper = new ManagementObjectHelper(waitHandle);
@@ -429,12 +441,6 @@ namespace SIL.LCModel.Utils
 				waitHandle.WaitOne();
 				return helper.Memory;
 			}
-#else
-			using (var pc = new PerformanceCounter("Mono Memory", "Total Physical Memory"))
-			{
-				return (ulong)pc.RawValue;
-			}
-#endif
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -474,9 +480,7 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		private class ManagementObjectHelper
 		{
-#if !__MonoCS__
-			private EventWaitHandle m_waitHandle;
-#endif
+			private readonly EventWaitHandle m_waitHandle;
 
 			/// --------------------------------------------------------------------------------
 			/// <summary>
@@ -486,9 +490,7 @@ namespace SIL.LCModel.Utils
 			/// --------------------------------------------------------------------------------
 			public ManagementObjectHelper(EventWaitHandle waitHandle)
 			{
-#if !__MonoCS__
 				m_waitHandle = waitHandle;
-#endif
 			}
 
 			/// --------------------------------------------------------------------------------
@@ -499,7 +501,6 @@ namespace SIL.LCModel.Utils
 			/// --------------------------------------------------------------------------------
 			public ulong Memory { get; private set; }
 
-#if !__MonoCS__
 			/// --------------------------------------------------------------------------------
 			/// <summary>
 			/// Gets the physical memory in bytes.
@@ -515,7 +516,7 @@ namespace SIL.LCModel.Utils
 					{
 						using (var objColl = searcher.Get())
 						{
-							foreach (ManagementObject mem in objColl)
+							foreach (ManagementObject mem in objColl.Cast<ManagementObject>())
 							{
 								Memory += (ulong) mem.GetPropertyValue("Capacity");
 								mem.Dispose();
@@ -529,7 +530,6 @@ namespace SIL.LCModel.Utils
 				}
 				m_waitHandle.Set();
 			}
-#endif
 
 		}
 		#endregion

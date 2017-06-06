@@ -13,13 +13,6 @@ using System.Diagnostics;
 
 namespace SIL.LCModel.Core.Scripture
 {
-#if __MonoCS__
-// The mono compiler has a bug (#463613) that causes warnings on most of the operators.
-// Therefore we have to disable CS0108 for this file.
-// See https://bugzilla.novell.com/show_bug.cgi?id=463613
-#pragma warning disable 0108
-#endif
-
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>
 	/// Represents a scripture reference
@@ -1043,7 +1036,4 @@ namespace SIL.LCModel.Core.Scripture
 
 		#endregion
 	}
-#if __MonoCS__
-#pragma warning restore
-#endif
 }

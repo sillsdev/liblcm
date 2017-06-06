@@ -29,19 +29,8 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		public const string Version = "54";
 
-		private const string kIcuUcDllName =
-#if !__MonoCS__
-			"icuuc" + Version + ".dll";
-#else // __MonoCS__
-			"libicuuc.so";
-#endif // __MonoCS__
-
-		private const string kIcuinDllName =
-#if !__MonoCS__
-			"icuin" + Version + ".dll";
-#else // __MonoCS__
-			"libicui18n.so";
-#endif // __MonoCS__
+		private const string IcuucDllName = "icuuc" + Version + ".dll";
+		private const string IcuinDllName = "icuin" + Version + ".dll";
 
 		private const string VersionSuffix = "_" + Version;
 
@@ -278,35 +267,35 @@ namespace SIL.LCModel.Core.Text
 		#region ICU methods that are not exposed directly
 
 		/// <summary>SIL-specific initialization. Note that we do not currently define the kIcuVersion extension for this method.</summary>
-		[DllImport(kIcuUcDllName, EntryPoint = "SilIcuInit",
+		[DllImport(IcuucDllName, EntryPoint = "SilIcuInit",
 			 CallingConvention = CallingConvention.Cdecl)]
 		[return: MarshalAs(UnmanagedType.I1)]
 		private static extern bool SilIcuInit(
 			[MarshalAs(UnmanagedType.LPStr)]string pathname);
 
 		/// <summary>get the name of an ICU code point</summary>
-		[DllImport(kIcuUcDllName, EntryPoint = "u_init" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_init" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern void u_Init(out UErrorCode errorCode);
 
 		/// <summary>Clean up the ICU files that could be locked</summary>
-		[DllImport(kIcuUcDllName, EntryPoint = "u_cleanup" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_cleanup" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern void u_Cleanup();
 
 		/// <summary>Return the ICU data directory</summary>
-		[DllImport(kIcuUcDllName, EntryPoint = "u_getDataDirectory" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_getDataDirectory" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern IntPtr u_GetDataDirectory();
 
 		/// <summary>Set the ICU data directory</summary>
-		[DllImport(kIcuUcDllName, EntryPoint = "u_setDataDirectory" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_setDataDirectory" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern void u_SetDataDirectory(
 			[MarshalAs(UnmanagedType.LPStr)]string directory);
 
 		/// <summary>get the name of an ICU code point</summary>
-		[DllImport(kIcuUcDllName, EntryPoint = "u_charName" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_charName" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int u_CharName(
 			int code,
@@ -379,7 +368,7 @@ namespace SIL.LCModel.Core.Text
 		/// get the numeric value for the Unicode digit
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[DllImport(kIcuUcDllName, EntryPoint = "u_digit" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_digit" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int u_digit(
 			int characterCode,
@@ -403,13 +392,13 @@ namespace SIL.LCModel.Core.Text
 		/// enumeration that doesn't match the enumeration in FwKernel: LgGeneralCharCategory
 		/// </remarks>
 		/// ------------------------------------------------------------------------------------
-		[DllImport(kIcuUcDllName, EntryPoint = "u_getIntPropertyValue" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_getIntPropertyValue" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int u_getIntPropertyValue(
 			int characterCode,
 			UProperty choice);
 
-		[DllImport(kIcuUcDllName, EntryPoint = "u_getUnicodeVersion" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_getUnicodeVersion" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern void u_getUnicodeVersion(byte[] versionInfo);
 
@@ -454,7 +443,7 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// <param name="characterCode"></param>
 		/// <returns></returns>
-		[DllImport(kIcuUcDllName, EntryPoint = "u_charType" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_charType" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int u_charType(int characterCode);
 
@@ -533,7 +522,7 @@ namespace SIL.LCModel.Core.Text
 			return (UCharCategory)u_charType(ch);
 		}
 
-		[DllImport(kIcuUcDllName, EntryPoint = "u_charType" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_charType" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int u_charDirection(int characterCode);
 
@@ -623,7 +612,7 @@ namespace SIL.LCModel.Core.Text
 		///<param name="characterCode">Code point to get the numeric value for</param>
 		///<returns>Numeric value of c, or U_NO_NUMERIC_VALUE if none is defined.</returns>
 		/// ------------------------------------------------------------------------------------
-		[DllImport(kIcuUcDllName, EntryPoint = "u_getNumericValue" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_getNumericValue" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern double u_getNumericValue(
 			int characterCode);
@@ -639,7 +628,7 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// <param name="characterCode">the code point to be tested</param>
 		/// ------------------------------------------------------------------------------------
-		[DllImport(kIcuUcDllName, EntryPoint = "u_ispunct" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_ispunct" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		// Required because ICU returns a one-byte boolean. Without this C# assumes 4, and picks up 3 more random bytes,
 		// which are usually zero, especially in debug builds...but one day we will be sorry.
@@ -672,7 +661,7 @@ namespace SIL.LCModel.Core.Text
 		/// <param name="characterCode">the code point to be tested</param>
 		/// <returns><c>true</c> if the character has the Bidi_Mirrored property</returns>
 		/// ------------------------------------------------------------------------------------
-		[DllImport(kIcuUcDllName, EntryPoint = "u_isMirrored" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_isMirrored" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		// Required because ICU returns a one-byte boolean. Without this C# assumes 4, and picks up 3 more random bytes,
 		// which are usually zero, especially in debug builds...but one day we will be sorry.
@@ -699,7 +688,7 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// <param name="characterCode">the code point to be tested</param>
 		/// ------------------------------------------------------------------------------------
-		[DllImport(kIcuUcDllName, EntryPoint = "u_iscntrl" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_iscntrl" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		// Required because ICU returns a one-byte boolean. Without this C# assumes 4, and picks up 3 more random bytes,
 		// which are usually zero, especially in debug builds...but one day we will be sorry.
@@ -748,7 +737,7 @@ namespace SIL.LCModel.Core.Text
 		///	</remarks>
 		/// <param name="characterCode">the code point to be tested</param>
 		/// ------------------------------------------------------------------------------------
-		[DllImport(kIcuUcDllName, EntryPoint = "u_isspace" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_isspace" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		// Required because ICU returns a one-byte boolean. Without this C# assumes 4, and picks up 3 more random bytes,
 		// which are usually zero, especially in debug builds...but one day we will be sorry.
@@ -864,7 +853,7 @@ namespace SIL.LCModel.Core.Text
 		/// ------------------------------------------------------------------------------------
 		/// <summary>Get the ICU LCID for a locale</summary>
 		/// ------------------------------------------------------------------------------------
-		[DllImport(kIcuUcDllName, EntryPoint = "uloc_getLCID" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "uloc_getLCID" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int uloc_getLCID(string localeID);
 		/// <summary></summary>
@@ -876,7 +865,7 @@ namespace SIL.LCModel.Core.Text
 		/// ------------------------------------------------------------------------------------
 		/// <summary>Return the ISO 3 char value, if it exists</summary>
 		/// ------------------------------------------------------------------------------------
-		[DllImport(kIcuUcDllName, EntryPoint = "uloc_getISO3Country" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "uloc_getISO3Country" + VersionSuffix,
 			CallingConvention = CallingConvention.Cdecl)]
 		private static extern IntPtr uloc_getISO3Country(
 			[MarshalAs(UnmanagedType.LPStr)]string locale);
@@ -890,7 +879,7 @@ namespace SIL.LCModel.Core.Text
 		/// ------------------------------------------------------------------------------------
 		/// <summary>Return the ISO 3 char value, if it exists</summary>
 		/// ------------------------------------------------------------------------------------
-		[DllImport(kIcuUcDllName, EntryPoint = "uloc_getISO3Language" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "uloc_getISO3Language" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern IntPtr uloc_getISO3Language(
 			[MarshalAs(UnmanagedType.LPStr)]string locale);
@@ -908,7 +897,7 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// <returns>the size of the locale list </returns>
 		/// ------------------------------------------------------------------------------------
-		[DllImport(kIcuUcDllName, EntryPoint = "uloc_countAvailable" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "uloc_countAvailable" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int uloc_countAvailable();
 		/// <summary></summary>
@@ -927,7 +916,7 @@ namespace SIL.LCModel.Core.Text
 		/// <param name="n">n  the specific locale name index of the available locale list</param>
 		/// <returns>a specified locale name of all available locales</returns>
 		/// ------------------------------------------------------------------------------------
-		[DllImport(kIcuUcDllName, EntryPoint = "uloc_getAvailable" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "uloc_getAvailable" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern IntPtr uloc_getAvailable(int n);
 
@@ -959,7 +948,7 @@ namespace SIL.LCModel.Core.Text
 		/// <returns>the actual buffer size needed for the language code. If it's greater
 		/// than languageCapacity, the returned language code will be truncated</returns>
 		/// ------------------------------------------------------------------------------------
-		[DllImport(kIcuUcDllName, EntryPoint = "uloc_getLanguage" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "uloc_getLanguage" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int uloc_getLanguage(string localeID, IntPtr language,
 			int languageCapacity, out UErrorCode err);
@@ -1019,7 +1008,7 @@ namespace SIL.LCModel.Core.Text
 		/// <returns>the actual buffer size needed for the script code. If it's greater
 		/// than scriptCapacity, the returned script code will be truncated</returns>
 		/// ------------------------------------------------------------------------------------
-		[DllImport(kIcuUcDllName, EntryPoint = "uloc_getScript" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "uloc_getScript" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int uloc_getScript(string localeID, IntPtr script,
 			int scriptCapacity, out UErrorCode err);
@@ -1062,7 +1051,7 @@ namespace SIL.LCModel.Core.Text
 		/// <returns>the actual buffer size needed for the country code. If it's greater
 		/// than countryCapacity, the returned country code will be truncated</returns>
 		/// ------------------------------------------------------------------------------------
-		[DllImport(kIcuUcDllName, EntryPoint = "uloc_getCountry" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "uloc_getCountry" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int uloc_getCountry(string localeID, IntPtr country,
 			int countryCapacity, out UErrorCode err);
@@ -1122,7 +1111,7 @@ namespace SIL.LCModel.Core.Text
 		/// <returns>the actual buffer size needed for the variant code. If it's greater
 		/// than variantCapacity, the returned variant code will be truncated</returns>
 		/// ------------------------------------------------------------------------------------
-		[DllImport(kIcuUcDllName, EntryPoint = "uloc_getVariant" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "uloc_getVariant" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int uloc_getVariant(string localeID, IntPtr variant,
 			int variantCapacity, out UErrorCode err);
@@ -1169,7 +1158,7 @@ namespace SIL.LCModel.Core.Text
 		/// <returns>the actual buffer size needed for the displayable name. If it's greater
 		/// than variantCapacity, the returned displayable name will be truncated.</returns>
 		/// ------------------------------------------------------------------------------------
-		[DllImport(kIcuUcDllName, EntryPoint = "uloc_getDisplayName" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "uloc_getDisplayName" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int uloc_getDisplayName(string localeID, string inLocaleID,
 			IntPtr result, int maxResultSize, out UErrorCode err);
@@ -1202,22 +1191,22 @@ namespace SIL.LCModel.Core.Text
 		enum DisplayType { Name, Language, Script, Country, Variant };
 
 
-		[DllImport(kIcuUcDllName, EntryPoint = "uloc_getDisplayLanguage" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "uloc_getDisplayLanguage" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int uloc_getDisplayLanguage(string localeID, string displayLocaleID,
 			IntPtr result, int maxResultSize, out UErrorCode err);
 
-		[DllImport(kIcuUcDllName, EntryPoint = "uloc_getDisplayScript" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "uloc_getDisplayScript" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int uloc_getDisplayScript(string localeID, string displayLocaleID,
 			IntPtr result, int maxResultSize, out UErrorCode err);
 
-		[DllImport(kIcuUcDllName, EntryPoint = "uloc_getDisplayCountry" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "uloc_getDisplayCountry" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int uloc_getDisplayCountry(string localeID, string displayLocaleID,
 			IntPtr result, int maxResultSize, out UErrorCode err);
 
-		[DllImport(kIcuUcDllName, EntryPoint = "uloc_getDisplayVariant" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "uloc_getDisplayVariant" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int uloc_getDisplayVariant(string localeID, string displayLocaleID,
 			IntPtr result, int maxResultSize, out UErrorCode err);
@@ -1358,7 +1347,7 @@ namespace SIL.LCModel.Core.Text
 		/// <summary>
 		/// Gets the full name for the specified locale.
 		/// </summary>
-		[DllImport(kIcuUcDllName, EntryPoint = "uloc_getName" + VersionSuffix, CharSet = CharSet.Ansi,
+		[DllImport(IcuucDllName, EntryPoint = "uloc_getName" + VersionSuffix, CharSet = CharSet.Ansi,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int uloc_getName(
 			string localeID,
@@ -1372,7 +1361,7 @@ namespace SIL.LCModel.Core.Text
 			return uloc_getName(localeID, name, nameCapacity, out err);
 		}
 
-		[DllImport(kIcuUcDllName, EntryPoint = "uloc_getName" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "uloc_getName" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int uloc_getName(string localeID, IntPtr name,
 			int nameCapacity, out UErrorCode err);
@@ -1453,7 +1442,7 @@ namespace SIL.LCModel.Core.Text
 		/// <summary>
 		/// Open a UCollator for comparing strings.
 		/// </summary>
-		[DllImport(kIcuinDllName, EntryPoint = "ucol_open" + VersionSuffix,
+		[DllImport(IcuinDllName, EntryPoint = "ucol_open" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern IntPtr ucol_open(
 			byte[] loc,
@@ -1478,7 +1467,7 @@ namespace SIL.LCModel.Core.Text
 		/// <summary>
 		/// Get a sort key for a string from a UCollator
 		/// </summary>
-		[DllImport(kIcuinDllName, EntryPoint = "ucol_getSortKey" + VersionSuffix, CharSet = CharSet.Unicode,
+		[DllImport(IcuinDllName, EntryPoint = "ucol_getSortKey" + VersionSuffix, CharSet = CharSet.Unicode,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int ucol_getSortKey(IntPtr col1, string source, int sourceLength, byte[] result, int resultLength);
 
@@ -1529,18 +1518,18 @@ namespace SIL.LCModel.Core.Text
 			UCOL_FULL_RULES
 		}
 
-		[DllImport(kIcuinDllName, EntryPoint = "ucol_open" + VersionSuffix,
+		[DllImport(IcuinDllName, EntryPoint = "ucol_open" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern IntPtr ucol_open([MarshalAs(UnmanagedType.LPStr)] string locale, out UErrorCode errorCode);
-		[DllImport(kIcuinDllName, EntryPoint = "ucol_getRulesEx" + VersionSuffix,
+		[DllImport(IcuinDllName, EntryPoint = "ucol_getRulesEx" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int ucol_getRulesEx(IntPtr coll, UColRuleOption delta, IntPtr buffer, int bufferLen);
 		/// <summary>Test the rules to see if they are valid.</summary>
-		[DllImport(kIcuinDllName, EntryPoint = "ucol_openRules" + VersionSuffix,
+		[DllImport(IcuinDllName, EntryPoint = "ucol_openRules" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern IntPtr ucol_openRules(string rules, int rulesLength, UColAttributeValue normalizationMode,
 			UColAttributeValue strength, out UParseError parseError, out UErrorCode status);
-		[DllImport(kIcuinDllName, EntryPoint = "ucol_close" + VersionSuffix,
+		[DllImport(IcuinDllName, EntryPoint = "ucol_close" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern void ucol_close(IntPtr coll);
 
@@ -1643,7 +1632,7 @@ namespace SIL.LCModel.Core.Text
 			UCOL_BOUND_UPPER_LONG
 		}
 
-		[DllImport(kIcuinDllName, EntryPoint = "ucol_getBound" + VersionSuffix,
+		[DllImport(IcuinDllName, EntryPoint = "ucol_getBound" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int ucol_getBound(byte[] source, int sourceLength, UColBoundMode boundType, int noOfLevels,
 			byte[] result, int resultLength, out UErrorCode status);
@@ -1669,7 +1658,7 @@ namespace SIL.LCModel.Core.Text
 			}
 		}
 
-		[DllImport(kIcuinDllName, EntryPoint = "ucol_strcoll" + VersionSuffix,
+		[DllImport(IcuinDllName, EntryPoint = "ucol_strcoll" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int ucol_strcoll(IntPtr coll, string source, int sourceLength, string target, int targetLength);
 
@@ -1690,32 +1679,32 @@ namespace SIL.LCModel.Core.Text
 		#region case related
 
 		/// <summary>Return the lower case equivalent of the string.</summary>
-		[DllImport(kIcuUcDllName, EntryPoint = "u_strToLower" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_strToLower" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int u_strToLower(IntPtr dest,
 			 int destCapacity, string src, int srcLength, [MarshalAs(UnmanagedType.LPStr)] string locale, out UErrorCode errorCode);
 
 		/// <summary>Return the title case equivalent of the string.</summary>
-		[DllImport(kIcuUcDllName, EntryPoint = "u_strToTitle" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_strToTitle" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int u_strToTitle(IntPtr dest,
 			int destCapacity, string src, int srcLength, IntPtr titleIter, [MarshalAs(UnmanagedType.LPStr)] string locale, out UErrorCode errorCode);
 
 		/// <summary>Return the upper case equivalent of the string.</summary>
-		[DllImport(kIcuUcDllName, EntryPoint = "u_strToUpper" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_strToUpper" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int u_strToUpper(IntPtr dest,
 			int destCapacity, string src, int srcLength, [MarshalAs(UnmanagedType.LPStr)] string locale, out UErrorCode errorCode);
 
-		[DllImport(kIcuUcDllName, EntryPoint = "u_toupper" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_toupper" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int u_toupper(int ch);
 
-		[DllImport(kIcuUcDllName, EntryPoint = "u_tolower" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_tolower" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int u_tolower(int ch);
 
-		[DllImport(kIcuUcDllName, EntryPoint = "u_totitle" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_totitle" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int u_totitle(int ch);
 
@@ -1890,14 +1879,14 @@ namespace SIL.LCModel.Core.Text
 		/// <summary>
 		/// Get a normalizer for the specified name and mode.
 		/// </summary>
-		[DllImport(kIcuUcDllName, EntryPoint = "unorm2_getInstance" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "unorm2_getInstance" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		private static extern IntPtr unorm2_getInstance(string packageName, string name, UNormalization2Mode mode, out UErrorCode errorCode);
 
 		/// <summary>
 		/// Normalize a string using the specified normalizer.
 		/// </summary>
-		[DllImport(kIcuUcDllName, EntryPoint = "unorm2_normalize" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "unorm2_normalize" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int unorm2_normalize(IntPtr normalizer, string source, int sourceLength,
 			IntPtr result, int resultLength, out UErrorCode errorCode);
@@ -1906,7 +1895,7 @@ namespace SIL.LCModel.Core.Text
 		/// Decompose a single UTF-32 code point using the specified normalizer.
 		/// According to the ICU docs, this is significantly faster than calling Char.ConvertFromUtf32 and decomposing the resulting string.
 		/// </summary>
-		[DllImport(kIcuUcDllName, EntryPoint = "unorm2_getDecomposition" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "unorm2_getDecomposition" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int unorm2_getDecomposition(IntPtr normalizer, int source,
 			IntPtr result, int resultLength, out UErrorCode errorCode);
@@ -1914,23 +1903,23 @@ namespace SIL.LCModel.Core.Text
 		/// <summary>
 		/// Check whether a string is normalized according to the given mode and options.
 		/// </summary>
-		[DllImport(kIcuUcDllName, EntryPoint = "unorm2_isNormalized" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "unorm2_isNormalized" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		// Note that ICU's UBool type is typedef to an 8-bit integer.
 		private static extern byte unorm2_isNormalized(IntPtr normalizer, string source, int sourceLength,
 			out UErrorCode errorCode);
 
-		[DllImport(kIcuUcDllName, EntryPoint = "unorm2_getCombiningClass" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "unorm2_getCombiningClass" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern byte unorm2_getCombiningClass(IntPtr normalizer, int ch);
 
 		// UBool unorm2_hasBoundaryAfter (const UNormalizer2 *norm2, UChar32 c)
-		[DllImport(kIcuUcDllName, EntryPoint = "unorm2_hasBoundaryAfter" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "unorm2_hasBoundaryAfter" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern byte unorm2_hasBoundaryAfter(IntPtr normalizer, Int32 codepoint);
 
 		// UBool unorm2_hasBoundaryBefore (const UNormalizer2 *norm2, UChar32 c)
-		[DllImport(kIcuUcDllName, EntryPoint = "unorm2_hasBoundaryBefore" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "unorm2_hasBoundaryBefore" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern byte unorm2_hasBoundaryBefore(IntPtr normalizer, Int32 codepoint);
 
@@ -2235,7 +2224,7 @@ namespace SIL.LCModel.Core.Text
 		/// <param name="textLength">Length of the text.</param>
 		/// <param name="errorCode">The error code.</param>
 		/// <returns></returns>
-		[DllImport(kIcuUcDllName, EntryPoint = "ubrk_open" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "ubrk_open" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern IntPtr ubrk_open(UBreakIteratorType type, string locale,
 			IntPtr text, int textLength, out UErrorCode errorCode);
@@ -2244,7 +2233,7 @@ namespace SIL.LCModel.Core.Text
 		/// Close a UBreakIterator.
 		/// </summary>
 		/// <param name="bi">The break iterator.</param>
-		[DllImport(kIcuUcDllName, EntryPoint = "ubrk_close" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "ubrk_close" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern void ubrk_close(IntPtr bi);
 
@@ -2253,7 +2242,7 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// <param name="bi">The break iterator.</param>
 		/// <returns></returns>
-		[DllImport(kIcuUcDllName, EntryPoint = "ubrk_first" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "ubrk_first" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int ubrk_first(IntPtr bi);
 
@@ -2262,7 +2251,7 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// <param name="bi">The break iterator.</param>
 		/// <returns></returns>
-		[DllImport(kIcuUcDllName, EntryPoint = "ubrk_next" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "ubrk_next" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int ubrk_next(IntPtr bi);
 
@@ -2271,7 +2260,7 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// <param name="bi">The break iterator.</param>
 		/// <returns></returns>
-		[DllImport(kIcuUcDllName, EntryPoint = "ubrk_getRuleStatus" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "ubrk_getRuleStatus" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int ubrk_getRuleStatus(IntPtr bi);
 
@@ -2317,7 +2306,7 @@ namespace SIL.LCModel.Core.Text
 
 		#region Resource bundles
 		// UResourceBundle * ures_open (const char *package, const char *locale, UErrorCode *status)
-		[DllImport(kIcuUcDllName, EntryPoint = "ures_open" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "ures_open" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		private static extern IntPtr ures_open(string package, string locale, out UErrorCode status);
 
@@ -2337,7 +2326,7 @@ namespace SIL.LCModel.Core.Text
 		}
 
 		// void ures_close (UResourceBundle *resourceBundle)
-		[DllImport(kIcuUcDllName, EntryPoint = "ures_close" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "ures_close" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		private static extern void ures_close(IntPtr resourceBundle);
 
@@ -2352,7 +2341,7 @@ namespace SIL.LCModel.Core.Text
 		}
 
 		// const char * ures_getKey (const UResourceBundle *resourceBundle)
-		[DllImport(kIcuUcDllName, EntryPoint = "ures_getKey" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "ures_getKey" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		// Do NOT free the memory returned by this ICU function.
 		private static extern IntPtr ures_getKey(IntPtr resourceBundle);
@@ -2368,7 +2357,7 @@ namespace SIL.LCModel.Core.Text
 		}
 
 		// const UChar * ures_getString (const UResourceBundle *resourceBundle, int32_t *len, UErrorCode *status)
-		[DllImport(kIcuUcDllName, EntryPoint = "ures_getString" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "ures_getString" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		// Do NOT free the memory returned by this ICU function.
 		private static extern IntPtr ures_getString(IntPtr resourceBundle, out int len, out UErrorCode status);
@@ -2390,7 +2379,7 @@ namespace SIL.LCModel.Core.Text
 		}
 
 		// const char * ures_getLocale (const UResourceBundle *resourceBundle, UErrorCode *status)
-		[DllImport(kIcuUcDllName, EntryPoint = "ures_getLocale" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "ures_getLocale" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		// Do NOT free the memory returned by this ICU function.
 		private static extern IntPtr ures_getLocale(IntPtr resourceBundle, out UErrorCode status);
@@ -2411,7 +2400,7 @@ namespace SIL.LCModel.Core.Text
 		}
 
 		// UResourceBundle * ures_getByKey (const UResourceBundle *resourceBundle, const char *key, UResourceBundle *fillIn, UErrorCode *status)
-		[DllImport(kIcuUcDllName, EntryPoint = "ures_getByKey" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "ures_getByKey" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		private static extern IntPtr ures_getByKey(IntPtr resourceBundle, string key, IntPtr fillIn, out UErrorCode status);
 
@@ -2431,7 +2420,7 @@ namespace SIL.LCModel.Core.Text
 		}
 
 		// const UChar * ures_getStringByKey (const UResourceBundle *resourceBundle, const char *key, int32_t *len, UErrorCode *status)
-		[DllImport(kIcuUcDllName, EntryPoint = "ures_getStringByKey" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "ures_getStringByKey" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		// Do NOT free the memory returned by this ICU function.
 		private static extern IntPtr ures_getStringByKey(IntPtr resourceBundle, string key, out int len, out UErrorCode status);
@@ -2458,7 +2447,7 @@ namespace SIL.LCModel.Core.Text
 		}
 
 		// void ures_resetIterator (UResourceBundle *resourceBundle)
-		[DllImport(kIcuUcDllName, EntryPoint = "ures_resetIterator" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "ures_resetIterator" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern void ures_resetIterator(IntPtr resourceBundle);
 
@@ -2474,7 +2463,7 @@ namespace SIL.LCModel.Core.Text
 		}
 
 		// const UChar * ures_getNextString (UResourceBundle *resourceBundle, int32_t *len, const char **key, UErrorCode *status)
-		[DllImport(kIcuUcDllName, EntryPoint = "ures_getNextString" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "ures_getNextString" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		// Do NOT free the memory returned by this ICU function.
 		private static extern IntPtr ures_getNextString(IntPtr resourceBundle, out int len, out IntPtr key, out UErrorCode status);
@@ -2522,7 +2511,7 @@ namespace SIL.LCModel.Core.Text
 		#region Converters
 		// TODO: Write public methods
 		// UEnumeration * ucnv_openAllNames (UErrorCode *pErrorCode)
-		[DllImport(kIcuUcDllName, EntryPoint = "ucnv_openAllNames" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "ucnv_openAllNames" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern IntPtr ucnv_openAllNames(out UErrorCode errorCode);
 
@@ -2543,7 +2532,7 @@ namespace SIL.LCModel.Core.Text
 		// CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		//private static extern string ucnv_getAvailableName(int iconv);
 
-		[DllImport(kIcuUcDllName, EntryPoint = "ucnv_getStandardName" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "ucnv_getStandardName" + VersionSuffix,
 		 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		// Do NOT free the memory returned by this ICU function.
 		private static extern IntPtr ucnv_getStandardName(string name, string standard, out UErrorCode errorCode);
@@ -2595,7 +2584,7 @@ namespace SIL.LCModel.Core.Text
 
 		#region Transliterator enumeration
 		// UEnumeration * utrans_openIDs (UErrorCode *pErrorCode)
-		[DllImport(kIcuinDllName, EntryPoint = "utrans_openIDs" + VersionSuffix,
+		[DllImport(IcuinDllName, EntryPoint = "utrans_openIDs" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern IntPtr utrans_openIDs(out UErrorCode errorCode);
 
@@ -2613,7 +2602,7 @@ namespace SIL.LCModel.Core.Text
 		}
 
 		// int32_t uenum_count (UEnumeration *en, UErrorCode *status)
-		[DllImport(kIcuUcDllName, EntryPoint = "uenum_count" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "uenum_count" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int uenum_count(IntPtr uenum, out UErrorCode errorCode);
 
@@ -2632,7 +2621,7 @@ namespace SIL.LCModel.Core.Text
 		}
 
 		// const UChar * uenum_unext (UEnumeration *en, int32_t *resultLength, UErrorCode *status)
-		[DllImport(kIcuUcDllName, EntryPoint = "uenum_unext" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "uenum_unext" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		// Do NOT free the memory returned by this ICU function.
 		private static extern IntPtr uenum_unext(IntPtr uenum, out int resultLen, out UErrorCode errorCode);
@@ -2655,7 +2644,7 @@ namespace SIL.LCModel.Core.Text
 		}
 
 		// void uenum_close (UEnumeration *en)
-		[DllImport(kIcuUcDllName, EntryPoint = "uenum_close" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "uenum_close" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern void uenum_close(IntPtr uenum);
 
@@ -2691,20 +2680,20 @@ namespace SIL.LCModel.Core.Text
 
 		// UMessageFormat * umsg_open (const UChar *pattern, int32_t patternLength, const char *locale, UParseError *parseError, UErrorCode *status)
 		// Open a message formatter with given pattern and for the given locale.
-		[DllImport(kIcuinDllName, EntryPoint = "umsg_open" + VersionSuffix,
+		[DllImport(IcuinDllName, EntryPoint = "umsg_open" + VersionSuffix,
 		 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern IntPtr umsg_open(string pattern, int patternLen, string locale, out UParseError parseError, out UErrorCode status);
 
 		// UMessageFormat * umsg_close (UMessageFormat *format)
 		// Close a message formatter.
-		[DllImport(kIcuinDllName, EntryPoint = "umsg_close" + VersionSuffix,
+		[DllImport(IcuinDllName, EntryPoint = "umsg_close" + VersionSuffix,
 		 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern void umsg_close(IntPtr format);
 
 		// int32_t umsg_format (const UMessageFormat *fmt, UChar *result, int32_t resultLength, UErrorCode *status, ...)
 		// We hardcode it to take 3 parameters, an int and two strings, because that's how we'll be calling it from GetTransliteratorDisplayName.
 		// The alternative is to use the completely undocumented __arglist keyword, and that's not worth the danger given that we only call this function from one place.
-		[DllImport(kIcuinDllName, EntryPoint = "umsg_format" + VersionSuffix,
+		[DllImport(IcuinDllName, EntryPoint = "umsg_format" + VersionSuffix,
 		 CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int umsg_format(IntPtr format, StringBuilder result, int resultLen, out UErrorCode status, double arg0, string arg1, string arg2);
 

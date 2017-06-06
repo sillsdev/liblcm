@@ -10,10 +10,7 @@ using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-
-#if __MonoCS__
 using Mono.Unix.Native;
-#endif
 
 namespace SIL.LCModel.Utils
 {
@@ -1059,17 +1056,18 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		public static void SetExecutable(string path)
 		{
-			#if __MonoCS__
-			if (!FileUtils.FileExists(path) && !FileUtils.DirectoryExists(path))
+			if (MiscUtils.IsWindows)
+				return;
+
+			if (!FileExists(path) && !DirectoryExists(path))
 				throw new FileNotFoundException();
 
-			var fileStat = new Mono.Unix.Native.Stat();
-			Mono.Unix.Native.Syscall.stat(path, out fileStat);
+			Stat fileStat;
+			Syscall.stat(path, out fileStat);
 			var originalMode = fileStat.st_mode;
 			var modeWithExecute = originalMode | FilePermissions.S_IXUSR |
 				FilePermissions.S_IXGRP | FilePermissions.S_IXOTH;
-			Mono.Unix.Native.Syscall.chmod(path, modeWithExecute);
-			#endif
+			Syscall.chmod(path, modeWithExecute);
 		}
 
 		/// <summary>
@@ -1079,14 +1077,13 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		public static bool IsExecutable(string path)
 		{
-			if (!FileUtils.FileExists(path) && !FileUtils.DirectoryExists(path))
+			if (MiscUtils.IsWindows)
+				return true;
+
+			if (!FileExists(path) && !DirectoryExists(path))
 				throw new FileNotFoundException();
 
-			#if !__MonoCS__
-			return true;
-			#else
-			return Mono.Unix.Native.Syscall.access(path, Mono.Unix.Native.AccessModes.X_OK) == 0;
-			#endif
+			return Syscall.access(path, AccessModes.X_OK) == 0;
 		}
 		#endregion
 

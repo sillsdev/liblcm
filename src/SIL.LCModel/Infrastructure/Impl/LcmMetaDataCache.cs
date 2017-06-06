@@ -122,7 +122,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 		private void InitializeMetaDataCache(IEnumerable<Type> cmObjectTypes)
 		{
 			//AddClassesAndProps(cmObjectTypes);
-#if !__MonoCS__
 			foreach (var lcmType in cmObjectTypes)
 			{
 				// Cache classes.
@@ -136,33 +135,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 						 ((ModelClassAttribute)classAttrs[0]).Clsid,
 						 lcmType.Name == "CmObject" ? "CmObject" : lcmType.BaseType.Name,
 						 lcmType.IsAbstract);
-#else
-			foreach (var lcmType in cmObjectTypes)
-			{
-				// Cache classes.
-				var classAttrs = lcmType.GetCustomAttributes(typeof(ModelClassAttribute), false);
-				if (classAttrs == null || classAttrs.Length <= 0)
-					continue; // ScrFootnote does not have the 'ModelClassAttribute'.
-				// TODO-Linux: work around for https://bugzilla.novell.com/show_bug.cgi?id=539288
-				// Add its class information.
-				AddClass1(lcmType.Name,
-						 ((ModelClassAttribute)classAttrs[0]).Clsid,
-						 lcmType.Name == "CmObject" ? "CmObject" : lcmType.BaseType.Name,
-						 lcmType.IsAbstract);
-			}
-
-			foreach (var lcmType in cmObjectTypes)
-			{
-				// Cache classes.
-				var classAttrs = lcmType.GetCustomAttributes(typeof(ModelClassAttribute), false);
-				if (classAttrs == null || classAttrs.Length <= 0)
-					continue; // ScrFootnote does not have the 'ModelClassAttribute'.
-
-				AddClass2(lcmType.Name,
-						 ((ModelClassAttribute)classAttrs[0]).Clsid,
-						 lcmType.Name == "CmObject" ? "CmObject" : lcmType.BaseType.Name,
-						 lcmType.IsAbstract);
-#endif
 
 				if (lcmType.GetInterface("IAnalysis") != null)
 					m_analysisClids.Add(((ModelClassAttribute)classAttrs[0]).Clsid);
@@ -1231,7 +1203,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 		#region IFwMetaDataCache helper methods
 
-#if !__MonoCS__
 		/// <summary> Add a class to the MetaDataCache. </summary>
 		/// <param name='className'> </param>
 		/// <param name='clid'> </param>
@@ -1252,34 +1223,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 			var mcrSuperclass = m_metaClassRecords[mcr.m_baseClsid];
 			mcrSuperclass.m_directSubclasses.Add(mcr);
 		}
-#else // TODO-Linux: workaround for https://bugzilla.novell.com/show_bug.cgi?id=539288
-
-		/// <summary> Add a class to the MetaDataCache. </summary>
-		/// <param name='bstrClassName'> </param>
-		/// <param name='luClid'> </param>
-		/// <param name='bstrSuperclassName'> </param>
-		/// <param name='isAbstract'> </param>
-		private void AddClass1(string bstrClassName, int luClid, string bstrSuperclassName, bool isAbstract)
-		{
-			var mcr = new MetaClassRec(bstrSuperclassName, isAbstract, bstrClassName) {m_clid = luClid};
-
-			// These will throw if it is already in the dictionary.
-			m_metaClassRecords.Add(luClid, mcr);
-			m_nameToClid.Add(mcr.m_className, luClid);
-		}
-
-		private void AddClass2(string bstrClassName, int luClid, string bstrSuperclassName, bool isAbstract)
-		{
-			var mcr = m_metaClassRecords[luClid];
-
-			// Set superclass info, except for top CmObject superclass.
-			if (bstrClassName == "CmObject") return;
-
-			mcr.m_baseClsid = m_nameToClid[mcr.m_superclassName];
-			var mcrSuperclass = m_metaClassRecords[mcr.m_baseClsid];
-			mcrSuperclass.m_directSubclasses.Add(mcr);
-		}
-#endif
 
 		/// --------------------------------------------------------------------------------
 		/// <summary>

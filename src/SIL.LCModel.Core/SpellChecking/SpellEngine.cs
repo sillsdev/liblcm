@@ -9,6 +9,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using SIL.LCModel.Core.Text;
+using SIL.LCModel.Utils;
 
 namespace SIL.LCModel.Core.SpellChecking
 {
@@ -135,7 +136,7 @@ namespace SIL.LCModel.Core.SpellChecking
 						if (item.Length > 0 && item[0] == '*')
 							item = item.Substring(1);
 						// If we already got it, or the current line is before the word, just copy the line to the output.
-						if (insertedLineForWord || String.Compare(item, word, System.StringComparison.Ordinal) < 0)
+						if (insertedLineForWord || string.Compare(item, word, StringComparison.Ordinal) < 0)
 						{
 							builder.AppendLine(line);
 							continue;
@@ -202,7 +203,7 @@ namespace SIL.LCModel.Core.SpellChecking
 
 		protected virtual void Dispose(bool disposing)
 		{
-			System.Diagnostics.Debug.WriteLineIf(!disposing, "****** Missing Dispose() call for " + GetType().Name + ". ****** ");
+			Debug.WriteLineIf(!disposing, "****** Missing Dispose() call for " + GetType().Name + ". ****** ");
 			if (m_hunspellHandle != IntPtr.Zero)
 			{
 				Hunspell_uninitialize(m_hunspellHandle);
@@ -213,14 +214,14 @@ namespace SIL.LCModel.Core.SpellChecking
 		// This method transforms an array of unmanaged character pointers (pointed to by pUnmanagedStringArray)
 		// into an array of managed strings.
 		// Adapted with thanks from http://limbioliong.wordpress.com/2011/08/14/returning-an-array-of-strings-from-c-to-c-part-1/
-		static string[] MarshalUnmananagedStrArray2ManagedStrArray(IntPtr pUnmanagedStringArray, int StringCount)
+		static string[] MarshalUnmananagedStrArray2ManagedStrArray(IntPtr pUnmanagedStringArray, int stringCount)
 		{
-			IntPtr[] pIntPtrArray = new IntPtr[StringCount];
-			var ManagedStringArray = new string[StringCount];
+			IntPtr[] pIntPtrArray = new IntPtr[stringCount];
+			var managedStringArray = new string[stringCount];
 
-			Marshal.Copy(pUnmanagedStringArray, pIntPtrArray, 0, StringCount);
+			Marshal.Copy(pUnmanagedStringArray, pIntPtrArray, 0, stringCount);
 
-			for (int i = 0; i < StringCount; i++)
+			for (int i = 0; i < stringCount; i++)
 			{
 				var data = new List<byte>();
 				var ptr = pIntPtrArray[i];
@@ -234,70 +235,54 @@ namespace SIL.LCModel.Core.SpellChecking
 					}
 					data.Add(ch);
 				}
-				ManagedStringArray[i] = Encoding.UTF8.GetString(data.ToArray());
+				managedStringArray[i] = Encoding.UTF8.GetString(data.ToArray());
 			}
-			return ManagedStringArray;
+			return managedStringArray;
 		}
 
-		private const string klibHunspell = "libhunspell";
+		private const string LibHunspell = "libhunspell";
+		private const string LibHunspellPrefix = "hunspell_";
 
-#if __MonoCS__
-		// Hunspell on Linux uses methods that start with uppercase Hunspell and has
-		// different methods for (un-)initializing.
-		private const string klibHunspellCtor = "Hunspell_create";
-		private const string klibHunspellDtor = "Hunspell_destroy";
-		private const string klibHunspellPrefix = "Hunspell_";
-#else
-		// Hunspell on Windows uses different methods that start with lowercase hunspell!
-		private const string klibHunspellCtor = "hunspell_initialize";
-		private const string klibHunspellDtor = "hunspell_uninitialize";
-		private const string klibHunspellPrefix = "hunspell_";
-#endif
-
-		[DllImport(klibHunspell, EntryPoint = klibHunspellCtor,
+		[DllImport(LibHunspell, EntryPoint = LibHunspellPrefix + "initialize",
 			CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-		private static extern IntPtr Hunspell_initialize(byte[] aff_file,
-			byte[] dict_file);
+		private static extern IntPtr Hunspell_initialize(byte[] affFile, byte[] dictFile);
 
-		[DllImport(klibHunspell, EntryPoint = klibHunspellDtor,
+		[DllImport(LibHunspell, EntryPoint = LibHunspellPrefix + "uninitialize",
 			CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern void Hunspell_uninitialize(IntPtr handle);
 
-		[DllImport(klibHunspell, EntryPoint = klibHunspellPrefix + "spell",
+		[DllImport(LibHunspell, EntryPoint = LibHunspellPrefix + "spell",
 			CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int Hunspell_spell(IntPtr handle, byte[] word);
 
-		[DllImport(klibHunspell, EntryPoint = klibHunspellPrefix + "add",
+		[DllImport(LibHunspell, EntryPoint = LibHunspellPrefix + "add",
 			CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int Hunspell_add(IntPtr handle, byte[] word);
 
-		[DllImport(klibHunspell, EntryPoint = klibHunspellPrefix + "add_with_affix",
+		[DllImport(LibHunspell, EntryPoint = LibHunspellPrefix + "add_with_affix",
 			CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int Hunspell_add_with_affix(IntPtr handle, byte[] word, byte[] example);
 
-		[DllImport(klibHunspell, EntryPoint = klibHunspellPrefix + "remove",
+		[DllImport(LibHunspell, EntryPoint = LibHunspellPrefix + "remove",
 			CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int Hunspell_remove(IntPtr handle, byte[] word);
 
-#if __MonoCS__
-		[DllImport(klibHunspell, EntryPoint = klibHunspellPrefix + "suggest",
+		[DllImport(LibHunspell, EntryPoint = LibHunspellPrefix + "suggest",
 			CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-		private static extern int Hunspell_suggest_Impl(IntPtr handle, out IntPtr suggestions, byte[] word);
-#else
-		[DllImport(klibHunspell, EntryPoint = klibHunspellPrefix + "suggest",
+		private static extern int Hunspell_suggest_unix(IntPtr handle, out IntPtr suggestions, byte[] word);
+
+		[DllImport(LibHunspell, EntryPoint = LibHunspellPrefix + "suggest",
 			CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-		private static extern int Hunspell_suggest_Impl(IntPtr handle, byte[] word, out IntPtr suggestions);
-#endif
+		private static extern int Hunspell_suggest_win(IntPtr handle, byte[] word, out IntPtr suggestions);
+
 		private static int Hunspell_suggest(IntPtr handle, byte[] word, out IntPtr suggestions)
 		{
-#if __MonoCS__
-			return Hunspell_suggest_Impl(handle, out suggestions, word);
-#else
-			return Hunspell_suggest_Impl(handle, word, out suggestions);
-#endif
+			if (MiscUtils.IsUnix)
+				return Hunspell_suggest_unix(handle, out suggestions, word);
+			return Hunspell_suggest_win(handle, word, out suggestions);
 		}
 
-		[DllImport(klibHunspell, EntryPoint = klibHunspellPrefix + "free_list",
+		[DllImport(LibHunspell, EntryPoint = LibHunspellPrefix + "free_list",
 			CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern void Hunspell_free_list(IntPtr handle, ref IntPtr list, int count);
 

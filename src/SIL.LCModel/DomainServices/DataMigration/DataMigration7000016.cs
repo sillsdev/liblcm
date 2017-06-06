@@ -1,12 +1,6 @@
-// Copyright (c) 2010-2013 SIL International
+// Copyright (c) 2010-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
-//
-// File: DataMigration7000016.cs
-// Responsibility: mcconnel
-//
-// <remarks>
-// </remarks>
 
 using System;
 using System.Collections.Generic;
@@ -34,29 +28,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		readonly string ksguidConversation = RnResearchNbkTags.kguidRecConversation.ToString("D").ToLowerInvariant();
 		readonly string ksguidInterview = RnResearchNbkTags.kguidRecInterview.ToString("D").ToLowerInvariant();
 		readonly string ksguidPerformance = RnResearchNbkTags.kguidRecPerformance.ToString("D").ToLowerInvariant();
-
-#if __MonoCS__ // TODO-Linux: work around mono bug https://bugzilla.novell.com/show_bug.cgi?id=594877
-		internal static XElement LocateObjsurElement(XElement e, string attributeTValue, string attributeGuidValue)
-		{
-			if (e.Name == "objsur" &&
-				e.Attribute("t").Value == attributeTValue &&
-				e.Attribute("guid").Value.ToLowerInvariant() == attributeGuidValue.ToLowerInvariant())
-			{
-				return e;
-			}
-
-			if (e.Descendants() != null)
-			{
-				foreach(var x in e.Descendants())
-				{
-					var ret = LocateObjsurElement(x, attributeTValue, attributeGuidValue);
-					if (ret != null)
-						return ret;
-				}
-			}
-			return null;
-		}
-#endif
 
 		#region IDataMigration Members
 
@@ -181,17 +152,16 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			{
 				DomainObjectDTO dtoOldOwner = repoDTO.GetDTO(sGuidOld);
 				XElement xeOldOwner = XElement.Parse(dtoOldOwner.Xml);
-#if !__MonoCS__
-				string xpathOld = String.Format(".//objsur[@t='o' and @guid='{0}']", dto.Guid);
+				string xpathOld = string.Format(".//objsur[@t='o' and @guid='{0}']", dto.Guid);
 				XElement xeOldRef = xeOldOwner.XPathSelectElement(xpathOld);
 				if (xeOldRef == null)
 				{
-					xpathOld = String.Format(".//objsur[@t='o' and @guid='{0}']", dto.Guid.ToLowerInvariant());
+					xpathOld = string.Format(".//objsur[@t='o' and @guid='{0}']", dto.Guid.ToLowerInvariant());
 					xeOldRef = xeOldOwner.XPathSelectElement(xpathOld);
 				}
 				if (xeOldRef == null)
 				{
-					xpathOld = String.Format(".//objsur[@t='o' and @guid='{0}']", dto.Guid.ToUpperInvariant());
+					xpathOld = string.Format(".//objsur[@t='o' and @guid='{0}']", dto.Guid.ToUpperInvariant());
 					xeOldRef = xeOldOwner.XPathSelectElement(xpathOld);
 				}
 				if (xeOldRef == null)
@@ -206,12 +176,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 						}
 					}
 				}
-#else // TODO-Linux: work around mono bug https://bugzilla.novell.com/show_bug.cgi?id=594877
-				XElement xeOldRef = null;
-				xeOldRef = LocateObjsurElement(xeOldOwner, "o", dto.Guid);
-				if (xeOldRef == null)
-						xeOldRef = LocateObjsurElement(xeOldOwner, "0", dto.Guid);
-#endif
 				if (xeOldRef != null)
 				{
 					xeOldRef.Remove();

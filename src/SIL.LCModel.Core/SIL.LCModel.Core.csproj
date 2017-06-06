@@ -181,6 +181,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="BuildInclude.targets">
       <SubType>Designer</SubType>
     </None>

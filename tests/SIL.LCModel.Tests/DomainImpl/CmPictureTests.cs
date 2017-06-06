@@ -265,19 +265,13 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// -------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException)
-#if !__MonoCS__
-			, ExpectedMessage = "File path (c:\\wha<>tever.jpg) contains at least one invalid character.\r\nParameter name: srcFile")]
-#else
-			// It's hard to match the ExpectedMessage if it has a null character, so don't try to match it.
-			)]
-#endif
+		[ExpectedException(typeof(ArgumentException))]
 		public void CmPictureConstructor_FromTextRep_InvalidFilename()
 		{
 			// Note that on Linux only NULL and slash are invalid characters in a file
 			// name, and Path.GetInvalidPathChars() only even reports the NULL character.
 			string sTextRepOfPicture;
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			if (MiscUtils.IsUnix)
 				sTextRepOfPicture = "CmPicture||/wha<>\u0000tever.jpg||||This is a caption||";
 			else
 				sTextRepOfPicture = "CmPicture||c:\\wha<>tever.jpg||||This is a caption||";

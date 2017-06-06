@@ -10,6 +10,7 @@ using System.IO.MemoryMappedFiles;
 using System.Linq;
 using ProtoBuf;
 using SIL.LCModel.DomainServices.DataMigration;
+using SIL.LCModel.Utils;
 using SIL.Threading;
 
 namespace SIL.LCModel.Infrastructure.Impl
@@ -34,9 +35,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		private MemoryMappedFile m_commitLog;
 		private readonly Guid m_peerID;
 		private readonly Dictionary<int, Process> m_peerProcesses;
-#if __MonoCS__
 		private string m_commitLogDir;
-#endif
 
 		internal SharedXMLBackendProvider(LcmCache cache, IdentityMap identityMap, ICmObjectSurrogateFactory surrogateFactory, IFwMetaDataCacheManagedInternal mdc,
 			IDataMigrationManager dataMigrationManager, ILcmUI ui, ILcmDirectories dirs, LcmSettings settings)
@@ -44,10 +43,11 @@ namespace SIL.LCModel.Infrastructure.Impl
 		{
 			m_peerProcesses = new Dictionary<int, Process>();
 			m_peerID = Guid.NewGuid();
-#if __MonoCS__
-			// /dev/shm is not guaranteed to be available on all systems, so fall back to temp
-			m_commitLogDir = Directory.Exists("/dev/shm") ? "/dev/shm" : Path.GetTempPath();
-#endif
+			if (MiscUtils.IsMono)
+			{
+				// /dev/shm is not guaranteed to be available on all systems, so fall back to temp
+				m_commitLogDir = Directory.Exists("/dev/shm") ? "/dev/shm" : Path.GetTempPath();
+			}
 		}
 
 		internal int OtherApplicationsConnectedCount
@@ -130,9 +130,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				CompleteAllCommits();
 				using (m_commitLogMutex.Lock())
 				{
-#if __MonoCS__
 					bool delete = false;
-#endif
 					using (MemoryMappedViewStream stream = m_commitLogMetadata.CreateViewStream())
 					{
 						CommitLogMetadata metadata;
@@ -158,9 +156,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 								metadata.FileGeneration = metadata.CurrentGeneration;
 							}
 							RemovePeer(metadata, m_peerID);
-#if __MonoCS__
-							delete = metadata.Peers.Count == 0;
-#endif
+							delete = MiscUtils.IsMono && metadata.Peers.Count == 0;
 							SaveMetadata(stream, metadata);
 						}
 					}
@@ -173,14 +169,12 @@ namespace SIL.LCModel.Infrastructure.Impl
 					m_commitLogMetadata.Dispose();
 					m_commitLogMetadata = null;
 
-#if __MonoCS__
 					if (delete)
 					{
 						File.Delete(Path.Combine(m_commitLogDir, CommitLogMetadataName));
 						File.Delete(Path.Combine(m_commitLogDir, CommitLogName));
 						m_commitLogMutex.Unlink();
 					}
-#endif
 				}
 			}
 
@@ -254,20 +248,11 @@ namespace SIL.LCModel.Infrastructure.Impl
 				SaveMetadata(stream, metadata);
 		}
 
-		private string MutexName
-		{
-			get { return ProjectId.Name + "_Mutex"; }
-		}
+		private string MutexName => ProjectId.Name + "_Mutex";
 
-		private string CommitLogName
-		{
-			get { return ProjectId.Name + "_CommitLog"; }
-		}
+		private string CommitLogName => ProjectId.Name + "_CommitLog";
 
-		private string CommitLogMetadataName
-		{
-			get { return ProjectId.Name + "_CommitLogMetadata"; }
-		}
+		private string CommitLogMetadataName => ProjectId.Name + "_CommitLogMetadata";
 
 		private void CreateSharedMemory(bool createdNew)
 		{
@@ -277,22 +262,23 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 		private MemoryMappedFile CreateOrOpen(string name, long capacity, bool createdNew)
 		{
-#if __MonoCS__
-			name = Path.Combine(m_commitLogDir, name);
-			// delete old file that could be left after a crash
-			if (createdNew && File.Exists(name))
-				File.Delete(name);
-
-			// Mono only supports memory mapped files that are backed by an actual file
-			if (!File.Exists(name))
+			if (MiscUtils.IsMono)
 			{
-				using (var fs = new FileStream(name, FileMode.CreateNew))
-					fs.SetLength(capacity);
+				name = Path.Combine(m_commitLogDir, name);
+				// delete old file that could be left after a crash
+				if (createdNew && File.Exists(name))
+					File.Delete(name);
+
+				// Mono only supports memory mapped files that are backed by an actual file
+				if (!File.Exists(name))
+				{
+					using (var fs = new FileStream(name, FileMode.CreateNew))
+						fs.SetLength(capacity);
+				}
+				return MemoryMappedFile.CreateFromFile(name);
 			}
-			return MemoryMappedFile.CreateFromFile(name);
-#else
+
 			return MemoryMappedFile.CreateOrOpen(name, capacity);
-#endif
 		}
 
 		/// <summary>

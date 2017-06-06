@@ -672,11 +672,7 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 				catch (Exception)
 				{
 					GC.Collect();
-#if !__MonoCS__
-					// on mono WaitForFullGCComplete is incorrectly a .net 4 method.
-					// TODO-Linux: System.GC::WaitForFullGCComplete() is not implemented or marked with MonoTODO
 					GC.WaitForFullGCComplete();
-#endif
 				}
 				if (streamWriter == null)
 				{
@@ -703,8 +699,7 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 			}
 			finally
 			{
-				if (streamWriter != null)
-					streamWriter.Dispose();
+				streamWriter?.Dispose();
 			}
 
 			File.SetLastWriteTime(newFileName, fileDateTime);

@@ -316,22 +316,20 @@ namespace SIL.LCModel.Core.SpellChecking
 			InitDictionary(dicPath, new string[0]);
 		}
 
-#if !__MonoCS__
 		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
 		static extern uint GetShortPathName(string lpszLongPath, char[] lpszShortPath, int cchBuffer);
-#endif
 
 		private static string GetShortName(string input)
 		{
-#if __MonoCS__
+			if (MiscUtils.IsWindows)
+			{
+				if (!File.Exists(input))
+					return input; // can only convert real files, hope for the best on others.
+				char[] buffer = new char[270];
+				uint chars = GetShortPathName(input, buffer, 270);
+				return new string(buffer).Substring(0, (int) chars);
+			}
 			return input;
-#else
-			if (!File.Exists(input))
-				return input; // can only convert real files, hope for the best on others.
-			char[] buffer = new char[270];
-			uint chars = GetShortPathName(input, buffer, 270);
-			return new string(buffer).Substring(0, (int) chars);
-#endif
 		}
 
 		/// <summary>
