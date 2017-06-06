@@ -2002,7 +2002,6 @@ namespace SIL.LCModel.DomainServices
 
 			CallFixSegmentsForPara();
 			VerifyParaSegmentBreaks();
-			ITsString emptyAnalFreeTrans = TsStringUtils.EmptyString(Cache.DefaultAnalWs);
 			VerifySegment(0);
 			VerifySegment(1);
 		}
@@ -2614,7 +2613,6 @@ namespace SIL.LCModel.DomainServices
 
 			CallFixSegmentsForPara();
 			VerifyParaSegmentBreaks();
-			ITsString emptyAnalFreeTrans = TsStringUtils.EmptyString(Cache.DefaultAnalWs);
 			VerifySegment(0);
 			VerifySegment(1);
 			VerifySegment(2);

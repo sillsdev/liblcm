@@ -364,7 +364,6 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 				progressDlg.Message = Strings.ksBackupStatusMessage;
 				foreach (string fileName in files)
 				{
-					string shortName = Path.GetFileName(fileName);
 					string entryName = fileName;
 					if (!string.IsNullOrEmpty(entryName))
 					{

@@ -813,7 +813,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			if (possiblePhrase == null || possiblePhrase.Length == 0 || m_firstWordToPhrases == null)
 				return;
 			string firstWordLowered;
-			var firstWord = ParagraphParser.FirstWord(possiblePhrase, m_cache.ServiceLocator.WritingSystemManager, out firstWordLowered);
+			ParagraphParser.FirstWord(possiblePhrase, m_cache.ServiceLocator.WritingSystemManager, out firstWordLowered);
 			if (firstWordLowered == null || firstWordLowered.Length == possiblePhrase.Length)
 				return;
 			HashSet<ITsString> phrases;
@@ -832,7 +832,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			if (possiblePhrase == null || possiblePhrase.Length == 0 || m_firstWordToPhrases == null)
 				return;
 			string firstWordLowered;
-			var firstWord = ParagraphParser.FirstWord(possiblePhrase, m_cache.ServiceLocator.WritingSystemManager, out firstWordLowered);
+			ParagraphParser.FirstWord(possiblePhrase, m_cache.ServiceLocator.WritingSystemManager, out firstWordLowered);
 			if (firstWordLowered.Length == possiblePhrase.Length)
 				return;
 			HashSet<ITsString> phrases;

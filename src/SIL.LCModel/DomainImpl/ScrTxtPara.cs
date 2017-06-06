@@ -1757,7 +1757,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			ichLimIns = -1; //default output, if nothing inserted
 
-			ITsString tssBt = GetOrCreateBT().Translation.get_String(wsAlt);
+			GetOrCreateBT();
 
 			// Get the corresponding chapter number from the vernacular
 #pragma warning disable 219

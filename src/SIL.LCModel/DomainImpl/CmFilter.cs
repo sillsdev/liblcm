@@ -28,26 +28,8 @@ namespace SIL.LCModel.DomainImpl
 		// ENHANCE: For now this filter class only supports simple filters (single CmRow owning
 		// a single CmCell).
 		private List<ICmCell> m_cells = new List<ICmCell>();
-		private ICmPossibilitySupplier m_possSupplier = null;
 		private List<int> m_filteredFlids = new List<int>();
 		private List<CellarPropertyType> m_filteredFieldTypes = new List<CellarPropertyType>();
-		#endregion
-
-		#region Public properties
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// An object that can supply a chosen CmPossibility to match on, given a possibility
-		/// list (typically the Chooser dialog)
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public ICmPossibilitySupplier PossibilitySupplier
-		{
-			set
-			{
-				lock (SyncRoot)
-					m_possSupplier = value;
-			}
-		}
 		#endregion
 
 		#region IFilter Members

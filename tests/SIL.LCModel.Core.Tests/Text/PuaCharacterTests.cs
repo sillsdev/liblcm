@@ -73,7 +73,7 @@ namespace SIL.LCModel.Core.Text
 		[Test]
 		public void PuaCharacterTextConstructor()
 		{
-			PUACharacter puaCharacter = new PUACharacter("0669", "ARABIC-INDIC DIGIT NINE;Nd;0;AN;;9;9;9;N;;;;;");
+			new PUACharacter("0669", "ARABIC-INDIC DIGIT NINE;Nd;0;AN;;9;9;9;N;;;;;");
 		}
 
 		[TestCase("1", Result = "\x0001")]

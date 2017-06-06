@@ -1156,7 +1156,7 @@ namespace SIL.LCModel.DomainServices
 			var entryComponents = MorphServices.BuildEntryComponents(Cache,
 																			tssFullForm);
 			entryComponents.GlossAlternatives.Add(TsStringUtils.MakeString("senseToUndo", Cache.DefaultVernWs));
-			ILexEntry newEntry = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create(entryComponents);
+			Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create(entryComponents);
 
 			Assert.AreEqual(1, Cache.ServiceLocator.GetInstance<ILexEntryRepository>().Count);
 			Assert.AreEqual(1, Cache.ServiceLocator.GetInstance<ILexSenseRepository>().Count);

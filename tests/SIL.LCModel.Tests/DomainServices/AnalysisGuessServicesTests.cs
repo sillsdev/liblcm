@@ -193,7 +193,7 @@ namespace SIL.LCModel.DomainServices
 			// make two analyses, but don't make any glosses. so we don't expect any guesses for one of the analyses.
 			using (var setup = new AnalysisGuessBaseSetup(Cache))
 			{
-				var newAnalysisWag = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[1]);
+				WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[1]);
 				var newAnalysisWag2 = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[1]);
 				var guessActual = setup.GuessServices.GetBestGuess(newAnalysisWag2.Analysis);
 				Assert.AreEqual(new NullWAG(), guessActual);
@@ -289,11 +289,11 @@ namespace SIL.LCModel.DomainServices
 			using (var setup = new AnalysisGuessBaseSetup(Cache))
 			{
 				// create an affix entry
-				var newEntry1= setup.EntryFactory.Create("a-", "aPrefix", SandboxGenericMSA.Create(MsaType.kInfl, null));
-				var newEntry2 = setup.EntryFactory.Create("-a", "aSuffix", SandboxGenericMSA.Create(MsaType.kDeriv, null));
-				var newEntry3 = setup.EntryFactory.Create("-a-", "aInfix", SandboxGenericMSA.Create(MsaType.kUnclassified, null));
-				var newEntry4 = setup.EntryFactory.Create("ay", "Astem", SandboxGenericMSA.Create(MsaType.kStem, null));
-				var newEntry5 = setup.EntryFactory.Create("ay", "Aroot", SandboxGenericMSA.Create(MsaType.kRoot, null));
+				setup.EntryFactory.Create("a-", "aPrefix", SandboxGenericMSA.Create(MsaType.kInfl, null));
+				setup.EntryFactory.Create("-a", "aSuffix", SandboxGenericMSA.Create(MsaType.kDeriv, null));
+				setup.EntryFactory.Create("-a-", "aInfix", SandboxGenericMSA.Create(MsaType.kUnclassified, null));
+				setup.EntryFactory.Create("ay", "Astem", SandboxGenericMSA.Create(MsaType.kStem, null));
+				setup.EntryFactory.Create("ay", "Aroot", SandboxGenericMSA.Create(MsaType.kRoot, null));
 				// try to generate analyses for matching entries (should have no results)
 				setup.GuessServices.GenerateEntryGuesses(setup.StText);
 
@@ -323,12 +323,12 @@ namespace SIL.LCModel.DomainServices
 				morphTypeBoundedStem.Prefix = morphTypeBoundedStem.Postfix = null;
 
 				// create an affix entry
-				var newEntry1 = setup.EntryFactory.Create("a-", "aPrefix", SandboxGenericMSA.Create(MsaType.kInfl, null));
-				var newEntry2 = setup.EntryFactory.Create("-a", "aSuffix", SandboxGenericMSA.Create(MsaType.kDeriv, null));
-				var newEntry3 = setup.EntryFactory.Create("-a-", "aInfix", SandboxGenericMSA.Create(MsaType.kUnclassified, null));
-				var boundedStem = setup.EntryFactory.Create(morphTypeBoundedStem, TsStringUtils.MakeString("a", Cache.DefaultVernWs),
+				setup.EntryFactory.Create("a-", "aPrefix", SandboxGenericMSA.Create(MsaType.kInfl, null));
+				setup.EntryFactory.Create("-a", "aSuffix", SandboxGenericMSA.Create(MsaType.kDeriv, null));
+				setup.EntryFactory.Create("-a-", "aInfix", SandboxGenericMSA.Create(MsaType.kUnclassified, null));
+				setup.EntryFactory.Create(morphTypeBoundedStem, TsStringUtils.MakeString("a", Cache.DefaultVernWs),
 					"aboundedstem", SandboxGenericMSA.Create(MsaType.kStem, null));
-				var boundedRoot = setup.EntryFactory.Create(morphTypeBoundedRoot, TsStringUtils.MakeString("a", Cache.DefaultVernWs),
+				setup.EntryFactory.Create(morphTypeBoundedRoot, TsStringUtils.MakeString("a", Cache.DefaultVernWs),
 					"aboundedroot", SandboxGenericMSA.Create(MsaType.kRoot, null));
 				// try to generate analyses for matching entries (should have no results)
 				setup.GuessServices.GenerateEntryGuesses(setup.StText);
@@ -369,11 +369,11 @@ namespace SIL.LCModel.DomainServices
 			using (var setup = new AnalysisGuessBaseSetup(Cache, AnalysisGuessBaseSetup.Flags.PartsOfSpeech))
 			{
 				// create an affix entry
-				var newEntry1 = setup.EntryFactory.Create("a-", "aPrefix", SandboxGenericMSA.Create(MsaType.kInfl, null));
-				var newEntry2 = setup.EntryFactory.Create("-a", "aSuffix", SandboxGenericMSA.Create(MsaType.kDeriv, null));
-				var newEntry3 = setup.EntryFactory.Create("-a-", "aInfix", SandboxGenericMSA.Create(MsaType.kUnclassified, null));
+				setup.EntryFactory.Create("a-", "aPrefix", SandboxGenericMSA.Create(MsaType.kInfl, null));
+				setup.EntryFactory.Create("-a", "aSuffix", SandboxGenericMSA.Create(MsaType.kDeriv, null));
+				setup.EntryFactory.Create("-a-", "aInfix", SandboxGenericMSA.Create(MsaType.kUnclassified, null));
 				var newEntry4_expectedMatch = setup.EntryFactory.Create("a", "astem", SandboxGenericMSA.Create(MsaType.kStem, setup.Pos_noun));
-				var newEntry5 = setup.EntryFactory.Create("a", "aroot", SandboxGenericMSA.Create(MsaType.kRoot, null));
+				setup.EntryFactory.Create("a", "aroot", SandboxGenericMSA.Create(MsaType.kRoot, null));
 
 				// expect a guess to be generated
 				setup.GuessServices.GenerateEntryGuesses(setup.StText);
@@ -641,7 +641,7 @@ namespace SIL.LCModel.DomainServices
 			using (var setup = new AnalysisGuessBaseSetup(Cache))
 			{
 				var newWagEvaluation = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[1]);
-				var newWagNoEvaluation = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[1]);
+				WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[1]);
 				setup.UserAgent.SetEvaluation(newWagEvaluation.Analysis, Opinions.approves);
 				var guessActual = setup.GuessServices.GetBestGuess(setup.Words_para0[1]);
 				Assert.AreEqual(newWagEvaluation.Analysis, guessActual);
@@ -657,7 +657,7 @@ namespace SIL.LCModel.DomainServices
 			using (var setup = new AnalysisGuessBaseSetup(Cache, AnalysisGuessBaseSetup.Flags.PartsOfSpeech))
 			{
 				// create an affix entry
-				var expectedMatch = setup.EntryFactory.Create("a", "astem", SandboxGenericMSA.Create(MsaType.kStem, setup.Pos_noun));
+				setup.EntryFactory.Create("a", "astem", SandboxGenericMSA.Create(MsaType.kStem, setup.Pos_noun));
 				// expect a guess to be generated
 				setup.GuessServices.GenerateEntryGuesses(setup.StText);
 				// create parser approved guess
@@ -677,7 +677,7 @@ namespace SIL.LCModel.DomainServices
 			using (var setup = new AnalysisGuessBaseSetup(Cache, AnalysisGuessBaseSetup.Flags.PartsOfSpeech))
 			{
 				// create an affix entry
-				var expectedMatch = setup.EntryFactory.Create("a", "astem", SandboxGenericMSA.Create(MsaType.kStem, setup.Pos_noun));
+				setup.EntryFactory.Create("a", "astem", SandboxGenericMSA.Create(MsaType.kStem, setup.Pos_noun));
 				// expect a guess to be generated
 				setup.GuessServices.GenerateEntryGuesses(setup.StText);
 				// create user approved guess
@@ -698,7 +698,7 @@ namespace SIL.LCModel.DomainServices
 		{
 			using (var setup = new AnalysisGuessBaseSetup(Cache))
 			{
-				var newWagOutsideTexts = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[1]);
+				WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[1]);
 				var newWagInText = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[1]);
 				// set the analysis at the appropriate location to be the one we created.
 				setup.Para0.SetAnalysis(0, 1, newWagInText.Analysis);
@@ -716,7 +716,7 @@ namespace SIL.LCModel.DomainServices
 			using (var setup = new AnalysisGuessBaseSetup(Cache, AnalysisGuessBaseSetup.Flags.PartsOfSpeech))
 			{
 				// create an affix entry
-				var expectedMatch = setup.EntryFactory.Create("a", "astem", SandboxGenericMSA.Create(MsaType.kStem, setup.Pos_noun));
+				setup.EntryFactory.Create("a", "astem", SandboxGenericMSA.Create(MsaType.kStem, setup.Pos_noun));
 				// expect a guess to be generated
 				setup.GuessServices.GenerateEntryGuesses(setup.StText);
 				// create user approved guess
@@ -738,7 +738,7 @@ namespace SIL.LCModel.DomainServices
 		{
 			using (var setup = new AnalysisGuessBaseSetup(Cache))
 			{
-				var newWagOutsideTexts = WordAnalysisOrGlossServices.CreateNewAnalysisTreeGloss(setup.Words_para0[1]);
+				WordAnalysisOrGlossServices.CreateNewAnalysisTreeGloss(setup.Words_para0[1]);
 				var newWagInText = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[1]);
 				// set the analysis at the appropriate location to be the one we created.
 				setup.Para0.SetAnalysis(0, 1, newWagInText.Analysis);
@@ -757,7 +757,7 @@ namespace SIL.LCModel.DomainServices
 		{
 			using (var setup = new AnalysisGuessBaseSetup(Cache))
 			{
-				var newWagUppercase = WordAnalysisOrGlossServices.CreateNewAnalysisTreeGloss(setup.Words_para0[0]);
+				WordAnalysisOrGlossServices.CreateNewAnalysisTreeGloss(setup.Words_para0[0]);
 				var newWagLowercase = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[1]);
 				var wagUppercase = new AnalysisOccurrence(setup.Para0.SegmentsOS[0], 0);
 				var guessActual = setup.GuessServices.GetBestGuess(wagUppercase);
@@ -792,7 +792,7 @@ namespace SIL.LCModel.DomainServices
 		{
 			using (var setup = new AnalysisGuessBaseSetup(Cache))
 			{
-				var wagUppercaseB = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[5]);
+				WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[5]);
 				var wagLowercaseB = new AnalysisOccurrence(setup.Para0.SegmentsOS[1], 0);
 				var guessActual = setup.GuessServices.GetBestGuess(wagLowercaseB);
 				Assert.AreEqual(new NullWAG(), guessActual);

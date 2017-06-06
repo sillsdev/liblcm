@@ -173,7 +173,6 @@ public class LexerGenerate : TokensGen // used during LexerGenerate
 		if (pT!=null)
 			bas = pT.m_name;
 		string newname = "";
-		char[] buf = new char[32];
 		for (int variant=1;;variant++)
 		{ // ensure we get a unique name
 			newname = String.Format("{0}_{1}",bas,variant);
@@ -372,7 +371,6 @@ public class LexerGenerate : TokensGen // used during LexerGenerate
 					}
 				if (isNew && tokClass!="TOKEN")
 				{ // this token class has not been declared. Do so now
-					bool isNode = (m_tokens.tokens[bas1]!=null);
 					t = new TokClassDef(this,tokClass,bas1); // updates TOKEN.tokens
 					m_outFile.WriteLine("//%{0}",tokClass);
 					m_outFile.WriteLine(@"/// <summary/>");

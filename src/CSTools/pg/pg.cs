@@ -853,7 +853,6 @@ public class ParserGenerate : SymbolsGen
 					{ // an OldAction that has been converted to a SimpleAction: discard it
 						s = a.m_sym; // add the SimpleAction instead
 						s.m_symtype = CSymbol.SymType.simpleaction;
-						ParserSimpleAction sa = (ParserSimpleAction)s;
 					}
 					else  // add it to the Actions function
 						m_actions += String.Format("\ncase {0} : {1} break;", a.m_action, a.m_initialisation);

@@ -162,24 +162,24 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			// These are all present in the original data file and act as controls.
 			// They should not be changed.
 			mockMdc.AddField(2001, "RegularOwningAtomic", CellarPropertyType.OwningAtom, 2);
-			var extantExtantOwningAtomicFlid = mockMdc.AddCustomField("CustomPropertyMagnet", "ExtantOwningAtomic", CellarPropertyType.OwningAtom, 2);
-			var extantBoolFlid = mockMdc.AddCustomField("CustomPropertyMagnet", "ExtantBooleanProperty", CellarPropertyType.Boolean, 0);
-			var extantGenDateFlid = mockMdc.AddCustomField("CustomPropertyMagnet", "ExtantGenDateProperty", CellarPropertyType.GenDate, 0);
-			var extantGuidFlid = mockMdc.AddCustomField("CustomPropertyMagnet", "ExtantGuidProperty", CellarPropertyType.Guid, 0);
+			mockMdc.AddCustomField("CustomPropertyMagnet", "ExtantOwningAtomic", CellarPropertyType.OwningAtom, 2);
+			mockMdc.AddCustomField("CustomPropertyMagnet", "ExtantBooleanProperty", CellarPropertyType.Boolean, 0);
+			mockMdc.AddCustomField("CustomPropertyMagnet", "ExtantGenDateProperty", CellarPropertyType.GenDate, 0);
+			mockMdc.AddCustomField("CustomPropertyMagnet", "ExtantGuidProperty", CellarPropertyType.Guid, 0);
 			// Not used in model yet (as of 23 march 2013) var extantFloatFlid = mockMdc.AddCustomField("CustomPropertyMagnet", "ExtantFloatProperty", CellarPropertyType.Float, 0);
-			var extantIntegerFlid = mockMdc.AddCustomField("CustomPropertyMagnet", "ExtantIntegerProperty", CellarPropertyType.Integer, 0);
+			mockMdc.AddCustomField("CustomPropertyMagnet", "ExtantIntegerProperty", CellarPropertyType.Integer, 0);
 			// Not used in model yet (as of 23 march 2013) var extantNumericFlid = mockMdc.AddCustomField("CustomPropertyMagnet", "ExtantNumericProperty", CellarPropertyType.Numeric, 0);
-			var extantTimeFlid = mockMdc.AddCustomField("CustomPropertyMagnet", "ExtantTimeProperty", CellarPropertyType.Time, 0);
+			mockMdc.AddCustomField("CustomPropertyMagnet", "ExtantTimeProperty", CellarPropertyType.Time, 0);
 
 			// These are all missing in the original data file.
 			// They should all end up with the default values for the given type of data.
-			var missingBoolFlid = mockMdc.AddCustomField("CustomPropertyMagnet", "NewBooleanProperty", CellarPropertyType.Boolean, 0);
-			var missingGenDateFlid = mockMdc.AddCustomField("CustomPropertyMagnet", "NewGenDateProperty", CellarPropertyType.GenDate, 0);
-			var missingGuidFlid = mockMdc.AddCustomField("CustomPropertyMagnet", "NewGuidProperty", CellarPropertyType.Guid, 0);
+			mockMdc.AddCustomField("CustomPropertyMagnet", "NewBooleanProperty", CellarPropertyType.Boolean, 0);
+			mockMdc.AddCustomField("CustomPropertyMagnet", "NewGenDateProperty", CellarPropertyType.GenDate, 0);
+			mockMdc.AddCustomField("CustomPropertyMagnet", "NewGuidProperty", CellarPropertyType.Guid, 0);
 			// Not used in model yet (as of 23 march 2013) var missingFloatFlid = mockMdc.AddCustomField("CustomPropertyMagnet", "NewFloatProperty", CellarPropertyType.Float, 0);
-			var missingIntegerFlid = mockMdc.AddCustomField("CustomPropertyMagnet", "NewIntegerProperty", CellarPropertyType.Integer, 0);
+			mockMdc.AddCustomField("CustomPropertyMagnet", "NewIntegerProperty", CellarPropertyType.Integer, 0);
 			// Not used in model yet (as of 23 march 2013) var missingNumericFlid = mockMdc.AddCustomField("CustomPropertyMagnet", "NewNumericProperty", CellarPropertyType.Numeric, 0);
-			var missingTimeFlid = mockMdc.AddCustomField("CustomPropertyMagnet", "NewTimeProperty", CellarPropertyType.Time, 0);
+			mockMdc.AddCustomField("CustomPropertyMagnet", "NewTimeProperty", CellarPropertyType.Time, 0);
 
 			var dtos = DataMigrationTestServices.ParseProjectFile("DataMigration7000066_CustomPropertyMagnet.xml");
 			IDomainObjectDTORepository dtoRepos = new DomainObjectDtoRepository(7000065, dtos, mockMdc, null,
@@ -221,24 +221,24 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			// These are all present in the original data file and act as controls.
 			// They should not be changed.
 			mockMdc.AddField(1001, "RegularOwningAtomic", CellarPropertyType.OwningAtom, 2);
-			var extantExtantOwningAtomicFlid = mockMdc.AddCustomField("CmObject", "ExtantOwningAtomic", CellarPropertyType.OwningAtom, 2);
-			var extantBoolFlid = mockMdc.AddCustomField("CmObject", "ExtantBooleanProperty", CellarPropertyType.Boolean, 0);
-			var extantGenDateFlid = mockMdc.AddCustomField("CmObject", "ExtantGenDateProperty", CellarPropertyType.GenDate, 0);
-			var extantGuidFlid = mockMdc.AddCustomField("CmObject", "ExtantGuidProperty", CellarPropertyType.Guid, 0);
+			mockMdc.AddCustomField("CmObject", "ExtantOwningAtomic", CellarPropertyType.OwningAtom, 2);
+			mockMdc.AddCustomField("CmObject", "ExtantBooleanProperty", CellarPropertyType.Boolean, 0);
+			mockMdc.AddCustomField("CmObject", "ExtantGenDateProperty", CellarPropertyType.GenDate, 0);
+			mockMdc.AddCustomField("CmObject", "ExtantGuidProperty", CellarPropertyType.Guid, 0);
 			// Not used in model yet (as of 23 march 2013) var extantFloatFlid = mockMdc.AddCustomField("CmObject", "ExtantFloatProperty", CellarPropertyType.Float, 0);
-			var extantIntegerFlid = mockMdc.AddCustomField("CmObject", "ExtantIntegerProperty", CellarPropertyType.Integer, 0);
+			mockMdc.AddCustomField("CmObject", "ExtantIntegerProperty", CellarPropertyType.Integer, 0);
 			// Not used in model yet (as of 23 march 2013) var extantNumericFlid = mockMdc.AddCustomField("CmObject", "ExtantNumericProperty", CellarPropertyType.Numeric, 0);
-			var extantTimeFlid = mockMdc.AddCustomField("CmObject", "ExtantTimeProperty", CellarPropertyType.Time, 0);
+			mockMdc.AddCustomField("CmObject", "ExtantTimeProperty", CellarPropertyType.Time, 0);
 
 			// These are all missing in the original data file.
 			// They should all end up with the default values for the given type of data.
-			var missingBoolFlid = mockMdc.AddCustomField("CmObject", "NewBooleanProperty", CellarPropertyType.Boolean, 0);
-			var missingGenDateFlid = mockMdc.AddCustomField("CmObject", "NewGenDateProperty", CellarPropertyType.GenDate, 0);
-			var missingGuidFlid = mockMdc.AddCustomField("CmObject", "NewGuidProperty", CellarPropertyType.Guid, 0);
+			mockMdc.AddCustomField("CmObject", "NewBooleanProperty", CellarPropertyType.Boolean, 0);
+			mockMdc.AddCustomField("CmObject", "NewGenDateProperty", CellarPropertyType.GenDate, 0);
+			mockMdc.AddCustomField("CmObject", "NewGuidProperty", CellarPropertyType.Guid, 0);
 			// Not used in model yet (as of 23 march 2013) var missingFloatFlid = mockMdc.AddCustomField("CmObject", "NewFloatProperty", CellarPropertyType.Float, 0);
-			var missingIntegerFlid = mockMdc.AddCustomField("CmObject", "NewIntegerProperty", CellarPropertyType.Integer, 0);
+			mockMdc.AddCustomField("CmObject", "NewIntegerProperty", CellarPropertyType.Integer, 0);
 			// Not used in model yet (as of 23 march 2013) var missingNumericFlid = mockMdc.AddCustomField("CmObject", "NewNumericProperty", CellarPropertyType.Numeric, 0);
-			var missingTimeFlid = mockMdc.AddCustomField("CmObject", "NewTimeProperty", CellarPropertyType.Time, 0);
+			mockMdc.AddCustomField("CmObject", "NewTimeProperty", CellarPropertyType.Time, 0);
 
 			var dtos = DataMigrationTestServices.ParseProjectFile("DataMigration7000066_CustomPropertyMagnet.xml");
 			IDomainObjectDTORepository dtoRepos = new DomainObjectDtoRepository(7000065, dtos, mockMdc, null,

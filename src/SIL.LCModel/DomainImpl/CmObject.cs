@@ -822,10 +822,6 @@ namespace SIL.LCModel.DomainImpl
 					// We must have a custom field, and it needs special treatment.
 					Debug.Assert(m_cache.GetIsCustomField(flid));
 					mySetMethod = null;
-#if DEBUG
-					var classname = mdc.GetOwnClsName(flid);
-					var sView = classname + "_" + fieldname;
-#endif
 					switch (nType)
 					{
 						case (int)CellarPropertyType.String:

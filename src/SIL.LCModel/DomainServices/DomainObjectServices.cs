@@ -276,7 +276,6 @@ namespace SIL.LCModel.DomainServices
 			SegmentServices.EnsureMainParaSegments(para);
 			ISilDataAccess sda = cache.MainCacheAccessor;
 			IScripture scr = para.Cache.LangProject.TranslatedScriptureOA;
-			ICmTranslation originalBT = para.GetBT(); // Can be null
 			foreach (int ws in wss)
 			{
 				var wsOnlyProps = StyleUtils.CharStyleTextProps(null, ws);

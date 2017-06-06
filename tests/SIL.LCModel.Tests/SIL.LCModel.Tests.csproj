@@ -320,7 +320,6 @@
     <Content Include="TestData\DataMigration7000066_RegularPropertyMagnet.xml" />
     <Content Include="TestData\DataMigration7000069_ExtendedNote.xml" />
     <Content Include="TestData\DataMigration7000069_UnspecComplexAndVariantType.xml" />
-    <Content Include="TestData\DataMigration7000070.xml" />
     <Content Include="TestData\DataMigration7000071.xml" />
     <Content Include="TestData\TeStyles.xml" />
     <None Include="TestData\am-Ethi-fonipa_7000069.ldml" />

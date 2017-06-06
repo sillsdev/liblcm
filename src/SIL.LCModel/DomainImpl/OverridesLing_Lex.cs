@@ -5231,7 +5231,6 @@ namespace SIL.LCModel.DomainImpl
 				{
 					IReversalIndex revIndex = Services.GetInstance<IReversalIndexRepository>().FindOrCreateIndexForWs(ws);
 					ISilDataAccess sda = m_cache.MainCacheAccessor;
-					IActionHandler acth = sda.GetActionHandler();
 					foreach (string currentForm in formsColl)
 					{
 						var idRevEntry = revIndex.FindOrCreateReversalEntry(currentForm);
@@ -6014,7 +6013,6 @@ namespace SIL.LCModel.DomainImpl
 			get
 			{
 				int count = 0;
-				var anals = new List<IWfiAnalysis>();
 				foreach (ICmObject cmo in ReferringObjects)
 					if (cmo is IWfiMorphBundle)
 						count += (cmo.Owner as WfiAnalysis).OccurrencesInTexts.Count<ISegment>();

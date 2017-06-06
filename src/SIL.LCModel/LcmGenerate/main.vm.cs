@@ -21,12 +21,14 @@ using SIL.LCModel.Core.Scripture;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Infrastructure;
 
+#pragma warning disable 219
 namespace SIL.LCModel.DomainImpl
 {
 #foreach($module in $lcmgenerate.Modules)
 #parse("module.vm.cs")
 #end
 }
+#pragma warning restore 219
 ## Generate constants
 $lcmgenerate.SetOutput("GeneratedConstants.cs")
 $lcmgenerate.Process("Constants.vm.cs")

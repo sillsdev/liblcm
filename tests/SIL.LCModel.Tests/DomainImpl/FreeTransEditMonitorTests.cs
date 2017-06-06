@@ -102,7 +102,7 @@ namespace SIL.LCModel.DomainImpl
 			AddVerse((IScrTxtPara)m_para, 0, 9, pc1);
 			AddVerse((IScrTxtPara)m_para, 0, 10, pc2);
 			AddVerse((IScrTxtPara)m_para, 0, 11, string.Empty);
-			ISegment seg1 = SetFt(m_para, trans1, 1);
+			SetFt(m_para, trans1, 1);
 			Assert.AreEqual(verse1 + trans1 + " " + verse2 + " " + verse3,
 				m_para.TranslationsOC.ToArray()[0].Translation.get_String(m_wsTrans).Text,
 				"translation should be correct after changing prop2");

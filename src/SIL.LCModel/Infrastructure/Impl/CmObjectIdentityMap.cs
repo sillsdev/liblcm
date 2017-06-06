@@ -490,7 +490,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		{
 			foreach (var goner in goners)
 			{
-				var didRemoveIt = m_IdentityMap.Remove(goner);
+				m_IdentityMap.Remove(goner);
 			}
 		}
 

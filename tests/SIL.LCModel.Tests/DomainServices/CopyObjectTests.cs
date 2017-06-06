@@ -33,7 +33,6 @@ namespace SIL.LCModel.DomainServices
 		private ILcmServiceLocator m_servLoc;
 		private ILgWritingSystemFactory m_wsf;
 		private int m_ws_en;
-		private int m_ws_fr;
 
 		#endregion
 
@@ -49,7 +48,6 @@ namespace SIL.LCModel.DomainServices
 			m_servLoc = Cache.ServiceLocator;
 			m_wsf = Cache.WritingSystemFactory;
 			m_ws_en = m_wsf.GetWsFromStr("en");
-			m_ws_fr = m_wsf.GetWsFromStr("fr");
 
 			CreateTestText();
 		}
@@ -97,7 +95,7 @@ namespace SIL.LCModel.DomainServices
 				template);
 			var row1 = rowFact.Create(srcChart, 0, TsStringUtils.MakeString("1a", m_ws_en));
 			var row2 = rowFact.Create(srcChart, 1, TsStringUtils.MakeString("1b", m_ws_en));
-			var row3 = rowFact.Create(srcChart, 2, TsStringUtils.MakeString("1c", m_ws_en));
+			rowFact.Create(srcChart, 2, TsStringUtils.MakeString("1c", m_ws_en));
 			tagFact.Create(row1, 0, template.SubPossibilitiesOS[0], possTags.SubPossibilitiesOS[0]);
 			tagFact.Create(row1, 1, template.SubPossibilitiesOS[2], possTags.SubPossibilitiesOS[0]);
 			tagFact.Create(row2, 0, template.SubPossibilitiesOS[1], possTags.SubPossibilitiesOS[0]);

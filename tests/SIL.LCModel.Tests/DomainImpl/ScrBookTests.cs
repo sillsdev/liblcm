@@ -1355,7 +1355,7 @@ namespace SIL.LCModel.DomainImpl
 		[ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void MergeSectionIntoPreviousSectionContent_NoPreviousSection()
 		{
-			IStStyle newStyle = Cache.LangProject.TranslatedScriptureOA.FindStyle(ScrStyleNames.NormalParagraph);
+			Cache.LangProject.TranslatedScriptureOA.FindStyle(ScrStyleNames.NormalParagraph);
 			m_philemon.MergeSectionContentIntoPreviousSectionContent(0);
 		}
 		#endregion

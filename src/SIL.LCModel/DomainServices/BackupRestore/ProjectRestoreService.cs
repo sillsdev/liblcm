@@ -67,8 +67,6 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 			BackupFileSettings fileSettings = m_restoreSettings.Backup;
 			fileSettings.Validate(); // Normally, this will already have been done, so this will do nothing.
 
-			bool suppressConversion = false;
-
 			//First of all, if the project exists and we are overwriting it, then make a copy of the project.  That way
 			//if the restoration fails part way through, we can put it back the way it was.
 			if (Directory.Exists(m_restoreSettings.ProjectPath))
@@ -76,7 +74,6 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 				// If the project already exists using the fwdata extension, either we're not sharing,
 				// or it is a project for which sharing is suppressed. In any case we don't want to
 				// convert the new project.
-				suppressConversion = File.Exists(m_restoreSettings.FullProjectPath);
 				CreateACopyOfTheProject();
 			}
 

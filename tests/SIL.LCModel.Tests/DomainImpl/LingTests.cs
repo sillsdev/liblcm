@@ -168,8 +168,8 @@ namespace SIL.LCModel.DomainImpl
 			Assert.That(lme.HomographNumber, Is.EqualTo(0));
 
 			// Make sure it has 2 homographs.
-			var lme2 = MakeEntry(sLexForm);
-			var lme3 = MakeEntry(sLexForm);
+			MakeEntry(sLexForm);
+			MakeEntry(sLexForm);
 
 			// This version of the CollectHomographs will not include the lme entry.
 			List<ILexEntry> rgHomographs = ((LexEntry)lme).CollectHomographs();

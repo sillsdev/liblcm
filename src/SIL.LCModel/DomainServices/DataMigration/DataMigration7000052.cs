@@ -27,7 +27,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		{
 			DataMigrationServices.CheckVersionNumber(domainObjectDtoRepository, 7000051);
 
-			var newGuidValue = Guid.NewGuid().ToString().ToLowerInvariant();
 			const string className = "WfiMorphBundle";
 			var wmbList = domainObjectDtoRepository.AllInstancesSansSubclasses(className);
 			foreach (var wmb in wmbList)

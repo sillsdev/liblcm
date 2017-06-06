@@ -63,7 +63,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			foreach (var ScriptureDto in domainObjectDtoRepository.AllInstancesSansSubclasses("ScrImportSet"))
 			{
 				var rtElement = XElement.Parse(ScriptureDto.Xml);
-				var ClassDto = rtElement.Element(ScriptureDto.Classname);
 				var ProjElement = rtElement.Element("ScrImportSet");
 				var rmElement = ProjElement.Element("ImportSettings");
 				if (rmElement!= null)
@@ -78,7 +77,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			foreach (var FootnoteDto in domainObjectDtoRepository.AllInstancesSansSubclasses("StFootnote"))
 			{
 				var rt2Element = XElement.Parse(FootnoteDto.Xml);
-				var ClassDto = rt2Element.Element(FootnoteDto.Classname);
 				var ProjElement = rt2Element.Element("StFootnote");
 				var rm2Element = ProjElement.Element("DisplayFootnoteReference");
 				if (rm2Element!= null)
@@ -96,7 +94,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			foreach (var FootNoteaDto in domainObjectDtoRepository.AllInstancesSansSubclasses("ScrFootnote"))
 			{
 				var rtaElement = XElement.Parse(FootNoteaDto.Xml);
-				var ClassDto = rtaElement.Element(FootNoteaDto.Classname);
 				var ProjElement = rtaElement.Element("StFootnote");
 				var rm2aElement = ProjElement.Element("DisplayFootnoteReference");
 				if (rm2aElement!= null)
@@ -113,7 +110,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			foreach (var StParaDto in domainObjectDtoRepository.AllInstancesSansSubclasses("StPara"))
 			{
 				var rt3Element = XElement.Parse(StParaDto.Xml);
-				var ClassDto = rt3Element.Element(StParaDto.Classname);
 				var ProjElement = rt3Element.Element("StPara");
 				var rm3Element = ProjElement.Element("StyleName");
 				if (rm3Element!= null)
@@ -127,7 +123,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			foreach (var StParaaDto in domainObjectDtoRepository.AllInstancesSansSubclasses("StTxtPara"))
 			{
 				var rt3aElement = XElement.Parse(StParaaDto.Xml);
-				var ClassaDto = rt3aElement.Element(StParaaDto.Classname);
 				var ProjaElement = rt3aElement.Element("StPara");
 				var rm3aElement = ProjaElement.Element("StyleName");
 				if (rm3aElement!= null)
@@ -141,7 +136,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			foreach (var StParabDto in domainObjectDtoRepository.AllInstancesSansSubclasses("ScrTxtPara"))
 			{
 				var rt3bElement = XElement.Parse(StParabDto.Xml);
-				var ClassbDto = rt3bElement.Element(StParabDto.Classname);
 				var ProjbElement = rt3bElement.Element("StPara");
 				var rm3bElement = ProjbElement.Element("StyleName");
 				if (rm3bElement!= null)

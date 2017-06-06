@@ -967,7 +967,6 @@ namespace SIL.LCModel
 						string sBridge = Cache.LangProject.TranslatedScriptureOA.Bridge;
 						string[] pieces = fieldData.Split(new string[] { sBridge }, 2, StringSplitOptions.RemoveEmptyEntries);
 						StringBuilder strb = new StringBuilder();
-						string sLastVerse = pieces[pieces.Length - 1];
 						Int32.TryParse(fieldData, out nVerse);
 						if (vernWs.RightToLeftScript && pieces.Length == 2)
 						{

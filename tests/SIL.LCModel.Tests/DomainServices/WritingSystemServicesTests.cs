@@ -273,7 +273,7 @@ namespace SIL.LCModel.DomainServices
 		{
 			var entry0 = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
 			CoreWritingSystemDefinition newWs;
-			var ws = WritingSystemServices.FindOrCreateWritingSystem(Cache, null, "en-NO", true, false, out newWs);
+			WritingSystemServices.FindOrCreateWritingSystem(Cache, null, "en-NO", true, false, out newWs);
 			// A string property NOT using the WS we will change.
 			entry0.ImportResidue = TsStringUtils.MakeString("hello", Cache.DefaultAnalWs);
 			// A multilingual one using the WS.

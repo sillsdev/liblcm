@@ -913,7 +913,6 @@ namespace SIL.LCModel.Application.Impl
 		{
 			// Test deleting atomic owned property.
 			// Add a new WFI to the language project.
-			var lexDbFactory = Cache.ServiceLocator.GetInstance<ILexDbFactory>();
 			var lexDb = Cache.LanguageProject.LexDbOA;
 
 			m_sda.DeleteObj(lexDb.Hvo);
@@ -1172,7 +1171,7 @@ namespace SIL.LCModel.Application.Impl
 		{
 			ILcmServiceLocator servLoc = Cache.ServiceLocator;
 			IStText title;
-			IScrBook book = servLoc.GetInstance<IScrBookFactory>().Create(1, out title);
+			servLoc.GetInstance<IScrBookFactory>().Create(1, out title);
 
 			int hvoPara = m_sda.MakeNewObject(StTxtParaTags.kClassId, title.Hvo, StTextTags.kflidParagraphs, 0);
 			IStTxtPara para = servLoc.GetInstance<IStTxtParaRepository>().GetObject(hvoPara);

@@ -351,7 +351,7 @@ namespace SIL.LCModel.DomainImpl
 		private IWfiAnalysis MakeCompleteAnalysis(IWfiWordform wf, out IPartOfSpeech pos, out ICmAgent human, out IWfiGloss wg)
 		{
 			var wa = MakeAnalysis(wf);
-			var bundle = MakeCompleteBundle(wa);
+			MakeCompleteBundle(wa);
 			wg = MakeCompleteGloss(wa);
 			pos = MakePartOfSpeech();
 			wa.CategoryRA = pos;
@@ -380,7 +380,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			var entry = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
 			ILexSense sense = MakeCompleteSense(entry);
-			IMoStemAllomorph morph = MakeStemMorphWithFormDefaultAlternatives(entry, "dummy form", "dummy form");
+			MakeStemMorphWithFormDefaultAlternatives(entry, "dummy form", "dummy form");
 			return sense;
 		}
 

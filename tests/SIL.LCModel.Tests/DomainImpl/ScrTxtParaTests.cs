@@ -117,8 +117,8 @@ namespace SIL.LCModel.DomainImpl
 			AddDataToMatthew();
 			IScrSection section = m_book.SectionsOS[1];
 			IScrTxtPara para = (IScrTxtPara)section.ContentOA.ParagraphsOS[0];
-			IScrFootnote footnote1 = AddFootnote(m_book, para, 11, "Footnote one.");
-			IScrFootnote footnote2 = AddFootnote(m_book, para, 24, "Footnote one.");
+			AddFootnote(m_book, para, 11, "Footnote one.");
+			AddFootnote(m_book, para, 24, "Footnote one.");
 			Assert.AreEqual(2, m_book.FootnotesOS.Count);
 
 			// Add a paragraph split at the end of verse one
@@ -1304,9 +1304,8 @@ namespace SIL.LCModel.DomainImpl
 		{
 			IScrTxtPara paraRev = (IScrTxtPara)SetUpParagraphInArchiveWithFootnotesAndBT();
 			IScrTxtPara paraCur = (IScrTxtPara)m_currentText.ParagraphsOS[0];
-			IScrFootnote footnoteCur1 = AddFootnote(m_book, paraCur, 0,
-				"Original footnote at start of current para");
-			IScrFootnote footnoteCur2 = AddFootnote(m_book, paraCur, paraCur.Contents.Length,
+			AddFootnote(m_book, paraCur, 0, "Original footnote at start of current para");
+			AddFootnote(m_book, paraCur, paraCur.Contents.Length,
 				"Original footnote at end of current para");
 			int initialRevFootnotes = m_arcBook.FootnotesOS.Count;
 			Assert.AreEqual(2, m_book.FootnotesOS.Count, "Two footnotes expected in book at start");

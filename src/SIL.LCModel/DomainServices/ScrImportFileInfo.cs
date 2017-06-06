@@ -135,9 +135,6 @@ namespace SIL.LCModel.DomainServices
 		protected bool m_doStrictFileChecking;
 		private bool m_scanInlineBackslashMarkers;
 
-		/// <summary>link to the CmFile in the project</summary>
-		private ICmFile m_file;
-
 		/// <summary>full path name of the file</summary>
 		protected string m_fileName;
 
@@ -251,7 +248,6 @@ namespace SIL.LCModel.DomainServices
 			this(file.AbsoluteInternalPath, mappingList, domain, wsId, noteType,
 			scanInlineBackslashMarkers)
 		{
-			m_file = file;
 		}
 
 		/// ------------------------------------------------------------------------------------

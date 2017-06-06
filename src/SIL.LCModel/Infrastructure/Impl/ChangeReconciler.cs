@@ -227,8 +227,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 									// We have a date modified change. We allow these even when the current unsaved changes
 									// also modify this date. But if that is the case we need to do some reconciling.
 									var newForeignDate = dtChange.NewTime;
-									var currentObjInternal = (ICmObjectInternal) UowService.GetObject(dirtball.Id);
-									var currentDate = currentObjInternal.GetTimeProperty(flid);
 									// See if we have a conflict to reconcile. We do if any of our unsaved changes
 									// modify this same date time.
 									// (otherwise, this UOW has NOT modified the date time, so we just let the

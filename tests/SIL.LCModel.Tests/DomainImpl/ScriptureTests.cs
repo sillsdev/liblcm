@@ -938,7 +938,7 @@ namespace SIL.LCModel.DomainImpl
 
 			IStText titleText;
 			IScrBook hebrews = m_servloc.GetInstance<IScrBookFactory>().Create(58, out titleText);
-			IStTxtPara title = AddParaToMockedText(titleText, ScrStyleNames.MainBookTitle);
+			AddParaToMockedText(titleText, ScrStyleNames.MainBookTitle);
 			AddSectionToMockedBook(hebrews, true);
 			IScrSection section = hebrews.SectionsOS[0];
 			AddSectionHeadParaToSection(section, "The world's finest section", ScrStyleNames.SectionHead);

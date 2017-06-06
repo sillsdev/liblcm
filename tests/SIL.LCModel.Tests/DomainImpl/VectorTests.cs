@@ -447,7 +447,6 @@ namespace SIL.LCModel.DomainImpl
 		public void CopyTo_NoItemsInEmptyItemListTest()
 		{
 			ILcmServiceLocator servLoc = Cache.ServiceLocator;
-			IScrBookFactory bookFact = servLoc.GetInstance<IScrBookFactory>();
 
 			IScrBook[] bookArray = new IScrBook[0];
 			m_scr.ScriptureBooksOS.CopyTo(bookArray, 0);
@@ -524,7 +523,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			ILcmServiceLocator servLoc = Cache.ServiceLocator;
 
-			IScrBook book0 = servLoc.GetInstance<IScrBookFactory>().Create(1);
+			servLoc.GetInstance<IScrBookFactory>().Create(1);
 			m_scr.ScriptureBooksOS.Insert(0, null);
 		}
 
@@ -579,7 +578,7 @@ namespace SIL.LCModel.DomainImpl
 
 			// Setup the source sequence using the scripture books sequence.
 			IStText text;
-			IScrBook book0 = bookFact.Create(1, out text);
+			bookFact.Create(1, out text);
 			IStTxtPara para = text.AddNewTextPara(ScrStyleNames.MainBookTitle);
 			IScrRefSystem systemToAdd = servLoc.GetInstance<IScrRefSystemRepository>().Singleton;
 			para.AnalyzedTextObjectsOS.Insert(0, systemToAdd);
@@ -597,7 +596,7 @@ namespace SIL.LCModel.DomainImpl
 			IScrBookFactory bookFact = servLoc.GetInstance<IScrBookFactory>();
 
 			// Setup the source sequence using the scripture books sequence.
-			IScrBook book0 = bookFact.Create(1);
+			bookFact.Create(1);
 			IScrBook book1 = bookFact.Create(2);
 			IScrBook book2 = bookFact.Create(3);
 
@@ -624,7 +623,7 @@ namespace SIL.LCModel.DomainImpl
 			IScrBookFactory bookFact = servLoc.GetInstance<IScrBookFactory>();
 
 			// Setup the source sequence using the scripture books sequence.
-			IScrBook book0 = bookFact.Create(1);
+			bookFact.Create(1);
 			IScrBook book1 = bookFact.Create(2);
 			IScrBook book2 = bookFact.Create(3);
 

@@ -13,6 +13,7 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
+#pragma warning disable 414
 namespace SIL.LCModel.DomainImpl
 {
 #foreach($module in $lcmgenerate.Modules)
@@ -23,3 +24,4 @@ namespace SIL.LCModel.DomainImpl
 #end
 #end
 }
+#pragma warning restore 414

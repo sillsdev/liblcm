@@ -586,9 +586,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		public bool RightToLeftScript;
 		public string SpellCheckingId;
 		public string ValidChars;
-		public string ScriptName;
-		public string RegionName;
-		public string VariantName;
 
 
 		internal void Save(string filePath)
@@ -1047,17 +1044,13 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			+ "(-(?'extension'" + ExtensionExpr + "))?"
 			+ "(-(?'privateuse'" + PrivateUseExpr + "))?\\z)";
 		private static readonly Regex s_langTagPattern;
-		private static readonly Regex s_langPattern;
 		private static readonly Regex s_scriptPattern;
 		private static readonly Regex s_regionPattern;
-		private static readonly Regex s_variantPattern;
 		static Version19LangTagUtils()
 		{
 			s_langTagPattern = new Regex(LangTagExpr, RegexOptions.ExplicitCapture);
-			s_langPattern = new Regex("\\A(" + LanguageExpr + ")\\z", RegexOptions.ExplicitCapture);
 			s_scriptPattern = new Regex("\\A(" + ScriptExpr + ")\\z", RegexOptions.ExplicitCapture);
 			s_regionPattern = new Regex("\\A(" + RegionExpr + ")\\z", RegexOptions.ExplicitCapture);
-			s_variantPattern = new Regex("\\A(" + FuzzyVariantExpr + ")\\z", RegexOptions.ExplicitCapture);
 		}
 
 		/// <summary>

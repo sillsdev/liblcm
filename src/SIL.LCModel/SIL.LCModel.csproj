@@ -320,7 +320,6 @@
     <Compile Include="Infrastructure\GenericUndoAction.cs" />
     <Compile Include="Infrastructure\Impl\ChangeReconciler.cs" />
     <Compile Include="Infrastructure\Impl\CmObjectId.cs" />
-    <Compile Include="Infrastructure\Impl\CommitData.cs" />
     <Compile Include="Infrastructure\Impl\DataSortingService.cs" />
     <Compile Include="Infrastructure\Impl\LcmInvertSet.cs" />
     <Compile Include="Infrastructure\Impl\RepositoryBase.cs" />

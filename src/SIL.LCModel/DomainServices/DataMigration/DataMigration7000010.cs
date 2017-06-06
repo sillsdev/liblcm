@@ -1494,7 +1494,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Dictionary<string, List<byte[]>> notes)
 		{
 			var dtos = dtoRepos.AllInstancesSansSubclasses("CmIndirectAnnotation");
-			var count = dtos.Count();
 			var num = 0;
 			var cann = 0;
 			foreach (var indirectAnnDto in dtos)
@@ -1883,7 +1882,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				return retval;
 			var appliesToBounds = new ElementBounds(xmlBytes, s_tagsAppliesTo,
 				indirectBounds.BeginTagOffset, indirectBounds.EndTagOffset);
-			var ichNext = appliesToBounds.BeginTagOffset + s_tagsAppliesTo.BeginTag.Length;
 			var objsurBounds = new ElementBounds(xmlBytes, s_tagsObjsur,
 				appliesToBounds.BeginTagOffset, appliesToBounds.EndTagOffset);
 			while (objsurBounds.IsValid)

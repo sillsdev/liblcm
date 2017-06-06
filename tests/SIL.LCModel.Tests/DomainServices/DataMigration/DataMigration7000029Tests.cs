@@ -125,7 +125,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		private string GetCmFilePath(DomainObjectDTO fileDto)
 		{
 			XElement cmFileXML = XElement.Parse(fileDto.Xml);
-			var InternalPath = cmFileXML.XPathSelectElement("InternalPath");
 			var filePathFromCmFile = cmFileXML.XPathSelectElement("InternalPath").XPathSelectElement("Uni").Value;
 			return filePathFromCmFile;
 		}

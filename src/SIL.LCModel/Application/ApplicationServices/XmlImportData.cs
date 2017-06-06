@@ -140,7 +140,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 		private ILgWritingSystemFactory m_wsf;
 		private ICmObjectRepository m_repoCmObject;
 		private WritingSystemManager m_wsManager;
-		private IProgress m_progress;
 		// Factories for ownerless classes.
 		private IWfiWordformFactory m_factWfiWordForm;
 		private ICmBaseAnnotationFactory m_factCmBaseAnnotation;
@@ -152,7 +151,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 		private Dictionary<Guid, string> m_mapGuidId = new Dictionary<Guid, string>();
 
 		private ReferenceTracker m_rglinks = new ReferenceTracker();
-		private TextReader m_rdrInput;
 		private TextWriter m_wrtrLog;
 		private bool m_createLinks;
 
@@ -258,8 +256,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 		/// ------------------------------------------------------------------------------------
 		public void ImportData(TextReader rdr, TextWriter wrtrLog, IProgress progress)
 		{
-			m_progress = progress;
-			m_rdrInput = rdr;
 			m_wrtrLog = wrtrLog;
 
 			XmlReader xrdr = null;
@@ -2055,7 +2051,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 		{
 			if (m_repoCmObject == null)
 				m_repoCmObject = m_cache.ServiceLocator.GetInstance<ICmObjectRepository>();
-			ICmObject cmoTargetPrev = null;
 			ICmObject cmoOwnerPrev = null;
 			ILexRefType lrtPrev = null;
 			bool fReversePrev = false;
@@ -2146,7 +2141,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 						}
 						lrPrev = lr;
 					}
-					cmoTargetPrev = cmoTarget;
 					cmoOwnerPrev = cmoOwner;
 					lrtPrev = lrt;
 					fReversePrev = fReverse;
@@ -2204,7 +2198,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 							m_sda.Replace(hvoOwner, flid, chvo, chvo, new int[] { hvo }, 1);
 						}
 					}
-					cmoTargetPrev = null;
 					cmoOwnerPrev = null;
 					lrtPrev = null;
 					fReversePrev = false;

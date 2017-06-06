@@ -73,7 +73,7 @@ namespace SIL.LCModel.DomainImpl
 			var cf = CheckFsClosedFeature("b2646044-b47e-46d7-8dd3-d57c079e7b5f", featureSystem, "fDeg");
 			Assert.That(cf, Is.EqualTo(feature));
 			Assert.That(featureType.FeaturesRS, Has.Member(cf));
-			var fv = CheckFsSymFeatVal("a2c5215b-86f7-4851-ac71-ab04c47137cf", cf, "vPositive");
+			CheckFsSymFeatVal("a2c5215b-86f7-4851-ac71-ab04c47137cf", cf, "vPositive");
 
 			var compItem = degItem.ChildNodes[3];
 			var feature2 = featureSystem.AddFeatureFromXml(compItem);
@@ -157,10 +157,10 @@ namespace SIL.LCModel.DomainImpl
 
 			var mascItem = genderItem.ChildNodes[3];
 			Assert.That(mascItem, Is.Not.Null);
-			var feature = featureSystem.AddFeatureFromXml(mascItem);
+			featureSystem.AddFeatureFromXml(mascItem);
 
-			var featureType = CheckFsFeatStrucType("3293182e-dbf8-460f-a1db-947a5a7bb03b", featureSystem, "tAdjAgr");
-			var complexFeatureType = CheckFsComplexFeature("58a4cedb-7ed8-4548-8dae-770294804ec9", featureSystem, "cAdjAgr");
+			CheckFsFeatStrucType("3293182e-dbf8-460f-a1db-947a5a7bb03b", featureSystem, "tAdjAgr");
+			CheckFsComplexFeature("58a4cedb-7ed8-4548-8dae-770294804ec9", featureSystem, "cAdjAgr");
 			// Lots more we could check, but the essential point of this test is two paths that must create objects with the right guids.
 		}
 

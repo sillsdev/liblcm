@@ -841,7 +841,7 @@ namespace SIL.LCModel.DomainImpl
 			IScrSection introSection1 = m_philemon.SectionsOS[0];
 			IScrSection introSection2 = m_philemon.SectionsOS[1];
 			// Add one more para to the heading to make sure multiple paras are moved.
-			IScrTxtPara newPara = AddSectionHeadParaToSection(introSection2, "Heading para 2", ScrStyleNames.IntroSectionHead);
+			AddSectionHeadParaToSection(introSection2, "Heading para 2", ScrStyleNames.IntroSectionHead);
 
 			// Confirm the text in the first content section.
 			Assert.AreEqual(1, introSection1.ContentOA.ParagraphsOS.Count);
@@ -880,7 +880,7 @@ namespace SIL.LCModel.DomainImpl
 			IScrSection introSection1 = m_philemon.SectionsOS[0];
 			IScrSection introSection2 = m_philemon.SectionsOS[1];
 			// Add one more para to the heading to make sure multiple paras are moved.
-			IScrTxtPara newPara = AddSectionHeadParaToSection(introSection2, "Heading para 2", ScrStyleNames.IntroSectionHead);
+			AddSectionHeadParaToSection(introSection2, "Heading para 2", ScrStyleNames.IntroSectionHead);
 
 			Assert.AreEqual(2, introSection2.HeadingOA.ParagraphsOS.Count);
 			// Confirm the text in the first content section.

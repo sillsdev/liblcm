@@ -55,7 +55,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 				{
 					using (var zipStream = new ZipInputStream(inputStream))
 					{
-						var entry = zipStream.GetNextEntry(); // advances it to where we can read the one zipped file.
+						zipStream.GetNextEntry(); // advances it to where we can read the one zipped file.
 						using (var reader = new StreamReader(zipStream, Encoding.UTF8))
 							ImportTranslatedLists(reader, cache, progress);
 					}
@@ -160,7 +160,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			xrdr.MoveToContent();
 			if (xrdr.Name != "Lists")
 				throw new Exception(String.Format("Unexpected outer element (expected <Lists>): {0}", xrdr.Name));
-			DateTime dateOfTranslation = ReadDateAttribute(xrdr);
+			ReadDateAttribute(xrdr);
 			if (!xrdr.ReadToDescendant("List"))
 				throw new Exception(String.Format("Unexpected second element (expected <List>): {0}", xrdr.Name));
 

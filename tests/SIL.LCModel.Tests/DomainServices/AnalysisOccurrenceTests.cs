@@ -391,7 +391,7 @@ namespace SIL.LCModel.DomainServices
 			try
 			{
 				// SUT
-				var actual = point1.GetAdvancingOccurrencesInclusiveOf(point2);
+				point1.GetAdvancingOccurrencesInclusiveOf(point2);
 				Assert.Fail("Failed to get an expected ArgumentOutOfRangeException.");
 			}
 			catch (ArgumentOutOfRangeException)

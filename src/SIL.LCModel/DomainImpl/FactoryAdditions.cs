@@ -496,7 +496,7 @@ namespace SIL.LCModel.DomainImpl
 			else
 			{
 #pragma warning disable 168
-				var allomorph = MoForm.CreateAllomorph(entry, sense.MorphoSyntaxAnalysisRA, tssLexemeForm, morphType, true);
+				MoForm.CreateAllomorph(entry, sense.MorphoSyntaxAnalysisRA, tssLexemeForm, morphType, true);
 #pragma warning restore 168
 			}
 			// (We don't want a citation form by default.  See LT-7220.)
@@ -629,15 +629,15 @@ namespace SIL.LCModel.DomainImpl
 				(mmt.Hvo != mmtInfix.Hvo))
 				mmt = mmtPrefix; // force a prefix if it's neither a prefix nor an infix
 #pragma warning disable 168
-			var allomorph = MoForm.CreateAllomorph(entry, sense.MorphoSyntaxAnalysisRA,
-												   TsStringUtils.MakeString(sLeftMember, wsVern), mmt, false);
+			MoForm.CreateAllomorph(entry, sense.MorphoSyntaxAnalysisRA,
+				TsStringUtils.MakeString(sLeftMember, wsVern), mmt, false);
 #pragma warning disable 168
 			mmt = MorphServices.FindMorphType(m_cache, ref sRightMember, out clsidForm);
 			if ((mmt.Hvo != mmtInfix.Hvo) &&
 				(mmt.Hvo != mmtSuffix.Hvo))
 				mmt = mmtSuffix; // force a suffix if it's neither a suffix nor an infix
-			allomorph = MoForm.CreateAllomorph(entry, sense.MorphoSyntaxAnalysisRA,
-											   TsStringUtils.MakeString(sRightMember, wsVern), mmt, false);
+			MoForm.CreateAllomorph(entry, sense.MorphoSyntaxAnalysisRA,
+				TsStringUtils.MakeString(sRightMember, wsVern), mmt, false);
 
 			return lexemeAllo;
 		}
@@ -1186,7 +1186,6 @@ namespace SIL.LCModel.DomainImpl
 				throw new ArgumentNullException("owner");
 
 			int hvo = ((IDataReader)m_cache.ServiceLocator.GetInstance<IDataSetup>()).GetNextRealHvo();
-			int flid = m_cache.MetaDataCache.GetFieldId("CmPossibilityList", "Possibilities", false);
 
 			var retval = new CmPerson(m_cache, hvo, guid);
 			owner.PossibilitiesOS.Add(retval);
@@ -1203,7 +1202,6 @@ namespace SIL.LCModel.DomainImpl
 			if (owner == null) throw new ArgumentNullException("owner");
 
 			int hvo = ((IDataReader)m_cache.ServiceLocator.GetInstance<IDataSetup>()).GetNextRealHvo();
-			int flid = m_cache.MetaDataCache.GetFieldId("FsFeatureSystem", "Types", false);
 
 			var retval = new FsFeatStrucType(m_cache, hvo, guid);
 			owner.TypesOC.Add(retval);
@@ -1218,7 +1216,6 @@ namespace SIL.LCModel.DomainImpl
 			if (owner == null) throw new ArgumentNullException("owner");
 
 			int hvo = ((IDataReader)m_cache.ServiceLocator.GetInstance<IDataSetup>()).GetNextRealHvo();
-			int flid = m_cache.MetaDataCache.GetFieldId("FsFeatureSystem", "Features", false);
 
 			var retval = new FsClosedFeature(m_cache, hvo, guid);
 			owner.FeaturesOC.Add(retval);
@@ -1233,7 +1230,6 @@ namespace SIL.LCModel.DomainImpl
 			if (owner == null) throw new ArgumentNullException("owner");
 
 			int hvo = ((IDataReader)m_cache.ServiceLocator.GetInstance<IDataSetup>()).GetNextRealHvo();
-			int flid = m_cache.MetaDataCache.GetFieldId("FsFeatureSystem", "Features", false);
 
 			var retval = new FsComplexFeature(m_cache, hvo, guid);
 			owner.FeaturesOC.Add(retval);
@@ -1248,7 +1244,6 @@ namespace SIL.LCModel.DomainImpl
 			if (owner == null) throw new ArgumentNullException("owner");
 
 			int hvo = ((IDataReader)m_cache.ServiceLocator.GetInstance<IDataSetup>()).GetNextRealHvo();
-			int flid = m_cache.MetaDataCache.GetFieldId("FsClosedFeature", "Values", false);
 
 			var retval = new FsSymFeatVal(m_cache, hvo, guid);
 			owner.ValuesOC.Add(retval);
@@ -1299,7 +1294,6 @@ namespace SIL.LCModel.DomainImpl
 			if (owner == null) throw new ArgumentNullException("owner");
 
 			int hvo = ((IDataReader)m_cache.ServiceLocator.GetInstance<IDataSetup>()).GetNextRealHvo();
-			int flid = m_cache.MetaDataCache.GetFieldId("CmPossibilityList", "Possibilities", false);
 
 			var retval = new CmPossibility(m_cache, hvo, guid);
 			owner.PossibilitiesOS.Add(retval);
@@ -1311,7 +1305,6 @@ namespace SIL.LCModel.DomainImpl
 			if (owner == null) throw new ArgumentNullException("owner");
 
 			int hvo = ((IDataReader)m_cache.ServiceLocator.GetInstance<IDataSetup>()).GetNextRealHvo();
-			int flid = m_cache.MetaDataCache.GetFieldId("CmPossibility", "SubPossibilities", false);
 
 			var retval = new CmPossibility(m_cache, hvo, guid);
 			owner.SubPossibilitiesOS.Add(retval);
@@ -1358,7 +1351,6 @@ namespace SIL.LCModel.DomainImpl
 			if (owner == null) throw new ArgumentNullException("owner");
 
 			int hvo = ((IDataReader)m_cache.ServiceLocator.GetInstance<IDataSetup>()).GetNextRealHvo();
-			int flid = m_cache.MetaDataCache.GetFieldId("CmPossibilityList", "Possibilities", false);
 
 			var retval = new CmAnthroItem(m_cache, hvo, guid);
 			owner.PossibilitiesOS.Add(retval);
@@ -1370,7 +1362,6 @@ namespace SIL.LCModel.DomainImpl
 			if (owner == null) throw new ArgumentNullException("owner");
 
 			int hvo = ((IDataReader)m_cache.ServiceLocator.GetInstance<IDataSetup>()).GetNextRealHvo();
-			int flid = m_cache.MetaDataCache.GetFieldId("CmPossibility", "SubPossibilities", false);
 
 			var retval = new CmAnthroItem(m_cache, hvo, guid);
 			owner.SubPossibilitiesOS.Add(retval);
@@ -1390,7 +1381,6 @@ namespace SIL.LCModel.DomainImpl
 			if (owner == null) throw new ArgumentNullException("owner");
 
 			int hvo = ((IDataReader)m_cache.ServiceLocator.GetInstance<IDataSetup>()).GetNextRealHvo();
-			int flid = m_cache.MetaDataCache.GetFieldId("CmPossibilityList", "Possibilities", false);
 
 			var retval = new CmLocation(m_cache, hvo, guid);
 			owner.PossibilitiesOS.Add(retval);
@@ -1402,7 +1392,6 @@ namespace SIL.LCModel.DomainImpl
 			if (owner == null) throw new ArgumentNullException("owner");
 
 			int hvo = ((IDataReader)m_cache.ServiceLocator.GetInstance<IDataSetup>()).GetNextRealHvo();
-			int flid = m_cache.MetaDataCache.GetFieldId("CmPossibility", "SubPossibilities", false);
 
 			var retval = new CmLocation(m_cache, hvo, guid);
 			owner.SubPossibilitiesOS.Add(retval);
@@ -1422,7 +1411,6 @@ namespace SIL.LCModel.DomainImpl
 			if (owner == null) throw new ArgumentNullException("owner");
 
 			int hvo = ((IDataReader)m_cache.ServiceLocator.GetInstance<IDataSetup>()).GetNextRealHvo();
-			int flid = m_cache.MetaDataCache.GetFieldId("CmPossibilityList", "Possibilities", false);
 
 			var retval = new CmSemanticDomain(m_cache, hvo, guid);
 			owner.PossibilitiesOS.Add(retval);
@@ -1434,7 +1422,6 @@ namespace SIL.LCModel.DomainImpl
 			if (owner == null) throw new ArgumentNullException("owner");
 
 			int hvo = ((IDataReader)m_cache.ServiceLocator.GetInstance<IDataSetup>()).GetNextRealHvo();
-			int flid = m_cache.MetaDataCache.GetFieldId("CmPossibility", "SubPossibilities", false);
 
 			var retval = new CmSemanticDomain(m_cache, hvo, guid);
 			owner.SubPossibilitiesOS.Add(retval);
@@ -2771,7 +2758,6 @@ namespace SIL.LCModel.DomainImpl
 			if (owner == null) throw new ArgumentNullException("owner");
 
 			int hvo = ((IDataReader) m_cache.ServiceLocator.GetInstance<IDataSetup>()).GetNextRealHvo();
-			int flid = m_cache.MetaDataCache.GetFieldId("PhPhonemeSet", "BoundaryMarkers", false);
 
 			var retval = new PhBdryMarker(m_cache, hvo, guid);
 			owner.BoundaryMarkersOC.Add(retval);

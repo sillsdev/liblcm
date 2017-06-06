@@ -194,7 +194,7 @@ namespace SIL.LCModel.DomainImpl
 		ILexEntry MakeEntry(string form, string gloss)
 		{
 			var result = MakeEntry(form);
-			var sense = MakeSense(result, gloss);
+			MakeSense(result, gloss);
 			return result;
 		}
 

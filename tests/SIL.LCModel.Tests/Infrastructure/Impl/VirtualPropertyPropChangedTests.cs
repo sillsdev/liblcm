@@ -94,10 +94,8 @@ namespace SIL.LCModel.Infrastructure.Impl
 		{
 			var fact = Cache.ServiceLocator.GetInstance<ILexEntryFactory>();
 			var repo = Cache.ServiceLocator.GetInstance<ILexEntryRepository>();
-			ILexEntry entry1 = null;
 			UndoableUnitOfWorkHelper.Do("set domain name", "redo", m_actionHandler,
-				() => entry1 = fact.Create());
-			var oldInstances = repo.AllInstances();
+				() => fact.Create());
 			PrepareToTrackPropChanged();
 			ILexEntry entry2 = null;
 			UndoableUnitOfWorkHelper.Do("set domain name", "redo", m_actionHandler,
@@ -1061,7 +1059,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 			// Now try inserting a record.
 			PrepareToTrackPropChanged();
-			var subRecordIns = MakeSubRecord(record, "Preparing the rods", 0);
+			MakeSubRecord(record, "Preparing the rods", 0);
 			len = subrecord.SubrecordOf.Length;
 			CheckChange(RnGenericRecTags.kClassId, subrecord, "SubrecordOf", 0, len, 0,
 						"inserting a record before a subrecord should cause PropChanged on SubrecordOf");
@@ -1272,9 +1270,8 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 			var sut = Cache.ServiceLocator.GetInstance<ITextFactory>();
 			PrepareToTrackPropChanged();
-			IText result = null;
 			UndoableUnitOfWorkHelper.Do("undo", "redo", m_actionHandler,
-				() => result = sut.Create(Cache, guid));
+				() => sut.Create(Cache, guid));
 			CheckChange(LangProjectTags.kClassId, Cache.LangProject, "Texts", 0, 1, 0,
 				"Creating a text should generate a PropChanged on LangProj");
 
@@ -1304,7 +1301,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 						para0.ParseIsCurrent = true; // so we will auto-parse on mods.
 					});
 			var wfHello = WfiWordformServices.FindOrCreateWordform(Cache, "hello",Cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem);
-			var wfWorld = WfiWordformServices.FindOrCreateWordform(Cache, "world", Cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem);
+			WfiWordformServices.FindOrCreateWordform(Cache, "world", Cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem);
 			// This is not just to test it, but to cause the count data structure to be set up.
 			Assert.That(wfHello.FullConcordanceCount, Is.EqualTo(1));
 			PrepareToTrackPropChanged();
@@ -1331,7 +1328,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 		{
 			var para = (IStTxtPara)text.ParagraphsOS[0];
 			int length = para.Contents.Length;
-			int start = 0;
 			if (length == 0)
 				para.Contents = TsStringUtils.MakeString(contents, Cache.DefaultVernWs);
 			else
@@ -1339,7 +1335,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 				var bldr = para.Contents.GetBldr();
 				bldr.Replace(length, length, " " + contents, null);
 				para.Contents = bldr.GetString();
-				start = length + 1;
 			}
 			var seg = para.SegmentsOS[para.SegmentsOS.Count - 1];
 			return seg;

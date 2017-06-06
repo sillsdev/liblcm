@@ -49,33 +49,12 @@ namespace SIL.LCModel.DomainServices
 	public class LcmStyleSheetTests : ScrInMemoryLcmTestBase
 	{
 		private DummyLcmStyleSheet m_styleSheet;
-		private ILgWritingSystemFactory m_wsf;
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public override void FixtureSetup()
-		{
-			base.FixtureSetup();
-
-			// For these tests we don't need to run InstallLanguage.
-			m_wsf = Cache.WritingSystemFactory;
-
-			// Done by MemoryOnlyBackendProviderTestBase FixtureSetup.
-//			// The GetFontFaceNameFromStyle needs a vern WS.
-//			var frenchWs = Cache.WritingSystemFactory.GetWsFromStr("fr");
-//			var french = Cache.ServiceLocator.GetInstance<ILgWritingSystemRepository>().GetObject(frenchWs);
-//			Cache.LanguageProject.VernWssRC.Add(french);
-//			Cache.LanguageProject.CurVernWssRS.Add(french);
-		}
 
 		/// <summary>
 		/// Clear out test data.
 		/// </summary>
 		public override void FixtureTeardown()
 		{
-			m_wsf = null;
 			m_styleSheet = null;
 
 			base.FixtureTeardown();

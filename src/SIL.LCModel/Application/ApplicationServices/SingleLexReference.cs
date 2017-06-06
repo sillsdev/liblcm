@@ -31,7 +31,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 		protected int m_nMappingType = -1;
 		private readonly LcmCache m_cache;
 		private readonly ICmObjectRepository m_cmObjectRepository;
-		private readonly WritingSystemManager m_wsManager;
 
 		/// <summary>Constructor.</summary>
 		public SingleLexReference(ICmObject lexRef, int hvoCrossRef)
@@ -40,7 +39,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 			m_hvoCrossRef = hvoCrossRef;
 			m_cache = lexRef.Cache;
 			m_cmObjectRepository = m_cache.ServiceLocator.GetInstance<ICmObjectRepository>();
-			m_wsManager = m_cache.ServiceLocator.WritingSystemManager;
 		}
 
 		/// <summary></summary>

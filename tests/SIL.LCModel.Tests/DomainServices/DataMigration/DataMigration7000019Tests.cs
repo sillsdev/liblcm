@@ -59,9 +59,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.AreEqual(0, dtoRepos.AllInstancesSansSubclasses("LgCollation").Count());
 			Assert.AreEqual(0, dtoRepos.AllInstancesSansSubclasses("CmSortSpec").Count());
 
-			DomainObjectDTO lpDto = dtoRepos.AllInstancesSansSubclasses("LangProject").First();
-			XElement lpElem = XElement.Parse(lpDto.Xml);
-
 			var kalabaPath = Path.Combine(storePath, "x-kal.ldml"); // Note this migration does NOT yet convert to qaa-x-kal
 			var kalabaNode = XDocument.Parse(Encoding.UTF8.GetString(File.ReadAllBytes(kalabaPath))).Root;
 			Assert.That(kalabaNode.Name.LocalName, Is.EqualTo("ldml"));
@@ -80,7 +77,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			//Assert.AreEqual("FrnI", frIpa.Abbreviation);
 			//Assert.AreEqual("IPA Unicode 1.0", frIpa.Keyboard);
 
-			var analysisWss = (string)lpElem.Element("AnalysisWss");
 			//foreach (string id in analysisWss.Split(' '))
 			//    Assert.IsTrue(wsManager.Exists(id));
 			//var vernWss = (string)lpElem.Element("VernWss");

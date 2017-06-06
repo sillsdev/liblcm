@@ -768,8 +768,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 				xl.ImportList(m_cache.LangProject, "SemanticDomainList", reader, null);
 
 				var wsEn = m_cache.WritingSystemFactory.GetWsFromStr("en");
-				var wsEs = m_cache.WritingSystemFactory.GetWsFromStr("es");
-				var wsFr = m_cache.WritingSystemFactory.GetWsFromStr("fr");
 
 				Assert.AreEqual(2, list.PossibilitiesOS.Count);
 				Assert.AreEqual(127, list.Depth);

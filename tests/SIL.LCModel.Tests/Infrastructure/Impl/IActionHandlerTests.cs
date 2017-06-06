@@ -1027,7 +1027,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				m_wordFormFactory.Create();
 				undoHelper.RollBack = false;
 			}
-			int hMark = m_actionHandler.Mark();
+			m_actionHandler.Mark();
 			Assert.IsFalse(m_actionHandler.get_TasksSinceMark(true));
 			Assert.IsFalse(m_actionHandler.get_TasksSinceMark(false));
 			using (var undoHelper = new UndoableUnitOfWorkHelper(m_actionHandler, "add Object"))
@@ -1783,7 +1783,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 			IStText title = null;
 			IScrSection section1 = null;
 			IScrSection section2 = null;
-			IStTxtPara para = null;
 			IScrBook book = null;
 
 			// Basic setup
@@ -1796,7 +1795,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				book = Cache.ServiceLocator.GetInstance<IScrBookFactory>().Create(1, out title);
 				section1 = Cache.ServiceLocator.GetInstance<IScrSectionFactory>().CreateScrSection(book, 0, "testing",
 					StyleUtils.ParaStyleTextProps("Intro Paragraph"), true);
-				para = Cache.ServiceLocator.GetInstance<IScrTxtParaFactory>().CreateWithStyle(section1.ContentOA,
+				Cache.ServiceLocator.GetInstance<IScrTxtParaFactory>().CreateWithStyle(section1.ContentOA,
 					1, "Intro Section");
 				section2 = Cache.ServiceLocator.GetInstance<IScrSectionFactory>().CreateEmptySection(book, 1);
 			});

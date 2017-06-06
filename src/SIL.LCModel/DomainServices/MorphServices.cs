@@ -96,7 +96,6 @@ namespace SIL.LCModel.DomainServices
 		/// </summary>
 		public static void GetMatchingMonomorphemicMorphs(LcmCache cache, Dictionary<ITsString, IMoStemAllomorph> formCollector)
 		{
-			var wss = (from key in formCollector.Keys select TsStringUtils.GetWsAtOffset(key, 0)).Distinct().ToArray();
 			var morphRepo = (MoStemAllomorphRepository)cache.ServiceLocator.GetInstance<IMoStemAllomorphRepository>();
 			var morphData = morphRepo.MonomorphemicMorphData();
 			foreach (var key in formCollector.Keys.ToArray())

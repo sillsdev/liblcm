@@ -1,9 +1,6 @@
-// Copyright (c) 2003-2013 SIL International
+// Copyright (c) 2003-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
-//
-// File: StTextTests.cs
-// Responsibility: FieldWorks Team
 
 using System;
 using System.Reflection;
@@ -22,7 +19,6 @@ namespace SIL.LCModel.DomainImpl
 	public class StTextTests: MemoryOnlyBackendProviderRestoredForEachTestTestBase
 	{
 		private IStText m_stText;
-		private IStTxtPara m_stTextPara;
 		private IText m_text;
 
 		/// ------------------------------------------------------------------------------------
@@ -33,7 +29,7 @@ namespace SIL.LCModel.DomainImpl
 		protected override void CreateTestData()
 		{
 			m_text = AddInterlinearTextToLangProj("My Interlinear Text");
-			m_stTextPara = AddParaToInterlinearTextContents(m_text, "Here is a sentence I can chart.");
+			AddParaToInterlinearTextContents(m_text, "Here is a sentence I can chart.");
 			m_stText = m_text.ContentsOA;
 		}
 

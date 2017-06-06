@@ -96,7 +96,6 @@ namespace SIL.LCModel.DomainServices
 
 		IWfiWordformRepository m_wfr;
 		IWfiWordformFactory m_wordfactory;
-		ICmBaseAnnotationFactory m_cbaf;
 		/// <summary> the repository for getting annotations </summary>
 		protected ICmBaseAnnotationRepository m_cbar;
 		int m_paraWs = 0;
@@ -340,7 +339,6 @@ namespace SIL.LCModel.DomainServices
 			m_paragraphTextScanner = new WordMaker(null, cache.ServiceLocator.WritingSystemManager);
 			m_wfr = m_cache.ServiceLocator.GetInstance<IWfiWordformRepository>();
 			m_wordfactory = m_cache.ServiceLocator.GetInstance<IWfiWordformFactory>();
-			m_cbaf = m_cache.ServiceLocator.GetInstance<ICmBaseAnnotationFactory>();
 			m_cbar = m_cache.ServiceLocator.GetInstance<ICmBaseAnnotationRepository>();
 		}
 
@@ -1334,7 +1332,6 @@ namespace SIL.LCModel.DomainServices
 			m_paragraphTextScanner = null;
 			m_wordfactory = null;
 			m_wfr = null;
-			m_cbaf = null;
 			m_cbar = null;
 			m_wordMaker = null;
 			m_tssPara = null;

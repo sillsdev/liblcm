@@ -34,9 +34,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		readonly string ksguidConversation = RnResearchNbkTags.kguidRecConversation.ToString("D").ToLowerInvariant();
 		readonly string ksguidInterview = RnResearchNbkTags.kguidRecInterview.ToString("D").ToLowerInvariant();
 		readonly string ksguidPerformance = RnResearchNbkTags.kguidRecPerformance.ToString("D").ToLowerInvariant();
-		// GUIDs of record types that remain owned by the list
-		readonly string ksguidLiteratureSummary = RnResearchNbkTags.kguidRecLiteratureSummary.ToString("D").ToLowerInvariant();
-		readonly string ksguidAnalysis = RnResearchNbkTags.kguidRecAnalysis.ToString("D").ToLowerInvariant();
 
 #if __MonoCS__ // TODO-Linux: work around mono bug https://bugzilla.novell.com/show_bug.cgi?id=594877
 		internal static XElement LocateObjsurElement(XElement e, string attributeTValue, string attributeGuidValue)

@@ -466,7 +466,7 @@ namespace SIL.LCModel.DomainImpl
 
 			// We want to match entries that have the same LexemeForm even if they are not homographs.
 			// This is possible if one of them has an empty CF in the homograph writing system.
-			var orange = MakeLexEntry("orange", "orangeCf", "orang", "", semDom1);
+			MakeLexEntry("orange", "orangeCf", "orang", "", semDom1);
 			var orange2 = MakeLexEntry("orange", "", "orang", "", semDom2);
 			fSenseDeleted = RunMergeSense(orange2);
 			Assert.IsTrue(fSenseDeleted, "Merging two forms of orange with matching LF and new blank Cf should delete sense");

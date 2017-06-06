@@ -94,11 +94,8 @@ namespace SIL.LCModel.DomainServices
 		{
 			var servLoc = lp.Cache.ServiceLocator;
 			var dataReader = (IDataReader)servLoc.GetInstance<IDataSetup>();
-			var mdcManaged = servLoc.GetInstance<IFwMetaDataCacheManaged>();
 			var listFactory = servLoc.GetInstance<ICmPossibilityListFactory>() as ICmPossibilityListFactoryInternal;
 			Debug.Assert(listFactory != null, "ServiceLocator has no instance of ICmPossibilityListFactory.");
-
-			int flidTranslationTags = mdcManaged.GetFieldId("LangProject", "TranslationTags", false);
 
 			var list = listFactory.Create(
 				CmPossibilityListTags.kguidTranslationTypes,
@@ -131,8 +128,6 @@ namespace SIL.LCModel.DomainServices
 				2);
 
 			// Key terms list.
-			int flidCheckLists = mdcManaged.GetFieldId("LangProject", "CheckLists", false);
-
 			list = listFactory.Create(
 				CmPossibilityListTags.kguidChkKeyTermsList,
 				dataReader.GetNextRealHvo());
@@ -183,7 +178,7 @@ namespace SIL.LCModel.DomainServices
 			ICmPossibilityList posList = lp.AnnotationDefsOA;
 
 			// Text Annotations
-			ICmAnnotationDefn txtAnnDef = AddAnnotationDefn(posList, CmAnnotationDefnTags.kguidAnnText);
+			AddAnnotationDefn(posList, CmAnnotationDefnTags.kguidAnnText);
 
 			// Notes
 			ICmAnnotationDefn noteAnnDef = AddAnnotationDefn(posList, CmAnnotationDefnTags.kguidAnnNote);

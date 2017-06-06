@@ -124,7 +124,7 @@ namespace SIL.LCModel
 			// Setup test
 			var origName = "zCustom Field";
 			var newName = "zNew Custom Field User label";
-			var customField1 = CreateCustomFieldAndRelabel(origName, newName);
+			CreateCustomFieldAndRelabel(origName, newName);
 			var firstFlid = m_mdc.GetFieldId2(1, origName, true);
 			var secondUserLabel = "unrelatedUserLabel";
 			var customField2 = new FieldDescription(Cache)

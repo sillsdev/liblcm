@@ -3127,9 +3127,6 @@ namespace SIL.LCModel.DomainImpl
 				case MoMorphTypeTags.kMorphClitic: // Fall through.
 				case MoMorphTypeTags.kMorphEnclitic:
 					Debug.Assert(msa is MoStemMsa, "Wrong MSA for a clitic.");
-#pragma warning disable 168
-					var stemMsa = (IMoStemMsa)msa;
-#pragma warning restore 168
 					goto case MoMorphTypeTags.kMorphBoundStem;
 				case MoMorphTypeTags.kMorphRoot: // Fall through.
 				case MoMorphTypeTags.kMorphBoundRoot: // Fall through.

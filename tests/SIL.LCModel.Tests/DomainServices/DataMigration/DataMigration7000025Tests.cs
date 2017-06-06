@@ -18,7 +18,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		private readonly string _utcCreatedAsString;
 		private readonly string _utcModifiedAsString;
 		private readonly string _utcResolvedAsString;
-		private readonly string _utcRunDateAsString;
 
 		/// <summary>
 		/// Constructor.
@@ -58,7 +57,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 											asUtcResolved.Minute,
 											asUtcResolved.Second,
 											asUtcResolved.Millisecond);
-			_utcRunDateAsString = _utcCreatedAsString; // Just make run date the same as created in the test.
 		}
 
 		/// ------------------------------------------------------------------------------------

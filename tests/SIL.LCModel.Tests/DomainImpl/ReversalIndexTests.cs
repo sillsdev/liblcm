@@ -39,11 +39,10 @@ namespace SIL.LCModel.DomainImpl
 						revIndex =
 							Cache.ServiceLocator.GetInstance<IReversalIndexRepository>().FindOrCreateIndexForWs(wsEn);
 					});
-			IReversalIndexEntry empty = null;
 			UndoableUnitOfWorkHelper.Do("undo make rie", "redo make rie", m_actionHandler,
 				() =>
 				{
-					empty = revIndex.FindOrCreateReversalEntry("");
+					revIndex.FindOrCreateReversalEntry("");
 				});
 			IReversalIndexEntry bank = null;
 			UndoableUnitOfWorkHelper.Do("undo make rie", "redo make rie", m_actionHandler,

@@ -316,8 +316,7 @@ namespace SIL.LCModel.DomainImpl
 		[Test]
 		public void FindNextFootnote_IPBeginningOfHeadingFootnoteInContents()
 		{
-			IStTxtPara para = AddSectionHeadParaToSection(m_introSection,
-				"Intro heading", ScrStyleNames.IntroSectionHead);
+			AddSectionHeadParaToSection(m_introSection, "Intro heading", ScrStyleNames.IntroSectionHead);
 
 			FootnoteLocationInfo info = m_genesis.FindNextFootnote(0, 0, 0, ScrSectionTags.kflidHeading);
 			IScrFootnote footnote = info.m_footnote;
@@ -806,8 +805,7 @@ namespace SIL.LCModel.DomainImpl
 		[Test]
 		public void FindPreviousFootnote_IPInBookTitleFootnoteAfterIP()
 		{
-			IStFootnote expectedFootnote = AddFootnote(m_genesis,
-				(IStTxtPara)m_genesis.TitleOA.ParagraphsOS[0], 3);
+			AddFootnote(m_genesis, (IStTxtPara) m_genesis.TitleOA.ParagraphsOS[0], 3);
 			int iSection = 0;
 			int iPara = 0;
 			int ich = 1;
@@ -888,7 +886,7 @@ namespace SIL.LCModel.DomainImpl
 		public void GetRefForFootnote_Scripture()
 		{
 			IScrFootnote footnote = (IScrFootnote)m_genesis.FootnotesOS[1];
-			IStTxtPara para = footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
+			footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
 			m_scr.DisplayFootnoteReference = true;
 			m_scr.CrossRefsCombinedWithFootnotes = false;
 			m_scr.DisplayCrossRefReference = false; // Just to make sure it's not using this by mistake
@@ -905,7 +903,7 @@ namespace SIL.LCModel.DomainImpl
 		public void GetRefForFootnote_Scripture_DontDisplay()
 		{
 			IScrFootnote footnote = (IScrFootnote)m_genesis.FootnotesOS[1];
-			IStTxtPara para = footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
+			footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
 			m_scr.DisplayFootnoteReference = false;
 			m_scr.CrossRefsCombinedWithFootnotes = false;
 			m_scr.DisplayCrossRefReference = true; // Just to make sure it's not using this by mistake
@@ -922,7 +920,7 @@ namespace SIL.LCModel.DomainImpl
 		public void GetRefForCrossRef_Scripture()
 		{
 			IScrFootnote footnote = (IScrFootnote)m_genesis.FootnotesOS[1];
-			IStTxtPara para = footnote.AddNewTextPara(ScrStyleNames.CrossRefFootnoteParagraph);
+			footnote.AddNewTextPara(ScrStyleNames.CrossRefFootnoteParagraph);
 			m_scr.DisplayFootnoteReference = false; // Just to make sure it's not using this by mistake
 			m_scr.CrossRefsCombinedWithFootnotes = false;
 			m_scr.DisplayCrossRefReference = true;
@@ -939,7 +937,7 @@ namespace SIL.LCModel.DomainImpl
 		public void GetRefForCrossRef_Scripture_DontDisplay()
 		{
 			IScrFootnote footnote = (IScrFootnote)m_genesis.FootnotesOS[1];
-			IStTxtPara para = footnote.AddNewTextPara(ScrStyleNames.CrossRefFootnoteParagraph);
+			footnote.AddNewTextPara(ScrStyleNames.CrossRefFootnoteParagraph);
 			m_scr.DisplayFootnoteReference = true; // Just to make sure it's not using this by mistake
 			m_scr.CrossRefsCombinedWithFootnotes = false;
 			m_scr.DisplayCrossRefReference = false;
@@ -955,7 +953,7 @@ namespace SIL.LCModel.DomainImpl
 		public void GetRefForFootnote_IntroPara()
 		{
 			IScrFootnote footnote = (IScrFootnote)m_genesis.FootnotesOS[0];
-			IStTxtPara para = footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
+			footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
 			m_scr.DisplayFootnoteReference = true;
 			Assert.AreEqual("", footnote.RefAsString, "Intro footnotes don't have Scripture references.");
 		}
@@ -970,7 +968,7 @@ namespace SIL.LCModel.DomainImpl
 		public void UpdateRefForFootnote_InsertVerse()
 		{
 			IScrFootnote footnote = (IScrFootnote)m_genesis.FootnotesOS[2];
-			IStTxtPara footnotePara = footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
+			footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
 			m_scr.DisplayFootnoteReference = true;
 			Assert.AreEqual("1:5 ", footnote.RefAsString);
 
@@ -996,7 +994,7 @@ namespace SIL.LCModel.DomainImpl
 		public void UpdateRefForFootnote_DeleteVerse()
 		{
 			IScrFootnote footnote = (IScrFootnote)m_genesis.FootnotesOS[2];
-			IStTxtPara footnotePara = footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
+			footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
 			m_scr.DisplayFootnoteReference = true;
 			Assert.AreEqual("1:5 ", footnote.RefAsString);
 
@@ -1020,7 +1018,7 @@ namespace SIL.LCModel.DomainImpl
 		public void FootnoteRefVerseBridge()
 		{
 			IScrFootnote footnote = (IScrFootnote)m_genesis.FootnotesOS[2];
-			IStTxtPara footnotePara = footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
+			footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
 			m_scr.DisplayFootnoteReference = true;
 			Assert.AreEqual("1:5 ", footnote.RefAsString);
 
@@ -1123,13 +1121,13 @@ namespace SIL.LCModel.DomainImpl
 		public void GetMarkerForFootnote_Scripture_AutoNumbered()
 		{
 			IScrFootnote footnote = (IScrFootnote)m_genesis.FootnotesOS[0];
-			IStTxtPara para = footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
+			footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
 
 			footnote = (IScrFootnote)m_genesis.FootnotesOS[1];
-			para = footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
+			footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
 
 			footnote = (IScrFootnote)m_genesis.FootnotesOS[2];
-			para = footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
+			footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
 
 			ITsString expectedMarker = MakeMarker("c");
 			m_scr.FootnoteMarkerType = FootnoteMarkerTypes.AutoFootnoteMarker;
@@ -1180,13 +1178,13 @@ namespace SIL.LCModel.DomainImpl
 		public void GetMarkerForCrossRef_Scripture_AutoNumbered()
 		{
 			IScrFootnote footnote = (IScrFootnote)m_genesis.FootnotesOS[0];
-			IStTxtPara para = footnote.AddNewTextPara(ScrStyleNames.CrossRefFootnoteParagraph);
+			footnote.AddNewTextPara(ScrStyleNames.CrossRefFootnoteParagraph);
 
 			footnote = (IScrFootnote)m_genesis.FootnotesOS[1];
-			para = footnote.AddNewTextPara(ScrStyleNames.CrossRefFootnoteParagraph);
+			footnote.AddNewTextPara(ScrStyleNames.CrossRefFootnoteParagraph);
 
 			footnote = (IScrFootnote)m_genesis.FootnotesOS[2];
-			para = footnote.AddNewTextPara(ScrStyleNames.CrossRefFootnoteParagraph);
+			footnote.AddNewTextPara(ScrStyleNames.CrossRefFootnoteParagraph);
 
 			ITsString expectedMarker = MakeMarker("c");
 			m_scr.CrossRefMarkerType = FootnoteMarkerTypes.AutoFootnoteMarker;

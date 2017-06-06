@@ -78,7 +78,7 @@ namespace SIL.LCModel.DomainServices
 			var wf2 = MakeWordform("wordXX");
 			var wf3 = MakeWordform("wordXX");
 			WfiWordformServices.FixDuplicates(Cache, m_progress);
-			var wf = Survivor(wf2, wf3);
+			Survivor(wf2, wf3);
 			Assert.That(wf1.IsValidObject, Is.True);
 		}
 

@@ -146,7 +146,7 @@ namespace SIL.LCModel.DomainServices
 			AppendTestItemToList("Second");
 			// For this test, just keep the same order.
 			var desiredSeq = m_testList.PossibilitiesOS.Cast<ICmObject>();
-			var myvo = CreateTestVO(desiredSeq);
+			CreateTestVO(desiredSeq);
 			// Make sure test setup worked
 			Assert.AreEqual(1, m_voRepo.Count, "There ought to be one VO object.");
 
@@ -169,7 +169,7 @@ namespace SIL.LCModel.DomainServices
 			AppendTestItemToList("Second");
 			// For this test, just keep the same order.
 			var desiredSeq = m_testList.PossibilitiesOS.Cast<ICmObject>();
-			var myvo = CreateTestVO(desiredSeq);
+			CreateTestVO(desiredSeq);
 			// Make sure test setup worked
 			Assert.AreEqual(1, m_voRepo.Count, "There ought to be one VO object.");
 
@@ -220,7 +220,6 @@ namespace SIL.LCModel.DomainServices
 		{
 			// Setup
 			AppendTestItemToList("Second");
-			var initialSeq = m_testList.PossibilitiesOS.Cast<ICmObject>();
 			// Make sure test setup worked
 			Assert.AreEqual(0, m_voRepo.Count, "There shouldn't be an existing VO object.");
 			// Make a sequence in a different order
@@ -251,7 +250,7 @@ namespace SIL.LCModel.DomainServices
 			Assert.AreEqual(1, m_voRepo.Count, "There ought to be one VO object.");
 
 			// SUT
-			var resultSeq = VirtualOrderingServices.GetOrderedValue(m_testList, possibilitiesFlid, initialSeq);
+			VirtualOrderingServices.GetOrderedValue(m_testList, possibilitiesFlid, initialSeq);
 
 			// Verify
 			Assert.AreEqual(1, m_voRepo.Count, "There ought to still be one VO object.");

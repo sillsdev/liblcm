@@ -565,7 +565,7 @@ namespace SIL.LCModel.DomainImpl
 			// Define text representation and create a footnote from it.
 			string footnoteRep = @"<FN><BLAH>o</BLAH>";
 
-			IStFootnote footnote = Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
+			Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
 				footnoteRep, 0, "Note Marker");
 		}
 
@@ -584,7 +584,7 @@ namespace SIL.LCModel.DomainImpl
 			string footnoteRep = @"<FN><M>o</M><P><PS>Note General Paragraph</PS>" +
 				@"<RUN WS='AINT_IT' CS='Emphasis'>Test Text</RUN></P></FN>";
 
-			IStFootnote footnote = Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
+			Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
 				footnoteRep, 0, "Note Marker");
 		}
 
@@ -604,7 +604,7 @@ namespace SIL.LCModel.DomainImpl
 				@"<RUN WS='fr'>Fine so far...</RUN>" +
 				"<TRANS WS='en'><BLAH>...but here's the problem</BLAH></TRANS></P></FN>";
 
-			IStFootnote footnote = Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
+			Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
 				footnoteRep, 0, "Note Marker");
 		}
 
@@ -623,7 +623,7 @@ namespace SIL.LCModel.DomainImpl
 			string footnoteRep = @"<FN><M>o</M><P><PS>Note General Paragraph</PS>" +
 				@"<RUN>Run without a writing system.</RUN></P></FN>";
 
-			IStFootnote footnote = Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
+			Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
 				footnoteRep, 0, "Note Marker");
 		}
 
@@ -642,7 +642,7 @@ namespace SIL.LCModel.DomainImpl
 			string footnoteRep = @"<FN><M>o</M><P><PS>Note General Paragraph</PS>" +
 				@"<RUN WS=>Run has a writing system attribute but no value.</RUN></P></FN>";
 
-			IStFootnote footnote = Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
+			Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
 				footnoteRep, 0, "Note Marker");
 		}
 		#endregion

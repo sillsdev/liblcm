@@ -2621,7 +2621,6 @@ namespace SIL.LCModel.DomainImpl
 			XmlNode feature = item.SelectSingleNode("fs/f");
 			if (feature != null)
 			{
-				var featName = feature.SelectSingleNode("@name");
 				var fs = feature.SelectSingleNode("fs");
 				if (fs != null)
 				{
@@ -3583,7 +3582,6 @@ namespace SIL.LCModel.DomainImpl
 			var feature = item.SelectSingleNode("fs/f");
 			if (feature != null)
 			{
-				var featName = feature.SelectSingleNode("@name");
 				var fs = feature.SelectSingleNode("fs");
 				IFsFeatStruc featStruct = this;
 				if (fs != null)

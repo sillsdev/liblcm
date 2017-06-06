@@ -717,7 +717,6 @@ namespace Tools
 			m_state = newstate;
 		}
 		public string m_buf;
-		bool m_matching;
 		int m_startMatch;
 		// match a Dfa against lexer's input
 		bool Match(ref TOKEN tok,Dfa dfa)
@@ -903,7 +902,6 @@ namespace Tools
 		}
 		void Matching(bool b)
 		{
-			m_matching = b;
 			if (b)
 				m_startMatch = m_pch;
 		}

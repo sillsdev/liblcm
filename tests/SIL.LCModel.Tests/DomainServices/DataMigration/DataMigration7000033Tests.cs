@@ -33,7 +33,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				Path.GetTempPath(), TestDirectoryFinder.LcmDirectories);
 
 			var projectFolder = repoDto.ProjectFolder;
-			var projectName = Path.GetFileNameWithoutExtension(projectFolder);
 			// This is equivalent to DirectoryFinder.GetConfigSettingsDir(projectFolder) at the time of creating
 			// the migration, but could conceivably change later.
 			var targetDir = Path.Combine(projectFolder, "ConfigurationSettings");

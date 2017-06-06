@@ -456,8 +456,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			// The previous version of the migration code ended up with "ChangeME" as the
 			// segment in this case when converting a CCA that referenced that wfic.
 			var oneSegmentParaDto = CheckPara(dtoRepos, "14f703d9-c849-4251-9b0f-09d964b6b69c", 1, true, false, out newSegmentObjSurElements); // all paragraphs now get reparsed on load
-			// This list provides the Analyses in the expected order.
-			var analysesGuid = new List<string>(1) { "068DC680-CD40-4C47-BBE6-00E572EE2602" };
 			DomainObjectDTO oneSegmentDto;
 			var oneSegmentInnerElement = CheckNewSegment(dtoRepos, 0, oneSegmentParaDto,
 				newSegmentObjSurElements[0], out oneSegmentDto);
@@ -516,8 +514,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			var firstSegmentInnerElement = CheckNewSegment(dtoRepos, 0, twoSegmentParaDto,
 				newSegmentObjSurElements[0], out oneSegmentDto);
 			CheckXfics(dtoRepos, firstSegmentInnerElement, 2, analysisGuids); // it won't make a pfic, will it?
-			var secondSegmentInnerElement = CheckNewSegment(dtoRepos, 11, twoSegmentParaDto,
-				newSegmentObjSurElements[1], out oneSegmentDto);
+			CheckNewSegment(dtoRepos, 11, twoSegmentParaDto, newSegmentObjSurElements[1], out oneSegmentDto);
 
 			// Make sure version number is correct.
 			Assert.AreEqual(7000010, dtoRepos.CurrentModelVersion, "Wrong updated version.");

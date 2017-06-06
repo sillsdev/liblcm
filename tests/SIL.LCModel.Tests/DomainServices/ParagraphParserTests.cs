@@ -1177,17 +1177,16 @@ namespace SIL.LCModel.DomainServices
 				// 1. Create a new paragraph.
 				CreateNewParagraph(paraDefn);
 				// Build Contents
-				ITsString contents;
 				XmlNodeList segments = m_paraDefn.SelectNodes("Segments16/CmBaseAnnotation");
 				if (segments.Count > 0)
 				{
-					contents = RebuildParagraphContentFromAnnotations();
+					RebuildParagraphContentFromAnnotations();
 				}
 				else
 				{
 					XmlNodeList runs = m_paraDefn.SelectNodes("Contents16/Str/Run");
 					if (runs.Count > 0)
-						contents = RebuildParagraphContentFromStrings();
+						RebuildParagraphContentFromStrings();
 				}
 				if (m_para.Contents == null)
 				{
@@ -1932,7 +1931,7 @@ namespace SIL.LCModel.DomainServices
 				XmlNode contents = textDefn.SelectSingleNode("Contents5054/StText");
 				if (contents == null)
 					return m_text;
-				IStText body = this.CreateContents(m_text);
+				this.CreateContents(m_text);
 
 				// 4. Create each paragraph for the text.
 				XmlNodeList paragraphs = contents.SelectNodes("Paragraphs14/StTxtPara");
@@ -1941,7 +1940,7 @@ namespace SIL.LCModel.DomainServices
 					foreach (XmlNode paraDef in paragraphs)
 					{
 						ParagraphBuilder pb = new ParagraphBuilder(m_cache, m_text.ContentsOA.ParagraphsOS);
-						IStTxtPara realPara = pb.BuildParagraphContent(paraDef);
+						pb.BuildParagraphContent(paraDef);
 					}
 				}
 
@@ -1959,27 +1958,6 @@ namespace SIL.LCModel.DomainServices
 					ParagraphBuilder pb = GetParagraphBuilder(para);
 					pb.GenerateParaContentFromAnnotations();
 				}
-			}
-
-			/// <summary>
-			/// TODO: Finish implementing this.
-			/// </summary>
-			/// <returns></returns>
-			public List<int> ExportRealSegmentAnnotationsFromDefn()
-			{
-				List<int> realSegments = new List<int>();
-				foreach (IStTxtPara para in m_text.ContentsOA.ParagraphsOS)
-				{
-					ParagraphBuilder pb = GetParagraphBuilder(para);
-					ParagraphAnnotatorForParagraphBuilder papb = new ParagraphAnnotatorForParagraphBuilder(pb);
-					int iseg = 0;
-					foreach (XmlNode segNode in pb.SegmentNodes())
-					{
-						int hvoSeg = papb.GetSegmentHvo(iseg);
-						// export this into a real annotation by converting it to a real annotation.
-					}
-				}
-				return realSegments;
 			}
 
 			/// <summary>
@@ -2335,7 +2313,6 @@ namespace SIL.LCModel.DomainServices
 		IText m_text1 = null;
 		private XmlNode m_testFixtureTextsDefn = null;
 		XmlDocument m_textsDefn = null;
-		private CoreWritingSystemDefinition m_wsEn = null;
 		private CoreWritingSystemDefinition m_wsXkal = null;
 
 		/// <summary>
@@ -2355,9 +2332,6 @@ namespace SIL.LCModel.DomainServices
 		/// </summary>
 		private void DoSetupFixture()
 		{
-			// Setup default analysis ws
-			m_wsEn = Cache.ServiceLocator.WritingSystemManager.Get("en");
-
 			// setup default vernacular ws.
 			m_wsXkal = Cache.ServiceLocator.WritingSystemManager.Set("qaa-x-kal");
 			m_wsXkal.Fonts.Clear();
@@ -2440,10 +2414,10 @@ namespace SIL.LCModel.DomainServices
 			var analysis1 = MakeWordformAnalysis(seg1, "pus");
 			Assert.That(analysis1.Reference.Text, Is.EqualTo("My Green 1.1"));
 			//// Now try for one in the second segment.
-			var analysis2 = MakeWordformAnalysis(seg1, "yalola");
-			var analysis3 = MakeWordformAnalysis(seg1, "nihimbilira");
+			MakeWordformAnalysis(seg1, "yalola");
+			MakeWordformAnalysis(seg1, "nihimbilira");
 			var seg2 = MakeSegment(sttext, "hesyla nihimbilira.");
-			var analysis4 = MakeWordformAnalysis(seg2, "hesyla");
+			MakeWordformAnalysis(seg2, "hesyla");
 			var analysis5 = MakeWordformAnalysis(seg2, "nihimbilira");
 			Assert.That(analysis5.Reference.Text, Is.EqualTo("My Green 1.2"));
 
@@ -2474,11 +2448,10 @@ namespace SIL.LCModel.DomainServices
 		/// Note that this depends on the code that automatically reparses the paragraph,
 		/// so the strings added must really produce segments.
 		/// </summary>
-		private ISegment MakeSegment(IStText text,string contents)
+		private ISegment MakeSegment(IStText text, string contents)
 		{
 			var para = (IStTxtPara) text.ParagraphsOS[0];
 			int length = para.Contents.Length;
-			int start = 0;
 			if (length == 0)
 				para.Contents = TsStringUtils.MakeString(contents, Cache.DefaultVernWs);
 			else
@@ -2486,7 +2459,6 @@ namespace SIL.LCModel.DomainServices
 				var bldr = para.Contents.GetBldr();
 				bldr.Replace(length, length, " " + contents, null);
 				para.Contents = bldr.GetString();
-				start = length + 1;
 			}
 			var seg = para.SegmentsOS[para.SegmentsOS.Count - 1];
 			return seg;
@@ -2724,7 +2696,6 @@ namespace SIL.LCModel.DomainServices
 
 			ParagraphBuilder pb = new ParagraphBuilder(m_textsDefn, m_text1, (int) Text1ParaIndex.PhraseWordforms);
 			ParagraphAnnotatorForParagraphBuilder tapb = new ParagraphAnnotatorForParagraphBuilder(pb);
-			XmlNode paraDef0 = pb.ParagraphDefinition.CloneNode(true);
 
 			pb.ParseParagraph();
 			// xxxpus xxxyalola xxxnihimbilira. xxxpus xxxyalola [xxxhesyla xxxnihimbilira]. xxxpus xxxyalola xxxnihimbilira
@@ -3036,7 +3007,7 @@ namespace SIL.LCModel.DomainServices
 			Assert.AreEqual(xnihimbilira_Sense1.Hvo, waCba2_1.MorphBundlesOS[1].SenseRA.Hvo);
 
 			// 3. establish a new analysis with Sense1.
-			IWfiAnalysis wfiAnalysis2 = tapb.BreakIntoMorphs(0, 2, moForms); // xxxnihimbilira (first occurrence)
+			tapb.BreakIntoMorphs(0, 2, moForms); // xxxnihimbilira (first occurrence)
 			tapb.SetMorphSense(0, 2, 1, xnihimbilira_Sense1);
 			Assert.That(wordform.FullConcordanceCount, Is.EqualTo(3));
 
@@ -3060,7 +3031,7 @@ namespace SIL.LCModel.DomainServices
 			Assert.AreEqual(xnihimbilira_Sense2, waCba0_2.MorphBundlesOS[1].SenseRA);
 
 			// do multiple occurrences of the same sense in the same segment.
-			IWfiAnalysis wfiAnalysis3 = tapb.BreakIntoMorphs(0, 0, moForms); // break xxxpus into xx xnihimbilira (for fun).
+			tapb.BreakIntoMorphs(0, 0, moForms); // break xxxpus into xx xnihimbilira (for fun).
 			tapb.SetMorphSense(0, 0, 1, xnihimbilira_Sense2);
 			Assert.That(xnihimbilira_Sense2.ReferringObjects, Has.Count.EqualTo(2));
 
@@ -3250,8 +3221,6 @@ namespace SIL.LCModel.DomainServices
 			IList<IWfiGloss> expectedGuesses = paGlossed.SetupDefaultWordGlosses();
 
 			// then verify we've created guesses for the new text.
-			ParagraphAnnotator paGuessed = new ParagraphAnnotator(paraGuessed);
-
 			IList<IWfiGloss> expectedGuessesBeforeEdit = expectedGuesses;
 			ValidateGuesses(expectedGuessesBeforeEdit, paraGuessed);
 

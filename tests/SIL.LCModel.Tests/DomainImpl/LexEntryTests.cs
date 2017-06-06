@@ -89,18 +89,17 @@ namespace SIL.LCModel.DomainImpl
 					bank1 = (LexEntry)MakeEntryWithForm("bank");
 					past = (LexEntry)MakeAffixWithForm("ed", MoMorphTypeTags.kguidMorphSuffix);
 					var pos1 = MakePartOfSpeech();
-					var msa = MakeAffixMsa(past, pos1, pos1);
+					MakeAffixMsa(past, pos1, pos1);
 				});
 			Assert.That(bank1.MLHeadWord.VernacularDefaultWritingSystem.Text, Is.EqualTo("bank"));
 			Assert.That(past.MLHeadWord.VernacularDefaultWritingSystem.Text, Is.EqualTo("-ed"));
 			Assert.That(bank1.MLHeadWord.AnalysisDefaultWritingSystem.Text, Is.Null);
 			Assert.That(past.MLHeadWord.AnalysisDefaultWritingSystem.Text, Is.Null,
 				"where all forms are empty, no affix marker");
-			LexEntry bank2 = null;
 			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor,
 				() =>
 				{
-					bank2 = (LexEntry)MakeEntryWithForm("bank");
+					MakeEntryWithForm("bank");
 				});
 			Assert.That(bank1.MLHeadWord.VernacularDefaultWritingSystem.Text, Is.EqualTo("bank1"), "homograph # part of name");
 			Assert.That(bank1.MLHeadWord.AnalysisDefaultWritingSystem.Text, Is.Null,
@@ -128,12 +127,9 @@ namespace SIL.LCModel.DomainImpl
 			IMoMorphSynAnalysis msaNoun = null;
 			IMoMorphSynAnalysis msaCommonNoun = null;
 			IWfiWordform wfBank = null;
-			IWfiAnalysis waBankMoney = null;
 			IWfiAnalysis waBankRiver = null;
-			IWfiAnalysis waBankTilt = null;
 			IWfiAnalysis waBankCreek = null;
 			IWfiAnalysis waBankStream = null;
-			IMoForm baank = null;
 			IMoForm baaank = null;
 
 			UndoableUnitOfWorkHelper.Do("undoit", "doit", Cache.ActionHandlerAccessor,
@@ -159,15 +155,15 @@ namespace SIL.LCModel.DomainImpl
 					msaVerb = bankTilt.MorphoSyntaxAnalysisRA;
 					msaCommonNoun = bankCreek.MorphoSyntaxAnalysisRA;
 
-					baank = MakeAllomorph(bankN, "baank");
+					MakeAllomorph(bankN, "baank");
 					baaank = MakeAllomorph(bankN, "baaank");
 
 					// Todo:  possibly fill in more fields of bankN; move bankCreek to new entry; verify
 					wfBank = MakeWordform("bank");
 					waBankCreek = MakeAnalysis(wfBank, bankCreek);
 					waBankRiver = MakeAnalysis(wfBank, bankRiver);
-					waBankTilt = MakeAnalysis(wfBank, bankTilt);
-					waBankMoney = MakeAnalysis(wfBank, bankMoney);
+					MakeAnalysis(wfBank, bankTilt);
+					MakeAnalysis(wfBank, bankMoney);
 					waBankStream = MakeAnalysis(wfBank, bankStream);
 					waBankStream.MorphBundlesOS[0].MorphRA = baaank;
 
@@ -232,9 +228,7 @@ namespace SIL.LCModel.DomainImpl
 			IMoMorphSynAnalysis msaNoun = null;
 			IMoMorphSynAnalysis msaCommonNoun = null;
 			IWfiWordform wfBank = null;
-			IWfiAnalysis waBankMoney = null;
 			IWfiAnalysis waBankRiver = null;
-			IWfiAnalysis waBankTilt = null;
 			IWfiAnalysis waBankCreek = null;
 			IWfiAnalysis waBankStream = null;
 			IWfiAnalysis waBankBrook = null;
@@ -275,8 +269,8 @@ namespace SIL.LCModel.DomainImpl
 					wfBank = MakeWordform("bank");
 					waBankCreek = MakeAnalysis(wfBank, bankCreek);
 					waBankRiver = MakeAnalysis(wfBank, bankRiver);
-					waBankTilt = MakeAnalysis(wfBank, bankTilt);
-					waBankMoney = MakeAnalysis(wfBank, bankMoney);
+					MakeAnalysis(wfBank, bankTilt);
+					MakeAnalysis(wfBank, bankMoney);
 					waBankStream = MakeAnalysis(wfBank, bankStream);
 					waBankStream.MorphBundlesOS[0].MorphRA = baank;
 					waBankBrook = MakeAnalysis(wfBank, bankBrook);
@@ -357,7 +351,6 @@ namespace SIL.LCModel.DomainImpl
 		public void AffixProcessesRemainUnchangedWhenSenseMovedToNewEntry()
 		{
 			ILexEntry past = null;
-			ILexSense mainPast = null;
 			ILexSense longPast = null;
 
 			UndoableUnitOfWorkHelper.Do("undoit", "doit", Cache.ActionHandlerAccessor, () =>
@@ -368,7 +361,7 @@ namespace SIL.LCModel.DomainImpl
 					var posVerb = MakePartOfSpeech("Verb");
 					past = MakeAffixProcessEntry("ed", MoMorphTypeTags.kguidMorphSuffix);
 					var msa = MakeAffixMsa(past, posVerb, posVerb);
-					mainPast = MakeSense(past, "ed");
+					MakeSense(past, "ed");
 					past.MorphoSyntaxAnalysesOC.Add(msa);
 					longPast = MakeSense(past, "ted");
 				});
@@ -818,7 +811,7 @@ namespace SIL.LCModel.DomainImpl
 			entry.Restrictions.AnalysisDefaultWritingSystem = MakeAnalysisString("restrict");
 			entry.SummaryDefinition.AnalysisDefaultWritingSystem = MakeAnalysisString("sum");
 			entry.DoNotUseForParsing = true;
-			var pub = MakeShowMainEntryInPub(entry);
+			MakeShowMainEntryInPub(entry);
 			var form = MakeLexemeForm(entry);
 			form.Form.VernacularDefaultWritingSystem = MakeVernString("lf");
 			var alternate1 = MakeAllomorph(entry);
@@ -827,7 +820,7 @@ namespace SIL.LCModel.DomainImpl
 			alternate2.Form.VernacularDefaultWritingSystem = MakeVernString("alt2");
 			var pron = MakePronunciation(entry);
 			pron.Form.VernacularDefaultWritingSystem = MakeVernString("pron");
-			var er = MakeEntryRef(entry);
+			MakeEntryRef(entry);
 			MakeEtymology(entry);
 			var pos1 = MakePartOfSpeech();
 			var msa = MakeMsa(entry, pos1);

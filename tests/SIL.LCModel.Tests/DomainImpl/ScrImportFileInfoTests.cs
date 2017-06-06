@@ -850,8 +850,7 @@ namespace SIL.LCModel.DomainImpl
 
 			try
 			{
-				IScrImportFileInfo info = m_factory.Create(filename, m_mappingList,
-					ImportDomain.Main, null, null, true);
+				m_factory.Create(filename, m_mappingList, ImportDomain.Main, null, null, true);
 				Assert.Fail("Failed to throw an exception.");
 			}
 			catch (ScriptureUtilsException e)

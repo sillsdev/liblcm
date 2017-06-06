@@ -1491,7 +1491,6 @@ namespace Tools
 					Console.WriteLine("Error recovery uncovers state {0}",top.m_state);
 				if (er.Pass(m_symbols,top.m_state, out pe))
 				{
-					SYMBOL oldtop = top.m_value;
 					top.m_value = er;
 					pe.Pass(ref top); // pass the error symbol
 					// now discard tokens until we find one we can pass
