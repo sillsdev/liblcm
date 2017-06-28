@@ -1488,9 +1488,18 @@ namespace SIL.LCModel.DomainServices
 			internal void SetExpectedValuesForSegment(XmlNode annotationDefn, int ichMin)
 			{
 				if (annotationDefn.Attributes["beginOffset"] == null)
-					XmlUtils.AppendAttribute(annotationDefn, "beginOffset", ichMin.ToString());
+					AppendAttribute(annotationDefn, "beginOffset", ichMin.ToString());
 				else
 					annotationDefn.Attributes["beginOffset"].Value = ichMin.ToString();
+			}
+
+			private void AppendAttribute(XmlNode annotationDefn, string beginoffset, string toString)
+			{
+				Debug.Assert(annotationDefn.OwnerDocument != null, "annotationDefn.OwnerDocument != null");
+				var xa = annotationDefn.OwnerDocument.CreateAttribute(beginoffset);
+				xa.InnerText = toString;
+				Debug.Assert(annotationDefn.Attributes != null, "annotationDefn.Attributes != null");
+				annotationDefn.Attributes.Append(xa);
 			}
 
 			public IStTxtPara AppendParagraph()
