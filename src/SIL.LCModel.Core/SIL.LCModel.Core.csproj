@@ -19,7 +19,7 @@
     <OutputPath>..\..\artifacts\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -28,7 +28,25 @@
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\artifacts\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>..\..\artifacts\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -203,23 +221,39 @@
     <None Include="Phonology\PhonEnvError.dtd" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\lib\downloads\icudt54.dll" Condition="'$(OS)'=='Windows_NT'">
+    <Content Include="..\..\lib\downloads\x86\icudt54.dll" Condition="'$(Platform)'=='x86' and '$(OS)'=='Windows_NT'">
       <Link>icudt54.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\lib\downloads\icuin54.dll" Condition="'$(OS)'=='Windows_NT'">
+    <Content Include="..\..\lib\downloads\x86\icuin54.dll" Condition="'$(Platform)'=='x86' and '$(OS)'=='Windows_NT'">
       <Link>icuin54.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\lib\downloads\icutu54.dll" Condition="'$(OS)'=='Windows_NT'">
+    <Content Include="..\..\lib\downloads\x86\icutu54.dll" Condition="'$(Platform)'=='x86' and '$(OS)'=='Windows_NT'">
       <Link>icutu54.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\lib\downloads\icuuc54.dll" Condition="'$(OS)'=='Windows_NT'">
+    <Content Include="..\..\lib\downloads\x86\icuuc54.dll" Condition="'$(Platform)'=='x86' and '$(OS)'=='Windows_NT'">
       <Link>icuuc54.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="IcuData\nfc.txt" />
+	  <Content Include="..\..\lib\downloads\x64\icudt54.dll" Condition="'$(Platform)'!='x86' and '$(OS)'=='Windows_NT'">
+		  <Link>icudt54.dll</Link>
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="..\..\lib\downloads\x64\icuin54.dll" Condition="'$(Platform)'!='x86' and '$(OS)'=='Windows_NT'">
+		  <Link>icuin54.dll</Link>
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="..\..\lib\downloads\x64\icutu54.dll" Condition="'$(Platform)'!='x86' and '$(OS)'=='Windows_NT'">
+		  <Link>icutu54.dll</Link>
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="..\..\lib\downloads\x64\icuuc54.dll" Condition="'$(Platform)'!='x86' and '$(OS)'=='Windows_NT'">
+		  <Link>icuuc54.dll</Link>
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="IcuData\nfc.txt" />
     <Content Include="IcuData\nfcHebrew.txt" />
     <Content Include="IcuData\nfcOverrides.txt" />
     <Content Include="IcuData\nfkc.txt" />
