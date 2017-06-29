@@ -6,8 +6,8 @@
 Type=TeamCity
 Url=http://build.palaso.org
 
-[TC::Libpalaso_PalasoWin32masterContinuous]
-Name=palaso-win32-master Continuous
+[TC::Libpalaso_PalasoWinmasterContinuous]
+Name=palaso-win-master Continuous
 RevisionName=lastSuccessful
 RevisionValue=latest.lastSuccessful
 Condition=Windows
