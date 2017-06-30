@@ -230,31 +230,31 @@
       <Link>icudt54.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\lib\downloads\x86\icuin54.dll" Condition="'$(Platform)'=='x86'">
+    <Content Include="..\..\lib\downloads\x86\icuin54.dll" Condition="'$(Platform)'=='x86' and '$(OS)'=='Windows_NT'">
       <Link>icuin54.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\lib\downloads\x86\icutu54.dll" Condition="'$(Platform)'=='x86'">
+    <Content Include="..\..\lib\downloads\x86\icutu54.dll" Condition="'$(Platform)'=='x86' and '$(OS)'=='Windows_NT'">
       <Link>icutu54.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\lib\downloads\x86\icuuc54.dll" Condition="'$(Platform)'=='x86'">
+    <Content Include="..\..\lib\downloads\x86\icuuc54.dll" Condition="'$(Platform)'=='x86' and '$(OS)'=='Windows_NT'">
       <Link>icuuc54.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\lib\downloads\x64\icudt54.dll" Condition="'$(Platform)'!='x86'">
+    <Content Include="..\..\lib\downloads\x64\icudt54.dll" Condition="'$(Platform)'!='x86' and '$(OS)'=='Windows_NT'">
       <Link>icudt54.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\lib\downloads\x64\icuin54.dll" Condition="'$(Platform)'!='x86'">
+    <Content Include="..\..\lib\downloads\x64\icuin54.dll" Condition="'$(Platform)'!='x86' and '$(OS)'=='Windows_NT'">
       <Link>icuin54.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\lib\downloads\x64\icutu54.dll" Condition="'$(Platform)'!='x86'">
+    <Content Include="..\..\lib\downloads\x64\icutu54.dll" Condition="'$(Platform)'!='x86' and '$(OS)'=='Windows_NT'">
       <Link>icutu54.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\lib\downloads\x64\icuuc54.dll" Condition="'$(Platform)'!='x86'">
+    <Content Include="..\..\lib\downloads\x64\icuuc54.dll" Condition="'$(Platform)'!='x86' and '$(OS)'=='Windows_NT'">
       <Link>icuuc54.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
