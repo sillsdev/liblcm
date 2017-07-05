@@ -122,7 +122,11 @@ namespace SIL.LCModel.Core.SpellChecking
 			{
 				if (!m_fGotIsVernacular)
 				{
+					#if __MonoCS__
+					m_isVernacular = Check(SpellingHelper.PrototypeWord);
+					#else
 					m_isVernacular = Check(MarshallAsUtf8Bytes(SpellingHelper.PrototypeWord));
+					#endif
 					m_fGotIsVernacular = true;
 				}
 				return m_isVernacular;
