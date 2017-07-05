@@ -83,8 +83,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ScrUtilsStrings.resx</DependentUpon>
     </Compile>
-    <Compile Include="SpellChecking\Linux\SpellEngine.cs" Condition="'$(OS)'!='Windows_NT'" />
-    <Compile Include="SpellChecking\Windows\SpellEngine.cs" Condition="'$(OS)'=='Windows_NT'" />
+    <Compile Include="SpellChecking\SpellEngine.cs" />
     <Compile Include="Text\IcuIdAndName.cs" />
     <Compile Include="Text\IcuResourceBundle.cs" />
     <Compile Include="Text\Icu.cs" />
