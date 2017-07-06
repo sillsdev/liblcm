@@ -10,6 +10,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Utils;
+#if !__MonoCS__
+using NHunspell;
+#endif
 
 namespace SIL.LCModel.Core.SpellChecking
 {
@@ -21,16 +24,26 @@ namespace SIL.LCModel.Core.SpellChecking
 		/// Words beginning * are known bad words.
 		/// </summary>
 		internal string ExceptionPath { get; set; }
-
+		#if __MonoCS__
+			private IntPtr m_hunspellHandle;
+		#else
+			private Hunspell m_hunspellHandle;
+		#endif
+		
 		internal SpellEngine(string affixPath, string dictPath, string exceptionPath)
 		{
 			try
 			{
+				#if __MonoCS__
 				m_hunspellHandle = Hunspell_initialize(MarshallAsUtf8Bytes(affixPath), MarshallAsUtf8Bytes(dictPath));
+				#else
+				m_hunspellHandle = new Hunspell(affixPath, dictPath);
+				#endif
 				ExceptionPath = exceptionPath;
-				if (File.Exists(exceptionPath))
+				
+				if (File.Exists(ExceptionPath))
 				{
-					using (var reader = new StreamReader(exceptionPath, Encoding.UTF8))
+					using (var reader = new StreamReader(ExceptionPath, Encoding.UTF8))
 					{
 						string line;
 						while ((line = reader.ReadLine()) != null)
@@ -50,21 +63,26 @@ namespace SIL.LCModel.Core.SpellChecking
 			catch (Exception e)
 			{
 				Debug.WriteLine("Initializing Hunspell: {0} exception: {1} ", e.GetType(), e.Message);
+#if __MonoCS__
 				if (m_hunspellHandle != IntPtr.Zero)
 				{
 					Hunspell_uninitialize(m_hunspellHandle);
 					m_hunspellHandle = IntPtr.Zero;
-					throw;
 				}
+#else
+				m_hunspellHandle?.Dispose();
+#endif
+				throw new Exception(e.Message);
 			}
-
 		}
-
-		private IntPtr m_hunspellHandle;
 
 		public bool Check(string word)
 		{
-			return Hunspell_spell(m_hunspellHandle, MarshallAsUtf8Bytes(word)) != 0;
+			#if __MonoCS__
+				return Hunspell_spell(m_hunspellHandle, MarshallAsUtf8Bytes(word)) != 0;
+			#else
+				return m_hunspellHandle.Spell(MarshallAsUtf8Bytes(word));
+			#endif
 		}
 
 		/// <summary>
@@ -75,10 +93,18 @@ namespace SIL.LCModel.Core.SpellChecking
 		/// </summary>
 		/// <param name="word"></param>
 		/// <returns></returns>
+#if __MonoCS__
 		private static byte[] MarshallAsUtf8Bytes(string word)
 		{
 			return Encoding.UTF8.GetBytes(Icu.Normalize(word, Icu.UNormalizationMode.UNORM_NFC) + "\0");
 		}
+#else
+		private static string MarshallAsUtf8Bytes(string word)
+		{
+			byte[] bytes = Encoding.UTF8.GetBytes(Icu.Normalize(word, Icu.UNormalizationMode.UNORM_NFC) + "\0");
+			return Encoding.UTF8.GetString(bytes);
+		}
+#endif
 
 		private bool m_isVernacular;
 		private bool m_fGotIsVernacular;
@@ -93,7 +119,11 @@ namespace SIL.LCModel.Core.SpellChecking
 			{
 				if (!m_fGotIsVernacular)
 				{
+					#if __MonoCS__
 					m_isVernacular = Check(SpellingHelper.PrototypeWord);
+					#else
+					m_isVernacular = Check(MarshallAsUtf8Bytes(SpellingHelper.PrototypeWord));
+					#endif
 					m_fGotIsVernacular = true;
 				}
 				return m_isVernacular;
@@ -107,6 +137,7 @@ namespace SIL.LCModel.Core.SpellChecking
 		/// <returns></returns>
 		public ICollection<string> Suggest(string badWord)
 		{
+			#if __MonoCS__
 			IntPtr pointerToAddressStringArray;
 			int resultCount = Hunspell_suggest(m_hunspellHandle, MarshallAsUtf8Bytes(badWord), out pointerToAddressStringArray);
 			if (pointerToAddressStringArray == IntPtr.Zero)
@@ -114,6 +145,9 @@ namespace SIL.LCModel.Core.SpellChecking
 			var results = MarshalUnmananagedStrArray2ManagedStrArray(pointerToAddressStringArray, resultCount);
 			Hunspell_free_list(m_hunspellHandle, ref pointerToAddressStringArray, resultCount);
 			return results;
+			#else
+			return m_hunspellHandle.Suggest(MarshallAsUtf8Bytes(badWord));
+			#endif
 		}
 
 		public void SetStatus(string word1, bool isCorrect)
@@ -170,18 +204,31 @@ namespace SIL.LCModel.Core.SpellChecking
 				{
 					// Custom vernacular-only dictionary.
 					// want it 'affixed' like the prototype, which has been marked to suppress other-case matches
-					Hunspell_add_with_affix(m_hunspellHandle, MarshallAsUtf8Bytes(word), MarshallAsUtf8Bytes(SpellingHelper.PrototypeWord));
+					#if __MonoCS__
+					Hunspell_add_with_affix(m_hunspellHandle, MarshallAsUtf8Bytes(word),
+							MarshallAsUtf8Bytes(SpellingHelper.PrototypeWord));
+					#else
+					m_hunspellHandle.AddWithAffix(MarshallAsUtf8Bytes(word), MarshallAsUtf8Bytes(SpellingHelper.PrototypeWord));
+					#endif
 				}
 				else
 				{
 					// not our custom dictionary, some majority language, we can't (and probably don't want)
 					// to be restrictive about case.
+					#if __MonoCS__
 					Hunspell_add(m_hunspellHandle, MarshallAsUtf8Bytes(word));
+					#else
+					m_hunspellHandle.Add(MarshallAsUtf8Bytes(word));
+					#endif
 				}
 			}
 			else
 			{
+				#if __MonoCS__
 				Hunspell_remove(m_hunspellHandle, MarshallAsUtf8Bytes(word));
+				#else
+				m_hunspellHandle.Remove(MarshallAsUtf8Bytes(word));
+				#endif
 			}
 		}
 
@@ -204,13 +251,18 @@ namespace SIL.LCModel.Core.SpellChecking
 		protected virtual void Dispose(bool disposing)
 		{
 			Debug.WriteLineIf(!disposing, "****** Missing Dispose() call for " + GetType().Name + ". ****** ");
+			#if __MonoCS__
 			if (m_hunspellHandle != IntPtr.Zero)
 			{
 				Hunspell_uninitialize(m_hunspellHandle);
 				m_hunspellHandle = IntPtr.Zero;
 			}
+			#else
+			m_hunspellHandle?.Dispose();
+			#endif
 		}
 
+		#if __MonoCS__
 		// This method transforms an array of unmanaged character pointers (pointed to by pUnmanagedStringArray)
 		// into an array of managed strings.
 		// Adapted with thanks from http://limbioliong.wordpress.com/2011/08/14/returning-an-array-of-strings-from-c-to-c-part-1/
@@ -242,7 +294,7 @@ namespace SIL.LCModel.Core.SpellChecking
 
 		private const string LibHunspell = "libhunspell";
 		private const string LibHunspellPrefix = "hunspell_";
-
+		
 		[DllImport(LibHunspell, EntryPoint = LibHunspellPrefix + "initialize",
 			CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern IntPtr Hunspell_initialize(byte[] affFile, byte[] dictFile);
@@ -270,21 +322,16 @@ namespace SIL.LCModel.Core.SpellChecking
 		[DllImport(LibHunspell, EntryPoint = LibHunspellPrefix + "suggest",
 			CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern int Hunspell_suggest_unix(IntPtr handle, out IntPtr suggestions, byte[] word);
-
-		[DllImport(LibHunspell, EntryPoint = LibHunspellPrefix + "suggest",
-			CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-		private static extern int Hunspell_suggest_win(IntPtr handle, byte[] word, out IntPtr suggestions);
-
+		
 		private static int Hunspell_suggest(IntPtr handle, byte[] word, out IntPtr suggestions)
 		{
-			if (MiscUtils.IsUnix)
-				return Hunspell_suggest_unix(handle, out suggestions, word);
-			return Hunspell_suggest_win(handle, word, out suggestions);
+			return Hunspell_suggest_unix(handle, out suggestions, word);
 		}
-
+		
 		[DllImport(LibHunspell, EntryPoint = LibHunspellPrefix + "free_list",
 			CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
 		private static extern void Hunspell_free_list(IntPtr handle, ref IntPtr list, int count);
-
+		
+#endif
 	}
 }
