@@ -72,7 +72,7 @@ namespace SIL.LCModel.Core.SpellChecking
 #else
 				m_hunspellHandle?.Dispose();
 #endif
-				throw new Exception(e.Message);
+				throw;
 			}
 		}
 
