@@ -75,8 +75,7 @@ namespace SIL.LCModel.DomainImpl
 				// Optimize JohnT: are we likely to modify any of the iterators while iterating? If not
 				// we may not need the ToList().
 				return (from ex in examples from trans in ex.TranslationsOC select trans).Cast<ICmObject>()
-					.Concat((from ex in examplesIWritingSystem defVernWs
-
+					.Concat((from ex in examples
                              where ex.TranslationsOC.Count == 0
 							 select ex).Cast<ICmObject>())
 					.ToList();
