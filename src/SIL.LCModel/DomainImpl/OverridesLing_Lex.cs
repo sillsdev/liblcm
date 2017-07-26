@@ -75,8 +75,9 @@ namespace SIL.LCModel.DomainImpl
 				// Optimize JohnT: are we likely to modify any of the iterators while iterating? If not
 				// we may not need the ToList().
 				return (from ex in examples from trans in ex.TranslationsOC select trans).Cast<ICmObject>()
-					.Concat((from ex in examples
-							 where ex.TranslationsOC.Count == 0
+					.Concat((from ex in examplesIWritingSystem defVernWs
+
+                             where ex.TranslationsOC.Count == 0
 							 select ex).Cast<ICmObject>())
 					.ToList();
 			}
@@ -2847,10 +2848,13 @@ namespace SIL.LCModel.DomainImpl
 			}
 			// The following code for setting Ws and FontFamily are to fix LT-6238.
 			CoreWritingSystemDefinition defVernWs = Services.WritingSystems.DefaultVernacularWritingSystem;
+			var entry = form.Owner as ILexEntry;
+			var hc = entry.Services.GetInstance<HomographConfiguration>();
 			if (!String.IsNullOrEmpty(prefix))
 			{
 				tsb.SetIntPropValues((int)FwTextPropType.ktptWs, 0, defVernWs.Handle);
 				tsb.SetStrPropValue((int)FwTextPropType.ktptFontFamily, "Doulos SIL");
+				StringServices.InsertHomographNumber(tsb, entry.HomographNumber, hc, HomographConfiguration.HeadwordVariant.Main, Cache);
 				tsb.Append(prefix);
 			}
 			StringServices.ShortName1Static(this, tsb);
@@ -2859,6 +2863,7 @@ namespace SIL.LCModel.DomainImpl
 				tsb.SetIntPropValues((int)FwTextPropType.ktptWs, 0, defVernWs.Handle);
 				tsb.SetStrPropValue((int)FwTextPropType.ktptFontFamily, "Doulos SIL");
 				tsb.Append(postfix);
+				StringServices.InsertHomographNumber(tsb, entry.HomographNumber, hc, HomographConfiguration.HeadwordVariant.Main, Cache);
 			}
 		}
 
