@@ -5,6 +5,9 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Linq;
 using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.Zip;
 using SIL.LCModel.Infrastructure.Impl;
@@ -149,6 +152,20 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 		{
 			DataContractSerializer serializer = new DataContractSerializer(typeof(BackupFileSettings));
 			return (BackupFileSettings)serializer.ReadObject(stream);
+		}
+
+		/// <summary>
+		/// Creates a new BackupFileSettings object, initialized from the Xml of a Backup Settings
+		/// file. This handles the case where Backup Settings files are created before FLEx 9.0
+		/// </summary>
+		/// <param name="backupInXml">The string containing the Backup Settings Xml</param>
+		/// <returns></returns>
+		public static BackupFileSettings CreateFromXml(string backupInXml)
+		{
+			XDocument backupXDocument = XDocument.Parse(backupInXml);
+			XmlReader xmlReader = backupXDocument.CreateReader();
+			DataContractSerializer serializer = new DataContractSerializer(typeof(BackupFileSettings));
+			return (BackupFileSettings) serializer.ReadObject(xmlReader);
 		}
 		#endregion
 
@@ -404,7 +421,15 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 								throw new InvalidOperationException("Zip file " + m_sZipFileName + " contained multiple " +
 									LcmFileHelper.ksBackupSettingsFilename + " files.");
 							foundBackupSettingsFile = true;
-							InitializeFromStream(zipIn);
+							try
+							{
+								InitializeFromStream(zipIn);
+							}
+							// handles the case where the backup settings xml file was create before FLEx 9.0
+							catch (SerializationException)
+							{
+								InitializeFromZipEntry(entry);
+							}
 						}
 						else if (Path.GetExtension(fileName) == LcmFileHelper.ksFwDataXmlFileExtension)
 						{
@@ -513,10 +538,21 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 		/// <param name="persistenceStream">The persistence stream.</param>
 		/// <exception cref="InvalidOperationException">An error occurred during deserialization.
 		/// </exception>
+		/// <exception cref="SerializationException">Deserialization issue, likely from a mismatching namespace.
+		/// </exception>
 		/// ------------------------------------------------------------------------------------
 		private void InitializeFromStream(Stream persistenceStream)
 		{
 			BackupFileSettings settings = CreateFromStream(persistenceStream);
+			CompleteInitialization(settings);
+		}
+
+		/// <summary>
+		/// Completes initialization after deserializing the backup settings xml
+		/// </summary>
+		/// <param name="settings"></param>
+		private void CompleteInitialization(BackupFileSettings settings)
+		{
 			m_backupTime = settings.BackupTime;
 			m_comment = settings.Comment;
 			m_projectName = settings.ProjectName;
@@ -531,6 +567,29 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 			m_fwVersion = settings.FwVersion;
 		}
 
+		/// <summary>
+		/// Reads in the backup settings from a given archive entry, usually from a fwbackup archive.
+		/// This includes a replacement operation on the xml namespace attribute to the expected namespace.
+		/// </summary>
+		/// <param name="zipEntry">The entry for the zip fwbackup folder.</param>
+		/// <exception cref="InvalidOperationException">An error occurred during deserialization.
+		/// </exception>
+		private void InitializeFromZipEntry(ZipEntry zipEntry)
+		{
+			using (FileStream fs = System.IO.File.OpenRead(m_sZipFileName))
+			{
+				ZipFile zf = new ZipFile(fs);
+				Stream zipStream = zf.GetInputStream(zipEntry);
+				XDocument xDoc = XDocument.Load(zipStream);
+				string backupXml = xDoc.ToString();
+				string xmlNamespace = @"\s+\bxmlns\b="".+\.\bBackupRestore\b\""\s+";
+				string expectedNamespace =
+					@" xmlns=""http://schemas.datacontract.org/2004/07/SIL.LCModel.DomainServices.BackupRestore"" ";
+				backupXml = Regex.Replace(backupXml, xmlNamespace, expectedNamespace);
+				BackupFileSettings settings = CreateFromXml(backupXml);
+				CompleteInitialization(settings);
+			}
+		}
 		#endregion
 	}
 
