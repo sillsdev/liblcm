@@ -550,7 +550,6 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 		/// <summary>
 		/// Completes initialization after deserializing the backup settings xml
 		/// </summary>
-		/// <param name="settings"></param>
 		private void CompleteInitialization(BackupFileSettings settings)
 		{
 			m_backupTime = settings.BackupTime;
@@ -582,9 +581,9 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 				Stream zipStream = zf.GetInputStream(zipEntry);
 				XDocument xDoc = XDocument.Load(zipStream);
 				string backupXml = xDoc.ToString();
-				string xmlNamespace = @"\s+\bxmlns\b="".+\.\bBackupRestore\b\""\s+";
+				string xmlNamespace = @"\s+xmlns="".+\.BackupRestore""";
 				string expectedNamespace =
-					@" xmlns=""http://schemas.datacontract.org/2004/07/SIL.LCModel.DomainServices.BackupRestore"" ";
+					@" xmlns=""http://schemas.datacontract.org/2004/07/SIL.LCModel.DomainServices.BackupRestore""";
 				backupXml = Regex.Replace(backupXml, xmlNamespace, expectedNamespace);
 				BackupFileSettings settings = CreateFromXml(backupXml);
 				CompleteInitialization(settings);
