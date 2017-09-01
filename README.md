@@ -5,7 +5,7 @@ Description
 -----------
 
 The library for the SIL Language and Culture Model.
-The liblcm library is the core FieldWorks model for linguistic analyses of languages. Tools in this library provide the ability to store and interact with language and culture data, including anthropological, text corpus, and linguistics data.
+The liblcm library is the core [FieldWorks](github.com/sillsdev/FieldWorks) model for linguistic analyses of languages. Tools in this library provide the ability to store and interact with language and culture data, including anthropological, text corpus, and linguistics data.
 
 Instructions
 ------------
@@ -15,11 +15,11 @@ Instructions
 - Visual Studio 2015 or MonoDevelop
 
 2. Clone the liblcm repository
-- Open a terminal (or git bash Windows) and cd into a desired directory.
+- Open a terminal (or git bash on Windows) and cd into a desired directory.
 - Run `git clone https://github.com/sillsdev/liblcm.git`
 
 3. Build liblcm
-cd into the directory of the cloned liblcm repository.
+- cd into the directory of the cloned liblcm repository.
 
 **On Windows**
 - Run `build.cmd` to build the liblcm library.
