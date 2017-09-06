@@ -284,7 +284,7 @@ namespace SIL.LCModel.DomainServices
 		}
 
 		/// <summary>
-		/// Method will use current homograph-number settings insert into the string
+		/// This method will use the current homograph-number settings to insert the homograph number into the string
 		/// </summary>
 		public static void InsertHomographNumber(ITsIncStrBldr tisb, int nHomograph, HomographConfiguration hc,
 			HomographConfiguration.HeadwordVariant hv, LcmCache cache)

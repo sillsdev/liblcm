@@ -1650,7 +1650,7 @@ namespace SIL.LCModel.DomainImpl
 		public static void UpdateReferencesForSenseMove(ILexEntry leSource, ILexEntry leTarget, ILexSense ls)
 		{
 			var msaCorrespondence = new Dictionary<IMoMorphSynAnalysis, IMoMorphSynAnalysis>(4);
-			(leTarget as LexEntry).ReplaceMsasForSense(ls, msaCorrespondence);
+			(leTarget as LexEntry).ReplaceMsasForSense(ls, msaCorrespondence, leSource);
 			foreach (var sense in ls.AllSenses)
 			{
 				foreach (var source in sense.ReferringObjects)
@@ -1732,23 +1732,32 @@ namespace SIL.LCModel.DomainImpl
 		/// The top-level call should pass a new, empty dictionary, which is passed on to child senses
 		/// with oldMsa->newMsa correspondences added.
 		/// </summary>
-		private void ReplaceMsasForSense(ILexSense ls, Dictionary<IMoMorphSynAnalysis, IMoMorphSynAnalysis> msaCorrespondence)
+		private void ReplaceMsasForSense(ILexSense ls, Dictionary<IMoMorphSynAnalysis, IMoMorphSynAnalysis> msaCorrespondence, ILexEntry leSource)
 		{
 			var msaOld = ls.MorphoSyntaxAnalysisRA;
 			if (msaOld != null)
 			{
-				IMoMorphSynAnalysis msaNew;
-				if (!msaCorrespondence.TryGetValue(msaOld, out msaNew))
+				IMoMorphSynAnalysis msaNew = null;
+				foreach (IMoMorphSynAnalysis msa in MorphoSyntaxAnalysesOC)
 				{
+					if (msa.EqualsMsa(msaOld))
+					{
+						msaNew = msa;
+						break;
+					}
+				}
+				if (msaNew == null)
+				{ 
 					msaNew = CopyObject<IMoMorphSynAnalysis>.CloneLcmObject(msaOld,
 						newMsa => MorphoSyntaxAnalysesOC.Add(newMsa));
-					msaCorrespondence[msaOld] = msaNew;
 				}
+				msaCorrespondence[msaOld] = msaNew;
+				LexSense.HandleOldMSA(Cache, ls, msaOld, msaNew, false, leSource);
 				ls.MorphoSyntaxAnalysisRA = msaNew;
 			}
 			foreach (var sense in ls.SensesOS)
 			{
-				ReplaceMsasForSense(sense, msaCorrespondence);
+				ReplaceMsasForSense(sense, msaCorrespondence, leSource);
 			}
 		}
 		/// <summary>
@@ -2849,7 +2858,7 @@ namespace SIL.LCModel.DomainImpl
 			CoreWritingSystemDefinition defVernWs = Services.WritingSystems.DefaultVernacularWritingSystem;
 			var entry = form.Owner as ILexEntry;
 			var hc = entry.Services.GetInstance<HomographConfiguration>();
-		    if (!String.IsNullOrEmpty(prefix))
+		    if (!string.IsNullOrEmpty(prefix))
 		    {
 		        tsb.SetIntPropValues((int) FwTextPropType.ktptWs, 0, defVernWs.Handle);
 		        tsb.SetStrPropValue((int) FwTextPropType.ktptFontFamily, "Doulos SIL");
@@ -2858,7 +2867,7 @@ namespace SIL.LCModel.DomainImpl
                 tsb.Append(prefix);
             }
 		    StringServices.ShortName1Static(this, tsb);
-			if (!String.IsNullOrEmpty(postfix))
+			if (!string.IsNullOrEmpty(postfix))
 			{
 				tsb.SetIntPropValues((int)FwTextPropType.ktptWs, 0, defVernWs.Handle);
 				tsb.SetStrPropValue((int)FwTextPropType.ktptFontFamily, "Doulos SIL");
@@ -5795,8 +5804,8 @@ namespace SIL.LCModel.DomainImpl
 		/// - Delete original MSA, if nothing uses it. (If assumeSurvives is true, caller already
 		/// knows that something still uses it.)
 		/// </summary>
-		public void HandleOldMSA(LcmCache cache, ILexSense sense, IMoMorphSynAnalysis oldMsa, IMoMorphSynAnalysis newMsa,
-			bool assumeSurvives)
+		public static void HandleOldMSA(LcmCache cache, ILexSense sense, IMoMorphSynAnalysis oldMsa, IMoMorphSynAnalysis newMsa,
+			bool assumeSurvives, ILexEntry leSource = null)
 		{
 			if (oldMsa == null || !oldMsa.IsValidObject)
 				return; // May have been deleted already, e.g., when deleting the whole entry.
@@ -5806,13 +5815,19 @@ namespace SIL.LCModel.DomainImpl
 				where mb.SenseRA == sense
 				select mb;
 			foreach (var mb in morphBundles)
-				mb.MsaRA = newMsa;
+			{
+				if (newMsa != null)
+					mb.MsaRA = newMsa;
+			}
 
 			if (assumeSurvives || (!oldMsa.IsValidObject || !oldMsa.CanDelete))
 				return;
 
 			// Wipe out the old MSA.
-			sense.Entry.MorphoSyntaxAnalysesOC.Remove(oldMsa);
+			if (leSource != null)
+				leSource.MorphoSyntaxAnalysesOC.Remove(oldMsa);
+			else
+				sense.Entry.MorphoSyntaxAnalysesOC.Remove(oldMsa);
 		}
 
 		private void UpdateMorphoSyntaxAnalysesOfLexEntryRefs()

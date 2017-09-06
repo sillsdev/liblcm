@@ -1402,14 +1402,14 @@ namespace SIL.LCModel.DomainServices
 		{
 			ILcmServiceLocator servLocator = cache.ServiceLocator;
 
-			// Where a reversal index is linked to the origWsId, remove the entire reversal index,
-			// not just its references to the origWsId. (See LT-14482.)
-			// FIXME: Modify the reversal index to preserve the reversal index entries
-			var condemnedReversals = servLocator.GetInstance<IReversalIndexRepository>().AllInstances().Where(reversalIndex =>
-				reversalIndex.WritingSystem == origWsId).ToList();
-			foreach (var condemnedReversal in condemnedReversals)
+			// When writing sytem code is changed, reversal index entries are preserved. (See LT-18256)
+			var reversalsToUpdate = servLocator.GetInstance<IReversalIndexRepository>().AllInstances().Where(reversalIndex =>
+				 reversalIndex.WritingSystem == origWsId).ToList();
+			foreach (var reversal in reversalsToUpdate)
 			{
-				((ILexDb) condemnedReversal.Owner).ReversalIndexesOC.Remove(condemnedReversal);
+				reversal.WritingSystem = newWsId;
+				var wsName = servLocator.WritingSystemManager.WritingSystemStore.AllWritingSystems.First(x => x.LanguageTag == newWsId).DisplayLabel;
+				reversal.Name.SetAnalysisDefaultWritingSystem(wsName);
 			}
 
 			UpdateWritingSystemField(cache, servLocator.GetInstance<IWordformLookupListRepository>().AllInstances(),
