@@ -3,9 +3,11 @@
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Core.WritingSystems;
+using SIL.LCModel.DomainImpl;
 using SIL.LCModel.Infrastructure;
 using SIL.LCModel.Infrastructure.Impl;
 
@@ -241,9 +243,7 @@ namespace SIL.LCModel.DomainServices
 			Assert.That(ws.Id, Is.EqualTo("qaa"));
 		}
 
-		/// <summary>
-		/// What it says
-		/// </summary>
+		/// <summary/>
 		[Test]
 		public void UpdateWritingSystemListField_RemovesMergedCodeAfterMergeWith()
 		{
@@ -253,9 +253,7 @@ namespace SIL.LCModel.DomainServices
 			Assert.That(Cache.LangProject.AnalysisWss, Is.EqualTo("fr en"));
 		}
 
-		/// <summary>
-		/// What it says
-		/// </summary>
+		/// <summary/>
 		[Test]
 		public void UpdateWritingSystemListField_RemovesMergedCodeBeforeMergeWith()
 		{
@@ -263,6 +261,38 @@ namespace SIL.LCModel.DomainServices
 			WritingSystemServices.UpdateWritingSystemListField(Cache, Cache.LangProject, LangProjectTags.kflidAnalysisWss, "fr-NO",
 				"fr");
 			Assert.That(Cache.LangProject.AnalysisWss, Is.EqualTo("en fr"));
+		}
+
+		/// <summary/>
+		public void UpdateWritingSystemListField_RemovesWsCode()
+		{
+			int m_wsEn = Cache.WritingSystemFactory.GetWsFromStr("en");
+			int m_wsFr = Cache.WritingSystemFactory.GetWsFromStr("fr");
+
+			CoreWritingSystemDefinition enBlz;
+			WritingSystemServices.FindOrCreateWritingSystem(Cache, null, "blz", false, false, out enBlz);
+
+			var revIndex = Cache.ServiceLocator.GetInstance<IReversalIndexRepository>().FindOrCreateIndexForWs(m_wsEn);
+
+			var entry1 = SenseOrEntryTests.CreateInterestingLexEntry(Cache);
+			var msa1 = Cache.ServiceLocator.GetInstance<IMoStemMsaFactory>().Create();
+			entry1.MorphoSyntaxAnalysesOC.Add(msa1);
+			entry1.SensesOS.First().MorphoSyntaxAnalysisRA = msa1;
+
+			var entry2 = SenseOrEntryTests.CreateInterestingLexEntry(Cache);
+			var msa2 = Cache.ServiceLocator.GetInstance<IMoStemMsaFactory>().Create();
+			entry2.MorphoSyntaxAnalysesOC.Add(msa2);
+			entry2.SensesOS.First().MorphoSyntaxAnalysisRA = msa2;
+
+			var testEntry = revIndex.FindOrCreateReversalEntry("first");
+			entry1.SensesOS.First().ReversalEntriesRC.Add(testEntry);
+			entry2.SensesOS.First().ReversalEntriesRC.Add(testEntry);
+
+			testEntry.ReversalIndex.WritingSystem = "fr";
+			testEntry.ReversalForm.set_String(m_wsFr, "fr");
+			WritingSystemServices.UpdateWritingSystemFields(Cache, "fr", "blz");
+			Assert.That(testEntry.ReversalIndex.WritingSystem, Is.EqualTo("blz"));
+			Assert.That(testEntry.ReversalIndex.ShortName, Is.EqualTo("Balantak"));
 		}
 
 		/// <summary>
