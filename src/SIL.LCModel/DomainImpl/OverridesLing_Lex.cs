@@ -2849,22 +2849,29 @@ namespace SIL.LCModel.DomainImpl
 			CoreWritingSystemDefinition defVernWs = Services.WritingSystems.DefaultVernacularWritingSystem;
 			var entry = form.Owner as ILexEntry;
 			var hc = entry.Services.GetInstance<HomographConfiguration>();
-			if (!String.IsNullOrEmpty(prefix))
-			{
-				tsb.SetIntPropValues((int)FwTextPropType.ktptWs, 0, defVernWs.Handle);
-				tsb.SetStrPropValue((int)FwTextPropType.ktptFontFamily, "Doulos SIL");
-				StringServices.InsertHomographNumber(tsb, entry.HomographNumber, hc, HomographConfiguration.HeadwordVariant.Main, Cache);
-				tsb.Append(prefix);
-			}
-			StringServices.ShortName1Static(this, tsb);
+		    if (!String.IsNullOrEmpty(prefix))
+		    {
+		        tsb.SetIntPropValues((int) FwTextPropType.ktptWs, 0, defVernWs.Handle);
+		        tsb.SetStrPropValue((int) FwTextPropType.ktptFontFamily, "Doulos SIL");
+		        if (hc.HomographNumberBefore)
+                    StringServices.InsertHomographNumber(tsb, entry.HomographNumber, hc, HomographConfiguration.HeadwordVariant.Main, Cache);
+                tsb.Append(prefix);
+            }
+		    StringServices.ShortName1Static(this, tsb);
 			if (!String.IsNullOrEmpty(postfix))
 			{
 				tsb.SetIntPropValues((int)FwTextPropType.ktptWs, 0, defVernWs.Handle);
 				tsb.SetStrPropValue((int)FwTextPropType.ktptFontFamily, "Doulos SIL");
-				tsb.Append(postfix);
-				StringServices.InsertHomographNumber(tsb, entry.HomographNumber, hc, HomographConfiguration.HeadwordVariant.Main, Cache);
+                tsb.Append(postfix);
+                if (!hc.HomographNumberBefore)
+                    StringServices.InsertHomographNumber(tsb, entry.HomographNumber, hc, HomographConfiguration.HeadwordVariant.Main, Cache);
 			}
-		}
+            else
+            {
+                if (!hc.HomographNumberBefore)
+                    StringServices.InsertHomographNumber(tsb, entry.HomographNumber, hc, HomographConfiguration.HeadwordVariant.Main, Cache);
+            }
+        }
 
 		internal static string ExtractLiftResidueContent(string sResidue)
 		{
