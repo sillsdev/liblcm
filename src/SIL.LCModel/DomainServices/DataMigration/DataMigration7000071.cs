@@ -65,20 +65,23 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			string localKeyboards;
 			if (!repoDto.ProjectFolder.StartsWith(Path.GetTempPath()) && TryGetLocalKeyboardsSetting(out localKeyboards))
 			{
-				XElement keyboardsElem = XElement.Parse(localKeyboards);
-				foreach (XElement keyboardElem in keyboardsElem.Elements("keyboard"))
+				if (localKeyboards.Length > 0)
 				{
-					var wsId = (string) keyboardElem.Attribute("ws");
-					CoreWritingSystemDefinition ws;
-					if (repo.TryGet(wsId, out ws))
+					XElement keyboardsElem = XElement.Parse(localKeyboards);
+					foreach (XElement keyboardElem in keyboardsElem.Elements("keyboard"))
 					{
-						var layout = (string) keyboardElem.Attribute("layout");
-						var locale = (string) keyboardElem.Attribute("locale");
-						string keyboardId = string.IsNullOrEmpty(locale) ? layout : $"{locale}_{layout}";
-						IKeyboardDefinition keyboard;
-						if (!Keyboard.Controller.TryGetKeyboard(keyboardId, out keyboard))
-							keyboard = Keyboard.Controller.CreateKeyboard(keyboardId, KeyboardFormat.Unknown, Enumerable.Empty<string>());
-						ws.LocalKeyboard = keyboard;
+						var wsId = (string)keyboardElem.Attribute("ws");
+						CoreWritingSystemDefinition ws;
+						if (repo.TryGet(wsId, out ws))
+						{
+							var layout = (string)keyboardElem.Attribute("layout");
+							var locale = (string)keyboardElem.Attribute("locale");
+							string keyboardId = string.IsNullOrEmpty(locale) ? layout : $"{locale}_{layout}";
+							IKeyboardDefinition keyboard;
+							if (!Keyboard.Controller.TryGetKeyboard(keyboardId, out keyboard))
+								keyboard = Keyboard.Controller.CreateKeyboard(keyboardId, KeyboardFormat.Unknown, Enumerable.Empty<string>());
+							ws.LocalKeyboard = keyboard;
+						}
 					}
 				}
 				repo.Save();
