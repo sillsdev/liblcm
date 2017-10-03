@@ -12,4 +12,4 @@ if "%2"=="" (
     SET TARGET=%2
 )
 
-msbuild /t:%TARGET% /p:Configuration=%CONFIG% /p:Platform=x86 LCM.sln
+msbuild /t:%TARGET% /p:Configuration=%CONFIG% /p:Platform=x86 /p:UseLocalFiles=False LCM.sln

@@ -13,4 +13,4 @@ else
 fi
 
 . environ
-xbuild /t:$TARGET /p:Configuration=$CONFIG /p:Platform=x86 LCM.sln
+xbuild /t:$TARGET /p:Configuration=$CONFIG /p:Platform=x86 /p:UseLocalFiles=False LCM.sln

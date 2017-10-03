@@ -18,6 +18,6 @@
 		<Delete Files="$(JobsFile)" ContinueOnError="true" />
 	</Target>
 
-	<Target Name="BeforeBuild" DependsOnTargets="DownloadDependencies">
+	<Target Name="BeforeBuild" DependsOnTargets="DownloadDependencies" Condition="'$(UseLocalFiles)'!='True'">
 	</Target>
 </Project>
