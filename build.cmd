@@ -12,4 +12,10 @@ if "%2"=="" (
     SET TARGET=%2
 )
 
-msbuild /t:%TARGET% /p:Configuration=%CONFIG% /p:Platform=x86 LCM.sln
+if "%3"=="" (
+	SET FILESAVAILABLE=False
+) else (
+	SET FILESAVAILABLE=%3
+)
+
+msbuild /t:%TARGET% /p:Configuration=%CONFIG% /p:Platform=x86 /p:UseLocalFiles=%FILESAVAILABLE% LCM.sln
