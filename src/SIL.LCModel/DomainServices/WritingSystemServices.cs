@@ -1607,8 +1607,8 @@ namespace SIL.LCModel.DomainServices
 		public static void UpdateWritingSystemId(LcmCache cache, CoreWritingSystemDefinition changedWs, string oldId)
 		{
 			var ws = changedWs.Handle;
-			StringServices.CrawlStrings(cache, (obj, str) => CheckForWs(obj, str, ws), (obj, ms) => CheckForWs(obj, ms, ws));
 			UpdateWritingSystemFields(cache, oldId, changedWs.Id);
+			StringServices.CrawlStrings(cache, (obj, str) => CheckForWs(obj, str, ws), (obj, ms) => CheckForWs(obj, ms, ws));
 		}
 
 		/// <summary>
