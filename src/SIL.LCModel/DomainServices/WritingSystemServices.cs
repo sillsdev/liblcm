@@ -1402,14 +1402,18 @@ namespace SIL.LCModel.DomainServices
 		{
 			ILcmServiceLocator servLocator = cache.ServiceLocator;
 
-			// When writing sytem code is changed, reversal index entries are preserved. (See LT-18256)
-			var reversalsToUpdate = servLocator.GetInstance<IReversalIndexRepository>().AllInstances().Where(reversalIndex =>
-				 reversalIndex.WritingSystem == origWsId).ToList();
-			foreach (var reversal in reversalsToUpdate)
+			if (newWsId != null)
 			{
-				reversal.WritingSystem = newWsId;
-				var wsName = servLocator.WritingSystemManager.WritingSystemStore.AllWritingSystems.First(x => x.LanguageTag == newWsId).DisplayLabel;
-				reversal.Name.SetAnalysisDefaultWritingSystem(wsName);
+				// When writing sytem code is changed, reversal index entries are preserved. (See LT-18256)
+				var reversalsToUpdate = servLocator.GetInstance<IReversalIndexRepository>().AllInstances().Where(reversalIndex =>
+					reversalIndex.WritingSystem == origWsId).ToList();
+				foreach (var reversal in reversalsToUpdate)
+				{
+					reversal.WritingSystem = newWsId;
+					var wsName = servLocator.WritingSystemManager.WritingSystemStore.AllWritingSystems
+						.First(x => x.LanguageTag == newWsId).DisplayLabel;
+					reversal.Name.SetAnalysisDefaultWritingSystem(wsName);
+				}
 			}
 
 			UpdateWritingSystemField(cache, servLocator.GetInstance<IWordformLookupListRepository>().AllInstances(),
