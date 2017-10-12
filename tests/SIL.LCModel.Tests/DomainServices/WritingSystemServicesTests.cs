@@ -291,6 +291,7 @@ namespace SIL.LCModel.DomainServices
 			testEntry.ReversalIndex.WritingSystem = "fr";
 			testEntry.ReversalForm.set_String(m_wsFr, "fr");
 			WritingSystemServices.UpdateWritingSystemFields(Cache, "fr", "blz");
+			Assert.DoesNotThrow(() => WritingSystemServices.UpdateWritingSystemFields(Cache, "fr", null));
 			Assert.That(testEntry.ReversalIndex.WritingSystem, Is.EqualTo("blz"));
 			Assert.That(testEntry.ReversalIndex.ShortName, Is.EqualTo("Balantak"));
 		}
