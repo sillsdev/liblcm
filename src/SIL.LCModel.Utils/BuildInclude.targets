@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
-	<Import Project="../../packages/BuildDependencyTasks.0.2.9.0/tools/BuildDependencyTasks.targets" Condition="Exists('../../packages/BuildDependencyTasks.0.2.9.0/tools/BuildDependencyTasks.targets')" />
+	<Import Project="../../packages/BuildDependencyTasks.0.4.0/tools/BuildDependencyTasks.targets" Condition="Exists('../../packages/BuildDependencyTasks.0.4.0/tools/BuildDependencyTasks.targets')" />
 
 	<PropertyGroup>
 		<LibDir>../../lib/</LibDir>
@@ -11,7 +11,7 @@
 	<Target Name="DownloadDependencies" Inputs="$(DependencyFile)" Outputs="$(JobsFile)">
 		<MakeDir Directories="$(LibDir)downloads" />
 		<Dependencies UseDependencyFile="True" DependencyFile="$(DependencyFile)" JobsFile="$(JobsFile)" KeepJobsFile="True"
-			WorkingDir="$(LibDir)" />
+			WorkingDir="$(LibDir)"  Platform="$(Platform)" />
 	</Target>
 
 	<Target Name="AfterClean">
