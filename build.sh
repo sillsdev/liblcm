@@ -16,6 +16,7 @@ if [ -z "$3" ] ; then
 	FILESAVAILABLE=False
 else
 	FILESAVAILABLE=$3
+fi
 
 . environ
 xbuild /t:$TARGET /p:Configuration=$CONFIG /p:Platform=x86 /p:UseLocalFiles=$FILESAVAILABLE LCM.sln
