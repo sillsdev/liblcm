@@ -10,7 +10,7 @@ Url=http://build.palaso.org
 Name=palaso-win-master Continuous
 RevisionName=lastSuccessful
 RevisionValue=latest.lastSuccessful
-Condition=Windows
+Condition=Win64
 Path=SIL.Core.dll => downloads/
 SIL.Core.pdb => downloads/
 SIL.Lexicon.dll => downloads/
@@ -62,3 +62,18 @@ icuin54.dll => downloads/x64
 icutu54.dll => downloads/x64
 icuuc54.dll => downloads/x64
 
+[TC::Libpalaso_PalasoWin32masterContinuous]
+Name=palaso-win32-master Continuous
+RevisionName=lastSuccessful
+RevisionValue=latest.lastSuccessful
+Condition=Win32
+Path=SIL.Core.dll => downloads/
+SIL.Core.pdb => downloads/
+SIL.Lexicon.dll => downloads/
+SIL.Lexicon.pdb => downloads/
+SIL.WritingSystems.dll => downloads/
+SIL.WritingSystems.pdb => downloads/
+SIL.TestUtilities.dll => downloads/
+Newtonsoft.Json.dll => downloads/
+icu.net.dll => downloads/
+Spart.dll => downloads/
