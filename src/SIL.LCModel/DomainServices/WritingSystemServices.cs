@@ -1415,6 +1415,15 @@ namespace SIL.LCModel.DomainServices
 					reversal.Name.SetAnalysisDefaultWritingSystem(wsName);
 				}
 			}
+			else
+			{
+				var condemnedReversals = servLocator.GetInstance<IReversalIndexRepository>().AllInstances().Where(reversalIndex =>
+					reversalIndex.WritingSystem == origWsId).ToList();
+				foreach (var condemnedReversal in condemnedReversals)
+				{
+					((ILexDb)condemnedReversal.Owner).ReversalIndexesOC.Remove(condemnedReversal);
+				}
+			}
 
 			UpdateWritingSystemField(cache, servLocator.GetInstance<IWordformLookupListRepository>().AllInstances(),
 				WordformLookupListTags.kflidWritingSystem, origWsId, newWsId);

@@ -255,6 +255,34 @@ namespace SIL.LCModel.DomainServices
 
 		/// <summary/>
 		[Test]
+		public void DeleteWritingSystem()
+		{
+			int m_wsEn = Cache.WritingSystemFactory.GetWsFromStr("en");
+			int m_wsFr = Cache.WritingSystemFactory.GetWsFromStr("fr");
+
+			CoreWritingSystemDefinition enBlz;
+			WritingSystemServices.FindOrCreateWritingSystem(Cache, null, "blz", false, false, out enBlz);
+
+			var revIndex = Cache.ServiceLocator.GetInstance<IReversalIndexRepository>().FindOrCreateIndexForWs(m_wsEn);
+
+			var entry1 = SenseOrEntryTests.CreateInterestingLexEntry(Cache);
+			var msa1 = Cache.ServiceLocator.GetInstance<IMoStemMsaFactory>().Create();
+			entry1.MorphoSyntaxAnalysesOC.Add(msa1);
+			entry1.SensesOS.First().MorphoSyntaxAnalysisRA = msa1;
+
+			var testEntry = revIndex.FindOrCreateReversalEntry("first");
+			entry1.SensesOS.First().ReversalEntriesRC.Add(testEntry);
+
+			testEntry.ReversalIndex.WritingSystem = "fr";
+			testEntry.ReversalForm.set_String(m_wsFr, "fr");
+			WritingSystemServices.UpdateWritingSystemFields(Cache, "fr", "blz");
+			Assert.That(testEntry.ReversalIndex.WritingSystem, Is.EqualTo("blz"));
+			WritingSystemServices.DeleteWritingSystem(Cache, enBlz);
+			Assert.IsFalse(testEntry.IsValidObject);
+		}
+
+		/// <summary/>
+		[Test]
 		public void UpdateWritingSystemListField_RemovesMergedCodeBeforeMergeWith()
 		{
 			Cache.LangProject.AnalysisWss = "fr-NO en fr";
