@@ -255,6 +255,28 @@ namespace SIL.LCModel.DomainServices
 
 		/// <summary/>
 		[Test]
+		public void DeleteWritingSystem()
+		{
+			CoreWritingSystemDefinition wsBlz;
+			WritingSystemServices.FindOrCreateWritingSystem(Cache, null, "blz", false, false, out wsBlz);
+
+			var revIndex = Cache.ServiceLocator.GetInstance<IReversalIndexRepository>().FindOrCreateIndexForWs(wsBlz.Handle);
+			Cache.LangProject.LexDbOA.ReversalIndexesOC.Add(revIndex);
+			var entry1 = SenseOrEntryTests.CreateInterestingLexEntry(Cache);
+
+			var testEntry = revIndex.FindOrCreateReversalEntry("first");
+			entry1.SensesOS.First().ReversalEntriesRC.Add(testEntry);
+
+			testEntry.ReversalIndex.WritingSystem = "blz";
+			testEntry.ReversalForm.set_String(wsBlz.Handle, "blz");
+			Assert.That(testEntry.ReversalIndex.WritingSystem, Is.EqualTo("blz"));
+			WritingSystemServices.DeleteWritingSystem(Cache, wsBlz);
+			Assert.IsFalse(testEntry.IsValidObject);
+			Assert.IsFalse(Cache.LangProject.LexDbOA.ReversalIndexesOC.Contains(revIndex));
+		}
+
+		/// <summary/>
+		[Test]
 		public void UpdateWritingSystemListField_RemovesMergedCodeBeforeMergeWith()
 		{
 			Cache.LangProject.AnalysisWss = "fr-NO en fr";
