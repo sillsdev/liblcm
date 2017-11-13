@@ -17,6 +17,7 @@ using SIL.LCModel.Application.ApplicationServices;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Core.WritingSystems;
+using SIL.LCModel.DomainImpl;
 using SIL.LCModel.Infrastructure;
 using SIL.LCModel.Utils;
 using SIL.WritingSystems;
@@ -1424,6 +1425,15 @@ namespace SIL.LCModel.DomainServices
 					((ILexDb)condemnedReversal.Owner).ReversalIndexesOC.Remove(condemnedReversal);
 				}
 			}
+
+			var homographConfig = cache.ServiceLocator.GetInstance<HomographConfiguration>();
+			if (newWsId == null)
+			{
+				homographConfig.WritingSystem = string.Empty;
+				homographConfig.CustomHomographNumbers = new List<string>();
+			}
+			else
+				homographConfig.WritingSystem = newWsId;
 
 			UpdateWritingSystemField(cache, servLocator.GetInstance<IWordformLookupListRepository>().AllInstances(),
 				WordformLookupListTags.kflidWritingSystem, origWsId, newWsId);
