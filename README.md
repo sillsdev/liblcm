@@ -38,3 +38,10 @@ Debugging
 The LCModel library depends on multiple libpalaso files that are downloaded automatically by triggering the build script. The option to build liblcm using locally built dependencies is also available to assist with debugging. Copy all of the relevent files from the libpalaso output folder into the lib/downloads folder in liblcm, then build with the command:
 
     build.(cmd|sh) Debug Build True
+
+Tests
+-----
+
+Linux
+
+    (. environ && cd artifacts/Debug/ && ICU_DATA="IcuData/" nunit-console SIL.LCModel*Tests.dll )
