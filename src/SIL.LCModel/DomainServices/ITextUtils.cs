@@ -767,6 +767,10 @@ namespace SIL.LCModel.DomainServices
 					}
 				}
 				tssWord = m_wordMaker.NextWord(out ichMin, out ichLim);
+				if (tssWord == null)
+				{
+					tssFirstWordOfNextSegment = tssWord;
+				}
 			} while (true);
 			return formsInSegment;
 		}
