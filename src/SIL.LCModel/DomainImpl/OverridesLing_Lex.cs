@@ -3990,6 +3990,7 @@ namespace SIL.LCModel.DomainImpl
 		private void RemoveDuplicateRefs()
 		{
 			int index = 0;
+			List<IReferenceSource> refsToRemove = new List<IReferenceSource>();
 			var refsList = new Dictionary<int, int>();
 			foreach (var item in m_incomingRefs)
 			{
@@ -3999,10 +4000,16 @@ namespace SIL.LCModel.DomainImpl
 				else
 				{
 					var prevRef = m_incomingRefs.ElementAt(refsList[sequence.MainObject.Hvo]);
-					m_incomingRefs.Remove(prevRef);
+					refsToRemove.Add(prevRef);
 					refsList[sequence.MainObject.Hvo] = index;
 				}
 				index++;
+			}
+
+			if (refsToRemove.Count > 0)
+			{
+				foreach (var refItem in refsToRemove)
+					m_incomingRefs.Remove(refItem);
 			}
 		}
 
