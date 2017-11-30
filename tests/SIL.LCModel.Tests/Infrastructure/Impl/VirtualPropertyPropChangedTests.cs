@@ -890,22 +890,10 @@ namespace SIL.LCModel.Infrastructure.Impl
 				{
 					lexRef.TargetsRS.Add(sense2);
 				});
-			// The numbers added here are strange, reflecting that the update code doesn't know the old
-			// value of the virtual property and pretends it was previously empty. Thus for example, because
-			// lexRef now points at sense2 twice, there are now two backrefs from sense2 to lexRef.
-			// The PropChanged is sent as if both were new.
-			CheckChange(LexSenseTags.kClassId, sense2, "LexSenseReferences", 0, 2, 0,
-						"Adding second sense from LexReference should update LexSenseReferences of added sense");
 
-			PrepareToTrackPropChanged();
-			UndoableUnitOfWorkHelper.Do("undo remove target", "redo", m_actionHandler,
-				() =>
-				{
-					lexRef.TargetsRS.Remove(sense2);
-				});
-			// We're now back to one backref from sense2 to lexRef. The PropChanged can only show this as an insertion!
+			//Previously two references were added this error has been fixed
 			CheckChange(LexSenseTags.kClassId, sense2, "LexSenseReferences", 0, 1, 0,
-						"Removing one of two copies of sense from LexReference should update LexSenseReferences of removed sense");
+						"Adding second sense from LexReference should update LexSenseReferences of added sense");
 
 			PrepareToTrackPropChanged();
 			UndoableUnitOfWorkHelper.Do("undo remove target", "redo", m_actionHandler,

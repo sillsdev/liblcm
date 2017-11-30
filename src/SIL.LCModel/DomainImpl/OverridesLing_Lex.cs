@@ -3970,6 +3970,8 @@ namespace SIL.LCModel.DomainImpl
 			{
 				((ICmObjectRepositoryInternal) Services.ObjectRepository).EnsureCompleteIncomingRefsFrom(
 					LexReferenceTags.kflidTargets);
+				//On Undo, possibly chances of duplicates of LexReference. Hence we removed the invalid references.
+				RemoveDuplicateRefs();
 				foreach (var item in m_incomingRefs)
 				{
 					var sequence = item as LcmReferenceSequence<ICmObject>;
@@ -3978,6 +3980,36 @@ namespace SIL.LCModel.DomainImpl
 					if (sequence.Flid == LexReferenceTags.kflidTargets)
 						yield return sequence.MainObject as ILexReference;
 				}
+			}
+		}
+
+		/// <summary>
+		/// LT-18771 - Method to remove the duplicated references occurs on Undo process, 
+		/// the first one of duplicated item becomes invalid. So we removed here.
+		/// </summary>
+		private void RemoveDuplicateRefs()
+		{
+			int index = 0;
+			List<IReferenceSource> refsToRemove = new List<IReferenceSource>();
+			var refsList = new Dictionary<int, int>();
+			foreach (var item in m_incomingRefs)
+			{
+				var sequence = item as LcmReferenceSequence<ICmObject>;
+				if (!refsList.ContainsKey(sequence.MainObject.Hvo))
+					refsList.Add(sequence.MainObject.Hvo, index);
+				else
+				{
+					var prevRef = m_incomingRefs.ElementAt(refsList[sequence.MainObject.Hvo]);
+					refsToRemove.Add(prevRef);
+					refsList[sequence.MainObject.Hvo] = index;
+				}
+				index++;
+			}
+
+			if (refsToRemove.Count > 0)
+			{
+				foreach (var refItem in refsToRemove)
+					m_incomingRefs.Remove(refItem);
 			}
 		}
 
