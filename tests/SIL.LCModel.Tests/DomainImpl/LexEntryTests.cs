@@ -692,13 +692,16 @@ namespace SIL.LCModel.DomainImpl
 					complex.AddComponent(component);
 				});
 			Assert.That(complex.EntryRefsOS.Count, Is.EqualTo(2));
-			var entryRef = complex.EntryRefsOS[1];
-			Assert.That(entryRef.RefType, Is.EqualTo(LexEntryRefTags.krtComplexForm));
-			Assert.That(entryRef.ComponentLexemesRS.Count, Is.EqualTo(1));
-			Assert.That(entryRef.ComponentLexemesRS[0], Is.EqualTo(component));
-			Assert.That(entryRef.PrimaryLexemesRS.Count, Is.EqualTo(1));
-			Assert.That(entryRef.PrimaryLexemesRS[0], Is.EqualTo(component));
-			Assert.That(entryRef.HideMinorEntry, Is.EqualTo(0));
+			var entryRef1 = complex.EntryRefsOS[0];
+			Assert.That(entryRef1.VariantEntryTypesRS.Count, Is.EqualTo(1));
+			Assert.That(entryRef1.VariantEntryTypesRS[0].Guid, Is.EqualTo(LexEntryTypeTags.kguidLexTypeUnspecifiedVar));
+			var entryRef2 = complex.EntryRefsOS[1];
+			Assert.That(entryRef2.RefType, Is.EqualTo(LexEntryRefTags.krtComplexForm));
+			Assert.That(entryRef2.ComponentLexemesRS.Count, Is.EqualTo(1));
+			Assert.That(entryRef2.ComponentLexemesRS[0], Is.EqualTo(component));
+			Assert.That(entryRef2.PrimaryLexemesRS.Count, Is.EqualTo(1));
+			Assert.That(entryRef2.PrimaryLexemesRS[0], Is.EqualTo(component));
+			Assert.That(entryRef2.HideMinorEntry, Is.EqualTo(0));
 			Assert.That(complex.LexemeFormOA.MorphTypeRA, Is.EqualTo(
 				Cache.ServiceLocator.GetInstance<IMoMorphTypeRepository>().GetObject(MoMorphTypeTags.kguidMorphStem)),
 				"a complex form cannot be a root");
