@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
@@ -74,7 +75,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			if (reader == null) throw new ArgumentNullException("reader");
 
-			return Int32.Parse(reader.Attribute("val").Value);
+			return int.Parse(reader.Attribute("val").Value, CultureInfo.InvariantCulture);
 		}
 
 		/// <summary>
