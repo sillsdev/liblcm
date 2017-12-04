@@ -1324,7 +1324,9 @@ namespace SIL.LCModel.DomainImpl
 			}
 			else
 			{
-				ler.VariantEntryTypesRS.Add(Cache.LangProject.LexDbOA.VariantEntryTypesOA.PossibilitiesOS[0] as ILexEntryType);
+				int defVariantIdx = Cache.LangProject.LexDbOA.VariantEntryTypesOA.PossibilitiesOS.Where(e =>
+					e.Guid == LexEntryTypeTags.kguidLexTypeUnspecifiedVar).Select(x => x.IndexInOwner).FirstOrDefault();
+				ler.VariantEntryTypesRS.Add(Cache.LangProject.LexDbOA.VariantEntryTypesOA.PossibilitiesOS[defVariantIdx] as ILexEntryType);
 			}
 			return ler;
 		}
