@@ -1665,7 +1665,7 @@ namespace SIL.LCModel.DomainImpl
 				if (InflFeatsOA != srcMsa.InflFeatsOA)
 					CopyObject<IFsFeatStruc>.CloneLcmObject(srcMsa.InflFeatsOA, newMsa => InflFeatsOA = newMsa);
 				RemoveInvalidFeatureSpecs(PartOfSpeechRA, InflFeatsOA);
-				if (InflFeatsOA.IsEmpty)
+				if (InflFeatsOA.IsEmpty || InflFeatsOA.FeatureSpecsOC.Count == 0)
 					InflFeatsOA = null;
 			}
 		}
