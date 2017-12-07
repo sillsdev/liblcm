@@ -353,6 +353,7 @@ namespace SIL.LCModel.DomainImpl
 			Assert.That(mdsm.FeaturesTSS.Text, Is.EqualTo(featSpec6.ShortNameTSS.Text),
 				"4 with one features (MsInflFeatsOA). FeaturesTSS should not be an empty string");		}
 
+
 		/// <summary>
 		/// Test the ExceptionFeaturesTSS virtual property.
 		/// </summary>
@@ -2062,6 +2063,72 @@ namespace SIL.LCModel.DomainImpl
 			// match feature structures
 			stemMsa1.MsFeaturesOA.AddFeatureFromXml(itemFem, Cache.LangProject.MsFeatureSystemOA);
 			Assert.IsTrue(stemMsa1.EqualsMsa(stemMsa2), "stemMsa1 & stemMsa2 should be equal with matching feature structure");
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		[Test]
+		public void OnRefresh_SetNullInflFeatsOAWhenInvalidFeature()
+		{
+			ILangProject lp = Cache.LangProject;
+			ILexEntry le = MakeLexEntry("xyzTest1", "xyzDefn1.1");
+
+			IMoInflAffMsa infAffixMsa1 = Cache.ServiceLocator.GetInstance<IMoInflAffMsaFactory>().Create();
+			IMoInflAffMsa infAffixMsa2 = Cache.ServiceLocator.GetInstance<IMoInflAffMsaFactory>().Create();
+			IMoStemMsa stemMsa = Cache.ServiceLocator.GetInstance<IMoStemMsaFactory>().Create();
+			;
+			IMoDerivAffMsa derivAffixMsa = Cache.ServiceLocator.GetInstance<IMoDerivAffMsaFactory>().Create();
+			IMoUnclassifiedAffixMsa unclassifiedAffixMsa =
+				Cache.ServiceLocator.GetInstance<IMoUnclassifiedAffixMsaFactory>().Create();
+
+			le.MorphoSyntaxAnalysesOC.Add(infAffixMsa1);
+			le.MorphoSyntaxAnalysesOC.Add(infAffixMsa2);
+			le.MorphoSyntaxAnalysesOC.Add(stemMsa);
+			le.MorphoSyntaxAnalysesOC.Add(derivAffixMsa);
+			le.MorphoSyntaxAnalysesOC.Add(unclassifiedAffixMsa);
+
+			// Verify we fail comparing on different MSA types.
+			Assert.IsFalse(infAffixMsa1.EqualsMsa(stemMsa));
+			Assert.IsFalse(infAffixMsa1.EqualsMsa(derivAffixMsa));
+			Assert.IsFalse(infAffixMsa1.EqualsMsa(unclassifiedAffixMsa));
+
+			// Verify that infAffixMsa1 equals itself.
+			Assert.IsTrue(infAffixMsa1.EqualsMsa(infAffixMsa1), infAffixMsa1 + " - should equal itself.");
+
+			// Verify that infAffixMsa1 equals infAffixMsa2
+			Assert.IsTrue(infAffixMsa1.EqualsMsa(infAffixMsa2),
+				infAffixMsa1.ToString() + " - should equal - " + infAffixMsa2);
+
+			// compare with on different PartOfSpeech
+			ILcmOwningSequence<ICmPossibility> posSeq = lp.PartsOfSpeechOA.PossibilitiesOS;
+			IPartOfSpeech pos1 = Cache.ServiceLocator.GetInstance<IPartOfSpeechFactory>().Create();
+			posSeq.Add(pos1);
+			IPartOfSpeech pos2 = Cache.ServiceLocator.GetInstance<IPartOfSpeechFactory>().Create();
+			posSeq.Add(pos2);
+
+			infAffixMsa1.PartOfSpeechRA = pos1;
+			infAffixMsa2.PartOfSpeechRA = pos2;
+			Assert.IsTrue(infAffixMsa1.PartOfSpeechRA != infAffixMsa2.PartOfSpeechRA, "msa POSes should not be equal.");
+			Assert.IsFalse(infAffixMsa1.EqualsMsa(infAffixMsa2),
+				"infAffixMsa1 should not be equal to infAffixMsa2 due to different POS");
+
+			// compare different InflFeats
+			XmlDocument doc = new XmlDocument();
+			doc.LoadXml(MoreCellarTests.ksFS1);
+			XmlNode itemNeut = doc.SelectSingleNode("/item/item[3]");
+			XmlNode itemFem = doc.SelectSingleNode("/item/item[2]");
+			var featStruc1 = Cache.ServiceLocator.GetInstance<IFsFeatStrucFactory>().Create();
+			var featStruc2 = Cache.ServiceLocator.GetInstance<IFsFeatStrucFactory>().Create();
+			infAffixMsa1.InflFeatsOA = featStruc1;
+			infAffixMsa2.InflFeatsOA = featStruc2;
+			infAffixMsa1.InflFeatsOA.AddFeatureFromXml(itemNeut, Cache.LangProject.MsFeatureSystemOA);
+			infAffixMsa2.InflFeatsOA.AddFeatureFromXml(itemFem, Cache.LangProject.MsFeatureSystemOA);
+			Assert.IsNotNull(infAffixMsa1.InflFeatsOA, "InflFeatsOA should not be null");
+
+			// change to POS with incompatible features
+			infAffixMsa1.PartOfSpeechRA = infAffixMsa2.PartOfSpeechRA;
+			Assert.IsNull(infAffixMsa1.InflFeatsOA, "InflFeatsOA should be null when 'FeatureSpecsOC' count is 0.");
 		}
 
 		/// <summary>
