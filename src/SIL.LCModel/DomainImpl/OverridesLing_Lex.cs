@@ -3997,6 +3997,8 @@ namespace SIL.LCModel.DomainImpl
 			foreach (var item in m_incomingRefs)
 			{
 				var sequence = item as LcmReferenceSequence<ICmObject>;
+				if (sequence == null)
+					continue;
 				if (!refsList.ContainsKey(sequence.MainObject.Hvo))
 					refsList.Add(sequence.MainObject.Hvo, index);
 				else
