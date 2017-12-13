@@ -1645,11 +1645,11 @@ namespace SIL.LCModel.Core.Text
 		private static int GetIntValueFromStr(string str, bool fAllowNegative)
 		{
 			if (fAllowNegative)
-				return int.Parse(str);
+				return int.Parse(str, CultureInfo.InvariantCulture);
 
 			try
 			{
-				return (int)uint.Parse(str);
+				return (int)uint.Parse(str, CultureInfo.InvariantCulture);
 			}
 			catch (OverflowException)
 			{

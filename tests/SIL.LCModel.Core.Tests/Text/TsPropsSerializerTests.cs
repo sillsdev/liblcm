@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.Threading;
 using System.Xml.Schema;
 using NUnit.Framework;
 using SIL.LCModel.Core.KernelInterfaces;
@@ -1419,6 +1421,23 @@ namespace SIL.LCModel.Core.Text
 		public void DeserializePropsFromXml_NegativeOffset()
 		{
 			CheckDeserializeIntProp("offset='-10' offsetUnit='mpt'", FwTextPropType.ktptOffset, -10, FwTextPropVar.ktpvMilliPoint);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the DeserializePropsFromXml method with a 'offset' attribute with a negative
+		/// value when the culture is set to override the - symbol.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void DeserializePropsFromXml_NegativeOffset_CurrentCultureRedefinesNegativeSign()
+		{
+			var oldCI = Thread.CurrentThread.CurrentCulture;
+			var ci = new CultureInfo("fi");
+			ci.NumberFormat.NegativeSign = "+";
+			Thread.CurrentThread.CurrentCulture = ci;
+			CheckDeserializeIntProp("offset='-10' offsetUnit='mpt'", FwTextPropType.ktptOffset, -10, FwTextPropVar.ktpvMilliPoint);
+			Thread.CurrentThread.CurrentCulture = oldCI;
 		}
 
 		/// ------------------------------------------------------------------------------------
