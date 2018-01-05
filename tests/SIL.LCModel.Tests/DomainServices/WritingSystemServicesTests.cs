@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.DomainImpl;
@@ -217,6 +218,42 @@ namespace SIL.LCModel.DomainServices
 			WritingSystemServices.GetMagicStringAlt(Cache, Cache.MainCacheAccessor,
 																 WritingSystemServices.kwsFirstPronunciation, entry.Hvo, entry.CitationForm.Flid, false, out wsId);
 			Assert.AreEqual(wsId, senId, "Did not pull second pronuciation language when first was empty.");
+		}
+
+		/// <summary>The first vernacular WS in a given paragraph. Not the most-prevalent, not the default, not the first analysis.</summary>
+		[Test]
+		public void GetMagicStringAlt_TestVernInPara()
+		{
+			// set up project writing systems
+			Cache.LangProject.CurrentVernacularWritingSystems.Clear();
+			Cache.LangProject.CurrentAnalysisWritingSystems.Clear();
+			CoreWritingSystemDefinition mluWs, senWs, engWs;
+			WritingSystemServices.FindOrCreateWritingSystem(Cache, null, "mlu", false, true, out mluWs);
+			WritingSystemServices.FindOrCreateWritingSystem(Cache, null, "sen", false, true, out senWs);
+			WritingSystemServices.FindOrCreateWritingSystem(Cache, null, "en", true, false, out engWs);
+			Cache.LangProject.AddToCurrentVernacularWritingSystems(mluWs);
+			Cache.LangProject.AddToCurrentVernacularWritingSystems(senWs);
+			Cache.LangProject.AddToCurrentAnalysisWritingSystems(engWs);
+			var mluId = mluWs.Handle;
+			var senId = senWs.Handle;
+			var engId = engWs.Handle;
+
+			// set up a paragraph that starts with Anal and ends with Vern
+			var tssf = new TsStrFactory();
+			var tssb = tssf.GetBldr();
+			tssb.Append(tssf.MakeString("Analysis ", engId));
+			tssb.Append(tssf.MakeString("Vernacular ", senId));
+			tssb.Append(tssf.MakeString("Other Vernacular ", mluId));
+			var paraBldr = Cache.ServiceLocator.GetInstance<StTxtParaBldr>();
+			var stText = Cache.ServiceLocator.GetInstance<IStTextFactory>().Create();
+			Cache.ServiceLocator.GetInstance<ITextFactory>().Create().ContentsOA = stText; // needed to put a Cache in stText
+			var para = paraBldr.CreateParagraph(stText);
+			para.Contents = tssb.GetString();
+
+			// SUT
+			int wsId;
+			WritingSystemServices.GetMagicStringAlt(Cache, Cache.MainCacheAccessor, WritingSystemServices.kwsVernInParagraph, para.Hvo, 0, false, out wsId);
+			Assert.AreEqual(senId, wsId, "The first vernacular WS in the para is 'sen'");
 		}
 
 		/// <summary>
