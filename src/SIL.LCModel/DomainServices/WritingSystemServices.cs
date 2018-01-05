@@ -770,7 +770,7 @@ namespace SIL.LCModel.DomainServices
 							hvoPara = hvo;
 							break;
 						case StTextTags.kClassId:
-							// just get the first paragraph.
+							// get the first paragraph. REVIEW (Hasso) 2018.01: the first occurence of a Vern WS could be in a following paragraph.
 							var stText = (IStText) cache.ServiceLocator.GetObject(hvo);
 							IStPara para = stText.ParagraphsOS.FirstOrDefault();
 							if (para != null)
@@ -781,13 +781,28 @@ namespace SIL.LCModel.DomainServices
 							// paragraph, and get the first one, but for now, just fall through.
 							break;
 					}
-
-
-					if (hvoPara != 0)
+					if (retWs != 0)
 					{
-						retWs = TsStringUtils.GetWsAtOffset(cache.ServiceLocator.GetInstance<IStTxtParaRepository>().GetObject(hvoPara).Contents, 0);
+						break;
 					}
-					else
+					if (hvoPara == 0)
+					{
+						retWs = defaultVernWs;
+						break;
+					}
+
+					// Find the first vernacular WS in the paragraph
+					var allVerns = new HashSet<int>(cache.LanguageProject.CurrentVernacularWritingSystems.Handles());
+					foreach (var run in cache.ServiceLocator.GetInstance<IStTxtParaRepository>().GetObject(hvoPara).Contents.Runs())
+					{
+						var runWs = run.Props.GetWs();
+						if (allVerns.Contains(runWs))
+						{
+							retWs = runWs;
+							break;
+						}
+					}
+					if (retWs == 0)
 					{
 						retWs = defaultVernWs;
 					}
