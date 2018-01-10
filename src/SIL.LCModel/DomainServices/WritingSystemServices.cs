@@ -577,11 +577,6 @@ namespace SIL.LCModel.DomainServices
 
 		}
 
-		/*----------------------------------------------------------------------------------------------
-
-			@param ws
-			@return a real writing system
-		----------------------------------------------------------------------------------------------*/
 		/// <summary>
 		/// Convert a writing system (could be magic) to a real writing system.
 		/// </summary>
@@ -602,11 +597,6 @@ namespace SIL.LCModel.DomainServices
 			return retWs;
 		}
 
-		/*----------------------------------------------------------------------------------------------
-
-			@param ws
-			@return a real writing system
-		----------------------------------------------------------------------------------------------*/
 		/// <summary>
 		/// Convert a writing system (could be magic) to a real writing system.
 		/// </summary>
@@ -736,6 +726,20 @@ namespace SIL.LCModel.DomainServices
 		}
 
 		/// <summary>
+		/// Extract a string and writing system from an object, flid, and 'magic' writing system code.
+		/// </summary>
+		/// <param name="cache">The cache.</param>
+		/// <param name="ws">Writing system to convert, which may be a 'magic'</param>
+		/// <param name="hvo">Hvo that owns the string.</param>
+		/// <param name="flid">Flid for the owned string.</param>
+		/// <param name="fWantString">false if we don't really care about the string. This allows clients to avoid retrieving it at all.</param>
+		/// <param name="retWs">Retrieves the actual ws that the returned string belongs to.</param>
+		public static ITsString GetMagicStringAlt(LcmCache cache, int ws, int hvo, int flid, bool fWantString, out int retWs)
+		{
+			return GetMagicStringAlt(cache, cache.DomainDataByFlid, ws, hvo, flid, fWantString, out retWs);
+		}
+
+		/// <summary>
 		/// Get a magic writing system alternative, for an object which may possibly be a fake known only to the
 		/// sda passed in.
 		/// </summary>
@@ -759,7 +763,7 @@ namespace SIL.LCModel.DomainServices
 				case kwsVernInParagraph:
 					// Even if we don't pass in a twfic, we can guess the ws in general for a text's paragraph
 					// is the ws of the first character in its string.
-					int hvoPara = 0;
+					IStTxtPara para = null;
 					switch (sda.get_IntProp(hvo, CmObjectTags.kflidClass))
 					{
 						case CmBaseAnnotationTags.kClassId:
@@ -767,25 +771,20 @@ namespace SIL.LCModel.DomainServices
 							retWs = TsStringUtils.GetWsAtOffset(((IStTxtPara) ann.BeginObjectRA).Contents, ann.BeginOffset);
 							break;
 						case StTxtParaTags.kClassId:
-							hvoPara = hvo;
+						case ScrTxtParaTags.kClassId:
+							para = cache.ServiceLocator.GetInstance<IStTxtParaRepository>().GetObject(hvo);
 							break;
 						case StTextTags.kClassId:
 							// get the first paragraph. REVIEW (Hasso) 2018.01: the first occurence of a Vern WS could be in a following paragraph.
 							var stText = (IStText) cache.ServiceLocator.GetObject(hvo);
-							IStPara para = stText.ParagraphsOS.FirstOrDefault();
-							if (para != null)
-								hvoPara = para.Hvo;
-							break;
-						default:
-							// todo: we could try to see if the flid's destination class is a
-							// paragraph, and get the first one, but for now, just fall through.
+							para = stText.ParagraphsOS.FirstOrDefault() as IStTxtPara;
 							break;
 					}
 					if (retWs != 0)
 					{
 						break;
 					}
-					if (hvoPara == 0)
+					if (para == null)
 					{
 						retWs = defaultVernWs;
 						break;
@@ -793,7 +792,7 @@ namespace SIL.LCModel.DomainServices
 
 					// Find the first vernacular WS in the paragraph
 					var allVerns = new HashSet<int>(cache.LanguageProject.CurrentVernacularWritingSystems.Handles());
-					foreach (var run in cache.ServiceLocator.GetInstance<IStTxtParaRepository>().GetObject(hvoPara).Contents.Runs())
+					foreach (var run in para.Contents.Runs())
 					{
 						var runWs = run.Props.GetWs();
 						if (allVerns.Contains(runWs))
@@ -1063,36 +1062,12 @@ namespace SIL.LCModel.DomainServices
 			return 0;
 		}
 
-
-		/// <summary>
-		/// Extract a string and writing system from an object, flid, and 'magic' writing
-		/// system code.
-		/// </summary>
-		/// <param name="cache">The cache.</param>
-		/// <param name="ws">Writing system to convert, which may be a 'magic'</param>
-		/// <param name="hvo">Hvo that owns the string.</param>
-		/// <param name="flid">Flid for the owned string.</param>
-		/// <param name="fWantString">false if we don't really care about the string.
-		/// This allows some branches to avoid retrieving it at all.</param>
-		/// <param name="retWs">Retrieves the actual ws that the returned string
-		/// belongs to.</param>
-		/// <returns></returns>
-		public static ITsString GetMagicStringAlt(LcmCache cache, int ws, int hvo, int flid, bool fWantString, out int retWs)
-		{
-			return GetMagicStringAlt(cache, cache.DomainDataByFlid, ws, hvo, flid, fWantString, out retWs);
-		}
-
 		/// <summary>
 		/// first try wsPreferred, then wsSecondary (both can be a magic).
 		/// </summary>
-		/// <param name="cache">The cache.</param>
-		/// <param name="wsPreferred">(can be magic)</param>
-		/// <param name="wsSecondary">(can be magic)</param>
-		/// <param name="hvoOwner">The hvo owner.</param>
-		/// <param name="flidOwning">The flid owning.</param>
-		/// <param name="actualWs">The actual ws.</param>
-		/// <param name="tssResult">The TSS result.</param>
-		/// <returns></returns>
+		/// <returns>
+		/// true if ws is real and tssResult has content (length greater than 0)
+		/// </returns>
 		public static bool TryWs(LcmCache cache, int wsPreferred, int wsSecondary, int hvoOwner, int flidOwning, out int actualWs, out ITsString tssResult)
 		{
 			return TryWs(cache, wsPreferred, hvoOwner, flidOwning, out actualWs, out tssResult)
@@ -1101,16 +1076,10 @@ namespace SIL.LCModel.DomainServices
 
 
 		/// <summary>
-		/// Try the given ws and return the resulting tss and actualWs.
+		/// Try the given ws (can be magic) and return the resulting tss and actualWs.
 		/// </summary>
-		/// <param name="cache">The cache.</param>
-		/// <param name="ws">The ws.</param>
-		/// <param name="hvoOwner">The hvo owner.</param>
-		/// <param name="flidOwning">The flid owning.</param>
-		/// <param name="actualWs">The actual ws.</param>
-		/// <param name="tssResult">The TSS result.</param>
 		/// <returns>
-		/// true if ws is nonzero and tssResult has content (length greater than 0)
+		/// true if ws is real and tssResult has content (length greater than 0)
 		/// </returns>
 		public static bool TryWs(LcmCache cache, int ws, int hvoOwner, int flidOwning, out int actualWs, out ITsString tssResult)
 		{
