@@ -687,6 +687,11 @@ namespace SIL.LCModel.DomainServices
 						// just set the Form.
 						wmb.Form.SetVernacularDefaultWritingSystem((string)morphForm);
 					}
+					else if (morphForm is ITsString)
+					{
+						var tssMf = (ITsString)morphForm;
+						wmb.Form.set_String(TsStringUtils.GetWsAtOffset(tssMf, 0), tssMf);
+					}
 					else if (morphForm is IMoForm)
 					{
 						wmb.MorphRA = morphForm as IMoForm;
