@@ -553,34 +553,31 @@ namespace SIL.LCModel.DomainServices
 		/// It is for ReversalIndexEntry
 		/// </summary>
 		[Test]
-		public void ReferringSenses()
+		public void ReversalEntries()
 		{
-			// Verify that if we make three lex entries whose senses all refer to niño,
-			// that the reversal index shows them in alphabetical order: boy, child, girl.
-			var girl = (LexEntry)MakeEntry("girl", "niño");
-			var senseGirl = girl.SensesOS.First();
-			var boy = (LexEntry)MakeEntry("boy", "niño");
-			var senseBoy = boy.SensesOS.First();
-			var child = (LexEntry)MakeEntry("child", "niño");
-			var senseChild = child.SensesOS.First();
+			// Verify that if we make three reversal index entries that point at the same sense,
+			// that the sense shows them in alphabetical order: boy, child, girl.
+			var childEntry = (LexEntry)MakeEntry("child", "niño");
+			var childSense = childEntry.SensesOS.First();
 
 			var lexDb = Cache.ServiceLocator.GetInstance<ILexDbRepository>().Singleton;
 			var ri = Cache.ServiceLocator.GetInstance<IReversalIndexFactory>().Create();
 			lexDb.ReversalIndexesOC.Add(ri);
-			var rie = MakeReversalIndexReference(senseGirl, "niño", ri);
-			senseBoy.ReversalEntriesRC.Add(rie);
-			senseChild.ReversalEntriesRC.Add(rie);
+			var child = MakeReversalIndexReference(childSense, "el pequeño", ri);
+			var boy = MakeReversalIndexReference(childSense, "niño", ri);
+			var girl = MakeReversalIndexReference(childSense, "niña", ri);
 
-			Assert.That(rie.ReferringSenses.First(), Is.EqualTo(senseBoy));
-			Assert.That(rie.ReferringSenses.Skip(1).First(), Is.EqualTo(senseChild));
-			Assert.That(rie.ReferringSenses.Last(), Is.EqualTo(senseGirl));
+			Assert.That(childSense.ReferringReversalIndexEntries.First(), Is.EqualTo(child));
+			Assert.That(childSense.ReferringReversalIndexEntries.Skip(1).First(), Is.EqualTo(girl));
+			Assert.That(childSense.ReferringReversalIndexEntries.Last(), Is.EqualTo(boy));
 
 			// we now manually reorder the senses
-			var flid = Cache.MetaDataCacheAccessor.GetFieldId2(ReversalIndexEntryTags.kClassId, "ReferringSenses", false);
-			VirtualOrderingServices.SetVO(rie, flid, new ICmObject[] { senseGirl, senseChild, senseBoy });
-			Assert.That(rie.ReferringSenses.First(), Is.EqualTo(senseGirl));
-			Assert.That(rie.ReferringSenses.Skip(1).First(), Is.EqualTo(senseChild));
-			Assert.That(rie.ReferringSenses.Last(), Is.EqualTo(senseBoy));
+			var flid = Cache.MetaDataCacheAccessor.GetFieldId2(LexSenseTags.kClassId, "ReferringReversalIndexEntries", false);
+			VirtualOrderingServices.SetVO(childSense, flid, new ICmObject[] { boy, girl, child });
+
+			Assert.That(childSense.ReferringReversalIndexEntries.First(), Is.EqualTo(boy));
+			Assert.That(childSense.ReferringReversalIndexEntries.Skip(1).First(), Is.EqualTo(girl));
+			Assert.That(childSense.ReferringReversalIndexEntries.Last(), Is.EqualTo(child));
 		}
 
 		private IReversalIndexEntry MakeReversalIndexReference(ILexSense sense, string gloss, IReversalIndex ri)
@@ -589,7 +586,7 @@ namespace SIL.LCModel.DomainServices
 			ri.EntriesOC.Add(rie);
 			rie.ReversalForm.AnalysisDefaultWritingSystem = TsStringUtils.MakeString(gloss,
 				Cache.DefaultAnalWs);
-			sense.ReversalEntriesRC.Add(rie);
+			rie.SensesRS.Add(sense);
 			return rie;
 		}
 

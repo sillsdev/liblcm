@@ -1119,6 +1119,8 @@ namespace SIL.LCModel
 		/// DialectLabels if it has none of its own.
 		/// </summary>
 		ILcmReferenceSequence<ICmPossibility> DialectLabelsSenseOrEntry { get; }
+
+		IEnumerable<IReversalIndexEntry> ReferringReversalIndexEntries { get; }
 	}
 
 	/// <summary>

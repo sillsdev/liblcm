@@ -351,7 +351,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 				"<Gloss><AUni ws=\"en\">adolescent</AUni></Gloss>" +
 				"<Definition><AStr ws=\"en\"><Run ws=\"en\">a boy or girl from the period of puberty to adulthood</Run></AStr></Definition>" +
 				"<AnthroCodes><Link ws=\"en\" abbr=\"561\" name=\"561 Age Stratification\" /></AnthroCodes>" +
-				"<ReversalEntries><Link ws=\"en\" form=\"adolescent\" /></ReversalEntries>" +
+				"<ReferringReversalIndexEntries><Link ws=\"en\" form=\"adolescent\" /></ReferringReversalIndexEntries>" +
 				"<SemanticDomains><Link ws=\"en\" abbr=\"2.6.4.2\" /></SemanticDomains>" +
 				"</LexSense>" +
 				"</Senses>" +
@@ -450,8 +450,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 			ICmSemanticDomain sem = subsense.SemanticDomainsRC.ToArray()[0];
 			Assert.AreEqual("2.6.4.2", sem.Name.get_String(wsEn.Handle).Text);
 			Assert.AreEqual("2.6.4.2", sem.Abbreviation.get_String(wsEn.Handle).Text);
-			Assert.AreEqual(1, subsense.ReversalEntriesRC.Count);
-			IReversalIndexEntry rieSense = subsense.ReversalEntriesRC.ToArray()[0];
+			Assert.AreEqual(1, subsense.ReferringReversalIndexEntries.Count());
+			IReversalIndexEntry rieSense = subsense.ReferringReversalIndexEntries.ToArray()[0];
 			Assert.AreEqual(revEntry, rieSense);
 			IWfiWordformRepository repoWfi = m_cache.ServiceLocator.GetInstance<IWfiWordformRepository>();
 			Assert.AreEqual(2, repoWfi.Count);

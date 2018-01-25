@@ -1237,34 +1237,34 @@ namespace SIL.LCModel.Application.Impl
 
 			var sense = servLoc.GetInstance<ILexSenseFactory>().Create();
 			le.SensesOS.Add(sense);
-			var ri = servLoc.GetInstance<IReversalIndexFactory>().Create();
-			lp.LexDbOA.ReversalIndexesOC.Add(ri);
-			var rieFactory = servLoc.GetInstance<IReversalIndexEntryFactory>();
+			var anthroCodeList = servLoc.GetInstance<ICmPossibilityListFactory>().Create();
+			lp.AnthroListOA = anthroCodeList;
+			var anthroItemFactory = servLoc.GetInstance<ICmAnthroItemFactory>();
 			for (int i = 0; i < 10; i++)
 			{
-				var rieNew = rieFactory.Create();
-				ri.EntriesOC.Add(rieNew);
-				sense.ReversalEntriesRC.Add(rieNew);
+				var item = anthroItemFactory.Create();
+				anthroCodeList.PossibilitiesOS.Add(item);
+				sense.AnthroCodesRC.Add(item);
 			}
-			var rie1 = rieFactory.Create();
-			ri.EntriesOC.Add(rie1);
+			var additionalAnthroItem = anthroItemFactory.Create();
+			anthroCodeList.PossibilitiesOS.Add(additionalAnthroItem);
 
-			var rie2 = rieFactory.Create();
-			ri.EntriesOC.Add(rie2);
+			var additionalAnthroItem2 = anthroItemFactory.Create();
+			anthroCodeList.PossibilitiesOS.Add(additionalAnthroItem2);
 
 			// collection replace
-			m_sda.Replace(sense.Hvo, LexSenseTags.kflidReversalEntries, 0, 5, new[] { rie1.Hvo }, 1);
-			Assert.AreEqual(6, sense.ReversalEntriesRC.Count);
-			Assert.IsTrue(sense.ReversalEntriesRC.Contains(rie1));
+			m_sda.Replace(sense.Hvo, LexSenseTags.kflidAnthroCodes, 0, 5, new[] { additionalAnthroItem.Hvo }, 1);
+			Assert.AreEqual(6, sense.AnthroCodesRC.Count);
+			Assert.IsTrue(sense.AnthroCodesRC.Contains(additionalAnthroItem));
 
 			// collection insert
-			m_sda.Replace(sense.Hvo, LexSenseTags.kflidReversalEntries, 0, 0, new[] { rie2.Hvo }, 1);
-			Assert.AreEqual(7, sense.ReversalEntriesRC.Count);
-			Assert.IsTrue(sense.ReversalEntriesRC.Contains(rie2));
+			m_sda.Replace(sense.Hvo, LexSenseTags.kflidAnthroCodes, 0, 0, new[] { additionalAnthroItem2.Hvo }, 1);
+			Assert.AreEqual(7, sense.AnthroCodesRC.Count);
+			Assert.IsTrue(sense.AnthroCodesRC.Contains(additionalAnthroItem2));
 
 			// collection delete
-			m_sda.Replace(sense.Hvo, LexSenseTags.kflidReversalEntries, 3, 7, new int[0], 0);
-			Assert.AreEqual(3, sense.ReversalEntriesRC.Count);
+			m_sda.Replace(sense.Hvo, LexSenseTags.kflidAnthroCodes, 3, 7, new int[0], 0);
+			Assert.AreEqual(3, sense.AnthroCodesRC.Count);
 		}
 
 		/// <summary>

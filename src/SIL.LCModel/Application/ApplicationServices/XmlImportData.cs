@@ -2188,14 +2188,25 @@ namespace SIL.LCModel.Application.ApplicationServices
 								subentryOrderMap.TryGetValue(hvo, out existing);
 								if (existing == null)
 								{
-									subentryOrderMap[hvo] = new List<ICmObject> { pend.FieldInformation.ParentOfOwner.Owner };
+									subentryOrderMap[hvo] =
+										new List<ICmObject> { pend.FieldInformation.ParentOfOwner.Owner };
 								}
 								else if (!existing.Contains(pend.FieldInformation.ParentOfOwner.Owner))
 								{
 									existing.Add(pend.FieldInformation.ParentOfOwner.Owner);
 								}
 							}
-							m_sda.Replace(hvoOwner, flid, chvo, chvo, new int[] { hvo }, 1);
+							var rie = m_cache.ServiceLocator.GetObject(hvo) as IReversalIndexEntry;
+							if (rie != null && pend.FieldInformation.Owner is ILexSense)
+							{
+								//This is a reversal index and we need a back reference set
+								rie.SensesRS.Add(pend.FieldInformation.Owner as ILexSense);
+							}
+							else
+							{
+								// Some normal reference collection, just add the reference
+								m_sda.Replace(hvoOwner, flid, chvo, chvo, new[] { hvo }, 1);
+							}
 						}
 					}
 					cmoOwnerPrev = null;
@@ -2946,8 +2957,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 				string sForm;
 				if (dictAttrs.TryGetValue("form", out sForm))
 				{
-					if (flid == LexSenseTags.kflidReversalEntries)		//ReversalIndexEntry
-						return GetMatchingReversalEntry(ws, sForm).Hvo;
+					var rie = GetMatchingReversalEntry(ws, sForm);
+					return rie.Hvo;
 				}
 				string sSenseNumber;
 				sForm = GetLexFormAndSenseNumber(dictAttrs, out sSenseNumber);

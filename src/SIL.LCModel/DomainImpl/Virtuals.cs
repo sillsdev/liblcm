@@ -211,18 +211,18 @@ namespace SIL.LCModel.DomainImpl // TODO: Move this to DomainServices
 				return m_langProjTexts;
 			}
 		}
-		private int m_reversalIndexEntryLexSenseBackRefs;
+		private int m_lexSenseReversalIndexEntryBackRefs;
 
 		/// <summary>
-		/// The Flid for the LexEntry.VisibleComplexFormBackRefs virtual property.
+		/// The Flid for the senses back reference collection of reversal index entries.
 		/// </summary>
-		public int ReversalIndexEntryLexSenseBackRefs
+		public int LexSenseReversalIndexEntryBackRefs
 		{
 			get
 			{
-				if (m_reversalIndexEntryLexSenseBackRefs == 0)
-					m_reversalIndexEntryLexSenseBackRefs = m_mdc.GetFieldId2(ReversalIndexEntryTags.kClassId, "ReferringSenses", false);
-				return m_reversalIndexEntryLexSenseBackRefs;
+				if (m_lexSenseReversalIndexEntryBackRefs == 0)
+					m_lexSenseReversalIndexEntryBackRefs = m_mdc.GetFieldId2(LexSenseTags.kClassId, "ReferringReversalIndexEntries", false);
+				return m_lexSenseReversalIndexEntryBackRefs;
 			}
 		}
 

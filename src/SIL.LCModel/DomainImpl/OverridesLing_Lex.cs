@@ -26,6 +26,7 @@ using SIL.LCModel.DomainServices;
 using SIL.LCModel.Infrastructure;
 using SIL.LCModel.Infrastructure.Impl;
 using SIL.LCModel.Utils;
+using SIL.ObjectModel;
 
 namespace SIL.LCModel.DomainImpl
 {
@@ -4495,12 +4496,6 @@ namespace SIL.LCModel.DomainImpl
 					SensesChangedPosition(e.Index);
 					((LexEntry) Entry).NumberOfSensesChanged(true);
 					break;
-				case LexSenseTags.kflidReversalEntries:
-					int ws = ((ReversalIndexEntry) e.ObjectAdded).WritingSystem;
-					if (ws != 0) // defensive, mainly for tests
-						ReversalEntriesBulkTextChanged(ws);
-					ReversalEntryReferringSensesChanged(e.ObjectAdded as ReversalIndexEntry, true);
-					break;
 				case LexSenseTags.kflidSemanticDomains:
 					List<ICmObject> backrefs = ((CmSemanticDomain) e.ObjectAdded).ReferringSenses.Cast<ICmObject>().ToList();
 					m_cache.ServiceLocator.GetInstance<IUnitOfWorkService>().RegisterVirtualAsModified(e.ObjectAdded,
@@ -4536,12 +4531,6 @@ namespace SIL.LCModel.DomainImpl
 					// and their subsenses.
 					SensesChangedPosition(e.Index);
 					((LexEntry) Entry).NumberOfSensesChanged(false);
-					break;
-				case LexSenseTags.kflidReversalEntries:
-					int ws = ((ReversalIndexEntry) e.ObjectRemoved).WritingSystem;
-					if (ws != 0) // defensive, mainly for tests
-						ReversalEntriesBulkTextChanged(ws);
-					ReversalEntryReferringSensesChanged(e.ObjectRemoved as ReversalIndexEntry, false);
 					break;
 				case LexSenseTags.kflidSemanticDomains:
 					List<ICmObject> backrefs = ((CmSemanticDomain) e.ObjectRemoved).ReferringSenses.Cast<ICmObject>().ToList();
@@ -4592,27 +4581,6 @@ namespace SIL.LCModel.DomainImpl
 			// Enhance JohnT: is there some way to pass a valid old value? Does it matter?
 			((IServiceLocatorInternal) m_cache.ServiceLocator).UnitOfWorkService.RegisterVirtualAsModified(this,
 				ReversalEntriesBulkTextFlid, ws, null, ReversalEntriesBulkTextForWs(ws));
-		}
-
-		private void ReversalEntryReferringSensesChanged(ReversalIndexEntry rie, bool fAdded)
-		{
-			var unitOfWorkService = ((IServiceLocatorInternal) m_cache.ServiceLocator).UnitOfWorkService;
-			// We don't need to record virtual property changes for newly created objects. Nothing can be displaying the old value.
-			if (unitOfWorkService.IsNew(rie))
-				return;
-			int flid = m_cache.MetaDataCache.GetFieldId2(ReversalIndexEntryTags.kClassId, "ReferringSenses", false);
-			List<Guid> guids = new List<Guid>();
-			var referringSenses = rie.ReferringSenses;
-			foreach (ILexSense ls in referringSenses)
-			{
-				if (ls == this && !fAdded)
-					continue;
-				guids.Add(ls.Guid);
-			}
-			if (fAdded && !referringSenses.Contains(this))
-				guids.Add(this.Guid);
-			unitOfWorkService.RegisterVirtualAsModified(rie,
-				flid, new Guid[0], guids.ToArray());
 		}
 
 		/// <summary>
@@ -5208,6 +5176,36 @@ namespace SIL.LCModel.DomainImpl
 			}
 		}
 
+		[VirtualProperty(CellarPropertyType.ReferenceSequence, "ReversalIndexEntry")]
+		public IEnumerable<IReversalIndexEntry> ReferringReversalIndexEntries
+		{
+			get { return VirtualOrderingServices.GetOrderedValue(this, Cache.ServiceLocator.GetInstance<Virtuals>().LexSenseReversalIndexEntryBackRefs,
+				SortReversalEntries());
+			}
+		}
+
+		private IEnumerable<IReversalIndexEntry> SortReversalEntries()
+		{
+			((ICmObjectRepositoryInternal)Services.ObjectRepository).EnsureCompleteIncomingRefsFrom(ReversalIndexEntryTags.kflidSenses);
+			// This set needs to be returned as a sorted list.
+			// Returning a sorted set is the default, but the user can override it.  See LT-6468.
+			List<IReversalIndexEntry> reversalEntries = new List<IReversalIndexEntry>();
+			foreach (var item in m_incomingRefs)
+			{
+				var collection = item as LcmReferenceSequence<ILexSense>;
+				if (collection == null)
+					continue;
+				if (collection.Flid == ReversalIndexEntryTags.kflidSenses)
+					reversalEntries.Add(collection.MainObject as IReversalIndexEntry);
+			}
+			reversalEntries.Sort(new AnonymousComparer<IReversalIndexEntry>((rhs, lhs)=>
+				{
+					return rhs.ReversalForm.BestAnalysisAlternative.Text.CompareTo(lhs.ReversalForm
+						.BestAnalysisAlternative.Text);
+				}));
+			return reversalEntries;
+		}
+
 		private ITsString ReversalEntriesBulkTextForWs(int ws)
 		{
 			ITsStrBldr tsb = TsStringUtils.MakeStrBldr();
@@ -5216,7 +5214,7 @@ namespace SIL.LCModel.DomainImpl
 			propsBldr.SetIntPropValues((int) FwTextPropType.ktptWs, (int) FwTextPropVar.ktpvDefault, ws);
 			ttpWs = propsBldr.GetTextProps();
 			tsb.Replace(0, 0, "", ttpWs); // In case it ends up empty, make sure it's empty in the right Ws.
-			foreach (ReversalIndexEntry revEntry in ReversalEntriesRC)
+			foreach (ReversalIndexEntry revEntry in ReferringReversalIndexEntries)
 			{
 				if (revEntry.WritingSystem == ws)
 				{
@@ -5249,7 +5247,7 @@ namespace SIL.LCModel.DomainImpl
 					continue;
 				formsColl.Add(form.Trim());
 			}
-			var senseEntries = ReversalEntriesRC.ToArray();
+			var senseEntries = ReferringReversalIndexEntries.ToArray();
 			int originalSenseEntriesCount = senseEntries.Length;
 
 			// We need the list of ReversalIndexEntries that this sense references, but which belong
@@ -5292,12 +5290,19 @@ namespace SIL.LCModel.DomainImpl
 						var idRevEntry = revIndex.FindOrCreateReversalEntry(currentForm);
 						survivingEntries.Add(idRevEntry);
 					}
-					var goners = new HashSet<ICmObject>(ReversalEntriesRC.Cast<ICmObject>());
+					var goners = new HashSet<ICmObject>(ReferringReversalIndexEntries.Cast<ICmObject>());
 					var newbies = new HashSet<ICmObject>(survivingEntries.Cast<ICmObject>());
 					goners.ExceptWith(newbies); // orginals, except the survivors
-					newbies.ExceptWith(ReversalEntriesRC.Cast<ICmObject>());
+					newbies.ExceptWith(ReferringReversalIndexEntries.Cast<ICmObject>());
 					// survivors, except the ones already present
-					ReversalEntriesRC.Replace(goners, newbies);
+					foreach (IReversalIndexEntry needsNewSenseRef in newbies)
+					{
+						needsNewSenseRef.SensesRS.Add(this);
+					}
+					foreach (IReversalIndexEntry needsSenseRefRemoved in goners)
+					{
+						needsSenseRefRemoved.SensesRS.Remove(this);
+					}
 					// Delete any leaf RIEs that have no referring senses and no children; probably spurious ones made
 					// by typing in the Reversals field.
 					foreach (IReversalIndexEntry rie in goners)
@@ -5899,7 +5904,7 @@ namespace SIL.LCModel.DomainImpl
 				wg.Form.UserDefaultWritingSystem = this.Gloss.UserDefaultWritingSystem;
 		}
 
-		#region Implementation of IVariantComponentLexeme
+#region Implementation of IVariantComponentLexeme
 
 		/// <summary>
 		/// This is a backreference (virtual) property.  It returns the list of ids for all the
@@ -5947,7 +5952,7 @@ namespace SIL.LCModel.DomainImpl
 			return LexEntry.FindMatchingVariantEntryBackRef(this, variantEntryType, targetVariantLexemeForm);
 		}
 
-		#endregion
+#endregion
 
 		/// <summary>
 		/// Return anything from the ImportResidue which occurs prior to whatever LIFT may have
@@ -6250,7 +6255,7 @@ namespace SIL.LCModel.DomainImpl
 				foreach (var rei in AllEntries)
 				{
 					++cEntries;
-					foreach (var ls in senses.Where(s => s.ReversalEntriesRC.Contains(rei)))
+					foreach (var ls in senses.Where(s => s.ReferringReversalIndexEntries.Contains(rei)))
 					{
 						if (!senseIds.Contains(ls.Hvo))
 							senseIds.Add(ls.Hvo);
@@ -6527,16 +6532,10 @@ namespace SIL.LCModel.DomainImpl
 			}
 		}
 
-		/// <summary>
-		/// Get the set of senses that refer to this reversal entry.
-		/// This is a virtual, backreference property.
-		/// </summary>
-		[VirtualProperty(CellarPropertyType.ReferenceSequence, "LexSense")]
 		public IEnumerable<ILexSense> ReferringSenses
 		{
 			get {
-				return VirtualOrderingServices.GetOrderedValue(this, Cache.ServiceLocator.GetInstance<Virtuals>().ReversalIndexEntryLexSenseBackRefs,
-					SortReferringSenses());
+				return SensesRS;
 			}
 		}
 
@@ -6546,21 +6545,9 @@ namespace SIL.LCModel.DomainImpl
 		/// <returns></returns>
 		public IEnumerable<ILexSense> SortReferringSenses()
 		{
-			((ICmObjectRepositoryInternal) Services.ObjectRepository).EnsureCompleteIncomingRefsFrom(
-				LexSenseTags.kflidReversalEntries);
-			// This set needs to be returned as a sorted list.  See FWR-3173.
-			// Returning a sorted set is the default, but the user can override it.  See LT-6468.
-			List<ILexSense> senses = new List<ILexSense>();
-			foreach (var item in m_incomingRefs)
-			{
-				var collection = item as LcmReferenceCollection<IReversalIndexEntry>;
-				if (collection == null)
-					continue;
-				if (collection.Flid == LexSenseTags.kflidReversalEntries)
-					senses.Add(collection.MainObject as ILexSense);
-			}
+			List<ILexSense> senses = new List<ILexSense>(SensesRS);
 			senses.Sort(new CompareSensesForReversal(m_cache.LangProject.DefaultVernacularWritingSystem));
-			return senses;
+			return SensesRS;
 		}
 
 		/// <summary>
@@ -6592,6 +6579,56 @@ namespace SIL.LCModel.DomainImpl
 			{
 				return m_wsVern.DefaultCollation.Collator.Compare(Key(x), Key(y));
 			}
+		}
+
+		protected override void AddObjectSideEffectsInternal(AddObjectEventArgs e)
+		{
+			switch (e.Flid)
+			{
+				case ReversalIndexEntryTags.kflidSenses:
+					var lexSense = e.ObjectAdded as LexSense;
+					if (WritingSystem != 0) // defensive, mainly for tests
+						lexSense.ReversalEntriesBulkTextChanged(WritingSystem);
+					ReversalEntryReferringSensesChanged(lexSense, true);
+					break;
+			}
+		}
+
+		protected override void RemoveObjectSideEffectsInternal(RemoveObjectEventArgs e)
+		{
+			switch (e.Flid)
+			{
+				case ReversalIndexEntryTags.kflidSenses:
+					var lexSense = e.ObjectRemoved as LexSense;
+					if (WritingSystem != 0) // defensive, mainly for tests
+						lexSense.ReversalEntriesBulkTextChanged(WritingSystem);
+					ReversalEntryReferringSensesChanged(lexSense, false);
+					break;
+			}
+		}
+
+		/// <summary>
+					/// Fires a change event for the virtual property in the sense that lists the ReversalIndexEntries which refer to it.
+					/// </summary>
+					/// <param name="sense"></param>
+					/// <param name="added">true if added, false if deleted</param>
+		private void ReversalEntryReferringSensesChanged(LexSense sense, bool added)
+		{
+			var unitOfWorkService = ((IServiceLocatorInternal)m_cache.ServiceLocator).UnitOfWorkService;
+			// We don't need to record virtual property changes for newly created objects. Nothing can be displaying the old value.
+			int flid = m_cache.MetaDataCache.GetFieldId2(LexSenseTags.kClassId, "ReferringReversalIndexEntries", false);
+			List<Guid> guids = new List<Guid>();
+			var referingSenses = sense.ReferringReversalIndexEntries;
+			// collect all the ReversalIndexEntries that reference this sense
+			foreach (var indexEntry in referingSenses)
+			{
+				if (indexEntry == this && !added) // skip the removed one
+					continue;
+				guids.Add(indexEntry.Guid);
+			}
+			if (added && !referingSenses.Contains(this))
+				guids.Add(this.Guid);
+			unitOfWorkService.RegisterVirtualAsModified(sense, flid, new Guid[0], guids.ToArray());
 		}
 	}
 
@@ -9422,7 +9459,7 @@ namespace SIL.LCModel.DomainImpl
 	/// </summary>
 	internal partial class LexEntryType : IComparable
 	{
-		#region IComparable Members
+#region IComparable Members
 
 		/// <summary>
 		/// Allow LexEntryType objects to be compared/sorted.
@@ -9447,7 +9484,7 @@ namespace SIL.LCModel.DomainImpl
 				return x;
 		}
 
-		#endregion
+#endregion
 
 		/// <summary>
 		/// Convert a LexEntryType to another LexEntryType
