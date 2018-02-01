@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2010-2017 SIL International
+﻿// Copyright (c) 2010-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -36,15 +36,14 @@ namespace SIL.LCModel.Utils
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Gets the registry key for the current application's company. This is
-		/// 'HKCU\Software\{Application.CompanyName}'
+		/// Gets the registry key for the current application's company. This is 'HKCU\Software\{Application.CompanyName}'
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public static RegistryKey CompanyKey
 		{
 			get
 			{
-				using (RegistryKey softwareKey = Registry.CurrentUser.CreateSubKey("Software"))
+				using (var softwareKey = Registry.CurrentUser.CreateSubKey("Software"))
 				{
 					Debug.Assert(softwareKey != null);
 					return softwareKey.CreateSubKey(CompanyName);
@@ -52,25 +51,38 @@ namespace SIL.LCModel.Utils
 			}
 		}
 
+		/// <summary>
+		/// Gets the registry key for the current application's company in the 32-bit space on a 64-bit machine.
+		/// This is 'HKCU\Software\WOW6432Node\{Application.CompanyName}'.
+		/// NOTE: This key is not opened for write access, because 64-bit apps should write to their own registry space.
+		/// </summary>
+		public static RegistryKey CompanyKeyOld32Bit => Registry.CurrentUser.OpenSubKey($@"Software\WOW6432Node\{CompanyName}");
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Gets the registry key for the current application's company from the local machine
 		/// settings. This is 'HKLM\Software\{Application.CompanyName}'
-		/// NOTE: This key is not opened for write access because it will fail on
-		/// non-administrator logins.
+		/// NOTE: This key is not opened for write access because it will fail on non-administrator logins.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public static RegistryKey CompanyKeyLocalMachine
 		{
 			get
 			{
-				using (RegistryKey softwareKey = Registry.LocalMachine.OpenSubKey("Software"))
+				using (var softwareKey = Registry.LocalMachine.OpenSubKey("Software"))
 				{
 					Debug.Assert(softwareKey != null);
 					return softwareKey.OpenSubKey(CompanyName);
 				}
 			}
 		}
+
+		/// <summary>
+		/// Gets the registry key for the current application's company from the Local Machine settings' 32-bit space on a 64-bit machine.
+		/// This is 'HKLM\Software\WOW6432Node\{Application.CompanyName}'.
+		/// NOTE: This key is not opened for write access, because 64-bit apps should write to their own registry space.
+		/// </summary>
+		public static RegistryKey CompanyKeyLocalMachineOld32Bit => Registry.LocalMachine.OpenSubKey($@"Software\WOW6432Node\{CompanyName}");
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -83,7 +95,7 @@ namespace SIL.LCModel.Utils
 		{
 			get
 			{
-				using (RegistryKey softwareKey = Registry.LocalMachine.CreateSubKey("Software"))
+				using (var softwareKey = Registry.LocalMachine.CreateSubKey("Software"))
 				{
 					Debug.Assert(softwareKey != null);
 					return softwareKey.CreateSubKey(CompanyName);
@@ -135,7 +147,7 @@ namespace SIL.LCModel.Utils
 			if (!KeyExists(key, subKey))
 				return false;
 
-			using (RegistryKey regSubKey = key.OpenSubKey(subKey))
+			using (var regSubKey = key.OpenSubKey(subKey))
 			{
 				Debug.Assert(regSubKey != null, "Should have caught this in the KeyExists call above");
 				if (Array.IndexOf(regSubKey.GetValueNames(), regEntry) >= 0)
@@ -148,48 +160,38 @@ namespace SIL.LCModel.Utils
 			}
 		}
 
-		/// ----------------------------------------------------------------------------------------
 		/// <summary>
 		/// Returns a subkey of HKCU\Software using the company name (Application.CompanyName) and
 		/// the product name (Application.ProductName).
 		/// </summary>
-		/// <param name="subKeys">Zero or more subkeys (e.g., a specific application name, project
-		/// name, etc.)</param>
-		/// ----------------------------------------------------------------------------------------
+		/// <param name="subKeys">Zero or more subkeys (e.g., a specific application name, project name, etc.)</param>
 		public static RegistryKey SettingsKey(params string[] subKeys)
 		{
-			StringBuilder bldr = new StringBuilder();
-			bldr.Append(ProductName).Append(@"\");
-			foreach (string subKey in subKeys)
-				bldr.Append(subKey).Append(@"\");
-			return CompanyKey.CreateSubKey(bldr.ToString());
+			return CompanyKey.CreateSubKey(GetSubkeyName(subKeys));
 		}
 
-		/// ----------------------------------------------------------------------------------------
+		/// <summary>
+		/// Returns a subkey of HKCU\Software using the company name (Application.CompanyName) and
+		/// the product name (Application.ProductName) in the  32-bit space on a 64-bit machine.
+		/// NOTE: This key is not opened for write access, because 64-bit apps should write to their own registry space.
+		/// </summary>
+		/// <param name="subKeys">Zero or more subkeys (e.g., a specific application name, project name, etc.)</param>
+		public static RegistryKey SettingsKeyOld32Bit(params string[] subKeys)
+		{
+			return CompanyKeyOld32Bit?.OpenSubKey(GetSubkeyName(subKeys));
+		}
+
 		/// <summary>
 		/// Returns a subkey of HKLM\Software using the company name (Application.CompanyName) and
 		/// the product name (Application.ProductName).
-		/// NOTE: This key is not opened for write access because it will fail on
-		/// non-administrator logins.
+		/// NOTE: This key is not opened for write access because it will fail on non-administrator logins.
 		/// </summary>
-		/// <param name="subKeys">Zero or more subkeys (e.g., a specific application name, project
-		/// name, etc.)</param>
-		/// ----------------------------------------------------------------------------------------
+		/// <param name="subKeys">Zero or more subkeys (e.g., a specific application name, project name, etc.)</param>
 		public static RegistryKey SettingsKeyLocalMachine(params string[] subKeys)
 		{
 			try
 			{
-				RegistryKey key = CompanyKeyLocalMachine;
-				if (key != null)
-				{
-					// GJM 5 Jan 2016: This didn't work. My machine over Christmas break developed an inability
-					// to read HKLM keys for FieldWorks w/o getting a SecurityException, so Jason and I added
-					// the try-catch block.
-					//var permission = new RegistryPermission(RegistryPermissionAccess.Read, key.Name +GetLocalMachineKeyName(new string[0] /*subKeys*/));
-					//permission.Demand();
-					return key.OpenSubKey(GetLocalMachineKeyName(subKeys), false);
-				}
-				return key;
+				return CompanyKeyLocalMachine?.OpenSubKey(GetSubkeyName(subKeys), false);
 			}
 			catch (SecurityException)
 			{
@@ -197,25 +199,40 @@ namespace SIL.LCModel.Utils
 			}
 		}
 
-		/// ----------------------------------------------------------------------------------------
+		/// <summary>
+		/// Returns a subkey of HKLM\Software using the company name (Application.CompanyName) and
+		/// the product name (Application.ProductName) in the  32-bit space on a 64-bit machine.
+		/// NOTE: This key is not opened for write access because it will fail on non-administrator logins.
+		/// </summary>
+		/// <param name="subKeys">Zero or more subkeys (e.g., a specific application name, project name, etc.)</param>
+		public static RegistryKey SettingsKeyLocalMachineOld32Bit(params string[] subKeys)
+		{
+			try
+			{
+				return CompanyKeyLocalMachineOld32Bit?.OpenSubKey(GetSubkeyName(subKeys), false);
+			}
+			catch (SecurityException)
+			{
+				return null;
+			}
+		}
+
 		/// <summary>
 		/// Returns a subkey of HKLM\Software using the company name (Application.CompanyName) and
 		/// the product name (Application.ProductName).
 		/// NOTE: This will fail on non-administrator logins.
 		/// </summary>
-		/// <param name="subKeys">Zero or more subkeys (e.g., a specific application name, project
-		/// name, etc.)</param>
-		/// ----------------------------------------------------------------------------------------
+		/// <param name="subKeys">Zero or more subkeys (e.g., a specific application name, project name, etc.)</param>
 		public static RegistryKey SettingsKeyLocalMachineForWriting(params string[] subKeys)
 		{
-			return CompanyKeyLocalMachineForWriting.CreateSubKey(GetLocalMachineKeyName(subKeys));
+			return CompanyKeyLocalMachineForWriting.CreateSubKey(GetSubkeyName(subKeys));
 		}
 
-		private static string GetLocalMachineKeyName(string[] subKeys)
+		private static string GetSubkeyName(string[] subKeys)
 		{
-			StringBuilder bldr = new StringBuilder();
+			var bldr = new StringBuilder();
 			bldr.Append(ProductName).Append(@"\");
-			foreach (string subKey in subKeys)
+			foreach (var subKey in subKeys)
 				bldr.Append(subKey).Append(@"\");
 			return bldr.ToString();
 		}
@@ -413,12 +430,12 @@ namespace SIL.LCModel.Utils
 			if (value is float)
 				return (float)value;
 
-			string val = (string)value;
+			var val = (string)value;
 
 			try
 			{
-				CultureInfo enCi = CultureInfo.GetCultureInfo("en-US");
-				string currDecSep = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+				var enCi = CultureInfo.GetCultureInfo("en-US");
+				var currDecSep = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
 				if (currDecSep != enCi.NumberFormat.NumberDecimalSeparator)
 					val = val.Replace(currDecSep, enCi.NumberFormat.NumberDecimalSeparator);
 
