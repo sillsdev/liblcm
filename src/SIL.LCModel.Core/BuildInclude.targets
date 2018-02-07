@@ -30,6 +30,7 @@
 	<ItemGroup>
 		<IcuDataInputs Include="IcuData/nfc*.txt" />
 		<IcuDataInputs Include="IcuData/nfkc*.txt" />
+		<IcuDataInputs Include="IcuData/UnicodeDataOverrides.txt" />
 
 		<IcuDataOutputs Include="$(OutDir)IcuData/icudt$(IcuVersion)l/nfc_fw.nrm" />
 		<IcuDataOutputs Include="$(OutDir)IcuData/icudt$(IcuVersion)l/nfkc_fw.nrm" />
@@ -44,7 +45,7 @@
 		</PropertyGroup>
 		<Exec Command='"$(gennorm2)" -o "$(OutDir)IcuData/icudt$(IcuVersion)l/nfc_fw.nrm" "IcuData/nfc.txt" "IcuData/nfcHebrew.txt" "IcuData/nfcOverrides.txt"' />
 		<Exec Command='"$(gennorm2)" -o "$(OutDir)IcuData/icudt$(IcuVersion)l/nfkc_fw.nrm" "IcuData/nfc.txt" "IcuData/nfcHebrew.txt" "IcuData/nfkc.txt" "IcuData/nfcOverrides.txt" "IcuData/nfkcOverrides.txt"' />
-		<Copy SourceFiles="IcuData/UnicodeDataOverrides.txt" DestinationFolder="$(OutDir)IcuData" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
+		<Copy SourceFiles="@(IcuDataInputs)" DestinationFolder="$(OutDir)IcuData/data" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
 	</Target>
 
 	<Target Name="AfterClean">
