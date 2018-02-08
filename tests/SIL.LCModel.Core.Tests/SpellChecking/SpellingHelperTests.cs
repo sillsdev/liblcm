@@ -301,8 +301,10 @@ namespace SIL.LCModel.Core.SpellChecking
 			DirectoryUtilities.DeleteDirectoryRobust(inputFolder);
 			Directory.CreateDirectory(outputFolder);
 			Directory.CreateDirectory(inputFolder);
+			// ReSharper disable LocalizableElement
 			File.AppendAllText(Path.Combine(inputFolder, "test.dic"), "nil");
 			File.AppendAllText(Path.Combine(inputFolder, "test.exc"), "nil");
+			// ReSharper restore LocalizableElement
 			// SUT
 			Assert.DoesNotThrow(()=>SpellingHelper.AddAnySpellingExceptionsFromBackup(inputFolder, outputFolder));
 			// Verify that the correct files were copied

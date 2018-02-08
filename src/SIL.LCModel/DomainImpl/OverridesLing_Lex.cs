@@ -6532,13 +6532,6 @@ namespace SIL.LCModel.DomainImpl
 			}
 		}
 
-		public IEnumerable<ILexSense> ReferringSenses
-		{
-			get {
-				return SensesRS;
-			}
-		}
-
 		/// <summary>
 		/// Get the set of senses that refer to this reversal entry and sort them
 		/// </summary>

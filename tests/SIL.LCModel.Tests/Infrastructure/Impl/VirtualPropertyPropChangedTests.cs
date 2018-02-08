@@ -244,7 +244,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			var sense = entry.SensesOS.First();
 
 			Assert.IsNotNull(reversal, "the expected reversal object was created");
-			Assert.AreEqual(0, reversal.ReferringSenses.Count(), "nothing should refer to the reversal entry initially");
+			Assert.AreEqual(0, reversal.SensesRS.Count(), "nothing should refer to the reversal entry initially");
 
 
 			PrepareToTrackPropChanged();
