@@ -143,6 +143,7 @@
     <Compile Include="DomainImpl\AnalysisAdjusterTests.cs" />
     <Compile Include="DomainServices\AnalysisGuessServicesTests.cs" />
     <Compile Include="DomainServices\AnalysisOccurrenceTests.cs" />
+    <Compile Include="DomainServices\DataMigration\DataMigration7000072Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DomainImpl\AtomicPropertyTests.cs" />
     <Compile Include="DomainServices\BaseStyleInfoTests.cs" />

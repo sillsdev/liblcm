@@ -122,6 +122,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			m_individualMigrations.Add(7000069, new DataMigration7000069());
 			m_individualMigrations.Add(7000070, new DataMigration7000070());
 			m_individualMigrations.Add(7000071, new DataMigration7000071());
+			m_individualMigrations.Add(7000072, new DataMigration7000072());
 			//Deprecated behavior: m_individualMigrations.Add(7000008, m_bumpNumberOnlyMigration);
 			//m_individualMigrations.Add(..., new WhateverDataMigration());
 			//m_individualMigrations.Add(n, new SomethingElseDataMigration());

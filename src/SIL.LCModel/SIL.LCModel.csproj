@@ -158,6 +158,7 @@
     <Compile Include="DomainServices\DataMigration\DataMigration7000069.cs" />
     <Compile Include="DomainServices\DataMigration\DataMigration7000070.cs" />
     <Compile Include="DomainServices\DataMigration\DataMigration7000071.cs" />
+    <Compile Include="DomainServices\DataMigration\DataMigration7000072.cs" />
     <Compile Include="DomainServices\DataMigration\WritingSystemIdMigrator.cs" />
     <Compile Include="DomainServices\SharedBackendServices.cs" />
     <Compile Include="LcmDataMigrationForbiddenException.cs" />
