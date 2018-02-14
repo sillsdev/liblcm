@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="utf-8"?>
+<languageproject version="7000071">
+<rt class="LexEntryInflType" guid="01d4fbc1-3b0c-4f52-9163-7ab0d4f4711c" ownerguid="bb372467-5230-43ef-9cc7-4d40b053fb94">
+<Abbreviation>
+<AUni ws="en">irreg. infl.</AUni>
+</Abbreviation>
+<BackColor val="0" />
+<DateCreated val="2018-2-8 8:59:19.599" />
+<DateModified val="2018-2-8 8:59:19.599" />
+<Description>
+<AStr ws="en">
+<Run ws="en">An Irregularly Inflected Form is an inflected form of the lexeme that is different from what you would expect from the normal rules of the grammar.</Run>
+</AStr>
+</Description>
+<Discussion>
+<objsur guid="b6f4c056-ea5e-11de-8a9c-0013722f8dec" t="o" />
+</Discussion>
+<ForeColor val="0" />
+<GlossAppend>
+<AUni ws="en">.irr.infl</AUni>
+</GlossAppend>
+<Hidden val="False" />
+<IsProtected val="True" />
+<Name>
+<AUni ws="en">Irregularly Inflected Form</AUni>
+</Name>
+<ReverseAbbr>
+<AUni ws="en">irreg. infl. of</AUni>
+</ReverseAbbr>
+<ReverseName>
+<AUni ws="en">Irregularly Inflected Form of</AUni>
+</ReverseName>
+<SortSpec val="0" />
+<SubPossibilities>
+<objsur guid="a32f1d1c-4832-46a2-9732-c2276d6547e8" t="o" />
+<objsur guid="837ebe72-8c1d-4864-95d9-fa313c499d78" t="o" />
+</SubPossibilities>
+<UnderColor val="0" />
+<UnderStyle val="0" />
+</rt>
+
+<rt class="ReversalIndexEntry" guid="d7ff046c-a604-4c5e-b15a-92b372d9a300" ownerguid="632f9ba1-67d1-4020-8574-54daa6d2fb92">
+  <ReversalForm>
+    <AUni ws="en">Rev1</AUni>
+  </ReversalForm>
+</rt>
+<rt class="ReversalIndexEntry" guid="2d1fb89c-5671-43de-8cdd-4624f4648ef4" ownerguid="632f9ba1-67d1-4020-8574-54daa6d2fb92">
+<ReversalForm>
+<AUni ws="en">Rev2</AUni>
+</ReversalForm>
+</rt>
+
+<rt class="LexEntry" guid="2f2795c0-2471-4c64-9fbe-adbe5d31a940">
+<DateCreated val="2018-2-8 8:59:53.731" />
+<DateModified val="2018-2-8 9:2:46.871" />
+<HomographNumber val="0" />
+<LexemeForm>
+<objsur guid="09a153a2-615b-454d-9955-39ad5a897398" t="o" />
+</LexemeForm>
+<Senses>
+<objsur guid="c836e945-92d3-4560-9622-bfd9656551c8" t="o" />
+<objsur guid="d3d19eae-d840-484e-8de2-0100336808ed" t="o" />
+</Senses>
+</rt>
+
+<rt class="ReversalIndex" guid="632f9ba1-67d1-4020-8574-54daa6d2fb92" ownerguid="af26d792-ea5e-11de-8f7e-0013722f8dec">
+<DateCreated val="2018-2-8 8:59:12.138" />
+<DateModified val="2018-2-8 9:2:29.435" />
+<Entries>
+<objsur guid="2d1fb89c-5671-43de-8cdd-4624f4648ef4" t="o" />
+<objsur guid="d7ff046c-a604-4c5e-b15a-92b372d9a300" t="o" />
+</Entries>
+<Name>
+<AUni ws="en">English</AUni>
+</Name>
+<WritingSystem>
+<Uni>en</Uni>
+</WritingSystem>
+</rt>
+
+<rt class="LexEntryInflType" guid="837ebe72-8c1d-4864-95d9-fa313c499d78" ownerguid="01d4fbc1-3b0c-4f52-9163-7ab0d4f4711c">
+<Abbreviation>
+<AUni ws="en">pst.</AUni>
+</Abbreviation>
+<BackColor val="0" />
+<DateCreated val="2018-2-8 8:59:19.600" />
+<DateModified val="2018-2-8 8:59:19.600" />
+<Description>
+<AStr ws="en">
+<Run ws="en">The past tense form of a verb that does not take the regular inflectional affix for past tense.</Run>
+</AStr>
+</Description>
+<Discussion>
+<objsur guid="b72df880-ea5e-11de-8e18-0013722f8dec" t="o" />
+</Discussion>
+<ForeColor val="0" />
+<GlossAppend>
+<AUni ws="en">.pst</AUni>
+</GlossAppend>
+<Hidden val="False" />
+<IsProtected val="True" />
+<Name>
+<AUni ws="en">Past</AUni>
+</Name>
+<ReverseAbbr>
+<AUni ws="en">pst. of</AUni>
+</ReverseAbbr>
+<ReverseName>
+<AUni ws="en">Past of</AUni>
+</ReverseName>
+<SortSpec val="0" />
+<UnderColor val="0" />
+<UnderStyle val="0" />
+</rt>
+<rt class="PartOfSpeech" guid="86ff66f6-0774-407a-a0dc-3eeaf873daf7" ownerguid="70e5d670-55bd-49b6-9c19-c2f682470cd2">
+<Abbreviation>
+<AUni ws="en">v</AUni>
+</Abbreviation>
+<BackColor val="-1073741824" />
+<CatalogSourceId>
+<Uni>Verb</Uni>
+</CatalogSourceId>
+<DateCreated val="2018-2-8 8:59:13.560" />
+<DateModified val="2018-2-8 8:59:13.560" />
+<Description>
+<AStr ws="en">
+<Run ws="en">A verb is a part of speech whose members typically signal events and actions; constitute, singly or in a phrase, a minimal predicate in a clause; govern the number and types of other constituents which may occur in the clause; and, in inflectional languages, may be inflected for tense, aspect, voice, modality, or agreement with other constituents in person, number, or grammatical gender.</Run>
+</AStr>
+</Description>
+<ForeColor val="6303632" />
+<Hidden val="False" />
+<IsProtected val="False" />
+<Name>
+<AUni ws="en">Verb</AUni>
+</Name>
+<SortSpec val="0" />
+<UnderColor val="-1073741824" />
+<UnderStyle val="1" />
+</rt>
+<rt class="PartOfSpeech" guid="a3274cfd-225f-45fd-8851-a7b1a1e1037a" ownerguid="a4fc78d6-7591-4fb3-8edd-82f10ae3739d">
+<Abbreviation>
+<AUni ws="en">pro</AUni>
+</Abbreviation>
+<BackColor val="-1073741824" />
+<CatalogSourceId>
+<Uni>Pronoun</Uni>
+</CatalogSourceId>
+<DateCreated val="2018-2-8 8:59:13.560" />
+<DateModified val="2018-2-8 8:59:13.560" />
+<Description>
+<AStr ws="en">
+<Run ws="en">A pronoun is a pro-form which functions like a noun and substitutes for a noun or noun phrase.</Run>
+</AStr>
+</Description>
+<ForeColor val="6303632" />
+<Hidden val="False" />
+<IsProtected val="False" />
+<Name>
+<AUni ws="en">Pronoun</AUni>
+</Name>
+<SortSpec val="0" />
+<UnderColor val="-1073741824" />
+<UnderStyle val="1" />
+</rt>
+<rt class="LexEntryInflType" guid="a32f1d1c-4832-46a2-9732-c2276d6547e8" ownerguid="01d4fbc1-3b0c-4f52-9163-7ab0d4f4711c">
+<Abbreviation>
+<AUni ws="en">pl.</AUni>
+</Abbreviation>
+<BackColor val="0" />
+<DateCreated val="2018-2-8 8:59:19.600" />
+<DateModified val="2018-2-8 8:59:19.600" />
+<Description>
+<AStr ws="en">
+<Run ws="en">The plural form of a noun that does not take the regular inflectional affix for plural.</Run>
+</AStr>
+</Description>
+<Discussion>
+<objsur guid="b716211a-ea5e-11de-8768-0013722f8dec" t="o" />
+</Discussion>
+<ForeColor val="0" />
+<GlossAppend>
+<AUni ws="en">.pl</AUni>
+</GlossAppend>
+<Hidden val="False" />
+<IsProtected val="True" />
+<Name>
+<AUni ws="en">Plural</AUni>
+</Name>
+<ReverseAbbr>
+<AUni ws="en">pl. of</AUni>
+</ReverseAbbr>
+<ReverseName>
+<AUni ws="en">Plural of</AUni>
+</ReverseName>
+<SortSpec val="0" />
+<UnderColor val="0" />
+<UnderStyle val="0" />
+</rt>
+<rt class="PartOfSpeech" guid="a4fc78d6-7591-4fb3-8edd-82f10ae3739d" ownerguid="70e5d670-55bd-49b6-9c19-c2f682470cd2">
+<Abbreviation>
+<AUni ws="en">pro-form</AUni>
+</Abbreviation>
+<BackColor val="-1073741824" />
+<CatalogSourceId>
+<Uni>Pro-form</Uni>
+</CatalogSourceId>
+<DateCreated val="2018-2-8 8:59:13.560" />
+<DateModified val="2018-2-8 8:59:13.560" />
+<Description>
+<AStr ws="en">
+<Run ws="en">A pro-form is a part of speech whose members usually substitute for other constituents, including phrases, clauses, or sentences, and whose meaning is recoverable from the linguistic or extralinguistic context.</Run>
+</AStr>
+</Description>
+<ForeColor val="6303632" />
+<Hidden val="False" />
+<IsProtected val="False" />
+<Name>
+<AUni ws="en">Pro-form</AUni>
+</Name>
+<SortSpec val="0" />
+<SubPossibilities>
+<objsur guid="a3274cfd-225f-45fd-8851-a7b1a1e1037a" t="o" />
+</SubPossibilities>
+<UnderColor val="-1073741824" />
+<UnderStyle val="1" />
+</rt>
+<rt class="LangProject" guid="766e2ecf-7dde-42a4-8a8c-66432fc81e88">
+<AffixCategories>
+<objsur guid="be6a7290-ea5e-11de-98a2-0013722f8dec" t="o" />
+</AffixCategories>
+<AnalysisWss>
+<Uni>en</Uni>
+</AnalysisWss>
+<AnalyzingAgents>
+<objsur guid="1257a971-fcef-4f06-a5e2-c289de5aaf72" t="o" />
+<objsur guid="5093d7d7-4f18-4aad-8c86-88389476df15" t="o" />
+<objsur guid="67e9b8bf-c312-458e-89c3-6e9326e48aa0" t="o" />
+<objsur guid="9303883a-ad5c-4ccf-97a5-4add391f8dcb" t="o" />
+</AnalyzingAgents>
+<AnnotationDefs>
+<objsur guid="ea346c01-022f-4f34-b938-219ce7b65b73" t="o" />
+</AnnotationDefs>
+<AnthroList>
+<objsur guid="d87ba7c6-ea5e-11de-9dd2-0013722f8dec" t="o" />
+</AnthroList>
+<ConfidenceLevels>
+<objsur guid="d99e8542-ea5e-11de-9301-0013722f8dec" t="o" />
+</ConfidenceLevels>
+<CurAnalysisWss>
+<Uni>en</Uni>
+</CurAnalysisWss>
+<CurPronunWss>
+<Uni>fr</Uni>
+</CurPronunWss>
+<CurVernWss>
+<Uni>fr</Uni>
+</CurVernWss>
+<DateCreated val="2018-2-8 8:59:19.450" />
+<DateModified val="2018-2-8 9:1:20.804" />
+<DiscourseData>
+<objsur guid="c3fe8c1e-ea5e-11de-9e45-0013722f8dec" t="o" />
+</DiscourseData>
+<Education>
+<objsur guid="d70c7f6e-ea5e-11de-9dc3-0013722f8dec" t="o" />
+</Education>
+<FilePathsInTsStrings>
+<objsur guid="156eff82-9e78-4f5a-b187-5baf85db7cae" t="o" />
+</FilePathsInTsStrings>
+<Filters>
+<objsur guid="abc71f1c-dd0b-4f57-add8-9200ac20a653" t="o" />
+<objsur guid="b887abc2-ea5e-11de-8ed2-0013722f8dec" t="o" />
+<objsur guid="b8a90c86-ea5e-11de-9e66-0013722f8dec" t="o" />
+<objsur guid="b8ca6d4a-ea5e-11de-9350-0013722f8dec" t="o" />
+<objsur guid="b8ebce0e-ea5e-11de-9a5f-0013722f8dec" t="o" />
+<objsur guid="b90d2ed2-ea5e-11de-87ca-0013722f8dec" t="o" />
+<objsur guid="b92e8f8c-ea5e-11de-8dff-0013722f8dec" t="o" />
+<objsur guid="b94ff050-ea5e-11de-8288-0013722f8dec" t="o" />
+<objsur guid="b9715114-ea5e-11de-9a92-0013722f8dec" t="o" />
+<objsur guid="b992b1d8-ea5e-11de-806d-0013722f8dec" t="o" />
+<objsur guid="b9b4129c-ea5e-11de-8aff-0013722f8dec" t="o" />
+<objsur guid="b9d57356-ea5e-11de-9799-0013722f8dec" t="o" />
+<objsur guid="ba02bfd2-ea5e-11de-96d4-0013722f8dec" t="o" />
+<objsur guid="ba242096-ea5e-11de-8dd3-0013722f8dec" t="o" />
+<objsur guid="ba516d08-ea5e-11de-91eb-0013722f8dec" t="o" />
+<objsur guid="ba72cdcc-ea5e-11de-9f45-0013722f8dec" t="o" />
+<objsur guid="ba942e86-ea5e-11de-9772-0013722f8dec" t="o" />
+<objsur guid="bab58f4a-ea5e-11de-9fec-0013722f8dec" t="o" />
+<objsur guid="bad6f00e-ea5e-11de-9708-0013722f8dec" t="o" />
+<objsur guid="baf850d2-ea5e-11de-9ccf-0013722f8dec" t="o" />
+<objsur guid="bb259d44-ea5e-11de-8dd1-0013722f8dec" t="o" />
+<objsur guid="bb46fe08-ea5e-11de-9314-0013722f8dec" t="o" />
+<objsur guid="bb744a7a-ea5e-11de-881b-0013722f8dec" t="o" />
+<objsur guid="bb7dd3d8-ea5e-11de-8cc5-0013722f8dec" t="o" />
+<objsur guid="bb89bf90-ea5e-11de-9773-0013722f8dec" t="o" />
+<objsur guid="bb95ab3e-ea5e-11de-94f6-0013722f8dec" t="o" />
+</Filters>
+<GenreList>
+<objsur guid="c06b099c-ea5e-11de-890c-0013722f8dec" t="o" />
+</GenreList>
+<HomographWs>
+<Uni>fr</Uni>
+</HomographWs>
+<LexDb>
+<objsur guid="af26d792-ea5e-11de-8f7e-0013722f8dec" t="o" />
+</LexDb>
+<LinkedFilesRootDir>
+<Uni>%proj%\LinkedFiles</Uni>
+</LinkedFilesRootDir>
+<Locations>
+<objsur guid="d887937e-ea5e-11de-9e1f-0013722f8dec" t="o" />
+</Locations>
+<MorphologicalData>
+<objsur guid="b80228bc-ea5e-11de-9d24-0013722f8dec" t="o" />
+</MorphologicalData>
+<MsFeatureSystem>
+<objsur guid="d6d5a99e-ea5e-11de-994c-0013722f8dec" t="o" />
+</MsFeatureSystem>
+<Overlays>
+<objsur guid="bfa2c518-ea5e-11de-8a81-0013722f8dec" t="o" />
+</Overlays>
+<PartsOfSpeech>
+<objsur guid="70e5d670-55bd-49b6-9c19-c2f682470cd2" t="o" />
+</PartsOfSpeech>
+<People>
+<objsur guid="d72de032-ea5e-11de-84f3-0013722f8dec" t="o" />
+</People>
+<PhFeatureSystem>
+<objsur guid="d6eb1eb4-ea5e-11de-89a2-0013722f8dec" t="o" />
+</PhFeatureSystem>
+<PhonologicalData>
+<objsur guid="be765e3e-ea5e-11de-9d42-0013722f8dec" t="o" />
+</PhonologicalData>
+<Positions>
+<objsur guid="d9b3fa4e-ea5e-11de-8cea-0013722f8dec" t="o" />
+</Positions>
+<ResearchNotebook>
+<objsur guid="d739cbea-ea5e-11de-85be-0013722f8dec" t="o" />
+</ResearchNotebook>
+<Restrictions>
+<objsur guid="d743553e-ea5e-11de-842a-0013722f8dec" t="o" />
+</Restrictions>
+<Roles>
+<objsur guid="d992998a-ea5e-11de-899e-0013722f8dec" t="o" />
+</Roles>
+<SemanticDomainList>
+<objsur guid="d21571a3-922e-4f1d-b848-36b66ff8d346" t="o" />
+</SemanticDomainList>
+<Status>
+<objsur guid="d86632ba-ea5e-11de-8a58-0013722f8dec" t="o" />
+</Status>
+<Styles>
+<objsur guid="164123a0-ca12-4c44-bd69-d5fb9d4b1a0b" t="o" />
+<objsur guid="1b25e2a0-5f78-40d1-943a-2b14caccf860" t="o" />
+<objsur guid="1fafdfa6-34a7-4577-b4aa-0c6518af623a" t="o" />
+<objsur guid="23efa4cc-0347-4fc1-a33d-57b57ee852f9" t="o" />
+<objsur guid="25d17a96-4130-49c5-8f2b-497c1953556a" t="o" />
+<objsur guid="282f9ae7-d4dc-4c9b-93b5-413a7d3986b1" t="o" />
+<objsur guid="3191611c-41c6-4ecf-bcd5-a5084cc3e1f2" t="o" />
+<objsur guid="31d215a7-ac39-4d1c-be7d-88fe2b7c8d34" t="o" />
+<objsur guid="366e9470-26f7-4bdf-86e4-f829784c3113" t="o" />
+<objsur guid="3c8c511b-4683-4289-88d0-024f66540f6f" t="o" />
+<objsur guid="3eb5354a-9f55-4165-a411-eca7f9d2a845" t="o" />
+<objsur guid="3f844794-09d1-45fa-9d75-05c62e2b836d" t="o" />
+<objsur guid="4d6cffc4-254e-4ef7-b26b-41aab4bfbf48" t="o" />
+<objsur guid="501c3363-065d-465a-baad-15d0787f9ded" t="o" />
+<objsur guid="693aedeb-1f1a-4f1f-b6cd-4a2a96a1dc37" t="o" />
+<objsur guid="6de6e4d1-0c06-4102-86e2-82faf7bf9811" t="o" />
+<objsur guid="6ed2cb3d-f6db-4af5-9de9-75669ce26f46" t="o" />
+<objsur guid="740c5846-9d09-4109-806c-5357fede8712" t="o" />
+<objsur guid="7434c828-a430-4084-8a49-4be3bfa97068" t="o" />
+<objsur guid="77997501-47d3-4574-ae1d-7300107dfb73" t="o" />
+<objsur guid="7a194e30-4c8c-4934-83ad-b12ecc47a768" t="o" />
+<objsur guid="7d2c80cd-af87-4d56-8337-cfd389b775bb" t="o" />
+<objsur guid="7ff691e7-32f4-445d-acea-1ded6a6ac8ea" t="o" />
+<objsur guid="80a47ed1-1e29-40d4-9aa0-d3041a8ca9dc" t="o" />
+<objsur guid="879d3c6f-8e62-4887-a4af-27feb88c2af1" t="o" />
+<objsur guid="89670d4f-71d4-4878-b2ff-815e45512be1" t="o" />
+<objsur guid="905a485e-4b54-47eb-a8e9-1f86e9c25699" t="o" />
+<objsur guid="90b94e23-3e77-4460-94fd-c1997ed9a81f" t="o" />
+<objsur guid="9132811f-a2e6-43b1-92f2-6e2030bbea12" t="o" />
+<objsur guid="92e5dc56-317a-461d-a179-e9e005d6612a" t="o" />
+<objsur guid="945e6502-615b-4863-a18c-111e4d6b36c6" t="o" />
+<objsur guid="9795fb02-12d8-4d1e-9546-5f1bf1c848ea" t="o" />
+<objsur guid="9ece8f19-30f0-43a0-bf7b-9e5f33c6cea7" t="o" />
+<objsur guid="9fa82bd0-e797-4c40-88d7-cb591613b426" t="o" />
+<objsur guid="aba229f3-ca42-4727-a903-0abc3d418607" t="o" />
+<objsur guid="cb0fbdb3-2ca2-473b-97bb-8f505e18010c" t="o" />
+<objsur guid="d80764cc-4d86-4e14-b217-d1b0a4dc3379" t="o" />
+<objsur guid="dd807cae-4b18-4354-934d-99632b663f9e" t="o" />
+<objsur guid="f41be047-a4ee-402b-bcfe-9458e502e682" t="o" />
+<objsur guid="fb6450f5-626d-4fbf-ada5-4cfd5986b5b0" t="o" />
+</Styles>
+<TextMarkupTags>
+<objsur guid="c1af47dc-ea5e-11de-8e34-0013722f8dec" t="o" />
+</TextMarkupTags>
+<TimeOfDay>
+<objsur guid="d850bdae-ea5e-11de-985e-0013722f8dec" t="o" />
+</TimeOfDay>
+<TranslationTags>
+<objsur guid="d7f71649-e8cf-11d3-9764-00c04f186933" t="o" />
+</TranslationTags>
+<VernWss>
+<Uni>fr</Uni>
+</VernWss>
+</rt>
+<rt class="LexDb" guid="af26d792-ea5e-11de-8f7e-0013722f8dec" ownerguid="766e2ecf-7dde-42a4-8a8c-66432fc81e88">
+<ComplexEntryTypes>
+<objsur guid="1ee09905-63dd-4c7a-a9bd-1d496743ccd6" t="o" />
+</ComplexEntryTypes>
+<DateCreated val="2018-2-8 8:59:12.139" />
+<DateModified val="2018-2-8 8:59:12.139" />
+<DialectLabels>
+<objsur guid="a3a8188b-ab00-4a43-b925-a1eed62287ba" t="o" />
+</DialectLabels>
+<DomainTypes>
+<objsur guid="b0a1eb98-ea5e-11de-888e-0013722f8dec" t="o" />
+</DomainTypes>
+<ExtendedNoteTypes>
+<objsur guid="ed6b2dcc-e82f-4631-b61a-6b630de332d0" t="o" />
+</ExtendedNoteTypes>
+<IsBodyInSeparateSubentry val="False" />
+<IsHeadwordCitationForm val="False" />
+<Languages>
+<objsur guid="487c15b0-2ced-4417-8b77-9075f4a21e5f" t="o" />
+</Languages>
+<MorphTypes>
+<objsur guid="d7f713d8-e8cf-11d3-9764-00c04f186933" t="o" />
+</MorphTypes>
+<Name>
+<AUni ws="en">Dictionary</AUni>
+</Name>
+<PublicationTypes>
+<objsur guid="48a4eaed-2ae3-4c81-8c9c-f79f2f3a1455" t="o" />
+</PublicationTypes>
+<References>
+<objsur guid="b758e2a2-ea5e-11de-9d24-0013722f8dec" t="o" />
+</References>
+<Resources>
+<objsur guid="717f83e9-3922-4204-b88f-05329dbfadb1" t="o" />
+</Resources>
+<ReversalIndexes>
+<objsur guid="632f9ba1-67d1-4020-8574-54daa6d2fb92" t="o" />
+</ReversalIndexes>
+<SenseTypes>
+<objsur guid="af32c340-ea5e-11de-9040-0013722f8dec" t="o" />
+</SenseTypes>
+<UsageTypes>
+<objsur guid="af542404-ea5e-11de-8bde-0013722f8dec" t="o" />
+</UsageTypes>
+<VariantEntryTypes>
+<objsur guid="bb372467-5230-43ef-9cc7-4d40b053fb94" t="o" />
+</VariantEntryTypes>
+</rt>
+
+<rt class="LexSense" guid="c836e945-92d3-4560-9622-bfd9656551c8" ownerguid="2f2795c0-2471-4c64-9fbe-adbe5d31a940">
+  <Gloss>
+    <AUni ws="en">Wish</AUni>
+  </Gloss>
+  <MorphoSyntaxAnalysis>
+    <objsur guid="56cf8263-b874-4b5e-b340-c5604b8ca58f" t="r" />
+  </MorphoSyntaxAnalysis>
+  <ReversalEntries>
+    <objsur guid="2d1fb89c-5671-43de-8cdd-4624f4648ef4" t="r" />
+    <objsur guid="d7ff046c-a604-4c5e-b15a-92b372d9a300" t="r" />
+  </ReversalEntries>
+</rt>
+<rt class="LexSense" guid="d3d19eae-d840-484e-8de2-0100336808ed" ownerguid="2f2795c0-2471-4c64-9fbe-adbe5d31a940">
+<Gloss>
+<AUni ws="en">Hello</AUni>
+</Gloss>
+<MorphoSyntaxAnalysis>
+<objsur guid="56cf8263-b874-4b5e-b340-c5604b8ca58f" t="r" />
+</MorphoSyntaxAnalysis>
+<ReversalEntries>
+<objsur guid="2d1fb89c-5671-43de-8cdd-4624f4648ef4" t="r" />
+<objsur guid="d7ff046c-a604-4c5e-b15a-92b372d9a300" t="r" />
+</ReversalEntries>
+</rt>
+
+<rt class="VirtualOrdering" guid="e59388af-df57-4778-b2b6-cb874edc7f1f">
+<Field>
+<Uni>ReferringSenses</Uni>
+</Field>
+<Items>
+<objsur guid="d3d19eae-d840-484e-8de2-0100336808ed" t="r" />
+<objsur guid="c836e945-92d3-4560-9622-bfd9656551c8" t="r" />
+</Items>
+<Source>
+<objsur guid="d7ff046c-a604-4c5e-b15a-92b372d9a300" t="r" />
+</Source>
+</rt>
+</languageproject>
