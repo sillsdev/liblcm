@@ -1,43 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <languageproject version="7000071">
-<rt class="LexEntryInflType" guid="01d4fbc1-3b0c-4f52-9163-7ab0d4f4711c" ownerguid="bb372467-5230-43ef-9cc7-4d40b053fb94">
-<Abbreviation>
-<AUni ws="en">irreg. infl.</AUni>
-</Abbreviation>
-<BackColor val="0" />
-<DateCreated val="2018-2-8 8:59:19.599" />
-<DateModified val="2018-2-8 8:59:19.599" />
-<Description>
-<AStr ws="en">
-<Run ws="en">An Irregularly Inflected Form is an inflected form of the lexeme that is different from what you would expect from the normal rules of the grammar.</Run>
-</AStr>
-</Description>
-<Discussion>
-<objsur guid="b6f4c056-ea5e-11de-8a9c-0013722f8dec" t="o" />
-</Discussion>
-<ForeColor val="0" />
-<GlossAppend>
-<AUni ws="en">.irr.infl</AUni>
-</GlossAppend>
-<Hidden val="False" />
-<IsProtected val="True" />
-<Name>
-<AUni ws="en">Irregularly Inflected Form</AUni>
-</Name>
-<ReverseAbbr>
-<AUni ws="en">irreg. infl. of</AUni>
-</ReverseAbbr>
-<ReverseName>
-<AUni ws="en">Irregularly Inflected Form of</AUni>
-</ReverseName>
-<SortSpec val="0" />
-<SubPossibilities>
-<objsur guid="a32f1d1c-4832-46a2-9732-c2276d6547e8" t="o" />
-<objsur guid="837ebe72-8c1d-4864-95d9-fa313c499d78" t="o" />
-</SubPossibilities>
-<UnderColor val="0" />
-<UnderStyle val="0" />
-</rt>
 
 <rt class="ReversalIndexEntry" guid="d7ff046c-a604-4c5e-b15a-92b372d9a300" ownerguid="632f9ba1-67d1-4020-8574-54daa6d2fb92">
   <ReversalForm>
@@ -78,74 +40,6 @@
 </WritingSystem>
 </rt>
 
-<rt class="LexEntryInflType" guid="837ebe72-8c1d-4864-95d9-fa313c499d78" ownerguid="01d4fbc1-3b0c-4f52-9163-7ab0d4f4711c">
-<Abbreviation>
-<AUni ws="en">pst.</AUni>
-</Abbreviation>
-<BackColor val="0" />
-<DateCreated val="2018-2-8 8:59:19.600" />
-<DateModified val="2018-2-8 8:59:19.600" />
-<Description>
-<AStr ws="en">
-<Run ws="en">The past tense form of a verb that does not take the regular inflectional affix for past tense.</Run>
-</AStr>
-</Description>
-<Discussion>
-<objsur guid="b72df880-ea5e-11de-8e18-0013722f8dec" t="o" />
-</Discussion>
-<ForeColor val="0" />
-<GlossAppend>
-<AUni ws="en">.pst</AUni>
-</GlossAppend>
-<Hidden val="False" />
-<IsProtected val="True" />
-<Name>
-<AUni ws="en">Past</AUni>
-</Name>
-<ReverseAbbr>
-<AUni ws="en">pst. of</AUni>
-</ReverseAbbr>
-<ReverseName>
-<AUni ws="en">Past of</AUni>
-</ReverseName>
-<SortSpec val="0" />
-<UnderColor val="0" />
-<UnderStyle val="0" />
-</rt>
-<rt class="LexEntryInflType" guid="a32f1d1c-4832-46a2-9732-c2276d6547e8" ownerguid="01d4fbc1-3b0c-4f52-9163-7ab0d4f4711c">
-<Abbreviation>
-<AUni ws="en">pl.</AUni>
-</Abbreviation>
-<BackColor val="0" />
-<DateCreated val="2018-2-8 8:59:19.600" />
-<DateModified val="2018-2-8 8:59:19.600" />
-<Description>
-<AStr ws="en">
-<Run ws="en">The plural form of a noun that does not take the regular inflectional affix for plural.</Run>
-</AStr>
-</Description>
-<Discussion>
-<objsur guid="b716211a-ea5e-11de-8768-0013722f8dec" t="o" />
-</Discussion>
-<ForeColor val="0" />
-<GlossAppend>
-<AUni ws="en">.pl</AUni>
-</GlossAppend>
-<Hidden val="False" />
-<IsProtected val="True" />
-<Name>
-<AUni ws="en">Plural</AUni>
-</Name>
-<ReverseAbbr>
-<AUni ws="en">pl. of</AUni>
-</ReverseAbbr>
-<ReverseName>
-<AUni ws="en">Plural of</AUni>
-</ReverseName>
-<SortSpec val="0" />
-<UnderColor val="0" />
-<UnderStyle val="0" />
-</rt>
 <rt class="LangProject" guid="766e2ecf-7dde-42a4-8a8c-66432fc81e88">
 <AnalysisWss>
 <Uni>en</Uni>
