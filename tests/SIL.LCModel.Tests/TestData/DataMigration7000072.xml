@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<languageproject version="7000071">
+
+<rt class="ReversalIndexEntry" guid="d7ff046c-a604-4c5e-b15a-92b372d9a300" ownerguid="632f9ba1-67d1-4020-8574-54daa6d2fb92">
+  <ReversalForm>
+    <AUni ws="en">Rev1</AUni>
+  </ReversalForm>
+</rt>
+<rt class="ReversalIndexEntry" guid="2d1fb89c-5671-43de-8cdd-4624f4648ef4" ownerguid="632f9ba1-67d1-4020-8574-54daa6d2fb92">
+<ReversalForm>
+<AUni ws="en">Rev2</AUni>
+</ReversalForm>
+</rt>
+
+<rt class="LexEntry" guid="2f2795c0-2471-4c64-9fbe-adbe5d31a940">
+<DateCreated val="2018-2-8 8:59:53.731" />
+<DateModified val="2018-2-8 9:2:46.871" />
+<HomographNumber val="0" />
+<LexemeForm>
+<objsur guid="09a153a2-615b-454d-9955-39ad5a897398" t="o" />
+</LexemeForm>
+<Senses>
+<objsur guid="c836e945-92d3-4560-9622-bfd9656551c8" t="o" />
+<objsur guid="d3d19eae-d840-484e-8de2-0100336808ed" t="o" />
+</Senses>
+</rt>
+
+<rt class="ReversalIndex" guid="632f9ba1-67d1-4020-8574-54daa6d2fb92" ownerguid="af26d792-ea5e-11de-8f7e-0013722f8dec">
+<DateCreated val="2018-2-8 8:59:12.138" />
+<DateModified val="2018-2-8 9:2:29.435" />
+<Entries>
+<objsur guid="2d1fb89c-5671-43de-8cdd-4624f4648ef4" t="o" />
+<objsur guid="d7ff046c-a604-4c5e-b15a-92b372d9a300" t="o" />
+</Entries>
+<Name>
+<AUni ws="en">English</AUni>
+</Name>
+<WritingSystem>
+<Uni>en</Uni>
+</WritingSystem>
+</rt>
+
+<rt class="LangProject" guid="766e2ecf-7dde-42a4-8a8c-66432fc81e88">
+<AnalysisWss>
+<Uni>en</Uni>
+</AnalysisWss>
+<CurAnalysisWss>
+<Uni>en</Uni>
+</CurAnalysisWss>
+<CurPronunWss>
+<Uni>fr</Uni>
+</CurPronunWss>
+<CurVernWss>
+<Uni>fr</Uni>
+</CurVernWss>
+<DateCreated val="2018-2-8 8:59:19.450" />
+<DateModified val="2018-2-8 9:1:20.804" />
+<LexDb>
+<objsur guid="af26d792-ea5e-11de-8f7e-0013722f8dec" t="o" />
+</LexDb>
+<VernWss>
+<Uni>fr</Uni>
+</VernWss>
+</rt>
+<rt class="LexDb" guid="af26d792-ea5e-11de-8f7e-0013722f8dec" ownerguid="766e2ecf-7dde-42a4-8a8c-66432fc81e88">
+<DateCreated val="2018-2-8 8:59:12.139" />
+<DateModified val="2018-2-8 8:59:12.139" />
+<ReversalIndexes>
+<objsur guid="632f9ba1-67d1-4020-8574-54daa6d2fb92" t="o" />
+</ReversalIndexes>
+</rt>
+
+<rt class="LexSense" guid="c836e945-92d3-4560-9622-bfd9656551c8" ownerguid="2f2795c0-2471-4c64-9fbe-adbe5d31a940">
+  <Gloss>
+    <AUni ws="en">Wish</AUni>
+  </Gloss>
+  <MorphoSyntaxAnalysis>
+    <objsur guid="56cf8263-b874-4b5e-b340-c5604b8ca58f" t="r" />
+  </MorphoSyntaxAnalysis>
+  <ReversalEntries>
+    <objsur guid="2d1fb89c-5671-43de-8cdd-4624f4648ef4" t="r" />
+    <objsur guid="d7ff046c-a604-4c5e-b15a-92b372d9a300" t="r" />
+  </ReversalEntries>
+</rt>
+<rt class="LexSense" guid="d3d19eae-d840-484e-8de2-0100336808ed" ownerguid="2f2795c0-2471-4c64-9fbe-adbe5d31a940">
+<Gloss>
+<AUni ws="en">Hello</AUni>
+</Gloss>
+<MorphoSyntaxAnalysis>
+<objsur guid="56cf8263-b874-4b5e-b340-c5604b8ca58f" t="r" />
+</MorphoSyntaxAnalysis>
+<ReversalEntries>
+<objsur guid="2d1fb89c-5671-43de-8cdd-4624f4648ef4" t="r" />
+<objsur guid="d7ff046c-a604-4c5e-b15a-92b372d9a300" t="r" />
+</ReversalEntries>
+</rt>
+
+<rt class="VirtualOrdering" guid="e59388af-df57-4778-b2b6-cb874edc7f1f">
+<Field>
+<Uni>ReferringSenses</Uni>
+</Field>
+<Items>
+<objsur guid="d3d19eae-d840-484e-8de2-0100336808ed" t="r" />
+<objsur guid="c836e945-92d3-4560-9622-bfd9656551c8" t="r" />
+</Items>
+<Source>
+<objsur guid="d7ff046c-a604-4c5e-b15a-92b372d9a300" t="r" />
+</Source>
+</rt>
+</languageproject>
