@@ -20,6 +20,7 @@
 <objsur guid="09a153a2-615b-454d-9955-39ad5a897398" t="o" />
 </LexemeForm>
 <Senses>
+<objsur guid="0036e945-92d3-4560-9622-bfd9656551c8" t="o" />
 <objsur guid="c836e945-92d3-4560-9622-bfd9656551c8" t="o" />
 <objsur guid="d3d19eae-d840-484e-8de2-0100336808ed" t="o" />
 </Senses>
@@ -70,6 +71,14 @@
 </ReversalIndexes>
 </rt>
 
+<rt class="LexSense" guid="0036e945-92d3-4560-9622-bfd9656551c8" ownerguid="2f2795c0-2471-4c64-9fbe-adbe5d31a940">
+  <Gloss>
+    <AUni ws="en">Irreversible</AUni>
+  </Gloss>
+  <MorphoSyntaxAnalysis>
+    <objsur guid="56cf8263-b874-4b5e-b340-c5604b8ca58f" t="r" />
+  </MorphoSyntaxAnalysis>
+</rt>
 <rt class="LexSense" guid="c836e945-92d3-4560-9622-bfd9656551c8" ownerguid="2f2795c0-2471-4c64-9fbe-adbe5d31a940">
   <Gloss>
     <AUni ws="en">Wish</AUni>

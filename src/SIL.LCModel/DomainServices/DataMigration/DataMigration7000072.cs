@@ -1,16 +1,13 @@
-﻿// Copyright (c) 2016-2017 SIL International
+﻿// Copyright (c) 2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+using System.Diagnostics;
 using System.Xml.Linq;
 
 namespace SIL.LCModel.DomainServices.DataMigration
 {
-	/// ----------------------------------------------------------------------------------------
-	/// <summary>
-	/// Migrate data from 7000071 to 7000072.
-	/// </summary>
-	/// ----------------------------------------------------------------------------------------
+	/// <inheritdoc />
 	internal class DataMigration7000072 : IDataMigration
 	{
 		/// <summary>
@@ -19,7 +16,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// 2) Remove the collection of ReversalIndexEntry from each Sense
 		/// 3) Migrate any VirtualOrdering objects if necessary
 		/// </summary>
-		/// <param name="repoDto"></param>
 		public void PerformMigration(IDomainObjectDTORepository repoDto)
 		{
 			DataMigrationServices.CheckVersionNumber(repoDto, 7000071);
@@ -37,7 +33,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// Add the reference collection of Senses to each reversal index
 		/// and fill it with the Senses that referenced the ReversalIndexEntry
 		/// </summary>
-		/// <param name="repoDto"></param>
 		public void AddSensesToReversalIndexEntry(IDomainObjectDTORepository repoDto)
 		{
 			// Get all the LexSense Classes
@@ -45,16 +40,17 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			foreach (var aLexSense in allLexSenses)
 			{
 				var lexSenseElement = XElement.Parse(aLexSense.Xml);
-				// Get the Current LexSense's Guid
-				var lexSenseGuid = lexSenseElement.Attribute("guid")?.Value;
-
 				// Get the ReversalEntries within the LexSense
 				var reversalEntries = lexSenseElement.Element("ReversalEntries");
 				if (reversalEntries == null)
-					break;
-				var reversalEntriesList = reversalEntries.Elements("objsur");
+					continue;
+
+				// Get the Current LexSense's Guid
+				var lexSenseGuid = lexSenseElement.Attribute("guid")?.Value;
+				Debug.Assert(lexSenseGuid != null, "lexSenseGuid != null");
 
 				// Loop through the ReversalEntries within the LexSense
+				var reversalEntriesList = reversalEntries.Elements("objsur");
 				foreach (var aReversalEntry in reversalEntriesList)
 				{
 					// Get the Current ReversalEntries (objsur) Guid from the objsur
@@ -68,17 +64,11 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					var sensesElement = reversalIndexElement.Element("Senses");
 					if (sensesElement == null)
 					{
-						XElement newSensesElement = new XElement("Senses",
-							new XElement("objsur", new XAttribute("guid", lexSenseGuid),
-								new XAttribute("t", "r")));
-						reversalIndexElement.Add(newSensesElement);
+						sensesElement = new XElement("Senses");
+						reversalIndexElement.Add(sensesElement);
 					}
-					else
-					{
-						XElement objsur = new XElement("objsur", new XAttribute("guid", lexSenseGuid),
-							new XAttribute("t", "r"));
-						reversalIndexElement.Element("Senses")?.Add(objsur);
-					}
+					var objsur = new XElement("objsur", new XAttribute("guid", lexSenseGuid), new XAttribute("t", "r"));
+					sensesElement.Add(objsur);
 
 					// Update the Reversal Entry
 					DataMigrationServices.UpdateDTO(repoDto, aReversalIndexEntry, reversalIndexElement.ToString());
@@ -89,7 +79,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// <summary>
 		/// Remove the collection of ReversalIndexEntry from each Sense
 		/// </summary>
-		/// <param name="repoDto"></param>
 		public void RemoveReversalEntriesFromSenses(IDomainObjectDTORepository repoDto)
 		{
 			// Get all the LexSense Classes
@@ -109,7 +98,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// <summary>
 		/// Change ReferringSenses To Senses under VirtualOrdering objects, if present
 		/// </summary>
-		/// <param name="repoDto"></param>
 		public void ChangeReferringSensesToSenses(IDomainObjectDTORepository repoDto)
 		{
 			// Get all the VirtualOrdering Classes
@@ -117,11 +105,10 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			foreach (var anOrdering in allOrderings)
 			{
 				var orderingElement = XElement.Parse(anOrdering.Xml);
-				var field = orderingElement.Element("Field");
-				var uniValue = field.Element("Uni");
+				var uniValue = orderingElement.Element("Field")?.Element("Uni");
 
 				// Change ReferringSenses Value as Senses
-				if (uniValue.Value == "ReferringSenses")
+				if (uniValue?.Value == "ReferringSenses")
 				{
 					uniValue.Value = "Senses";
 				}
