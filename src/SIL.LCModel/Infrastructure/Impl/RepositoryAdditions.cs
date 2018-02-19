@@ -1628,7 +1628,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// </summary>
 		public IEnumerable<ILexSense> InstancesWithReversalEntry(IReversalIndexEntry entry)
 		{
-			return (entry as ReversalIndexEntry).ReferringSenses;
+			return (entry as ReversalIndexEntry).SensesRS;
 		}
 	}
 	#endregion

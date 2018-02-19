@@ -253,7 +253,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				{
 					var newEntry = revEntryFactory.Create();
 					revIndex.EntriesOC.Add(newEntry);
-					sense.ReversalEntriesRC.Add(newEntry);
+					newEntry.SensesRS.Add(sense);
 					newEntry.ReversalForm.SetAnalysisDefaultWritingSystem(reversalForm);
 				}
 			});

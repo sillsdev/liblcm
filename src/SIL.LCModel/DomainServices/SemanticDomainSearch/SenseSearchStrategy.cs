@@ -37,7 +37,7 @@ namespace SIL.LCModel.DomainServices.SemanticDomainSearch
 			var results = new Dictionary<int, HashSet<string>>();
 			AddKeysFrom(m_sense.Gloss, results, int.MaxValue);
 			AddKeysFrom(m_sense.Definition, results, 2);
-			var reversalEntries = m_sense.ReversalEntriesRC;
+			var reversalEntries = m_sense.ReferringReversalIndexEntries;
 			foreach (IReversalIndexEntry reversalIndexEntry in reversalEntries)
 				AddKeysFrom(reversalIndexEntry.ReversalForm, results, int.MaxValue);
 

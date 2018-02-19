@@ -234,44 +234,45 @@ namespace SIL.LCModel.Infrastructure.Impl
 		}
 
 		/// <summary>
-		/// ReversalIndexEntry.ReferringSenses is updated when the ReversalEntries of the sense is changed.
+		/// LexSense.ReversalIndexRC is updated when the sense is added to ReversalIndexEntry.SensesRS.
 		/// </summary>
 		[Test]
 		public void ReferringSensesDependOnReversalEntries()
 		{
 			var entry = MakeEntry("form", "gloss");
 			var reversal = MakeReversalEntry("gloss") as ReversalIndexEntry;
+			var sense = entry.SensesOS.First();
 
 			Assert.IsNotNull(reversal, "the expected reversal object was created");
-			Assert.AreEqual(0, reversal.ReferringSenses.Count(),
-				"nothing should refer to the reversal entry initially");
+			Assert.AreEqual(0, reversal.SensesRS.Count(), "nothing should refer to the reversal entry initially");
+
 
 			PrepareToTrackPropChanged();
 			UndoableUnitOfWorkHelper.Do("undo set reversal entry", "redo", m_actionHandler,
 				() =>
 				{
-					entry.SensesOS[0].ReversalEntriesRC.Add(reversal);
+					reversal.SensesRS.Add(sense);
 				});
 
-			CheckChange(ReversalIndexEntryTags.kClassId, reversal, "ReferringSenses", 0, 1, 0, "ReferringSenses not notified when sense reversal added");
+			CheckChange(LexSenseTags.kClassId, sense, "ReferringReversalIndexEntries", 0, 1, 0, "Sense.ReversalEntries not notified when the sense was added to the ReversalIndexEntry");
 
-			Assert.AreEqual(1, reversal.ReferringSenses.Count(),
-				"one sense should be referring to the reversal entry after Add");
-			Assert.AreSame(entry.SensesOS[0], reversal.ReferringSenses.ToArray()[0],
+			Assert.AreEqual(1, sense.ReferringReversalIndexEntries.Count(),
+				"The sense should have one ReversalEntry added");
+			Assert.AreSame(reversal, sense.ReferringReversalIndexEntries.ToArray()[0],
 				"the known sense should be referring to the reversal entry");
 
 			PrepareToTrackPropChanged();
 			UndoableUnitOfWorkHelper.Do("undo remove reversal entry", "redo", m_actionHandler,
 				() =>
 				{
-					entry.SensesOS[0].ReversalEntriesRC.Remove(reversal);
+					reversal.SensesRS.Remove(sense);
 				});
 
 			// It's surprising that the number deleted is zero. However, the code that builds the virtual property change has no way to
 			// know the old value, so just assumes it is empty.
-			CheckChange(ReversalIndexEntryTags.kClassId, reversal, "ReferringSenses", 0, 0, 0, "ReferringSenses not notified when sense reversal removed");
+			CheckChange(LexSenseTags.kClassId, sense, "ReferringReversalIndexEntries", 0, 0, 0, "Sense.ReversalEntries not notified when the sense was removed from the ReversalIndexEntry");
 
-			Assert.AreEqual(0, reversal.ReferringSenses.Count(),
+			Assert.AreEqual(0, sense.ReferringReversalIndexEntries.Count(),
 				"nothing should refer to the reversal entry after Remove");
 		}
 

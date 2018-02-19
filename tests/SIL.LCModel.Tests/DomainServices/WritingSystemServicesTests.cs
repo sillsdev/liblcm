@@ -301,7 +301,7 @@ namespace SIL.LCModel.DomainServices
 			var entry1 = SenseOrEntryTests.CreateInterestingLexEntry(Cache);
 
 			var testEntry = revIndex.FindOrCreateReversalEntry("first");
-			entry1.SensesOS.First().ReversalEntriesRC.Add(testEntry);
+			testEntry.SensesRS.Add(entry1.SensesOS.First());
 
 			testEntry.ReversalIndex.WritingSystem = "blz";
 			testEntry.ReversalForm.set_String(wsBlz.Handle, "blz");
@@ -343,8 +343,8 @@ namespace SIL.LCModel.DomainServices
 			entry2.SensesOS.First().MorphoSyntaxAnalysisRA = msa2;
 
 			var testEntry = revIndex.FindOrCreateReversalEntry("first");
-			entry1.SensesOS.First().ReversalEntriesRC.Add(testEntry);
-			entry2.SensesOS.First().ReversalEntriesRC.Add(testEntry);
+			testEntry.SensesRS.Add(entry1.SensesOS.First());
+			testEntry.SensesRS.Add(entry2.SensesOS.First());
 
 			testEntry.ReversalIndex.WritingSystem = "fr";
 			testEntry.ReversalForm.set_String(m_wsFr, "fr");
