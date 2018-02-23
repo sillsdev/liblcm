@@ -6582,7 +6582,7 @@ namespace SIL.LCModel.DomainImpl
 					var lexSense = e.ObjectAdded as LexSense;
 					if (WritingSystem != 0) // defensive, mainly for tests
 						lexSense.ReversalEntriesBulkTextChanged(WritingSystem);
-					ReversalEntryReferringSensesChanged(lexSense, true);
+					ReversalEntrySensesChanged(lexSense, true);
 					break;
 			}
 		}
@@ -6595,7 +6595,7 @@ namespace SIL.LCModel.DomainImpl
 					var lexSense = e.ObjectRemoved as LexSense;
 					if (WritingSystem != 0) // defensive, mainly for tests
 						lexSense.ReversalEntriesBulkTextChanged(WritingSystem);
-					ReversalEntryReferringSensesChanged(lexSense, false);
+					ReversalEntrySensesChanged(lexSense, false);
 					break;
 			}
 		}
@@ -6605,21 +6605,21 @@ namespace SIL.LCModel.DomainImpl
 					/// </summary>
 					/// <param name="sense"></param>
 					/// <param name="added">true if added, false if deleted</param>
-		private void ReversalEntryReferringSensesChanged(LexSense sense, bool added)
+		private void ReversalEntrySensesChanged(LexSense sense, bool added)
 		{
 			var unitOfWorkService = ((IServiceLocatorInternal)m_cache.ServiceLocator).UnitOfWorkService;
 			// We don't need to record virtual property changes for newly created objects. Nothing can be displaying the old value.
 			int flid = m_cache.MetaDataCache.GetFieldId2(LexSenseTags.kClassId, "ReferringReversalIndexEntries", false);
 			List<Guid> guids = new List<Guid>();
-			var referingSenses = sense.ReferringReversalIndexEntries;
+			var referringRevIndexEntries = sense.ReferringReversalIndexEntries;
 			// collect all the ReversalIndexEntries that reference this sense
-			foreach (var indexEntry in referingSenses)
+			foreach (var indexEntry in referringRevIndexEntries)
 			{
 				if (indexEntry == this && !added) // skip the removed one
 					continue;
 				guids.Add(indexEntry.Guid);
 			}
-			if (added && !referingSenses.Contains(this))
+			if (added && !referringRevIndexEntries.Contains(this))
 				guids.Add(this.Guid);
 			unitOfWorkService.RegisterVirtualAsModified(sense, flid, new Guid[0], guids.ToArray());
 		}
