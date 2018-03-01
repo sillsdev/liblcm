@@ -345,7 +345,7 @@ namespace SIL.LCModel.IOC
 		{
 			if (string.IsNullOrEmpty(key))
 			{
-				return m_container.GetInstance(serviceType);
+				return m_container.TryGetInstance(serviceType);
 			}
 			return m_container.GetInstance(serviceType, key);
 		}
