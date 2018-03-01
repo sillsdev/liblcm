@@ -3564,7 +3564,7 @@ namespace SIL.LCModel.DomainImpl
 		///<summary>Needed only for Allomorph types; placeholder to keep the compiler happy</summary>
 		public virtual ILcmReferenceCollection<IPhEnvironment> AllomorphEnvironments
 		{
-			get { return Cache.ServiceLocator.GetInstance<ILcmReferenceCollection<IPhEnvironment>>(); }
+			get { return null; }
 		}
 	}
 
