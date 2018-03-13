@@ -13,6 +13,8 @@ RevisionValue=latest.lastSuccessful
 Condition=Win64
 Path=SIL.Core.dll => downloads/
 SIL.Core.pdb => downloads/
+SIL.Core.Desktop.dll => downloads/
+SIL.Core.Desktop.pdb => downloads/
 SIL.Lexicon.dll => downloads/
 SIL.Lexicon.pdb => downloads/
 SIL.WritingSystems.dll => downloads/
@@ -30,6 +32,8 @@ RevisionValue=latest.lastSuccessful
 Condition=Linux
 Path=SIL.Core.dll => downloads/
 SIL.Core.dll.mdb => downloads/
+SIL.Core.Desktop.dll => downloads/
+SIL.Core.Desktop.pdb => downloads/
 SIL.Lexicon.dll => downloads/
 SIL.Lexicon.dll.mdb => downloads/
 SIL.WritingSystems.dll => downloads/
@@ -69,6 +73,8 @@ RevisionValue=latest.lastSuccessful
 Condition=Win32
 Path=SIL.Core.dll => downloads/
 SIL.Core.pdb => downloads/
+SIL.Core.Desktop.dll => downloads/
+SIL.Core.Desktop.dll => downloads/
 SIL.Lexicon.dll => downloads/
 SIL.Lexicon.pdb => downloads/
 SIL.WritingSystems.dll => downloads/
