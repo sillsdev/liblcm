@@ -2,8 +2,9 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
 
 	<PropertyGroup>
+		<NuGetExeUrl>https://dist.nuget.org/win-x86-commandline/v3.4.4/nuget.exe</NuGetExeUrl>
 		<NuGetPath>$(MSBuildThisFileDirectory).nuget</NuGetPath>
-		<NuGetExe>$(NuGetPath)/NuGet.exe</NuGetExe>
+		<NuGetExe>$(NuGetPath)/nuget.exe</NuGetExe>
 		<NuGetCommand Condition=" '$(OS)' == 'Windows_NT'">"$(NuGetExe)"</NuGetCommand>
 		<NuGetCommand Condition=" '$(OS)' != 'Windows_NT' ">mono --runtime=v4.0.30319 $(NuGetExe)</NuGetCommand>
 	</PropertyGroup>
@@ -24,7 +25,7 @@
 	<Target Name="GetNuGet" Condition="!Exists('$(NuGetExe)')">
 		<MakeDir Directories="$(NuGetPath)" Condition="!Exists('$(NuGetPath)')" />
 		<DownloadNuGet TargetPath="$(NuGetExe)" Condition="'$(OS)' == 'Windows_NT'" />
-		<Exec Command="wget https://nuget.org/NuGet.exe || curl -O -L https://nuget.org/NuGet.exe"
+		<Exec Command="wget $(NuGetExeUrl) || curl -O -L $(NuGetExeUrl)"
 			WorkingDirectory="$(NuGetPath)"
 			Condition="'$(OS)' != 'Windows_NT'" />
 	</Target>
@@ -49,7 +50,7 @@
 
                     Log.LogMessage("Downloading latest version of NuGet.exe...");
                     WebClient webClient = new WebClient();
-                    webClient.DownloadFile("https://www.nuget.org/nuget.exe", TargetPath);
+                    webClient.DownloadFile("$(NuGetExeUrl)", TargetPath);
 
                     return true;
                 }
