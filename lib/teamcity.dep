@@ -33,7 +33,7 @@ Condition=Linux
 Path=SIL.Core.dll => downloads/
 SIL.Core.dll.mdb => downloads/
 SIL.Core.Desktop.dll => downloads/
-SIL.Core.Desktop.pdb => downloads/
+SIL.Core.Desktop.dll.mdb => downloads/
 SIL.Lexicon.dll => downloads/
 SIL.Lexicon.dll.mdb => downloads/
 SIL.WritingSystems.dll => downloads/
@@ -74,7 +74,7 @@ Condition=Win32
 Path=SIL.Core.dll => downloads/
 SIL.Core.pdb => downloads/
 SIL.Core.Desktop.dll => downloads/
-SIL.Core.Desktop.dll => downloads/
+SIL.Core.Desktop.pdb => downloads/
 SIL.Lexicon.dll => downloads/
 SIL.Lexicon.pdb => downloads/
 SIL.WritingSystems.dll => downloads/

@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0" DefaultTargets="GenerateKernelCs">
 	<UsingTask TaskName="IdlImp" AssemblyFile="$(OutDir)SIL.LCModel.Build.Tasks.dll" />
 	<PropertyGroup Condition="'$(OS)'=='Windows_NT'">
-		<PreprocessCommand>"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.11.25503\bin\Hostx86\x86\cl.exe" /E</PreprocessCommand>
+		<PreprocessCommand>"$(MSBuildProgramFiles32)\Microsoft Visual Studio $(MSBuildToolsVersion)\VC\bin\cl.exe" /E</PreprocessCommand>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(OS)'=='Unix'">
 		<PreprocessCommand>gcc -E -x c</PreprocessCommand>
