@@ -297,8 +297,8 @@ namespace SIL.LCModel.Core.SpellChecking
 			// make temp folder with enchant dictionary in it
 			var outputFolder = Path.Combine(Path.GetTempPath(), "EnchantDictionaryMigrationTestOut");
 			var inputFolder = Path.Combine(Path.GetTempPath(), "EnchantDictionaryMigrationTestIn");
-			DirectoryUtilities.DeleteDirectoryRobust(outputFolder);
-			DirectoryUtilities.DeleteDirectoryRobust(inputFolder);
+			RobustIO.DeleteDirectoryAndContents(outputFolder);
+			RobustIO.DeleteDirectoryAndContents(inputFolder);
 			Directory.CreateDirectory(outputFolder);
 			Directory.CreateDirectory(inputFolder);
 			// ReSharper disable LocalizableElement
