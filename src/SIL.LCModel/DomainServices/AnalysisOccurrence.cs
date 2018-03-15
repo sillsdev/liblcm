@@ -38,14 +38,14 @@ namespace SIL.LCModel.DomainServices
 		/// The segment in which the occurrence is found.
 		/// </summary>
 		public ISegment Segment { get; private set; }
+
 		/// <summary>
 		/// The index within the segment of the particular occurrence.
 		/// </summary>
 		public int Index { get; private set; }
-		/// <summary>
-		/// The value of writing system which this occurrence has in the base text.
-		/// </summary>
-		private int IntBaselineWs { get; private set; }
+
+		private int _intBaselineWs;
+
 		/// <summary>
 		/// The actual analysis that occurs at this position.
 		/// Setter modifies the segment, and must be used inside a UOW.
@@ -122,11 +122,11 @@ namespace SIL.LCModel.DomainServices
 			{
 				if (!IsValid)
 					return -1; // might happen on an empty translation line.
-				if (IntBaselineWs == 0)
+				if (_intBaselineWs == 0)
 				{
-					IntBaselineWs = TsStringUtils.GetWsAtOffset(Paragraph.Contents, GetMyBeginOffsetInPara());
+					_intBaselineWs = TsStringUtils.GetWsAtOffset(Paragraph.Contents, GetMyBeginOffsetInPara());
 				}
-				return IntBaselineWs;
+				return _intBaselineWs;
 			}
 		}
 
