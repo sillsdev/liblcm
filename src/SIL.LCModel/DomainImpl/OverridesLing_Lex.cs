@@ -1,4 +1,4 @@
-// Copyright (c) 2002-2017 SIL International
+// Copyright (c) 2002-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 //
@@ -6111,6 +6111,35 @@ namespace SIL.LCModel.DomainImpl
 				return;
 
 			LexEntry.SafelyReplaceSequenceReferences(objOld, this, sequenceRefs);
+		}
+
+		public ITsString GetDefinitionOrGloss(string wsName, out int wsActual)
+		{
+			ITsString bestString;
+			var wsId = WritingSystemServices.GetMagicWsIdFromName(wsName);
+			if (wsId == 0)
+			{
+				wsId = Cache.WritingSystemFactory.GetWsFromStr(wsName);
+				if (wsId == 0) // The config is bad or stale, so just return null
+				{
+					Debug.WriteLine("Writing system requested that is not known in the local store: {0}", wsName);
+					wsActual = 0;
+					return null;
+				}
+				bestString = Definition.get_String(wsId);
+				if (String.IsNullOrEmpty(bestString.Text))
+					bestString = Gloss.get_String(wsId);
+				wsActual = wsId;
+			}
+			else
+			{
+				// Use the magic writing system (i.e. default analysis)
+				bestString = Definition.GetAlternativeOrBestTss(wsId, out wsActual);
+				if (String.IsNullOrEmpty(bestString.Text))
+					bestString = Gloss.GetAlternativeOrBestTss(wsId, out wsActual);
+			}
+
+			return bestString;
 		}
 
 		public IMultiStringAccessor DefinitionOrGloss
