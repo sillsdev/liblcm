@@ -1,4 +1,4 @@
-// Copyright (c) 2008-2017 SIL International
+// Copyright (c) 2008-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 //
@@ -1080,6 +1080,15 @@ namespace SIL.LCModel
 		/// Note this is called on SFM export by mdf.xml so needs to be a property.
 		/// </summary>
 		IEnumerable<ILexReference> LexSenseReferences { get; }
+
+		/// <summary>
+		/// This returns the TsString of the Definition or Gloss property of this LexSense for the
+		/// given writing system name.
+		/// </summary>
+		/// <param name="wsName">The name id of the writing system which could be "magic."</param>
+		/// <param name="wsActual">The id of the writing system to which the TsString belongs.</param>
+		/// <returns></returns>
+		ITsString GetDefinitionOrGloss(string wsName, out int wsActual);
 
 		/// <summary>
 		/// Convenience method for returning the contents of the Definition field or of the
