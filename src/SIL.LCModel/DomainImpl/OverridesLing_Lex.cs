@@ -6141,19 +6141,6 @@ namespace SIL.LCModel.DomainImpl
 
 			return bestString;
 		}
-
-		public IMultiStringAccessor DefinitionOrGloss
-		{
-			get
-			{
-				if(Definition.StringCount != 0)
-				{
-					if(Definition.BestAnalysisAlternative.Text != Strings.ksStars)
-						return Definition;
-				}
-				return Gloss;
-			}
-		}
 	}
 
 	/// <summary>
@@ -9423,7 +9410,9 @@ namespace SIL.LCModel.DomainImpl
 		{
 			get
 			{
-				return from sense in ((ILexEntry)Owner).SensesOS select sense.DefinitionOrGloss;
+				// LT-7445 This property doesn't appear to be used, although the option is available in the configuration node.
+				// return from sense in ((ILexEntry)Owner).SensesOS select sense.DefinitionOrGloss;
+				throw new NotImplementedException("The implementation of the DefinitionOrGloss property has been removed.");
 			}
 		}
 
