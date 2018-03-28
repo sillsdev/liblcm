@@ -196,9 +196,9 @@ namespace SIL.LCModel.DomainImpl
 				entry.SensesOS.Add(sense);
 				sense.Definition.set_String(ws, TsStringUtils.MakeString("definition", ws));
 				sense.Gloss.set_String(ws, TsStringUtils.MakeString("gloss", ws));
-
-				var dorg = sense.DefinitionOrGloss;
-				Assert.That(dorg.BestAnalysisAlternative.Text, Contains.Substring("definition"));
+				int wsActual;
+				var dorg = sense.GetDefinitionOrGloss(Cache.WritingSystemFactory.GetStrFromWs(ws), out wsActual);
+				Assert.That(dorg.Text, Contains.Substring("definition"));
 			});
 		}
 
@@ -215,9 +215,9 @@ namespace SIL.LCModel.DomainImpl
 				var sense = Cache.ServiceLocator.GetInstance<ILexSenseFactory>().Create();
 				entry.SensesOS.Add(sense);
 				sense.Gloss.set_String(ws, TsStringUtils.MakeString("gloss", ws));
-
-				var dorg = sense.DefinitionOrGloss;
-				Assert.That(dorg.BestAnalysisAlternative.Text, Contains.Substring("gloss"));
+				int wsActual;
+				var dorg = sense.GetDefinitionOrGloss(Cache.WritingSystemFactory.GetStrFromWs(ws), out wsActual);
+				Assert.That(dorg.Text, Contains.Substring("gloss"));
 			});
 		}
 
@@ -235,9 +235,9 @@ namespace SIL.LCModel.DomainImpl
 				entry.SensesOS.Add(sense);
 				sense.Definition.set_String(ws, TsStringUtils.EmptyString(ws));
 				sense.Gloss.set_String(ws, TsStringUtils.MakeString("gloss", ws));
-
-				var dorg = sense.DefinitionOrGloss;
-				Assert.That(dorg.BestAnalysisAlternative.Text, Contains.Substring("gloss"));
+				int wsActual;
+				var dorg = sense.GetDefinitionOrGloss(Cache.WritingSystemFactory.GetStrFromWs(ws), out wsActual);
+				Assert.That(dorg.Text, Contains.Substring("gloss"));
 			});
 		}
 	}
