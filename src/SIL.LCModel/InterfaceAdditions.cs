@@ -1091,12 +1091,6 @@ namespace SIL.LCModel
 		ITsString GetDefinitionOrGloss(string wsName, out int wsActual);
 
 		/// <summary>
-		/// Convenience method for returning the contents of the Definition field or of the
-		/// Gloss field if the Definition is undefined.
-		/// </summary>
-		IMultiStringAccessor DefinitionOrGloss { get; }
-
-		/// <summary>
 		/// This is a backreference (virtual) property.  It returns the list of all the LexEntryRef
 		/// objects that refer to this LexSense in ShowComplexFormIn  and are complex forms.
 		/// </summary>

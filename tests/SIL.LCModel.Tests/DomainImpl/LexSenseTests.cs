@@ -9,6 +9,7 @@ using System.Xml;
 using NUnit.Framework;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
+using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.DomainServices;
 using SIL.LCModel.Infrastructure;
 using SIL.LCModel.Infrastructure.Impl;
@@ -196,9 +197,9 @@ namespace SIL.LCModel.DomainImpl
 				entry.SensesOS.Add(sense);
 				sense.Definition.set_String(ws, TsStringUtils.MakeString("definition", ws));
 				sense.Gloss.set_String(ws, TsStringUtils.MakeString("gloss", ws));
-
-				var dorg = sense.DefinitionOrGloss;
-				Assert.That(dorg.BestAnalysisAlternative.Text, Contains.Substring("definition"));
+				int wsActual;
+				var dorg = sense.GetDefinitionOrGloss(Cache.WritingSystemFactory.GetStrFromWs(ws), out wsActual);
+				Assert.That(dorg.Text, Contains.Substring("definition"));
 			});
 		}
 
@@ -206,7 +207,7 @@ namespace SIL.LCModel.DomainImpl
 		///
 		/// </summary>
 		[Test]
-		public void DefinitionOrGloss_DefinitionNullGivesGloss()
+		public void DefinitionOrGloss_DefinitionNullOrEmptyGivesGloss()
 		{
 			UndoableUnitOfWorkHelper.Do("Undo add senses", "Redo add senses", m_actionHandler, () =>
 			{
@@ -215,29 +216,36 @@ namespace SIL.LCModel.DomainImpl
 				var sense = Cache.ServiceLocator.GetInstance<ILexSenseFactory>().Create();
 				entry.SensesOS.Add(sense);
 				sense.Gloss.set_String(ws, TsStringUtils.MakeString("gloss", ws));
-
-				var dorg = sense.DefinitionOrGloss;
-				Assert.That(dorg.BestAnalysisAlternative.Text, Contains.Substring("gloss"));
-			});
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		[Test]
-		public void DefinitionOrGloss_EmptyDefinitionGivesGloss()
-		{
-			UndoableUnitOfWorkHelper.Do("Undo add senses", "Redo add senses", m_actionHandler, () =>
-			{
-				int ws = Cache.LangProject.DefaultAnalysisWritingSystem.Handle;
-				var entry = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
-				var sense = Cache.ServiceLocator.GetInstance<ILexSenseFactory>().Create();
-				entry.SensesOS.Add(sense);
+				int wsActual;
+				var dorg = sense.GetDefinitionOrGloss(Cache.WritingSystemFactory.GetStrFromWs(ws), out wsActual);
+				Assert.That(dorg.Text, Contains.Substring("gloss"));
 				sense.Definition.set_String(ws, TsStringUtils.EmptyString(ws));
-				sense.Gloss.set_String(ws, TsStringUtils.MakeString("gloss", ws));
+				dorg = sense.GetDefinitionOrGloss(Cache.WritingSystemFactory.GetStrFromWs(ws), out wsActual);
+				Assert.That(dorg.Text, Contains.Substring("gloss"));
+			});
+		}
 
-				var dorg = sense.DefinitionOrGloss;
-				Assert.That(dorg.BestAnalysisAlternative.Text, Contains.Substring("gloss"));
+		/// <summary>
+		///
+		/// </summary>
+		[Test]
+		public void DefinitionOrGloss_AnalysisWsReturnsDefaultAnalysisDefinition()
+		{
+			UndoableUnitOfWorkHelper.Do("Undo add senses", "Redo add senses", m_actionHandler, () =>
+			{
+				int ws = Cache.LangProject.DefaultAnalysisWritingSystem.Handle;
+				var entry = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
+				var sense = Cache.ServiceLocator.GetInstance<ILexSenseFactory>().Create();
+				entry.SensesOS.Add(sense);
+				sense.Definition.set_String(ws, TsStringUtils.MakeString("english", ws));
+				CoreWritingSystemDefinition frWs;
+				Cache.ServiceLocator.WritingSystemManager.GetOrSet("fr", out frWs);
+				sense.Definition.set_String(frWs.Handle, TsStringUtils.MakeString("french", frWs.Handle));
+				int wsActual;
+				var frDef = sense.Definition.get_String(frWs.Handle);
+				var dorg = sense.GetDefinitionOrGloss("analysis", out wsActual);
+				Assert.That(frDef.Text, Contains.Substring("french"));
+				Assert.That(dorg.Text, Contains.Substring("english"));
 			});
 		}
 	}
