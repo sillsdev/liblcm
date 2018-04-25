@@ -1,4 +1,4 @@
-// Copyright (c) 2003-2013 SIL International
+// Copyright (c) 2003-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 //
@@ -522,7 +522,7 @@ namespace SIL.LCModel.Core.Text
 			return (UCharCategory)u_charType(ch);
 		}
 
-		[DllImport(IcuucDllName, EntryPoint = "u_charType" + VersionSuffix,
+		[DllImport(IcuucDllName, EntryPoint = "u_charDirection" + VersionSuffix,
 			 CallingConvention = CallingConvention.Cdecl)]
 		private static extern int u_charDirection(int characterCode);
 
