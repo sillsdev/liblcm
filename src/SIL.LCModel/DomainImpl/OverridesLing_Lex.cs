@@ -3994,19 +3994,20 @@ namespace SIL.LCModel.DomainImpl
 		{
 			int index = 0;
 			List<IReferenceSource> refsToRemove = new List<IReferenceSource>();
-			var refsList = new Dictionary<int, int>();
+			var refsList = new Dictionary<Tuple<int, int>, int>();
 			foreach (var item in m_incomingRefs)
 			{
 				var sequence = item as LcmReferenceSequence<ICmObject>;
 				if (sequence == null)
 					continue;
-				if (!refsList.ContainsKey(sequence.MainObject.Hvo))
-					refsList.Add(sequence.MainObject.Hvo, index);
+				var refKey = new Tuple<int, int>(sequence.MainObject.Hvo, sequence.Flid);
+				if (!refsList.ContainsKey(refKey))
+					refsList.Add(refKey, index);
 				else
 				{
-					var prevRef = m_incomingRefs.ElementAt(refsList[sequence.MainObject.Hvo]);
+					var prevRef = m_incomingRefs.ElementAt(refsList[refKey]);
 					refsToRemove.Add(prevRef);
-					refsList[sequence.MainObject.Hvo] = index;
+					refsList[refKey] = index;
 				}
 				index++;
 			}
@@ -4014,7 +4015,9 @@ namespace SIL.LCModel.DomainImpl
 			if (refsToRemove.Count > 0)
 			{
 				foreach (var refItem in refsToRemove)
+				{
 					m_incomingRefs.Remove(refItem);
+				}
 			}
 		}
 

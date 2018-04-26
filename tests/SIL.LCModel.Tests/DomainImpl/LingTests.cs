@@ -800,6 +800,33 @@ namespace SIL.LCModel.DomainImpl
 			}
 		}
 
+
+		/// <summary>
+		/// LT-18771 and other bugs can result in in memory duplication of LexReferences
+		/// Those are removed when LexSenseReferences is accessed.
+		/// This test proves other data isn't lost
+		/// </summary>
+		[Test]
+		public void ComplexFormCollectionsDoNotGetLostAfterLexReferenceCleanup()
+		{
+			// grab the factories that we'll need.
+			var servLoc = Cache.ServiceLocator;
+			var entryFactory = servLoc.GetInstance<ILexEntryFactory>();
+			var senseFactory = servLoc.GetInstance<ILexSenseFactory>();
+
+			var entry1 = entryFactory.Create();
+			var entry2 = entryFactory.Create();
+			var entry1Sense = senseFactory.Create();
+			entry1.SensesOS.Add(entry1Sense);
+			var entry2Sense = senseFactory.Create();
+			entry2.SensesOS.Add(entry2Sense);
+			MakeLexEntryRef(entry2, entry1Sense);
+			Assert.AreEqual(0, entry1Sense.LexSenseReferences.Count(), "No sense references should exist, but this method cleans up dups");
+			Assert.AreEqual(1, entry1Sense.ComplexFormEntries.Count(), "Should be 1");
+			Assert.AreEqual(1, entry1Sense.EntryRefsWithThisMainSense.Count(), "Should be 1");
+			Assert.AreEqual(1, entry1Sense.Subentries.Count(), "Should be 1");
+		}
+
 		/// <summary>
 		/// Check the merging LexEntryRefs, when two senses in an entry are merged.
 		/// </summary>
