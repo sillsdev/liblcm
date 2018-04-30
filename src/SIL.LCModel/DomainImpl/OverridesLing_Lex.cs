@@ -6828,7 +6828,7 @@ namespace SIL.LCModel.DomainImpl
 			if (phonRuleFeatList != null)
 			{
 				var phonRuleFeats = phonRuleFeatList.PossibilitiesOS.Cast<IPhPhonRuleFeat>();
-				if (phonRuleFeats != null && phonRuleFeats.Count() > 0)
+				if (phonRuleFeats != null && phonRuleFeats.Count() > 0 && phonRuleFeats.Where(prf => prf.ItemRA == obj).Count() > 0)
 				{
 					var phonRuleFeat = phonRuleFeats.First(prf => prf.ItemRA == obj);
 					phonRuleFeatList.PossibilitiesOS.Remove(phonRuleFeat);
