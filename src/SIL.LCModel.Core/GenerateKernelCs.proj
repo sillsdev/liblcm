@@ -6,7 +6,7 @@
 	<PropertyGroup Condition="'$(OS)'=='Windows_NT'">
 		<!-- use the vswhere provided VSInstallDir and the VCToolsVersion to locate cl.exe -->
 		<!-- This assumes that the build machine is 64bit, and that it doesn't matter if we use the x86 version of cl -->
-		<PreprocessCommand>"$(VSInstallDir)\VC\Tools\MSVC\$(VCToolsVersion)\bin\Hostx64\x86\cl.exe" /E</PreprocessCommand>
+		<PreprocessCommand>"$(VSInstallDir)\VC\Tools\MSVC\$(VCToolsVersion)\bin\Hostx64\x64\cl.exe" /E</PreprocessCommand>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(OS)'=='Unix'">
 		<PreprocessCommand>gcc -E -x c</PreprocessCommand>
