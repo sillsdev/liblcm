@@ -1,4 +1,4 @@
-// Copyright (c) 2002-2017 SIL International
+// Copyright (c) 2002-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 //
@@ -867,7 +867,7 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		private void InitializePronunciationWritingSystems()
 		{
-			if (m_currentPronunciationWritingSystems.Count > 0)
+			if (CheckValidPronunciationWritingSystem())
 				return;
 
 			NonUndoableUnitOfWorkHelper.DoSomehow(Cache.ActionHandlerAccessor,
@@ -905,6 +905,31 @@ namespace SIL.LCModel.DomainImpl
 							m_currentPronunciationWritingSystems.Add(wsVern);
 						}
 					});
+		}
+
+		/// <summary>
+		/// Confirms there is at least one valid writing system in the list of pronunciation writing systems. Removes any writing systems
+		/// in the list that aren't found in this project until a valid one is found.
+		/// </summary>
+		/// <returns>True if a valid writing system is found, otherwise false.</returns>
+		private bool CheckValidPronunciationWritingSystem()
+		{
+			CoreWritingSystemDefinition ws = null;
+			while (m_currentPronunciationWritingSystems.Count > 0)
+			{
+				try
+				{
+					ws = m_currentPronunciationWritingSystems[0];
+					return true;
+				}
+				catch (ArgumentException)
+				{
+					// Remove the bad writing system from the list
+					NonUndoableUnitOfWorkHelper.DoSomehow(Cache.ActionHandlerAccessor, () =>
+						m_currentPronunciationWritingSystems.RemoveAt(0));
+				}
+			}
+			return false;
 		}
 
 		/// ------------------------------------------------------------------------------------
