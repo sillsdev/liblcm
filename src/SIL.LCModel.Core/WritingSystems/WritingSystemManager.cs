@@ -580,7 +580,13 @@ namespace SIL.LCModel.Core.WritingSystems
 			{
 				CoreWritingSystemDefinition ws;
 				if (m_handleWSs.TryGetValue(handle, out ws))
+				{
+					if (string.IsNullOrEmpty(ws.Id))
+					{
+						return ws.LanguageTag;
+					}
 					return ws.Id;
+				}
 				return null;
 			}
 		}
