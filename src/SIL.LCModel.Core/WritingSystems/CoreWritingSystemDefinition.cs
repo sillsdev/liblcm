@@ -274,6 +274,7 @@ namespace SIL.LCModel.Core.WritingSystems
 			Collations.ReplaceAll(source.Collations.CloneItems());
 			DefaultCollation = source.DefaultCollation == null ? null : Collations[source.Collations.IndexOf(source.DefaultCollation)];
 			CharacterSets.ReplaceAll(source.CharacterSets.CloneItems());
+			NumberingSystem = source.NumberingSystem;
 			LegacyMapping = source.LegacyMapping;
 			IsGraphiteEnabled = source.IsGraphiteEnabled;
 		}
