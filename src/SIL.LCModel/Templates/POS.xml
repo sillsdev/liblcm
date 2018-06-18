@@ -3,6 +3,7 @@
 <PartsOfSpeech>
 <CmPossibilityList>
 <Depth><Integer val="127"/></Depth>
+<PreventDuplicates><Boolean val="true"/></PreventDuplicates>
 <IsSorted><Boolean val="true"/></IsSorted>
 <UseExtendedFields><Boolean val="true"/></UseExtendedFields>
 <ItemClsid><Integer val="5049"/></ItemClsid>

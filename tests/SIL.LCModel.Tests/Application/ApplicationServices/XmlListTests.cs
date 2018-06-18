@@ -29,6 +29,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			"  <PartsOfSpeech>" + Environment.NewLine +
 			"    <CmPossibilityList>" + Environment.NewLine +
 			"      <Depth><Integer val=\"127\"/></Depth>" + Environment.NewLine +
+			"      <PreventDuplicates><Boolean val=\"true\"/></PreventDuplicates>" + Environment.NewLine +
 			"      <IsSorted><Boolean val=\"true\"/></IsSorted>" + Environment.NewLine +
 			"      <UseExtendedFields><Boolean val=\"true\"/></UseExtendedFields>" + Environment.NewLine +
 			"      <ItemClsid><Integer val=\"5049\"/></ItemClsid>" + Environment.NewLine +
@@ -632,6 +633,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 				var wsFr = m_cache.WritingSystemFactory.GetWsFromStr("fr");
 
 				Assert.AreEqual(2, list.PossibilitiesOS.Count);
+				Assert.IsTrue(list.PreventDuplicates);
 				Assert.AreEqual(127, list.Depth);
 				Assert.AreEqual(-3, list.WsSelector);
 				Assert.IsTrue(list.IsSorted);
