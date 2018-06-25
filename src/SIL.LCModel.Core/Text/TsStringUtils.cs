@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013 SIL International
+// Copyright (c) 2004-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 //
@@ -485,6 +485,8 @@ namespace SIL.LCModel.Core.Text
 			// MONGOLIAN MANCHU FULL STOP
 			// LIMBU EXCLAMATION MARK
 			// LIMBU QUESTION MARK
+			// KHMER SIGN KHAN
+			// KHMER SIGN BARIYOOSAN
 			// DOUBLE EXCLAMATION MARK
 			// INTERROBANG
 			// DOUBLE QUESTION MARK
@@ -499,7 +501,7 @@ namespace SIL.LCModel.Core.Text
 			// FULLWIDTH QUESTION MARK
 			// HALFWIDTH IDEOGRAPHIC FULL STOP
 			// Except this is not a normal punctuation character.
-			return (cc == Icu.UCharCategory.U_OTHER_PUNCTUATION && (ch == 0x0021 || ch == 0x002E || ch == 0x003F || ch == 0x055C || ch == 0x055E || ch == 0x0589 || ch == 0x061F || ch == 0x06D4 || ch == 0x0700 || ch == 0x0701 || ch == 0x0702 || ch == 0x0964 || ch == 0x0965 || ch == 0x104A || ch == 0x104B || ch == 0x1362 || ch == 0x1367 || ch == 0x1368 || ch == 0x166E || ch == 0x1803 || ch == 0x1809 || ch == 0x1944 || ch == 0x1945 || ch == 0x203C || ch == 0x203D || ch == 0x2047 || ch == 0x2048 || ch == 0x2049 || ch == 0x3002 || ch == 0xFE52 || ch == 0xFE56 || ch == 0xFE57 || ch == 0xFF01 || ch == 0xFF0E || ch == 0xFF1F || ch == 0xFF61)) || ch == 0x00A7;
+			return (cc == Icu.UCharCategory.U_OTHER_PUNCTUATION && (ch == 0x0021 || ch == 0x002E || ch == 0x003F || ch == 0x055C || ch == 0x055E || ch == 0x0589 || ch == 0x061F || ch == 0x06D4 || ch == 0x0700 || ch == 0x0701 || ch == 0x0702 || ch == 0x0964 || ch == 0x0965 || ch == 0x104A || ch == 0x104B || ch == 0x1362 || ch == 0x1367 || ch == 0x1368 || ch == 0x166E || ch == 0x1803 || ch == 0x1809 || ch == 0x1944 || ch == 0x1945 || ch == 0x17D4 || ch == 0x17D5 || ch == 0x203C || ch == 0x203D || ch == 0x2047 || ch == 0x2048 || ch == 0x2049 || ch == 0x3002 || ch == 0xFE52 || ch == 0xFE56 || ch == 0xFE57 || ch == 0xFF01 || ch == 0xFF0E || ch == 0xFF1F || ch == 0xFF61)) || ch == 0x00A7;
 			// SECTION SIGN (used for forced segment breaks w/o punctuation)
 		}
 
