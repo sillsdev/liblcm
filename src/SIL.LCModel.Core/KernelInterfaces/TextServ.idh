@@ -987,7 +987,7 @@ DeclareInterface(TsPropsFactory, Unknown, FF3D947F-1D35-487B-A769-5B6C68722054)
 ----------------------------------------------------------------------------------------------*/
 // REVIEW: ShonK, JeffG(JeffG): Should TsStrBldr derive off of TsStrBase?  and
 // Should Strbuilder(s) accept TsPropsBldrs
-DeclareInterface(TsStrBldr, Unknown, 71D84C4A-10A2-4A7C-B58C-D01386DAE5F7)
+DeclareInterface(TsStrBldr, Unknown, 35C5278D-2A52-4B54-AB13-B6E346B301BA)
 {
 	// With the exception of the Replace*, PushEcoding, GetString methods, all other methods are
 	// the same as the methods with the same names found on ITsString. Please refer to ITsString
@@ -1063,7 +1063,7 @@ DeclareInterface(TsStrBldr, Unknown, 71D84C4A-10A2-4A7C-B58C-D01386DAE5F7)
 	HRESULT ReplaceRgch(
 		[in] int ichMin,
 		[in] int ichLim,
-		[in, size_is(cchIns)] const OLECHAR * prgchIns,
+		[in] const BSTR prgchIns,
 		[in] int cchIns,
 		[in] ITsTextProps * pttp);
 
