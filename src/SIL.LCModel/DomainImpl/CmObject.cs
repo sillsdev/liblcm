@@ -2894,7 +2894,7 @@ namespace SIL.LCModel.DomainImpl
 		/// <param name="flid">Custom field id.</param>
 		/// <param name="newValue">New value. (May be null.)</param>
 		/// <param name="useAccessor">'true' to send to UOW. 'false' to not send to the UOW.</param>
-		private void SetCustomPropertyForSDA(int flid, object newValue, bool useAccessor)
+		public void SetCustomPropertyForSDA(int flid, object newValue, bool useAccessor)
 		{
 			var key = new Tuple<ICmObject, int>(this, flid);
 			object oldValue;
