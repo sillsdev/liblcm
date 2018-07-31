@@ -3298,6 +3298,17 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
+		/// Remove one reference to the target object from one of your atomic reference properties.
+		/// </summary>
+		internal override void RemoveAReferenceCore(ICmObject target)
+		{
+			var flid = this.Cache.CustomProperties.Where(x => x.Value == target && x.Key.Item1 == this).Select(y => y.Key.Item2).FirstOrDefault();
+			if (flid > 0)
+				SetNonModelPropertyForSDA(flid, null, true);
+			base.RemoveAReferenceCore(target);
+		}
+
+		/// <summary>
 		/// Overrides the method, so we can also merge similar MSAs and allomorphs, after the main merge.
 		/// </summary>
 		public override void MergeObject(ICmObject objSrc, bool fLoseNoStringData)
