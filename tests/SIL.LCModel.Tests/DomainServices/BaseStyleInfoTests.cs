@@ -1,4 +1,4 @@
-// Copyright (c) 2006-2013 SIL International
+// Copyright (c) 2006-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 //
@@ -241,7 +241,7 @@ namespace SIL.LCModel.DomainServices
 		public void CreateCopy()
 		{
 			IStStyle testStyle = AddTestStyle("Title Main", ContextValues.Title,
-				StructureValues.Body, FunctionValues.Prose, false, m_scr.StylesOC);
+				StructureValues.Body, FunctionValues.Prose, false, Cache.LangProject.StylesOC);
 
 			BaseStyleInfo basedOnInfo = new BaseStyleInfo();
 			DummyStyleInfo origInfo = new DummyStyleInfo();

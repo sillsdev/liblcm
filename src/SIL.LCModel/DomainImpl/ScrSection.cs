@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2017 SIL International
+// Copyright (c) 2004-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -542,7 +542,7 @@ namespace SIL.LCModel.DomainImpl
 
 			newSection.HeadingOA.InsertNewPara(-1, headingStyleName, headingText);
 
-			IStStyle headingStyle = Cache.LangProject.TranslatedScriptureOA.FindStyle(headingStyleName);
+			IStStyle headingStyle = Cache.LangProject.FindStyle(headingStyleName);
 			if (headingStyle == null)
 				throw new ArgumentException("Unknown style :" + headingStyleName);
 
@@ -974,7 +974,7 @@ namespace SIL.LCModel.DomainImpl
 			{
 				ITsTextProps ttp = para.StyleRules;
 				string styleName = ttp.GetStrPropValue((int)FwTextPropType.ktptNamedStyle);
-				IStStyle style = ((IScripture)section.Owner.Owner).FindStyle(styleName);
+				IStStyle style = section.Cache.LangProject.FindStyle(styleName);
 				if (style.Structure != structure)
 					throw new InvalidStructureException(styleName, structure);
 				//Review: FWR-1319 Should LCM verify the Context (Intro, Scripture Text) also?

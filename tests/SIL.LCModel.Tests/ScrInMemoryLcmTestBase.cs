@@ -1,4 +1,4 @@
-// Copyright (c) 2007-2017 SIL International
+// Copyright (c) 2007-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -412,7 +412,7 @@ namespace SIL.LCModel
 		protected void AddScrStyle(string name, ContextValues context, StructureValues structure,
 			FunctionValues function, bool isCharStyle, int userLevel)
 		{
-			AddStyle(m_lp.TranslatedScriptureOA.StylesOC, name, context, structure, function,
+			AddStyle(m_lp.StylesOC, name, context, structure, function,
 				isCharStyle, userLevel, true);
 		}
 

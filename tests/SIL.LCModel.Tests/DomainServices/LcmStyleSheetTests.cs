@@ -1,4 +1,4 @@
-// Copyright (c) 2007-2017 SIL International
+// Copyright (c) 2007-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -69,7 +69,7 @@ namespace SIL.LCModel.DomainServices
 			base.TestSetup();
 
 			m_styleSheet = new DummyLcmStyleSheet();
-			m_styleSheet.Init(Cache, m_scr.Hvo, ScriptureTags.kflidStyles);
+			m_styleSheet.Init(Cache, Cache.LangProject.Hvo, LangProjectTags.kflidStyles);
 		}
 
 		/// <summary/>
@@ -110,7 +110,7 @@ namespace SIL.LCModel.DomainServices
 				"Should get correct format props for the style added");
 
 			// Make style be based on section head and check context
-			var baseOnStyle = m_scr.FindStyle(ScrStyleNames.SectionHead);
+			var baseOnStyle = Cache.LangProject.FindStyle(ScrStyleNames.SectionHead);
 			m_styleSheet.PutStyle("MyNewStyle", "bla", hvoStyle, baseOnStyle.Hvo,
 				hvoStyle, 0, false, false, ttpFormattingProps);
 			Assert.AreEqual(baseOnStyle.Context, style.Context);
@@ -172,7 +172,7 @@ namespace SIL.LCModel.DomainServices
 		{
 			var styleFactory = Cache.ServiceLocator.GetInstance<IStStyleFactory>();
 			var newStyle = styleFactory.Create();
-			Cache.LangProject.TranslatedScriptureOA.StylesOC.Add(newStyle);
+			Cache.LangProject.StylesOC.Add(newStyle);
 			newStyle.Name = name;
 			newStyle.BasedOnRA = basedOnStyle;
 			return newStyle;

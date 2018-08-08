@@ -1,4 +1,4 @@
-// Copyright (c) 2006-2013 SIL International
+// Copyright (c) 2006-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 //
@@ -30,7 +30,7 @@ namespace SIL.LCModel.DomainImpl
 			Excluded = info.IsExcluded;
 			Target = (int)info.MappingTarget;
 			Domain = (int)info.Domain;
-			StyleRA = info.Style == null ? m_cache.LangProject.TranslatedScriptureOA.FindStyle(info.StyleName) : info.Style;
+			StyleRA = info.Style == null ? m_cache.LangProject.FindStyle(info.StyleName) : info.Style;
 			WritingSystem = info.WsId;
 			NoteTypeRA = info.NoteType;
 		}

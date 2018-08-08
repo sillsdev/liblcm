@@ -588,6 +588,33 @@ namespace SIL.LCModel.DomainImpl
 
 		#endregion
 
+		/// <summary>
+		/// Obtain a style object from a style name.
+		/// </summary>
+		/// <param name="styleName">The name of the style to find.</param>
+		public IStStyle FindStyle(string styleName)
+		{
+			foreach (IStStyle style in StylesOC)
+			{
+				if (style.Name == styleName)
+					return style;
+			}
+
+			return null;
+		}
+
+
+		/// <summary>
+		/// Obtain a style object from character properties.
+		/// </summary>
+		/// <param name="ttp">The property containing a named style.</param>
+		public IStStyle FindStyle(ITsTextProps ttp)
+		{
+			if (ttp == null)
+				return null;
+			return FindStyle(ttp.GetStrPropValue((int) FwTextStringProp.kstpNamedStyle));
+		}
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Find the feature type for exception features.  Look in the Feature System.
