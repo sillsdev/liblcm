@@ -588,6 +588,26 @@ namespace SIL.LCModel.DomainImpl
 
 		#endregion
 
+		/// <inheritdoc/>
+		public IStStyle FindStyle(string styleName)
+		{
+			foreach (IStStyle style in StylesOC)
+			{
+				if (style.Name == styleName)
+					return style;
+			}
+
+			return null;
+		}
+
+		/// <inheritdoc/>
+		public IStStyle FindStyle(ITsTextProps ttp)
+		{
+			if (ttp == null)
+				return null;
+			return FindStyle(ttp.GetStrPropValue((int) FwTextStringProp.kstpNamedStyle));
+		}
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Find the feature type for exception features.  Look in the Feature System.

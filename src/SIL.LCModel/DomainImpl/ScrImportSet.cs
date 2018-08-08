@@ -1,4 +1,4 @@
-// Copyright (c) 2006-2017 SIL International
+// Copyright (c) 2006-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -1204,7 +1204,7 @@ namespace SIL.LCModel.DomainImpl
 					if (info.StyleName == StyleUtils.DefaultParaCharsStyleName)
 						info.MappingTarget = MappingTargetType.DefaultParaChars;
 					else if (info.Style == null || info.Style.Name != info.StyleName)
-						info.SetStyle(m_cache.LangProject.TranslatedScriptureOA.FindStyle(info.StyleName));
+						info.SetStyle(m_cache.LangProject.FindStyle(info.StyleName));
 					((ScrMarkerMapping)mapping).InitFromImportMappingInfo(info);
 				}
 			});

@@ -806,6 +806,13 @@ namespace SIL.LCModel
 		/// <returns></returns>
 		ICmPossibilityList MakeTextTagsList(string xml);
 
+		/// <summary/>
+		IStStyle FindStyle(string styleName);
+
+		/// <summary/>
+		/// <returns>A style matching the named style property of the given ttp.</returns>
+		IStStyle FindStyle(ITsTextProps ttp);
+
 		/// <summary>
 		/// Virtual list of texts. Replaces TextsOC now that Text objects are unowned.
 		/// </summary>

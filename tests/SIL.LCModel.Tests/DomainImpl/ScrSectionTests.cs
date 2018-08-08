@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2017 SIL International
+// Copyright (c) 2004-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -640,7 +640,7 @@ namespace SIL.LCModel.DomainImpl
 			Assert.AreEqual(1, introSection1.HeadingOA.ParagraphsOS.Count);
 			Assert.AreEqual("Intro1", ((IScrTxtPara) introSection1.HeadingOA.ParagraphsOS[0]).Contents.Text);
 
-			IStStyle headingStyle = m_scr.FindStyle(ScrStyleNames.IntroSectionHead);
+			IStStyle headingStyle = Cache.LangProject.FindStyle(ScrStyleNames.IntroSectionHead);
 
 			// Add the contents of the second section after the first paragraph.
 			ReflectionHelper.CallMethod(typeof(ScrSection), "MoveAllParas", introSection2,
@@ -681,7 +681,7 @@ namespace SIL.LCModel.DomainImpl
 			Assert.AreEqual(1, introSection1.HeadingOA.ParagraphsOS.Count);
 			Assert.AreEqual("Intro1", ((IScrTxtPara)introSection1.HeadingOA.ParagraphsOS[0]).Contents.Text);
 
-			IStStyle headingStyle = m_scr.FindStyle(ScrStyleNames.IntroSectionHead);
+			IStStyle headingStyle = Cache.LangProject.FindStyle(ScrStyleNames.IntroSectionHead);
 
 			// Add the contents of the second section before the first heading paragraph.
 			ReflectionHelper.CallMethod(typeof(ScrSection), "MoveAllParas", introSection2,
@@ -847,7 +847,7 @@ namespace SIL.LCModel.DomainImpl
 			Assert.AreEqual(1, introSection1.ContentOA.ParagraphsOS.Count);
 			Assert.AreEqual("some intro text", ((IScrTxtPara)introSection1.ContentOA.ParagraphsOS[0]).Contents.Text);
 
-			IStStyle introParaStyle = m_scr.FindStyle(ScrStyleNames.IntroListItem2);
+			IStStyle introParaStyle = Cache.LangProject.FindStyle(ScrStyleNames.IntroListItem2);
 
 			// Add the heading paras of the second section before the first content paragraph.
 			ReflectionHelper.CallMethod(typeof(ScrSection), "MoveAllParas", introSection2,
@@ -887,7 +887,7 @@ namespace SIL.LCModel.DomainImpl
 			Assert.AreEqual(1, introSection1.ContentOA.ParagraphsOS.Count);
 			Assert.AreEqual("some intro text", ((IScrTxtPara)introSection1.ContentOA.ParagraphsOS[0]).Contents.Text);
 
-			IStStyle introParaStyle = m_scr.FindStyle(ScrStyleNames.IntroListItem3);
+			IStStyle introParaStyle = Cache.LangProject.FindStyle(ScrStyleNames.IntroListItem3);
 
 			// Add the contents of the second section after the first content paragraph.
 			ReflectionHelper.CallMethod(typeof(ScrSection), "MoveAllParas", introSection2,
@@ -923,7 +923,7 @@ namespace SIL.LCModel.DomainImpl
 			Assert.AreEqual(1, introSection1.ContentOA.ParagraphsOS.Count);
 
 			// Move first content paragraph to a heading paragraph.
-			IStStyle introListItem1Style = Cache.LangProject.TranslatedScriptureOA.FindStyle(ScrStyleNames.IntroListItem1);
+			IStStyle introListItem1Style = Cache.LangProject.FindStyle(ScrStyleNames.IntroListItem1);
 			introSection1.MoveHeadingParasToContent(0, introListItem1Style);
 
 			// We expect that the section head paragraph is now the first content paragraph.
@@ -950,7 +950,7 @@ namespace SIL.LCModel.DomainImpl
 			Assert.AreEqual(1, introSection1.HeadingOA.ParagraphsOS.Count);
 
 			// Move first content paragraph to a heading paragraph.
-			IStStyle introHeadingStyle = Cache.LangProject.TranslatedScriptureOA.FindStyle(ScrStyleNames.IntroSectionHead);
+			IStStyle introHeadingStyle = Cache.LangProject.FindStyle(ScrStyleNames.IntroSectionHead);
 			introSection1.MoveContentParasToHeading(0, introHeadingStyle);
 
 			// We expect that the first content paragraph is now a section head (the second section head
@@ -978,7 +978,7 @@ namespace SIL.LCModel.DomainImpl
 			Assert.AreEqual(1, scrSection1.HeadingOA.ParagraphsOS.Count);
 
 			// Move first content paragraph to a heading paragraph.
-			IStStyle headingStyle = Cache.LangProject.TranslatedScriptureOA.FindStyle(ScrStyleNames.SectionHead);
+			IStStyle headingStyle = Cache.LangProject.FindStyle(ScrStyleNames.SectionHead);
 			scrSection1.MoveContentParasToHeading(0, headingStyle);
 		}
 		#endregion
@@ -1397,7 +1397,7 @@ namespace SIL.LCModel.DomainImpl
 
 			// Now we simulate a style change, which is followed by a change in structure in ScrSection.
 			para2.StyleRules = StyleUtils.ParaStyleTextProps(ScrStyleNames.SectionHead);
-			IStStyle headingStyle = Cache.LangProject.TranslatedScriptureOA.FindStyle(ScrStyleNames.SectionHead);
+			IStStyle headingStyle = Cache.LangProject.FindStyle(ScrStyleNames.SectionHead);
 			IScrSection newSection = section.SplitSectionContent_ExistingParaBecomesHeading(para2.IndexInOwner, 1, headingStyle);
 
 			// verify that the original section now has one content paragraph and one heading paragraph.
