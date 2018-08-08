@@ -1,4 +1,4 @@
-// Copyright (c) 2003-2017 SIL International
+// Copyright (c) 2003-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -1324,7 +1324,7 @@ namespace SIL.LCModel.DomainImpl
 			IScrSection secondSection = m_philemon.SectionsOS[1];
 			int numSectionsAtStart = m_philemon.SectionsOS.Count;
 
-			IStStyle newStyle = Cache.LangProject.TranslatedScriptureOA.FindStyle(ScrStyleNames.Line1);
+			IStStyle newStyle = Cache.LangProject.FindStyle(ScrStyleNames.Line1);
 			m_philemon.MergeSectionIntoPreviousSectionContent(1, newStyle);
 
 			// We expect the heading and contents of the second section to be added to the end
@@ -1355,7 +1355,7 @@ namespace SIL.LCModel.DomainImpl
 		[ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void MergeSectionIntoPreviousSectionContent_NoPreviousSection()
 		{
-			Cache.LangProject.TranslatedScriptureOA.FindStyle(ScrStyleNames.NormalParagraph);
+			Cache.LangProject.FindStyle(ScrStyleNames.NormalParagraph);
 			m_philemon.MergeSectionContentIntoPreviousSectionContent(0);
 		}
 		#endregion
@@ -1380,7 +1380,7 @@ namespace SIL.LCModel.DomainImpl
 			AddSectionHeadParaToSection(secondSection, "Intro Heading2c", ScrStyleNames.IntroSectionHead);
 			Assert.AreEqual(3, m_philemon.SectionsOS[1].HeadingOA.ParagraphsOS.Count);
 
-			IStStyle paraStyle = Cache.LangProject.TranslatedScriptureOA.FindStyle(ScrStyleNames.NormalParagraph);
+			IStStyle paraStyle = Cache.LangProject.FindStyle(ScrStyleNames.NormalParagraph);
 			m_philemon.MoveHeadingParasToPreviousSectionContent(1, 0, paraStyle);
 
 			// We expect the first heading of the second section to be added to the end
@@ -1420,7 +1420,7 @@ namespace SIL.LCModel.DomainImpl
 			AddSectionHeadParaToSection(secondSection, "Intro Heading2c", ScrStyleNames.IntroSectionHead);
 			Assert.AreEqual(3, m_philemon.SectionsOS[1].HeadingOA.ParagraphsOS.Count);
 
-			IStStyle contentStyle = Cache.LangProject.TranslatedScriptureOA.FindStyle(ScrStyleNames.IntroParagraph);
+			IStStyle contentStyle = Cache.LangProject.FindStyle(ScrStyleNames.IntroParagraph);
 			m_philemon.MoveHeadingParasToPreviousSectionContent(1, 1, contentStyle);
 
 			// We expect the first and second heading of the second section to be added to the end
@@ -1465,7 +1465,7 @@ namespace SIL.LCModel.DomainImpl
 			AddSectionHeadParaToSection(secondSection, "Intro Heading2c", ScrStyleNames.IntroSectionHead);
 			Assert.AreEqual(3, m_philemon.SectionsOS[1].HeadingOA.ParagraphsOS.Count);
 
-			IStStyle contentStyle = Cache.LangProject.TranslatedScriptureOA.FindStyle(ScrStyleNames.IntroParagraph);
+			IStStyle contentStyle = Cache.LangProject.FindStyle(ScrStyleNames.IntroParagraph);
 			m_philemon.MoveHeadingParasToPreviousSectionContent(1, 2, contentStyle);
 		}
 		#endregion
@@ -1524,7 +1524,7 @@ namespace SIL.LCModel.DomainImpl
 			Assert.AreEqual(1, secondSection.HeadingOA.ParagraphsOS.Count);
 			int numSectionsAtStart = m_philemon.SectionsOS.Count;
 
-			IStStyle introHeadingStyle = Cache.LangProject.TranslatedScriptureOA.FindStyle(
+			IStStyle introHeadingStyle = Cache.LangProject.FindStyle(
 				ScrStyleNames.IntroSectionHead);
 			m_philemon.MergeSectionIntoNextSectionHeading(0, introHeadingStyle);
 
@@ -1552,7 +1552,7 @@ namespace SIL.LCModel.DomainImpl
 		[ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void MergeSectionIntoNextSectionHeading_NoNextSection()
 		{
-			IStStyle paraStyle = Cache.LangProject.TranslatedScriptureOA.FindStyle(ScrStyleNames.NormalParagraph);
+			IStStyle paraStyle = Cache.LangProject.FindStyle(ScrStyleNames.NormalParagraph);
 			m_philemon.MergeSectionIntoNextSectionHeading(3, paraStyle);
 		}
 		#endregion
@@ -1580,7 +1580,7 @@ namespace SIL.LCModel.DomainImpl
 
 			// We must apply a heading style to the paragrpah that will become a heading.
 			para.StyleRules = StyleUtils.ParaStyleTextProps(ScrStyleNames.SectionHead);
-			IStStyle paraStyle = Cache.LangProject.TranslatedScriptureOA.FindStyle(para.StyleRules);
+			IStStyle paraStyle = Cache.LangProject.FindStyle(para.StyleRules);
 
 			m_philemon.MoveContentParasToNextSectionHeading(0, 2, paraStyle);
 
@@ -1611,7 +1611,7 @@ namespace SIL.LCModel.DomainImpl
 			IScrTxtPara para = AddParaToMockedSectionContent(lastSection, ScrStyleNames.NormalParagraph);
 			AddRunToMockedPara(para, "second para", Cache.DefaultVernWs);
 
-			IStStyle headingStyle = Cache.LangProject.TranslatedScriptureOA.FindStyle(ScrStyleNames.SectionHead);
+			IStStyle headingStyle = Cache.LangProject.FindStyle(ScrStyleNames.SectionHead);
 
 			// We expect the section index to cause the exception to be thrown.
 			m_philemon.MoveContentParasToNextSectionHeading(3, 1, headingStyle);
@@ -1628,7 +1628,7 @@ namespace SIL.LCModel.DomainImpl
 			ExpectedMessage = "iFirstPara cannot be the first paragraph.")]
 		public void MoveContentParasToNextSectionHeading_AllParas()
 		{
-			IStStyle headingStyle = Cache.LangProject.TranslatedScriptureOA.FindStyle(ScrStyleNames.SectionHead);
+			IStStyle headingStyle = Cache.LangProject.FindStyle(ScrStyleNames.SectionHead);
 
 			// We expect the para index to cause the exception to be thrown.
 			m_philemon.MoveContentParasToNextSectionHeading(0, 0, headingStyle);

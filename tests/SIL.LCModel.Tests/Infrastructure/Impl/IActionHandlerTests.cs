@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2017 SIL International
+// Copyright (c) 2010-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -1789,7 +1789,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			UndoableUnitOfWorkHelper.Do("Undo create book", "Redo create book", m_actionHandler, () =>
 			{
 				style = Cache.ServiceLocator.GetInstance<IStStyleFactory>().Create();
-				lp.TranslatedScriptureOA.StylesOC.Add(style);
+				lp.StylesOC.Add(style);
 				style.Name = "Intro Section";
 				style.Structure = StructureValues.Heading;
 				book = Cache.ServiceLocator.GetInstance<IScrBookFactory>().Create(1, out title);

@@ -1,4 +1,4 @@
-// Copyright (c) 2003-2017 SIL International
+// Copyright (c) 2003-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -630,7 +630,7 @@ namespace SIL.LCModel.DomainImpl
 
 			// Mark the footnote marker style as being in use.
 			Scripture scr = OwnerOfClass<Scripture>();
-			IStStyle markerStyle = scr.FindStyle(ScrStyleNames.FootnoteMarker);
+			IStStyle markerStyle = Cache.LangProject.FindStyle(ScrStyleNames.FootnoteMarker);
 			((StStyle)markerStyle).InUse = true;
 
 			// Copy current value of default footnote options to the new footnote.
