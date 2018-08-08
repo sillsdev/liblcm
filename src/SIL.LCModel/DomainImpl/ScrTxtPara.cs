@@ -2170,7 +2170,7 @@ namespace SIL.LCModel.DomainImpl
 			{
 				ITsTextProps ttp = Contents.get_Properties(iRun);
 				string styleName = ttp.GetStrPropValue((int)FwTextPropType.ktptNamedStyle);
-				IStStyle style = Scripture.FindStyle(styleName);
+				IStStyle style = Cache.LangProject.FindStyle(styleName);
 				if (style != null)
 					((StStyle)style).InUse = true;
 			}
@@ -2198,7 +2198,7 @@ namespace SIL.LCModel.DomainImpl
 
 			if (Cache.LangProject.TranslatedScriptureOA != null) // Only for tests, hopefully!
 			{
-				IStStyle style = Cache.LangProject.TranslatedScriptureOA.FindStyle(styleName);
+				IStStyle style = Cache.LangProject.FindStyle(styleName);
 				if (style != null)
 					((StStyle)style).InUse = true;
 			}

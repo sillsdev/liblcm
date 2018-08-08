@@ -814,7 +814,7 @@ namespace SIL.LCModel.DomainServices
 		public void EnsureStylesInUseSetForPara_EmptyPara()
 		{
 			m_para.StyleName = ScrStyleNames.Line3;
-			IStStyle style = m_scr.FindStyle(ScrStyleNames.Line3);
+			IStStyle style = Cache.LangProject.FindStyle(ScrStyleNames.Line3);
 			Assert.IsFalse(style.InUse);
 
 			DataStoreInitializationServices.EnsureStylesInUseSetForPara(m_para, m_scr);
@@ -831,11 +831,11 @@ namespace SIL.LCModel.DomainServices
 		public void EnsureStylesInUseSetForPara_CharStyles()
 		{
 			m_para.StyleName = ScrStyleNames.Line3;
-			IStStyle line3Style = m_scr.FindStyle(ScrStyleNames.Line3);
+			IStStyle line3Style = Cache.LangProject.FindStyle(ScrStyleNames.Line3);
 			Assert.IsFalse(line3Style.InUse);
-			IStStyle doxologyStyle = m_scr.FindStyle(ScrStyleNames.Doxology);
+			IStStyle doxologyStyle = Cache.LangProject.FindStyle(ScrStyleNames.Doxology);
 			Assert.IsFalse(doxologyStyle.InUse);
-			IStStyle altReadingStyle = m_scr.FindStyle(ScrStyleNames.AlternateReading);
+			IStStyle altReadingStyle = Cache.LangProject.FindStyle(ScrStyleNames.AlternateReading);
 			Assert.IsFalse(altReadingStyle.InUse);
 
 			AddRunToMockedPara(m_para, "This", ScrStyleNames.Doxology);

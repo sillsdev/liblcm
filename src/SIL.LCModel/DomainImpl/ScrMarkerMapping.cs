@@ -30,7 +30,7 @@ namespace SIL.LCModel.DomainImpl
 			Excluded = info.IsExcluded;
 			Target = (int)info.MappingTarget;
 			Domain = (int)info.Domain;
-			StyleRA = info.Style == null ? m_cache.LangProject.TranslatedScriptureOA.FindStyle(info.StyleName) : info.Style;
+			StyleRA = info.Style == null ? m_cache.LangProject.FindStyle(info.StyleName) : info.Style;
 			WritingSystem = info.WsId;
 			NoteTypeRA = info.NoteType;
 		}

@@ -1204,7 +1204,7 @@ namespace SIL.LCModel.DomainImpl
 					if (info.StyleName == StyleUtils.DefaultParaCharsStyleName)
 						info.MappingTarget = MappingTargetType.DefaultParaChars;
 					else if (info.Style == null || info.Style.Name != info.StyleName)
-						info.SetStyle(m_cache.LangProject.TranslatedScriptureOA.FindStyle(info.StyleName));
+						info.SetStyle(m_cache.LangProject.FindStyle(info.StyleName));
 					((ScrMarkerMapping)mapping).InitFromImportMappingInfo(info);
 				}
 			});

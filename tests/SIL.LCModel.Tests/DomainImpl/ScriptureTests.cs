@@ -234,7 +234,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			AddScrStyle("Section Head", ContextValues.Text, StructureValues.Heading, FunctionValues.Prose, false);
 
-			IStStyle style = m_scr.FindStyle("Section Head");
+			IStStyle style = Cache.LangProject.FindStyle("Section Head");
 			Assert.IsNotNull(style);
 			Assert.AreEqual("Section Head", style.Name);
 		}
@@ -247,7 +247,7 @@ namespace SIL.LCModel.DomainImpl
 		[Test]
 		public void FindStyle_NotExist()
 		{
-			IStStyle style = m_scr.FindStyle("Where's the Beef?");
+			IStStyle style = Cache.LangProject.FindStyle("Where's the Beef?");
 			Assert.IsNull(style);
 		}
 		#endregion

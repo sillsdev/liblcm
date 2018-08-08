@@ -630,7 +630,7 @@ namespace SIL.LCModel.DomainImpl
 
 			// Mark the footnote marker style as being in use.
 			Scripture scr = OwnerOfClass<Scripture>();
-			IStStyle markerStyle = scr.FindStyle(ScrStyleNames.FootnoteMarker);
+			IStStyle markerStyle = Cache.LangProject.FindStyle(ScrStyleNames.FootnoteMarker);
 			((StStyle)markerStyle).InUse = true;
 
 			// Copy current value of default footnote options to the new footnote.

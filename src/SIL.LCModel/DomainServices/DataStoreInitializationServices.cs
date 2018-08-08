@@ -869,11 +869,11 @@ namespace SIL.LCModel.DomainServices
 		/// ------------------------------------------------------------------------------------
 		internal static void EnsureStylesInUseSetForPara(IScrTxtPara para, IScripture scr)
 		{
-			IStStyle paraStyle = scr.FindStyle(para.StyleName);
+			IStStyle paraStyle = scr.Cache.LangProject.FindStyle(para.StyleName);
 			if (paraStyle == null)
 			{
 				para.StyleName = para.DefaultStyleName;
-				paraStyle = scr.FindStyle(para.StyleName);
+				paraStyle = scr.Cache.LangProject.FindStyle(para.StyleName);
 			}
 			((StStyle)paraStyle).InUse = true;
 
@@ -883,7 +883,7 @@ namespace SIL.LCModel.DomainServices
 				string charStyleName = paraContents.get_StringProperty(iRun, (int)FwTextPropType.ktptNamedStyle);
 				if (!string.IsNullOrEmpty(charStyleName))
 				{
-					IStStyle charStyle = scr.FindStyle(charStyleName);
+					IStStyle charStyle = scr.Cache.LangProject.FindStyle(charStyleName);
 					if (charStyle == null)
 					{
 						// FWR-2594: Converted FW 6.0 project can contain runs with styles that were deleted

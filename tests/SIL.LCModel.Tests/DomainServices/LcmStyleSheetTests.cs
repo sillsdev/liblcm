@@ -110,7 +110,7 @@ namespace SIL.LCModel.DomainServices
 				"Should get correct format props for the style added");
 
 			// Make style be based on section head and check context
-			var baseOnStyle = m_scr.FindStyle(ScrStyleNames.SectionHead);
+			var baseOnStyle = Cache.LangProject.FindStyle(ScrStyleNames.SectionHead);
 			m_styleSheet.PutStyle("MyNewStyle", "bla", hvoStyle, baseOnStyle.Hvo,
 				hvoStyle, 0, false, false, ttpFormattingProps);
 			Assert.AreEqual(baseOnStyle.Context, style.Context);

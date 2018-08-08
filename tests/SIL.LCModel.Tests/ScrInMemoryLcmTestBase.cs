@@ -412,7 +412,7 @@ namespace SIL.LCModel
 		protected void AddScrStyle(string name, ContextValues context, StructureValues structure,
 			FunctionValues function, bool isCharStyle, int userLevel)
 		{
-			AddStyle(m_lp.TranslatedScriptureOA.StylesOC, name, context, structure, function,
+			AddStyle(m_lp.StylesOC, name, context, structure, function,
 				isCharStyle, userLevel, true);
 		}
 
