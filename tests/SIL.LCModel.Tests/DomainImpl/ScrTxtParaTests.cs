@@ -1,4 +1,4 @@
-// Copyright (c) 2003-2017 SIL International
+// Copyright (c) 2003-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -166,14 +166,14 @@ namespace SIL.LCModel.DomainImpl
 		[Test]
 		public void OnStyleRulesChange_ParaStyle()
 		{
-			IStStyle style = m_scr.FindStyle(ScrStyleNames.Line3);
+			IStStyle style = Cache.LangProject.FindStyle(ScrStyleNames.Line3);
 			Assert.IsFalse(style.InUse);
 
 			IScrBook book = AddBookToMockedScripture(1, "Genesis");
 			IScrSection section = AddSectionToMockedBook(book);
 			AddParaToMockedSectionContent(section, ScrStyleNames.Line3);
 
-			style = m_scr.FindStyle(ScrStyleNames.Line3);
+			style = Cache.LangProject.FindStyle(ScrStyleNames.Line3);
 			Assert.IsTrue(style.InUse);
 		}
 
@@ -186,7 +186,7 @@ namespace SIL.LCModel.DomainImpl
 		[Test]
 		public void OnStylesRuleChange_OneCharStyle()
 		{
-			IStStyle style = m_scr.FindStyle(ScrStyleNames.Doxology);
+			IStStyle style = Cache.LangProject.FindStyle(ScrStyleNames.Doxology);
 			Assert.IsFalse(style.InUse);
 
 			IScrBook book = AddBookToMockedScripture(1, "Genesis");
@@ -201,7 +201,7 @@ namespace SIL.LCModel.DomainImpl
 			para.Contents = tssBldr.GetString();
 
 			// We expect that this character style will now be marked as InUse.
-			style = m_scr.FindStyle(ScrStyleNames.Doxology);
+			style = Cache.LangProject.FindStyle(ScrStyleNames.Doxology);
 			Assert.IsTrue(style.InUse);
 		}
 
@@ -216,9 +216,9 @@ namespace SIL.LCModel.DomainImpl
 		{
 			// We need to confirm that the character styles we are checking are initially not in use.
 			IStStyle style;
-			style = m_scr.FindStyle(ScrStyleNames.Doxology);
+			style = Cache.LangProject.FindStyle(ScrStyleNames.Doxology);
 			Assert.IsFalse(style.InUse);
-			style = m_scr.FindStyle(ScrStyleNames.AlternateReading);
+			style = Cache.LangProject.FindStyle(ScrStyleNames.AlternateReading);
 			Assert.IsFalse(style.InUse);
 
 			IScrBook book = AddBookToMockedScripture(1, "Genesis");
@@ -235,9 +235,9 @@ namespace SIL.LCModel.DomainImpl
 			para.Contents = tssBldr.GetString();
 
 			// We expect that these character style will now be marked as InUse.
-			style = m_scr.FindStyle(ScrStyleNames.Doxology);
+			style = Cache.LangProject.FindStyle(ScrStyleNames.Doxology);
 			Assert.IsTrue(style.InUse);
-			style = m_scr.FindStyle(ScrStyleNames.AlternateReading);
+			style = Cache.LangProject.FindStyle(ScrStyleNames.AlternateReading);
 			Assert.IsTrue(style.InUse);
 		}
 		#endregion
