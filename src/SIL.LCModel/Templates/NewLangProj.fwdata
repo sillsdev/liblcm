@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<languageproject version="7000069">
+<languageproject version="7000072">
 <rt class="CmPossibility" guid="00951e6f-2523-4ac9-a649-ad42c659cf83" ownerguid="d9d55b12-ea5e-11de-95ef-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">Evnt</AUni>
 </Abbreviation>
-<DateCreated val="2010-04-05 19:00:13.503" />
-<DateModified val="2010-04-05 19:00:13.503" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Event</AUni>
 </Name>
@@ -31,7 +30,8 @@
 <GlossAppend>
 <AUni ws="en">.irr.infl</AUni>
 </GlossAppend>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Irregularly Inflected Form</AUni>
 </Name>
@@ -58,7 +58,8 @@
 <Discussion>
 <objsur guid="b6c773e4-ea5e-11de-9774-0013722f8dec" t="o" />
 </Discussion>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Dialectal Variant</AUni>
 </Name>
@@ -78,8 +79,7 @@
 <Abbreviation>
 <AUni ws="en">Wthr</AUni>
 </Abbreviation>
-<DateCreated val="2010-04-05 19:00:13.503" />
-<DateModified val="2010-04-05 19:00:13.503" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Weather</AUni>
 </Name>
@@ -96,7 +96,8 @@
 <Discussion>
 <objsur guid="b7436d8c-ea5e-11de-8477-0013722f8dec" t="o" />
 </Discussion>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Spelling Variant</AUni>
 </Name>
@@ -116,10 +117,12 @@
 <Run ws="en">A discontiguous phrase has discontiguous constituents which (a) are separated from each other by one or more intervening constituents, and (b) are considered either (i) syntactically contiguous and unitary, or (ii) realizing the same, single meaning. An example is French ne...pas.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">discontiguous phrase</AUni>
 </Name>
+<SecondaryOrder val="0" />
 </rt>
 <rt class="CmAgent" guid="1257a971-fcef-4f06-a5e2-c289de5aaf72" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
 <Approves>
@@ -128,6 +131,7 @@
 <Disapproves>
 <objsur guid="68cd31f9-c1f3-46ac-86be-a18e3b31edfb" t="o" />
 </Disapproves>
+<Human val="False" />
 <Name>
 <AUni ws="en">M3Parser</AUni>
 </Name>
@@ -140,6 +144,25 @@
 <AUni ws="en">File paths in TsStrings</AUni>
 </Name>
 </rt>
+<rt class="StStyle" guid="164123a0-ca12-4c44-bd69-d5fb9d4b1a0b" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Dictionary-SenseNumber</Uni>
+</Name>
+<Rules>
+<Prop bold="invert"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">The number before each sense in an entry.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
 <rt class="MoMorphType" guid="18d9b1c3-b5b6-4c07-b92c-2fe1d2281bd4" ownerguid="d7f713d8-e8cf-11d3-9764-00c04f186933">
 <Abbreviation>
 <AUni ws="en">ifxnfx</AUni>
@@ -149,7 +172,8 @@
 <Run ws="en">An infixing interfix is an infix that can occur between two roots or stems.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">infixing interfix</AUni>
 </Name>
@@ -159,14 +183,41 @@
 <Prefix>
 <Uni>-</Uni>
 </Prefix>
+<SecondaryOrder val="0" />
+</rt>
+<rt class="StStyle" guid="1b25e2a0-5f78-40d1-943a-2b14caccf860" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="0" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Disabled Text</Uni>
+</Name>
+<Rules>
+<Prop forecolor="6d6d6d"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">Material marked as being disabled (no longer active)</AUni>
+</Usage>
+<UserLevel val="1" />
 </rt>
 <rt class="CmRow" guid="1b4d1c03-9321-415b-a560-fe6831f317be" ownerguid="abc71f1c-dd0b-4f57-add8-9200ac20a653" />
 <rt class="CmPossibilityList" guid="1ee09905-63dd-4c7a-a9bd-1d496743ccd6" ownerguid="af26d792-ea5e-11de-8f7e-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">EntTyp</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.269" />
+<DateModified val="2018-8-2 16:32:6.269" />
 <Depth val="127" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="False" />
+<IsVernacular val="False" />
 <ItemClsid val="5118" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Complex Form Types</AUni>
 </Name>
@@ -179,7 +230,10 @@
 <objsur guid="35cee792-74c8-444e-a9b7-ed0461d4d3b7" t="o" />
 <objsur guid="9466d126-246e-400b-8bba-0703e09bc567" t="o" />
 </Possibilities>
-<PreventDuplicates val="true" />
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="True" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="LexEntryType" guid="1f6ae209-141a-40db-983c-bee93af0ca3c" ownerguid="1ee09905-63dd-4c7a-a9bd-1d496743ccd6">
@@ -194,7 +248,8 @@
 <Discussion>
 <objsur guid="b314f2f8-ea5e-11de-86b7-0013722f8dec" t="o" />
 </Discussion>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Compound</AUni>
 </Name>
@@ -205,31 +260,161 @@
 <AUni ws="en">Compound of</AUni>
 </ReverseName>
 </rt>
+<rt class="StStyle" guid="1fafdfa6-34a7-4577-b4aa-0c6518af623a" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="7d2c80cd-af87-4d56-8337-cfd389b775bb" t="r" />
+</BasedOn>
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Classified-MainEntry</Uni>
+</Name>
+<Next>
+<objsur guid="945e6502-615b-4863-a18c-111e4d6b36c6" t="r" />
+</Next>
+<Rules>
+<Prop bold="invert" fontsize="12000" fontsizeUnit="mpt" italic="off" spaceAfter="2000" spaceBefore="8000"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="0" />
+<Usage>
+<AUni ws="en">In a Classified Dictionary, the heading giving the classification name</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
 <rt class="CmAnnotationDefn" guid="20cf6c1c-9389-4380-91f5-dfa057003d51" ownerguid="8d4cbd80-0dca-4a83-8a1f-9db3aa4cff54">
 <Abbreviation>
 <AUni ws="en">pt</AUni>
 </Abbreviation>
-<CopyCutPastable val="true" />
+<AllowsComment val="False" />
+<AllowsFeatureStructure val="False" />
+<AllowsInstanceOf val="False" />
+<CanCreateOrphan val="False" />
+<CopyCutPastable val="True" />
 <Description>
 <AStr ws="en">
 <Run ws="en">Used internally by the program to keep track of when some process was last applied to an object.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<InstanceOfSignature val="0" />
+<IsProtected val="True" />
+<MaxDupOccur val="0" />
+<Multi val="False" />
 <Name>
 <AUni ws="en">Process Time</AUni>
 </Name>
+<PromptUser val="False" />
+<Severity val="0" />
+<UserCanCreate val="False" />
+<ZeroWidth val="False" />
 </rt>
-<rt class="StStyle" guid="24399e56-7b78-4a54-a6bc-f347310b863e" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
-<Context val="5" />
-<IsBuiltIn val="true" />
+<rt class="StStyle" guid="23efa4cc-0347-4fc1-a33d-57b57ee852f9" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="aba229f3-ca42-4727-a903-0abc3d418607" t="r" />
+</BasedOn>
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
 <Name>
-<Uni>Hyperlink</Uni>
+<Uni>Sense-Reference-Number</Uni>
 </Name>
 <Rules>
-<Prop forecolor="blue" undercolor="blue" underline="single" />
+<Prop></Prop>
 </Rules>
+<Structure val="0" />
 <Type val="1" />
+<Usage>
+<AUni ws="en">Used for sense numbers in cross references.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="25d17a96-4130-49c5-8f2b-497c1953556a" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Reversal-Headword</Uni>
+</Name>
+<Rules>
+<Prop bold="invert"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">Used for the reversal form at the start of a reversal entry.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="282f9ae7-d4dc-4c9b-93b5-413a7d3986b1" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Reversal-Vernacular</Uni>
+</Name>
+<Rules>
+<Prop italic="invert"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">Used for items in reversal entries that contain vernacular text.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="3191611c-41c6-4ecf-bcd5-a5084cc3e1f2" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="7d2c80cd-af87-4d56-8337-cfd389b775bb" t="r" />
+</BasedOn>
+<Context val="0" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Heading 2</Uni>
+</Name>
+<Next>
+<objsur guid="7d2c80cd-af87-4d56-8337-cfd389b775bb" t="r" />
+</Next>
+<Rules>
+<Prop bold="invert" fontsize="12000" fontsizeUnit="mpt" italic="invert" spaceAfter="3000" spaceBefore="12000"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="0" />
+<Usage>
+<AUni ws="en">Second-level headings (1.1, 1.2, 1.3)</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="31d215a7-ac39-4d1c-be7d-88fe2b7c8d34" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="0" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Emphasized Text</Uni>
+</Name>
+<Rules>
+<Prop italic="invert"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">Material to be emphasized</AUni>
+</Usage>
+<UserLevel val="1" />
 </rt>
 <rt class="MoMorphType" guid="3433683d-08a9-4bae-ae53-2a7798f64068" ownerguid="d7f713d8-e8cf-11d3-9764-00c04f186933">
 <Abbreviation>
@@ -240,13 +425,15 @@
 <Run ws="en">A suffixing interfix is an suffix that can occur between two roots or stems.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">suffixing interfix</AUni>
 </Name>
 <Prefix>
 <Uni>-</Uni>
 </Prefix>
+<SecondaryOrder val="0" />
 </rt>
 <rt class="LexEntryType" guid="35cee792-74c8-444e-a9b7-ed0461d4d3b7" ownerguid="1ee09905-63dd-4c7a-a9bd-1d496743ccd6">
 <Abbreviation>
@@ -260,7 +447,8 @@
 <Discussion>
 <objsur guid="b641f0de-ea5e-11de-9395-0013722f8dec" t="o" />
 </Discussion>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Phrasal Verb</AUni>
 </Name>
@@ -270,6 +458,31 @@
 <ReverseName>
 <AUni ws="en">Phrasal Verb of</AUni>
 </ReverseName>
+</rt>
+<rt class="StStyle" guid="366e9470-26f7-4bdf-86e4-f829784c3113" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="7d2c80cd-af87-4d56-8337-cfd389b775bb" t="r" />
+</BasedOn>
+<Context val="0" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Heading 3</Uni>
+</Name>
+<Next>
+<objsur guid="7d2c80cd-af87-4d56-8337-cfd389b775bb" t="r" />
+</Next>
+<Rules>
+<Prop bold="off" fontsize="12000" fontsizeUnit="mpt" italic="invert" spaceAfter="3000" spaceBefore="12000"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="0" />
+<Usage>
+<AUni ws="en">Third-level headings (1.1.1, 1.1.2, 1.1.3)</AUni>
+</Usage>
+<UserLevel val="1" />
 </rt>
 <rt class="PhBdryMarker" guid="3bde17ce-e39a-4bae-8a5c-a8d96fd4cb56" ownerguid="be7fe79c-ea5e-11de-8151-0013722f8dec">
 <Codes>
@@ -284,6 +497,66 @@
 <AUni ws="en">+</AUni>
 </Name>
 </rt>
+<rt class="StStyle" guid="3c8c511b-4683-4289-88d0-024f66540f6f" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="7d2c80cd-af87-4d56-8337-cfd389b775bb" t="r" />
+</BasedOn>
+<Context val="0" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Bulleted List</Uni>
+</Name>
+<Next>
+<objsur guid="3c8c511b-4683-4289-88d0-024f66540f6f" t="r" />
+</Next>
+<Rules>
+<Prop bulNumScheme="101" bulNumStartAt="1" firstIndent="-9000" leadingIndent="21000"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="0" />
+<Usage>
+<AUni ws="en">A bulleted list of paragraphs</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="3eb5354a-9f55-4165-a411-eca7f9d2a845" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="0" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Writing System Abbreviation</Uni>
+</Name>
+<Rules>
+<Prop fontsize="8000" fontsizeUnit="mpt" italic="invert"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="3f844794-09d1-45fa-9d75-05c62e2b836d" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Dictionary-Headword</Uni>
+</Name>
+<Rules>
+<Prop bold="invert"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">The main headword at the start of the entry.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
 <rt class="CmAgentEvaluation" guid="41581e3a-7ed3-41ac-94c7-6e91dbcc108b" ownerguid="67e9b8bf-c312-458e-89c3-6e9326e48aa0" />
 <rt class="LexEntryType" guid="4343b1ef-b54f-4fa4-9998-271319a6d74c" ownerguid="bb372467-5230-43ef-9cc7-4d40b053fb94">
 <Abbreviation>
@@ -297,7 +570,8 @@
 <Discussion>
 <objsur guid="b6df4b4a-ea5e-11de-8285-0013722f8dec" t="o" />
 </Discussion>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Free Variant</AUni>
 </Name>
@@ -317,7 +591,8 @@
 <Run ws="en">A variant form that hasn't been labeled as a specific kind of variant.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Unspecified Variant</AUni>
 </Name>
@@ -334,8 +609,8 @@
 </Cells>
 </rt>
 <rt class="CmPossibilityList" guid="48a4eaed-2ae3-4c81-8c9c-f79f2f3a1455" ownerguid="af26d792-ea5e-11de-8f7e-0013722f8dec">
-<DateCreated val="2011-05-27 16:02:49.281" />
-<DateModified val="2011-05-27 16:02:49.281" />
+<DateCreated val="2011-5-27 16:2:49.281" />
+<DateModified val="2011-5-27 16:2:49.281" />
 <Depth val="1" />
 <DisplayOption val="0" />
 <IsClosed val="False" />
@@ -355,6 +630,51 @@
 <UseExtendedFields val="False" />
 <WsSelector val="0" />
 </rt>
+<rt class="StStyle" guid="4d6cffc4-254e-4ef7-b26b-41aab4bfbf48" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="5" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>UiElement</Uni>
+</Name>
+<Rules>
+<Prop>
+<WsStyles9999>
+<WsProp fontFamily="Microsoft Sans Serif" fontsize="10000" fontsizeUnit="mpt" ws="en"></WsProp>
+</WsStyles9999>
+</Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">This is a special style used for certain parts of the FieldWorks user interface. You should not normally modify it.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="501c3363-065d-465a-baad-15d0787f9ded" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="80a47ed1-1e29-40d4-9aa0-d3041a8ca9dc" t="r" />
+</BasedOn>
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Reversal-Subentry</Uni>
+</Name>
+<Rules>
+<Prop firstIndent="0" leadingIndent="21000" spaceBefore="0"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="0" />
+<Usage>
+<AUni ws="en">Each paragraph of subentry information that is added to a reversal entry if there are subentries.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
 <rt class="CmAgent" guid="5093d7d7-4f18-4aad-8c86-88389476df15" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
 <Approves>
 <objsur guid="b35f4cb9-5caa-4219-8ea6-4b191e71b06d" t="o" />
@@ -362,6 +682,7 @@
 <Disapproves>
 <objsur guid="70c0b09c-1699-4019-bee2-c02d6d95f7d9" t="o" />
 </Disapproves>
+<Human val="False" />
 <Name>
 <AUni ws="en">HCParser</AUni>
 </Name>
@@ -378,30 +699,39 @@
 <Run ws="en">A particle is a word that does not belong to one of the main classes of words, is invariable in form, and typically has grammatical or pragmatic meaning.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">particle</AUni>
 </Name>
+<SecondaryOrder val="0" />
 </rt>
 <rt class="CmAnnotationDefn" guid="56de9b1a-1ce7-42a1-aa76-512ebeff0dda" ownerguid="7ffc4eab-856a-43cc-bc11-0db55738c15b">
 <Abbreviation>
 <AUni ws="en">ConsNt</AUni>
 </Abbreviation>
-<AllowsComment val="true" />
-<CanCreateOrphan val="true" />
-<CopyCutPastable val="true" />
+<AllowsComment val="True" />
+<AllowsFeatureStructure val="False" />
+<AllowsInstanceOf val="False" />
+<CanCreateOrphan val="True" />
+<CopyCutPastable val="True" />
 <Description>
 <AStr ws="en">
 <Run ws="en">Note written from consultant to translation team.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<InstanceOfSignature val="0" />
+<IsProtected val="True" />
+<MaxDupOccur val="0" />
+<Multi val="False" />
 <Name>
 <AUni ws="en">Consultant Note</AUni>
 </Name>
-<PromptUser val="true" />
-<UserCanCreate val="true" />
-<ZeroWidth val="true" />
+<PromptUser val="True" />
+<Severity val="0" />
+<UserCanCreate val="True" />
+<ZeroWidth val="True" />
 </rt>
 <rt class="CmRow" guid="5b786787-2977-4103-9d71-3e38c636b1b0" ownerguid="bb744a7a-ea5e-11de-881b-0013722f8dec">
 <Cells>
@@ -409,9 +739,12 @@
 </Cells>
 </rt>
 <rt class="CmPerson" guid="5d543e4f-50d7-41fe-93a7-cf851c1d229e" ownerguid="d72de032-ea5e-11de-84f3-0013722f8dec">
-<DateCreated val="2006-01-30 13:47:49.693" />
-<DateModified val="2006-01-30 13:47:49.693" />
-<IsProtected val="true" />
+<DateOfBirth val="0" />
+<DateOfDeath val="0" />
+<Gender val="0" />
+<Hidden val="False" />
+<IsProtected val="True" />
+<IsResearcher val="False" />
 <Name>
 <AUni ws="en">Default User</AUni>
 </Name>
@@ -420,17 +753,13 @@
 <AllowsComment val="True" />
 <AllowsFeatureStructure val="False" />
 <AllowsInstanceOf val="False" />
-<BackColor val="0" />
 <CanCreateOrphan val="False" />
 <CopyCutPastable val="True" />
-<DateCreated val="2011-3-29 16:16:50.633" />
-<DateModified val="2011-3-29 16:16:50.633" />
 <Description>
 <AStr ws="en">
 <Run ws="en">Checks for potentially invalid characters.</Run>
 </AStr>
 </Description>
-<ForeColor val="0" />
 <HelpId>
 <Uni>Characters</Uni>
 </HelpId>
@@ -444,9 +773,6 @@
 </Name>
 <PromptUser val="False" />
 <Severity val="0" />
-<SortSpec val="0" />
-<UnderColor val="0" />
-<UnderStyle val="0" />
 <UserCanCreate val="False" />
 <ZeroWidth val="False" />
 </rt>
@@ -457,53 +783,107 @@
 <Disapproves>
 <objsur guid="ce8e565b-45f4-4b09-b3d3-5b4d064eff50" t="o" />
 </Disapproves>
+<Human val="False" />
 <Name>
 <AUni ws="en">Computer</AUni>
 </Name>
 </rt>
 <rt class="CmAgentEvaluation" guid="68cd31f9-c1f3-46ac-86be-a18e3b31edfb" ownerguid="1257a971-fcef-4f06-a5e2-c289de5aaf72" />
+<rt class="StStyle" guid="693aedeb-1f1a-4f1f-b6cd-4a2a96a1dc37" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="7a194e30-4c8c-4934-83ad-b12ecc47a768" t="r" />
+</BasedOn>
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Dictionary-Subsubentry</Uni>
+</Name>
+<Rules>
+<Prop firstIndent="0" leadingIndent="33000" spaceBefore="0"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="0" />
+<Usage>
+<AUni ws="en">Each paragraph of subsubentry information that is added to the entry if there are subsubentries.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="6de6e4d1-0c06-4102-86e2-82faf7bf9811" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Classified-Defn</Uni>
+</Name>
+<Rules>
+<Prop></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">Used for the definition and/or gloss in a Classified Dictionary.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
 <rt class="CmPossibility" guid="6ebc80f8-9ce0-45d9-bb49-3869591fb1ff" ownerguid="d743553e-ea5e-11de-842a-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">None</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">No restrictions</AUni>
 </Name>
+</rt>
+<rt class="StStyle" guid="6ed2cb3d-f6db-4af5-9de9-75669ce26f46" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="3f844794-09d1-45fa-9d75-05c62e2b836d" t="r" />
+</BasedOn>
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Homograph-Number</Uni>
+</Name>
+<Rules>
+<Prop bold="invert" superscript="sub"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">Used for homograph numbers, both in headwords and in references.</AUni>
+</Usage>
+<UserLevel val="1" />
 </rt>
 <rt class="CmAgentEvaluation" guid="70a39b4b-662d-47c5-a9de-e7b5988b7f55" ownerguid="9303883a-ad5c-4ccf-97a5-4add391f8dcb" />
 <rt class="CmPossibility" guid="70c0a758-5901-4884-b992-94ca31087607" ownerguid="48a4eaed-2ae3-4c81-8c9c-f79f2f3a1455">
 <Abbreviation>
 <AUni ws="en">Main</AUni>
 </Abbreviation>
-<BackColor val="0" />
-<DateCreated val="2011-05-27 16:02:49.281" />
-<DateModified val="2011-05-27 16:02:49.281" />
-<ForeColor val="0" />
 <Hidden val="False" />
 <IsProtected val="True" />
 <Name>
 <AUni ws="en">Main Dictionary</AUni>
 </Name>
-<SortSpec val="0" />
-<UnderColor val="0" />
-<UnderStyle val="0" />
 </rt>
 <rt class="CmAgentEvaluation" guid="70c0b09c-1699-4019-bee2-c02d6d95f7d9" ownerguid="5093d7d7-4f18-4aad-8c86-88389476df15" />
 <rt class="CmAnnotationDefn" guid="72abb400-f274-4498-92c5-77e99c90f75b" ownerguid="82e2fd92-48d8-43c9-ba84-cc4a2a5beead">
 <AllowsComment val="True" />
 <AllowsFeatureStructure val="False" />
 <AllowsInstanceOf val="False" />
-<BackColor val="0" />
 <CanCreateOrphan val="False" />
 <CopyCutPastable val="True" />
-<DateCreated val="2011-3-29 16:16:50.705" />
-<DateModified val="2011-3-29 16:16:50.705" />
 <Description>
 <AStr ws="en">
 <Run ws="en">Checks for repeated words.</Run>
 </AStr>
 </Description>
-<ForeColor val="0" />
 <HelpId>
 <Uni>Repeated_Words</Uni>
 </HelpId>
@@ -517,9 +897,6 @@
 </Name>
 <PromptUser val="False" />
 <Severity val="0" />
-<SortSpec val="0" />
-<UnderColor val="0" />
-<UnderStyle val="0" />
 <UserCanCreate val="False" />
 <ZeroWidth val="False" />
 </rt>
@@ -535,7 +912,8 @@
 <Discussion>
 <objsur guid="b33653bc-ea5e-11de-9802-0013722f8dec" t="o" />
 </Discussion>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Contraction</AUni>
 </Name>
@@ -546,12 +924,131 @@
 <AUni ws="en">Contraction of</AUni>
 </ReverseName>
 </rt>
+<rt class="CmResource" guid="73732cc2-7053-49bf-ac11-1ea942f2715c" ownerguid="af26d792-ea5e-11de-8f7e-0013722f8dec">
+<Name>
+<Uni>FlexStyles</Uni>
+</Name>
+<Version val="64eb89f8-aa7a-4408-8187-fcd451b16f32" />
+</rt>
+<rt class="StStyle" guid="740c5846-9d09-4109-806c-5357fede8712" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="7d2c80cd-af87-4d56-8337-cfd389b775bb" t="r" />
+</BasedOn>
+<Context val="0" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Numbered List</Uni>
+</Name>
+<Next>
+<objsur guid="740c5846-9d09-4109-806c-5357fede8712" t="r" />
+</Next>
+<Rules>
+<Prop bulNumScheme="10" bulNumStartAt="1" firstIndent="-9000" leadingIndent="21000"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="0" />
+<Usage>
+<AUni ws="en">A numbered list of paragraphs</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="7434c828-a430-4084-8a49-4be3bfa97068" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="0" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Added Text</Uni>
+</Name>
+<Rules>
+<Prop forecolor="2e8b57" undercolor="2e8b57" underline="single"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">Material marked as being added</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="77997501-47d3-4574-ae1d-7300107dfb73" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="7d2c80cd-af87-4d56-8337-cfd389b775bb" t="r" />
+</BasedOn>
+<Context val="0" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Heading 1</Uni>
+</Name>
+<Next>
+<objsur guid="7d2c80cd-af87-4d56-8337-cfd389b775bb" t="r" />
+</Next>
+<Rules>
+<Prop bold="invert" fontsize="14000" fontsizeUnit="mpt" spaceAfter="3000" spaceBefore="12000"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="0" />
+<Usage>
+<AUni ws="en">Major headings (1, 2, 3)</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="7a194e30-4c8c-4934-83ad-b12ecc47a768" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="7d2c80cd-af87-4d56-8337-cfd389b775bb" t="r" />
+</BasedOn>
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Dictionary-Normal</Uni>
+</Name>
+<Rules>
+<Prop firstIndent="-12000" leadingIndent="9000" spaceAfter="2000" spaceBefore="1000"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="0" />
+<Usage>
+<AUni ws="en">Base style for everything in the Dictionary view.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
 <rt class="CmCell" guid="7bf38df2-e180-4d74-ae16-df959a81eea6" ownerguid="c2f0eb83-212b-4c1b-b357-f28bcd96053e">
 <Contents>
 <Str>
 <Run ws="en">= 0</Run>
 </Str>
 </Contents>
+</rt>
+<rt class="StStyle" guid="7d2c80cd-af87-4d56-8337-cfd389b775bb" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="0" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Normal</Uni>
+</Name>
+<Next>
+<objsur guid="7d2c80cd-af87-4d56-8337-cfd389b775bb" t="r" />
+</Next>
+<Rules>
+<Prop fontsize="10000" fontsizeUnit="mpt" lineHeight="12000" lineHeightType="atLeast" lineHeightUnit="mpt" spaceAfter="6000" spaceBefore="0"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="0" />
+<Usage>
+<AUni ws="en">Normal is a parent style that all other paragraph styles are usually based on.</AUni>
+</Usage>
+<UserLevel val="0" />
 </rt>
 <rt class="PhBdryMarker" guid="7db635e0-9ef3-4167-a594-12551ed89aaa" ownerguid="be7fe79c-ea5e-11de-8151-0013722f8dec">
 <Codes>
@@ -566,71 +1063,127 @@
 <AUni ws="en">#</AUni>
 </Name>
 </rt>
+<rt class="StStyle" guid="7ff691e7-32f4-445d-acea-1ded6a6ac8ea" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="5" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Hyperlink</Uni>
+</Name>
+<Rules>
+<Prop forecolor="blue" undercolor="blue" underline="single"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">Links to other material via URLs</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
 <rt class="CmAnnotationDefn" guid="7ffc4eab-856a-43cc-bc11-0db55738c15b" ownerguid="ea346c01-022f-4f34-b938-219ce7b65b73">
 <Abbreviation>
 <AUni ws="en">Nt</AUni>
 </Abbreviation>
-<AllowsComment val="true" />
-<CanCreateOrphan val="true" />
-<CopyCutPastable val="true" />
+<AllowsComment val="True" />
+<AllowsFeatureStructure val="False" />
+<AllowsInstanceOf val="False" />
+<CanCreateOrphan val="True" />
+<CopyCutPastable val="True" />
 <Description>
 <AStr ws="en">
 <Run ws="en">General category for ad-hoc notes of any kind.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
-<Multi val="true" />
+<Hidden val="False" />
+<InstanceOfSignature val="0" />
+<IsProtected val="True" />
+<MaxDupOccur val="0" />
+<Multi val="True" />
 <Name>
 <AUni ws="en">Note</AUni>
 </Name>
+<PromptUser val="False" />
+<Severity val="0" />
 <SubPossibilities>
 <objsur guid="56de9b1a-1ce7-42a1-aa76-512ebeff0dda" t="o" />
 <objsur guid="80ae5729-9cd8-424d-8e71-96c1a8fd5821" t="o" />
 </SubPossibilities>
-<UserCanCreate val="true" />
+<UserCanCreate val="True" />
+<ZeroWidth val="False" />
 </rt>
 <rt class="CmPossibility" guid="80a0dddb-8b4b-4454-b872-88adec6f2aba" ownerguid="d7f71649-e8cf-11d3-9764-00c04f186933">
 <Abbreviation>
 <AUni ws="en">BT</AUni>
 </Abbreviation>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Back translation</AUni>
 </Name>
+</rt>
+<rt class="StStyle" guid="80a47ed1-1e29-40d4-9aa0-d3041a8ca9dc" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="7d2c80cd-af87-4d56-8337-cfd389b775bb" t="r" />
+</BasedOn>
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Reversal-Normal</Uni>
+</Name>
+<Rules>
+<Prop firstIndent="-12000" leadingIndent="9000" spaceAfter="2000" spaceBefore="1000"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="0" />
+<Usage>
+<AUni ws="en">Base style for everything in the Reversal view.</AUni>
+</Usage>
+<UserLevel val="1" />
 </rt>
 <rt class="CmAnnotationDefn" guid="80ae5729-9cd8-424d-8e71-96c1a8fd5821" ownerguid="7ffc4eab-856a-43cc-bc11-0db55738c15b">
 <Abbreviation>
 <AUni ws="en">TransNt</AUni>
 </Abbreviation>
-<AllowsComment val="true" />
-<CanCreateOrphan val="true" />
-<CopyCutPastable val="true" />
+<AllowsComment val="True" />
+<AllowsFeatureStructure val="False" />
+<AllowsInstanceOf val="False" />
+<CanCreateOrphan val="True" />
+<CopyCutPastable val="True" />
 <Description>
 <AStr ws="en">
 <Run ws="en">Note written by translation team.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<InstanceOfSignature val="0" />
+<IsProtected val="True" />
+<MaxDupOccur val="0" />
+<Multi val="False" />
 <Name>
 <AUni ws="en">Translator Note</AUni>
 </Name>
-<PromptUser val="true" />
-<UserCanCreate val="true" />
-<ZeroWidth val="true" />
+<PromptUser val="True" />
+<Severity val="0" />
+<UserCanCreate val="True" />
+<ZeroWidth val="True" />
 </rt>
 <rt class="CmPossibility" guid="82290763-1633-4998-8317-0ec3f5027fbd" ownerguid="d9d55b12-ea5e-11de-95ef-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">Ana</AUni>
 </Abbreviation>
 <BackColor val="16711680" />
-<DateCreated val="2009-12-16 14:39:19.723" />
-<DateModified val="2009-12-16 14:39:19.723" />
 <Description>
 <AStr ws="en">
 <Run ws="en">Reflection on events and other types of data, such as literature summaries or interviews. An analysis does not add data; it interprets and organizes data. An analysis entry may synthesize emerging themes. It may draw connections between observations. It is a place to speculate and hypothesize, or document moments of discovery and awareness. Analytic notes can be turned into articles. Or, they may just be steps on the stairway toward greater understanding.</Run>
 </AStr>
 </Description>
 <ForeColor val="16777215" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Analysis</AUni>
 </Name>
@@ -644,17 +1197,13 @@
 <AllowsComment val="True" />
 <AllowsFeatureStructure val="False" />
 <AllowsInstanceOf val="False" />
-<BackColor val="0" />
 <CanCreateOrphan val="False" />
 <CopyCutPastable val="True" />
-<DateCreated val="2011-3-29 16:16:50.449" />
-<DateModified val="2011-3-29 16:16:50.449" />
 <Description>
 <AStr ws="en">
 <Run ws="en">General category for errors of any kind.</Run>
 </AStr>
 </Description>
-<ForeColor val="0" />
 <Hidden val="False" />
 <InstanceOfSignature val="0" />
 <IsProtected val="True" />
@@ -665,7 +1214,6 @@
 </Name>
 <PromptUser val="False" />
 <Severity val="0" />
-<SortSpec val="0" />
 <SubPossibilities>
 <objsur guid="babcb400-f274-4498-92c5-77e99c90f75b" t="o" />
 <objsur guid="f17a054b-d21e-4298-a1a5-0d79c4af6f0f" t="o" />
@@ -676,8 +1224,6 @@
 <objsur guid="ddccb400-f274-4498-92c5-77e99c90f75c" t="o" />
 <objsur guid="72abb400-f274-4498-92c5-77e99c90f75b" t="o" />
 </SubPossibilities>
-<UnderColor val="0" />
-<UnderStyle val="0" />
 <UserCanCreate val="False" />
 <ZeroWidth val="False" />
 </rt>
@@ -696,7 +1242,8 @@
 <GlossAppend>
 <AUni ws="en">.pst</AUni>
 </GlossAppend>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Past</AUni>
 </Name>
@@ -707,23 +1254,168 @@
 <AUni ws="en">Past of</AUni>
 </ReverseName>
 </rt>
+<rt class="StStyle" guid="879d3c6f-8e62-4887-a4af-27feb88c2af1" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="7d2c80cd-af87-4d56-8337-cfd389b775bb" t="r" />
+</BasedOn>
+<Context val="0" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Block Quote</Uni>
+</Name>
+<Next>
+<objsur guid="879d3c6f-8e62-4887-a4af-27feb88c2af1" t="r" />
+</Next>
+<Rules>
+<Prop firstIndent="0" leadingIndent="21000" trailingIndent="21000"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="0" />
+<Usage>
+<AUni ws="en">Extended (paragraph size or larger) quotation</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="89670d4f-71d4-4878-b2ff-815e45512be1" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Dictionary-Context</Uni>
+</Name>
+<Rules>
+<Prop></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">Base style for Before/After/Between content in Dictionary and Reversal views.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
 <rt class="CmAgentEvaluation" guid="8caa11bb-cac4-4836-a081-1666245106b9" ownerguid="9303883a-ad5c-4ccf-97a5-4add391f8dcb" />
 <rt class="CmAnnotationDefn" guid="8d4cbd80-0dca-4a83-8a1f-9db3aa4cff54" ownerguid="ea346c01-022f-4f34-b938-219ce7b65b73">
 <Abbreviation>
 <AUni ws="en">Txt</AUni>
 </Abbreviation>
+<AllowsComment val="False" />
+<AllowsFeatureStructure val="False" />
+<AllowsInstanceOf val="False" />
+<CanCreateOrphan val="False" />
+<CopyCutPastable val="False" />
 <Description>
 <AStr ws="en">
 <Run ws="en">Annotations applied to larger parts of a text, such as a sentence or clause. This is a grouping category and should not be instantiated.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<InstanceOfSignature val="0" />
+<IsProtected val="True" />
+<MaxDupOccur val="0" />
+<Multi val="False" />
 <Name>
 <AUni ws="en">Text</AUni>
 </Name>
+<PromptUser val="False" />
+<Severity val="0" />
 <SubPossibilities>
 <objsur guid="20cf6c1c-9389-4380-91f5-dfa057003d51" t="o" />
 </SubPossibilities>
+<UserCanCreate val="False" />
+<ZeroWidth val="False" />
+</rt>
+<rt class="StStyle" guid="905a485e-4b54-47eb-a8e9-1f86e9c25699" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="7a194e30-4c8c-4934-83ad-b12ecc47a768" t="r" />
+</BasedOn>
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Dictionary-Sense</Uni>
+</Name>
+<Rules>
+<Prop firstIndent="-12000" leadingIndent="21000" spaceBefore="0"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="0" />
+<Usage>
+<AUni ws="en">Each paragraph of sense information that is added to the entry if senses are formatted as paragraphs.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="90b94e23-3e77-4460-94fd-c1997ed9a81f" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="7a194e30-4c8c-4934-83ad-b12ecc47a768" t="r" />
+</BasedOn>
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Dictionary-Subentry</Uni>
+</Name>
+<Rules>
+<Prop firstIndent="0" leadingIndent="21000" spaceBefore="0"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="0" />
+<Usage>
+<AUni ws="en">Each paragraph of subentry information that is added to the entry if there are subentries.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="9132811f-a2e6-43b1-92f2-6e2030bbea12" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="7a194e30-4c8c-4934-83ad-b12ecc47a768" t="r" />
+</BasedOn>
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Dictionary-Minor</Uni>
+</Name>
+<Rules>
+<Prop spaceBefore="0"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="0" />
+<Usage>
+<AUni ws="en">Each paragraph of minor entry information that is added to the entry if there are minor entries.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="92e5dc56-317a-461d-a179-e9e005d6612a" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="7a194e30-4c8c-4934-83ad-b12ecc47a768" t="r" />
+</BasedOn>
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Dictionary-Pictures</Uni>
+</Name>
+<Rules>
+<Prop firstIndent="0" leadingIndent="21000" spaceBefore="0"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="0" />
+<Usage>
+<AUni ws="en">The paragraph of pictures that follows the main paragraph (if there are pictures).</AUni>
+</Usage>
+<UserLevel val="1" />
 </rt>
 <rt class="CmAgent" guid="9303883a-ad5c-4ccf-97a5-4add391f8dcb" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
 <Approves>
@@ -732,10 +1424,32 @@
 <Disapproves>
 <objsur guid="70a39b4b-662d-47c5-a9de-e7b5988b7f55" t="o" />
 </Disapproves>
-<Human val="true" />
+<Human val="True" />
 <Name>
 <AUni ws="en">default user</AUni>
 </Name>
+</rt>
+<rt class="StStyle" guid="945e6502-615b-4863-a18c-111e4d6b36c6" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="7d2c80cd-af87-4d56-8337-cfd389b775bb" t="r" />
+</BasedOn>
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Classified-Item</Uni>
+</Name>
+<Rules>
+<Prop firstIndent="-9000" leadingIndent="9000" spaceBefore="2000"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="0" />
+<Usage>
+<AUni ws="en">In a Classified Dictionary, the individual item paragraphs</AUni>
+</Usage>
+<UserLevel val="1" />
 </rt>
 <rt class="LexEntryType" guid="9466d126-246e-400b-8bba-0703e09bc567" ownerguid="1ee09905-63dd-4c7a-a9bd-1d496743ccd6">
 <Abbreviation>
@@ -749,7 +1463,8 @@
 <Discussion>
 <objsur guid="b6b1fed8-ea5e-11de-8d97-0013722f8dec" t="o" />
 </Discussion>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Saying</AUni>
 </Name>
@@ -759,6 +1474,25 @@
 <ReverseName>
 <AUni ws="en">Saying of</AUni>
 </ReverseName>
+</rt>
+<rt class="StStyle" guid="9795fb02-12d8-4d1e-9546-5f1bf1c848ea" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="0" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Strong</Uni>
+</Name>
+<Rules>
+<Prop bold="invert"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">Material to stand out boldly</AUni>
+</Usage>
+<UserLevel val="1" />
 </rt>
 <rt class="LexEntryType" guid="98c273c4-f723-4fb0-80df-eede2204dfca" ownerguid="1ee09905-63dd-4c7a-a9bd-1d496743ccd6">
 <Abbreviation>
@@ -772,7 +1506,8 @@
 <Discussion>
 <objsur guid="b39a75fe-ea5e-11de-8de8-0013722f8dec" t="o" />
 </Discussion>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Derivative</AUni>
 </Name>
@@ -787,9 +1522,47 @@
 <Contents>
 <Str>
 <Run ws="en">Matches </Run>
-<Run link="80AE5729-9CD8-424D-8E71-96C1A8FD5821" ws="en" />
+<Run link="80ae5729-9cd8-424d-8e71-96c1a8fd5821" ws="en"></Run>
 </Str>
 </Contents>
+</rt>
+<rt class="StStyle" guid="9ece8f19-30f0-43a0-bf7b-9e5f33c6cea7" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="0" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Deleted Text</Uni>
+</Name>
+<Rules>
+<Prop forecolor="red" undercolor="red" underline="strikethrough"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">Material marked as being deleted</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="9fa82bd0-e797-4c40-88d7-cb591613b426" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Classified-Headword</Uni>
+</Name>
+<Rules>
+<Prop bold="invert"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">Used for the headword in a Classified Dictionary.</AUni>
+</Usage>
+<UserLevel val="1" />
 </rt>
 <rt class="CmCell" guid="a00ccf58-9159-471b-908f-2aaebda1b209" ownerguid="0288b729-8eb0-41ad-b27c-9534c64900a5">
 <Contents>
@@ -807,10 +1580,12 @@
 <Run ws="en">A phrase is a syntactic structure that consists of more than one word but lacks the subject-predicate organization of a clause.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">phrase</AUni>
 </Name>
+<SecondaryOrder val="0" />
 </rt>
 <rt class="LexEntryInflType" guid="a32f1d1c-4832-46a2-9732-c2276d6547e8" ownerguid="01d4fbc1-3b0c-4f52-9163-7ab0d4f4711c">
 <Abbreviation>
@@ -827,7 +1602,8 @@
 <GlossAppend>
 <AUni ws="en">.pl</AUni>
 </GlossAppend>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Plural</AUni>
 </Name>
@@ -838,12 +1614,32 @@
 <AUni ws="en">Plural of</AUni>
 </ReverseName>
 </rt>
+<rt class="StStyle" guid="aba229f3-ca42-4727-a903-0abc3d418607" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Dictionary-CrossReferences</Uni>
+</Name>
+<Rules>
+<Prop bold="invert"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">Used for the headwords that occur in cross references to other entries.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
 <rt class="CmFilter" guid="abc71f1c-dd0b-4f57-add8-9200ac20a653" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
 <App val="a7d421e1-1dd3-11d5-b720-0010a4b54856" />
 <ClassId val="3018" />
 <ColumnInfo>
 <Uni>replace me</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>kstidNoteMultiFilter</Uni>
 </Name>
@@ -854,6 +1650,7 @@
 <objsur guid="1b4d1c03-9321-415b-a560-fe6831f317be" t="o" />
 </Rows>
 <ShowPrompt val="1" />
+<Type val="0" />
 </rt>
 <rt class="LangProject" guid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
 <AffixCategories>
@@ -874,8 +1671,6 @@
 <ConfidenceLevels>
 <objsur guid="d99e8542-ea5e-11de-9301-0013722f8dec" t="o" />
 </ConfidenceLevels>
-<DateCreated val="1-1-1 0:0:0.0" />
-<DateModified val="1-1-1 0:0:0.0" />
 <DiscourseData>
 <objsur guid="c3fe8c1e-ea5e-11de-9e45-0013722f8dec" t="o" />
 </DiscourseData>
@@ -916,9 +1711,15 @@
 <GenreList>
 <objsur guid="c06b099c-ea5e-11de-890c-0013722f8dec" t="o" />
 </GenreList>
+<HomographWs>
+<Uni>fr</Uni>
+</HomographWs>
 <LexDb>
 <objsur guid="af26d792-ea5e-11de-8f7e-0013722f8dec" t="o" />
 </LexDb>
+<LinkedFilesRootDir>
+<Uni>%proj%\LinkedFiles</Uni>
+</LinkedFilesRootDir>
 <Locations>
 <objsur guid="d887937e-ea5e-11de-9e1f-0013722f8dec" t="o" />
 </Locations>
@@ -956,20 +1757,46 @@
 <objsur guid="d86632ba-ea5e-11de-8a58-0013722f8dec" t="o" />
 </Status>
 <Styles>
-<objsur guid="24399e56-7b78-4a54-a6bc-f347310b863e" t="o" />
-<objsur guid="b8179dd2-ea5e-11de-8537-0013722f8dec" t="o" />
-<objsur guid="b8238980-ea5e-11de-86e1-0013722f8dec" t="o" />
-<objsur guid="b82d12de-ea5e-11de-88cd-0013722f8dec" t="o" />
-<objsur guid="b838fe8c-ea5e-11de-8ed9-0013722f8dec" t="o" />
-<objsur guid="b844ea44-ea5e-11de-8766-0013722f8dec" t="o" />
-<objsur guid="b85a5f50-ea5e-11de-8168-0013722f8dec" t="o" />
-<objsur guid="b87236b6-ea5e-11de-97c0-0013722f8dec" t="o" />
-<objsur guid="b87bc014-ea5e-11de-912a-0013722f8dec" t="o" />
-<objsur guid="d85a4702-ea5e-11de-93d4-0013722f8dec" t="o" />
-<objsur guid="d9aa70f0-ea5e-11de-8efb-0013722f8dec" t="o" />
-<objsur guid="d9bfe5fc-ea5e-11de-9282-0013722f8dec" t="o" />
-<objsur guid="d9cbd1b4-ea5e-11de-8f8b-0013722f8dec" t="o" />
-<objsur guid="ff312e7a-4e45-4ec8-a9cb-71c7421c120f" t="o" />
+<objsur guid="164123a0-ca12-4c44-bd69-d5fb9d4b1a0b" t="o" />
+<objsur guid="1b25e2a0-5f78-40d1-943a-2b14caccf860" t="o" />
+<objsur guid="1fafdfa6-34a7-4577-b4aa-0c6518af623a" t="o" />
+<objsur guid="23efa4cc-0347-4fc1-a33d-57b57ee852f9" t="o" />
+<objsur guid="25d17a96-4130-49c5-8f2b-497c1953556a" t="o" />
+<objsur guid="282f9ae7-d4dc-4c9b-93b5-413a7d3986b1" t="o" />
+<objsur guid="3191611c-41c6-4ecf-bcd5-a5084cc3e1f2" t="o" />
+<objsur guid="31d215a7-ac39-4d1c-be7d-88fe2b7c8d34" t="o" />
+<objsur guid="366e9470-26f7-4bdf-86e4-f829784c3113" t="o" />
+<objsur guid="3c8c511b-4683-4289-88d0-024f66540f6f" t="o" />
+<objsur guid="3eb5354a-9f55-4165-a411-eca7f9d2a845" t="o" />
+<objsur guid="3f844794-09d1-45fa-9d75-05c62e2b836d" t="o" />
+<objsur guid="4d6cffc4-254e-4ef7-b26b-41aab4bfbf48" t="o" />
+<objsur guid="501c3363-065d-465a-baad-15d0787f9ded" t="o" />
+<objsur guid="693aedeb-1f1a-4f1f-b6cd-4a2a96a1dc37" t="o" />
+<objsur guid="6de6e4d1-0c06-4102-86e2-82faf7bf9811" t="o" />
+<objsur guid="6ed2cb3d-f6db-4af5-9de9-75669ce26f46" t="o" />
+<objsur guid="740c5846-9d09-4109-806c-5357fede8712" t="o" />
+<objsur guid="7434c828-a430-4084-8a49-4be3bfa97068" t="o" />
+<objsur guid="77997501-47d3-4574-ae1d-7300107dfb73" t="o" />
+<objsur guid="7a194e30-4c8c-4934-83ad-b12ecc47a768" t="o" />
+<objsur guid="7d2c80cd-af87-4d56-8337-cfd389b775bb" t="o" />
+<objsur guid="7ff691e7-32f4-445d-acea-1ded6a6ac8ea" t="o" />
+<objsur guid="80a47ed1-1e29-40d4-9aa0-d3041a8ca9dc" t="o" />
+<objsur guid="879d3c6f-8e62-4887-a4af-27feb88c2af1" t="o" />
+<objsur guid="89670d4f-71d4-4878-b2ff-815e45512be1" t="o" />
+<objsur guid="905a485e-4b54-47eb-a8e9-1f86e9c25699" t="o" />
+<objsur guid="90b94e23-3e77-4460-94fd-c1997ed9a81f" t="o" />
+<objsur guid="9132811f-a2e6-43b1-92f2-6e2030bbea12" t="o" />
+<objsur guid="92e5dc56-317a-461d-a179-e9e005d6612a" t="o" />
+<objsur guid="945e6502-615b-4863-a18c-111e4d6b36c6" t="o" />
+<objsur guid="9795fb02-12d8-4d1e-9546-5f1bf1c848ea" t="o" />
+<objsur guid="9ece8f19-30f0-43a0-bf7b-9e5f33c6cea7" t="o" />
+<objsur guid="9fa82bd0-e797-4c40-88d7-cb591613b426" t="o" />
+<objsur guid="aba229f3-ca42-4727-a903-0abc3d418607" t="o" />
+<objsur guid="cb0fbdb3-2ca2-473b-97bb-8f505e18010c" t="o" />
+<objsur guid="d80764cc-4d86-4e14-b217-d1b0a4dc3379" t="o" />
+<objsur guid="dd807cae-4b18-4354-934d-99632b663f9e" t="o" />
+<objsur guid="f41be047-a4ee-402b-bcfe-9458e502e682" t="o" />
+<objsur guid="fb6450f5-626d-4fbf-ada5-4cfd5986b5b0" t="o" />
 </Styles>
 <TextMarkupTags>
 <objsur guid="c1af47dc-ea5e-11de-8e34-0013722f8dec" t="o" />
@@ -994,6 +1821,8 @@
 <ExtendedNoteTypes>
 <objsur guid="ed6b2dcc-e82f-4631-b61a-6b630de332d0" t="o" />
 </ExtendedNoteTypes>
+<IsBodyInSeparateSubentry val="False" />
+<IsHeadwordCitationForm val="False" />
 <Languages>
 <objsur guid="487c15b0-2ced-4417-8b77-9075f4a21e5f" t="o" />
 </Languages>
@@ -1009,6 +1838,9 @@
 <References>
 <objsur guid="b758e2a2-ea5e-11de-9d24-0013722f8dec" t="o" />
 </References>
+<Resources>
+<objsur guid="73732cc2-7053-49bf-ac11-1ea942f2715c" t="o" />
+</Resources>
 <SenseTypes>
 <objsur guid="af32c340-ea5e-11de-9040-0013722f8dec" t="o" />
 </SenseTypes>
@@ -1023,9 +1855,15 @@
 <Abbreviation>
 <AUni ws="en">SenTyp</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.262" />
+<DateModified val="2018-8-2 16:32:6.262" />
 <Depth val="1" />
-<IsSorted val="true" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="True" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Sense Types</AUni>
 </Name>
@@ -1033,6 +1871,10 @@
 <objsur guid="af3eaef8-ea5e-11de-80fd-0013722f8dec" t="o" />
 <objsur guid="af48384c-ea5e-11de-9aef-0013722f8dec" t="o" />
 </Possibilities>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="CmPossibility" guid="af3eaef8-ea5e-11de-80fd-0013722f8dec" ownerguid="af32c340-ea5e-11de-9040-0013722f8dec">
@@ -1041,6 +1883,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">figurative</AUni>
 </Name>
@@ -1052,6 +1895,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">primary</AUni>
 </Name>
@@ -1060,44 +1904,125 @@
 <rt class="CmPossibilityList" guid="487c15b0-2ced-4417-8b77-9075f4a21e5f" ownerguid="af26d792-ea5e-11de-8f7e-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">Lgs</AUni>
-<AUni ws="es">Ids</AUni>
 <AUni ws="fr">Lgs</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.270" />
+<DateModified val="2018-8-2 16:32:6.270" />
 <Depth val="1" />
-<IsSorted val="true" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="True" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Languages</AUni>
-<AUni ws="es">Idiomas</AUni>
 <AUni ws="fr">Langues</AUni>
 </Name>
-<Possibilities>
-</Possibilities>
-<PreventDuplicates val="true" />
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="True" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="CmPossibilityList" guid="a3a8188b-ab00-4a43-b925-a1eed62287ba" ownerguid="af26d792-ea5e-11de-8f7e-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">Dials</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.270" />
+<DateModified val="2018-8-2 16:32:6.270" />
 <Depth val="1" />
-<IsSorted val="true" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="True" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Dialect Labels</AUni>
 </Name>
-<Possibilities>
-</Possibilities>
-<PreventDuplicates val="true" />
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="True" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-6" />
+</rt>
+<rt class="StStyle" guid="cb0fbdb3-2ca2-473b-97bb-8f505e18010c" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Dictionary-Contrasting</Uni>
+</Name>
+<Rules>
+<Prop italic="invert"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">Used for items in the entry that need to be distinguished from neighboring items.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="d80764cc-4d86-4e14-b217-d1b0a4dc3379" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Dictionary-Vernacular</Uni>
+</Name>
+<Rules>
+<Prop italic="invert"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">Used for items in the entry that contain vernacular text.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="dd807cae-4b18-4354-934d-99632b663f9e" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<BasedOn>
+<objsur guid="7a194e30-4c8c-4934-83ad-b12ecc47a768" t="r" />
+</BasedOn>
+<Context val="5" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Dictionary-LetterHeading</Uni>
+</Name>
+<Next>
+<objsur guid="7a194e30-4c8c-4934-83ad-b12ecc47a768" t="r" />
+</Next>
+<Rules>
+<Prop align="center" bold="invert" fontsize="14000" fontsizeUnit="mpt" spaceAfter="3000" spaceBefore="12000"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="0" />
+<Usage>
+<AUni ws="en">Letter headings in the dictionary and reversal indexes.</AUni>
+</Usage>
+<UserLevel val="1" />
 </rt>
 <rt class="CmPossibilityList" guid="ed6b2dcc-e82f-4631-b61a-6b630de332d0" ownerguid="af26d792-ea5e-11de-8f7e-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">ExtNoteTyp</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.269" />
+<DateModified val="2018-8-2 16:32:6.269" />
 <Depth val="1" />
-<IsSorted val="true" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="True" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Extended Note Types</AUni>
 </Name>
@@ -1108,7 +2033,10 @@
 <objsur guid="30115b33-608a-4506-9f9c-2457cab4f4a8" t="o" />
 <objsur guid="5dd29371-fdb0-497a-a2fb-7ca69b00ad4f" t="o" />
 </Possibilities>
-<PreventDuplicates val="true" />
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="True" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="CmPossibility" guid="2f06d436-b1e0-47ae-a42e-1f7b893c5fc2" ownerguid="ed6b2dcc-e82f-4631-b61a-6b630de332d0">
@@ -1117,6 +2045,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <IsProtected val="True" />
 <Name>
 <AUni ws="en">Collocation</AUni>
@@ -1129,6 +2058,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <IsProtected val="True" />
 <Name>
 <AUni ws="en">Cultural</AUni>
@@ -1141,6 +2071,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <IsProtected val="True" />
 <Name>
 <AUni ws="en">Discourse</AUni>
@@ -1153,6 +2084,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <IsProtected val="True" />
 <Name>
 <AUni ws="en">Grammar</AUni>
@@ -1165,6 +2097,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <IsProtected val="True" />
 <Name>
 <AUni ws="en">Semantic</AUni>
@@ -1175,9 +2108,15 @@
 <Abbreviation>
 <AUni ws="en">Use</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.267" />
+<DateModified val="2018-8-2 16:32:6.267" />
 <Depth val="127" />
-<IsSorted val="true" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="True" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Usages</AUni>
 </Name>
@@ -1197,6 +2136,10 @@
 <objsur guid="b06b15c8-ea5e-11de-8d8b-0013722f8dec" t="o" />
 <objsur guid="b0770176-ea5e-11de-88f6-0013722f8dec" t="o" />
 </Possibilities>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="CmPossibility" guid="af600fb2-ea5e-11de-82b5-0013722f8dec" ownerguid="af542404-ea5e-11de-8bde-0013722f8dec">
@@ -1205,6 +2148,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">archaic</AUni>
 </Name>
@@ -1219,13 +2163,15 @@
 <Run ws="en">A prefixing interfix is a prefix that can occur between two roots or stems.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">prefixing interfix</AUni>
 </Name>
 <Postfix>
 <Uni>-</Uni>
 </Postfix>
+<SecondaryOrder val="0" />
 </rt>
 <rt class="CmPossibility" guid="af699910-ea5e-11de-8d20-0013722f8dec" ownerguid="af542404-ea5e-11de-8bde-0013722f8dec">
 <Abbreviation>
@@ -1233,6 +2179,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">colloquial</AUni>
 </Name>
@@ -1244,6 +2191,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">formal</AUni>
 </Name>
@@ -1255,6 +2203,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">historical</AUni>
 </Name>
@@ -1266,6 +2215,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">honorific</AUni>
 </Name>
@@ -1277,6 +2227,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">informal</AUni>
 </Name>
@@ -1288,6 +2239,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">non-standard</AUni>
 </Name>
@@ -1299,6 +2251,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">obsolete</AUni>
 </Name>
@@ -1310,6 +2263,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">old-fashioned</AUni>
 </Name>
@@ -1321,6 +2275,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">rare</AUni>
 </Name>
@@ -1332,6 +2287,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">register</AUni>
 </Name>
@@ -1349,6 +2305,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">basic</AUni>
 </Name>
@@ -1360,6 +2317,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">high</AUni>
 </Name>
@@ -1371,6 +2329,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">low</AUni>
 </Name>
@@ -1382,6 +2341,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">mid</AUni>
 </Name>
@@ -1393,6 +2353,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">restrictive</AUni>
 </Name>
@@ -1411,6 +2372,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">animal</AUni>
 </Name>
@@ -1422,6 +2384,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">human</AUni>
 </Name>
@@ -1438,6 +2401,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">female</AUni>
 </Name>
@@ -1449,6 +2413,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">male</AUni>
 </Name>
@@ -1460,6 +2425,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">same sex sibling</AUni>
 </Name>
@@ -1471,6 +2437,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">obscene</AUni>
 </Name>
@@ -1482,6 +2449,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">offensive</AUni>
 </Name>
@@ -1493,6 +2461,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">taboo</AUni>
 </Name>
@@ -1504,6 +2473,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">slang</AUni>
 </Name>
@@ -1515,6 +2485,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">traditional</AUni>
 </Name>
@@ -1524,6 +2495,7 @@
 <Abbreviation>
 <AUni ws="en">Tent</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Tentative</AUni>
 </Name>
@@ -1532,9 +2504,15 @@
 <Abbreviation>
 <AUni ws="en">AcDom</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.267" />
+<DateModified val="2018-8-2 16:32:6.267" />
 <Depth val="127" />
-<IsSorted val="true" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="True" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Academic Domains</AUni>
 </Name>
@@ -1562,6 +2540,10 @@
 <objsur guid="b2fd1b92-ea5e-11de-8fa9-0013722f8dec" t="o" />
 <objsur guid="b3090740-ea5e-11de-901c-0013722f8dec" t="o" />
 </Possibilities>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="CmPossibility" guid="b0add746-ea5e-11de-8c5c-0013722f8dec" ownerguid="b0a1eb98-ea5e-11de-888e-0013722f8dec">
@@ -1570,6 +2552,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">anatomy</AUni>
 </Name>
@@ -1581,6 +2564,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">anthropology</AUni>
 </Name>
@@ -1595,6 +2579,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">cultural anthropology</AUni>
 </Name>
@@ -1609,6 +2594,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">cross cultural adaptation</AUni>
 </Name>
@@ -1620,6 +2606,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">artificial intelligence</AUni>
 </Name>
@@ -1631,6 +2618,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">computer science</AUni>
 </Name>
@@ -1642,6 +2630,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">education</AUni>
 </Name>
@@ -1653,6 +2642,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">graphology</AUni>
 </Name>
@@ -1664,6 +2654,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">language learning</AUni>
 </Name>
@@ -1675,6 +2666,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">legal</AUni>
 </Name>
@@ -1686,6 +2678,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">linguistics</AUni>
 </Name>
@@ -1710,6 +2703,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">applied linguistics</AUni>
 </Name>
@@ -1721,6 +2715,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">comparative linguistics</AUni>
 </Name>
@@ -1732,6 +2727,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">grammar</AUni>
 </Name>
@@ -1748,6 +2744,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">discourse</AUni>
 </Name>
@@ -1759,6 +2756,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">morphology</AUni>
 </Name>
@@ -1770,6 +2768,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">syntax</AUni>
 </Name>
@@ -1781,6 +2780,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">historical linguistics</AUni>
 </Name>
@@ -1792,6 +2792,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">lexicography</AUni>
 </Name>
@@ -1803,6 +2804,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">lexicology</AUni>
 </Name>
@@ -1814,6 +2816,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">phonetics</AUni>
 </Name>
@@ -1829,6 +2832,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">acoustic phonetics</AUni>
 </Name>
@@ -1840,6 +2844,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">articulatory phonetics</AUni>
 </Name>
@@ -1851,6 +2856,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">phonology</AUni>
 </Name>
@@ -1870,6 +2876,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">autosegmental phonology</AUni>
 </Name>
@@ -1881,6 +2888,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">generative phonology</AUni>
 </Name>
@@ -1892,6 +2900,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">lexical phonology</AUni>
 </Name>
@@ -1903,6 +2912,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">metrical phonology</AUni>
 </Name>
@@ -1914,6 +2924,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">non-linear phonology</AUni>
 </Name>
@@ -1925,6 +2936,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">phonemics</AUni>
 </Name>
@@ -1936,6 +2948,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">pragmatics</AUni>
 </Name>
@@ -1947,6 +2960,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">semantics</AUni>
 </Name>
@@ -1958,6 +2972,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">semiotics</AUni>
 </Name>
@@ -1969,6 +2984,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">literacy</AUni>
 </Name>
@@ -1989,7 +3005,8 @@
 <Discussion>
 <objsur guid="b4d2c886-ea5e-11de-9720-0013722f8dec" t="o" />
 </Discussion>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Idiom</AUni>
 </Name>
@@ -2000,6 +3017,44 @@
 <AUni ws="en">Idiom of</AUni>
 </ReverseName>
 </rt>
+<rt class="StStyle" guid="f41be047-a4ee-402b-bcfe-9458e502e682" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Dictionary-POS</Uni>
+</Name>
+<Rules>
+<Prop italic="invert"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">Used for Grammatical Category and other strings that need to be formatted similarly.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
+<rt class="StStyle" guid="fb6450f5-626d-4fbf-ada5-4cfd5986b5b0" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<Context val="14" />
+<Function val="0" />
+<IsBuiltIn val="True" />
+<IsModified val="False" />
+<IsPublishedTextStyle val="False" />
+<Name>
+<Uni>Classified-POS</Uni>
+</Name>
+<Rules>
+<Prop italic="invert"></Prop>
+</Rules>
+<Structure val="0" />
+<Type val="1" />
+<Usage>
+<AUni ws="en">Used for the grammatical information in a Classified Dictionary.</AUni>
+</Usage>
+<UserLevel val="1" />
+</rt>
 <rt class="LexEntryType" guid="fec038ed-6a8c-4fa5-bc96-a4f515a98c50" ownerguid="1ee09905-63dd-4c7a-a9bd-1d496743ccd6">
 <Abbreviation>
 <AUni ws="en">unspec. comp. form</AUni>
@@ -2009,7 +3064,8 @@
 <Run ws="en">A complex form that hasn't been labeled as a specific kind of complex form.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Unspecified Complex Form</AUni>
 </Name>
@@ -2026,6 +3082,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">newitem</AUni>
 </Name>
@@ -2037,6 +3094,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">literature</AUni>
 </Name>
@@ -2053,6 +3111,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">poetry</AUni>
 </Name>
@@ -2064,6 +3123,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">rhetoric</AUni>
 </Name>
@@ -2075,6 +3135,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">stylistics</AUni>
 </Name>
@@ -2086,6 +3147,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">logic</AUni>
 </Name>
@@ -2097,6 +3159,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">mathematics</AUni>
 </Name>
@@ -2108,6 +3171,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">media</AUni>
 </Name>
@@ -2119,6 +3183,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">medicine</AUni>
 </Name>
@@ -2130,6 +3195,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">philosophy</AUni>
 </Name>
@@ -2141,6 +3207,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">psycholinguistics</AUni>
 </Name>
@@ -2152,6 +3219,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">psychology</AUni>
 </Name>
@@ -2163,6 +3231,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">religion</AUni>
 </Name>
@@ -2177,6 +3246,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">ritual</AUni>
 </Name>
@@ -2188,6 +3258,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">sociolinguistics</AUni>
 </Name>
@@ -2205,6 +3276,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">applied linguistics</AUni>
 </Name>
@@ -2216,6 +3288,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">comparative linguistics</AUni>
 </Name>
@@ -2227,6 +3300,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">historical linguistics</AUni>
 </Name>
@@ -2238,6 +3312,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">survey</AUni>
 </Name>
@@ -2249,6 +3324,7 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">sociology</AUni>
 </Name>
@@ -2260,17 +3336,18 @@
 </Abbreviation>
 <BackColor val="-1073741824" />
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">translation</AUni>
 </Name>
 <UnderColor val="-1073741824" />
 </rt>
 <rt class="StText" guid="b314f2f8-ea5e-11de-86b7-0013722f8dec" ownerguid="1f6ae209-141a-40db-983c-bee93af0ca3c">
-<DateModified val="2011-3-29 16:16:31.319" />
 <Paragraphs>
 <objsur guid="b31e7c56-ea5e-11de-85d3-0013722f8dec" t="o" />
 <objsur guid="b32a6804-ea5e-11de-840f-0013722f8dec" t="o" />
 </Paragraphs>
+<RightToLeft val="False" />
 </rt>
 <rt class="StTxtPara" guid="b31e7c56-ea5e-11de-85d3-0013722f8dec" ownerguid="b314f2f8-ea5e-11de-86b7-0013722f8dec">
 <Contents>
@@ -2294,7 +3371,6 @@
 <ParseIsCurrent val="False" />
 </rt>
 <rt class="StText" guid="b33653bc-ea5e-11de-9802-0013722f8dec" ownerguid="73266a3a-48e8-4bd7-8c84-91c730340b7d">
-<DateModified val="2011-3-29 16:16:31.320" />
 <Paragraphs>
 <objsur guid="b33fdd1a-ea5e-11de-8c86-0013722f8dec" t="o" />
 <objsur guid="b34bc8c8-ea5e-11de-8b9f-0013722f8dec" t="o" />
@@ -2305,6 +3381,7 @@
 <objsur guid="b3829e98-ea5e-11de-807d-0013722f8dec" t="o" />
 <objsur guid="b38e8a50-ea5e-11de-8870-0013722f8dec" t="o" />
 </Paragraphs>
+<RightToLeft val="False" />
 </rt>
 <rt class="StTxtPara" guid="b33fdd1a-ea5e-11de-8c86-0013722f8dec" ownerguid="b33653bc-ea5e-11de-9802-0013722f8dec">
 <Contents>
@@ -2372,7 +3449,6 @@
 <ParseIsCurrent val="False" />
 </rt>
 <rt class="StText" guid="b39a75fe-ea5e-11de-8de8-0013722f8dec" ownerguid="98c273c4-f723-4fb0-80df-eede2204dfca">
-<DateModified val="2011-3-29 16:16:31.321" />
 <Paragraphs>
 <objsur guid="b3a3ff5c-ea5e-11de-9b21-0013722f8dec" t="o" />
 <objsur guid="b3afeb0a-ea5e-11de-8f7b-0013722f8dec" t="o" />
@@ -2402,6 +3478,7 @@
 <objsur guid="b4baf120-ea5e-11de-9c33-0013722f8dec" t="o" />
 <objsur guid="b4c6dcce-ea5e-11de-9d15-0013722f8dec" t="o" />
 </Paragraphs>
+<RightToLeft val="False" />
 </rt>
 <rt class="StTxtPara" guid="b3a3ff5c-ea5e-11de-9b21-0013722f8dec" ownerguid="b39a75fe-ea5e-11de-8de8-0013722f8dec">
 <Contents>
@@ -2558,7 +3635,7 @@
 </Contents>
 <ParseIsCurrent val="False" />
 <StyleRules>
-<Prop namedStyle="Normal" />
+<Prop namedStyle="Normal"></Prop>
 </StyleRules>
 </rt>
 <rt class="StTxtPara" guid="b4841b50-ea5e-11de-9804-0013722f8dec" ownerguid="b39a75fe-ea5e-11de-8de8-0013722f8dec">
@@ -2618,7 +3695,6 @@
 <ParseIsCurrent val="False" />
 </rt>
 <rt class="StText" guid="b4d2c886-ea5e-11de-9720-0013722f8dec" ownerguid="b2276dec-b1a6-4d82-b121-fd114c009c59">
-<DateModified val="2011-3-29 16:16:31.321" />
 <Paragraphs>
 <objsur guid="b4deb434-ea5e-11de-89f0-0013722f8dec" t="o" />
 <objsur guid="b4e83d92-ea5e-11de-993a-0013722f8dec" t="o" />
@@ -2653,6 +3729,7 @@
 <objsur guid="b62c7bc8-ea5e-11de-8193-0013722f8dec" t="o" />
 <objsur guid="b6386780-ea5e-11de-80d2-0013722f8dec" t="o" />
 </Paragraphs>
+<RightToLeft val="False" />
 </rt>
 <rt class="StTxtPara" guid="b4deb434-ea5e-11de-89f0-0013722f8dec" ownerguid="b4d2c886-ea5e-11de-9720-0013722f8dec">
 <Contents>
@@ -2911,7 +3988,6 @@
 <ParseIsCurrent val="False" />
 </rt>
 <rt class="StText" guid="b641f0de-ea5e-11de-9395-0013722f8dec" ownerguid="35cee792-74c8-444e-a9b7-ed0461d4d3b7">
-<DateModified val="2011-3-29 16:16:31.321" />
 <Paragraphs>
 <objsur guid="b64ddc8c-ea5e-11de-8425-0013722f8dec" t="o" />
 <objsur guid="b659c844-ea5e-11de-9e3d-0013722f8dec" t="o" />
@@ -2923,6 +3999,7 @@
 <objsur guid="b69c89c2-ea5e-11de-8a6c-0013722f8dec" t="o" />
 <objsur guid="b6a61320-ea5e-11de-96db-0013722f8dec" t="o" />
 </Paragraphs>
+<RightToLeft val="False" />
 </rt>
 <rt class="StTxtPara" guid="b64ddc8c-ea5e-11de-8425-0013722f8dec" ownerguid="b641f0de-ea5e-11de-9395-0013722f8dec">
 <Contents>
@@ -2997,28 +4074,28 @@
 <ParseIsCurrent val="False" />
 </rt>
 <rt class="StText" guid="b6b1fed8-ea5e-11de-8d97-0013722f8dec" ownerguid="9466d126-246e-400b-8bba-0703e09bc567">
-<DateModified val="2011-3-29 16:16:31.321" />
 <Paragraphs>
 <objsur guid="b6bdea86-ea5e-11de-9926-0013722f8dec" t="o" />
 </Paragraphs>
+<RightToLeft val="False" />
 </rt>
 <rt class="StTxtPara" guid="b6bdea86-ea5e-11de-9926-0013722f8dec" ownerguid="b6b1fed8-ea5e-11de-8d97-0013722f8dec">
 <ParseIsCurrent val="False" />
 </rt>
 <rt class="StText" guid="b6c773e4-ea5e-11de-9774-0013722f8dec" ownerguid="024b62c9-93b3-41a0-ab19-587a0030219a">
-<DateModified val="2011-3-29 16:16:31.321" />
 <Paragraphs>
 <objsur guid="b6d35f92-ea5e-11de-9aef-0013722f8dec" t="o" />
 </Paragraphs>
+<RightToLeft val="False" />
 </rt>
 <rt class="StTxtPara" guid="b6d35f92-ea5e-11de-9aef-0013722f8dec" ownerguid="b6c773e4-ea5e-11de-9774-0013722f8dec">
 <ParseIsCurrent val="False" />
 </rt>
 <rt class="StText" guid="b6df4b4a-ea5e-11de-8285-0013722f8dec" ownerguid="4343b1ef-b54f-4fa4-9998-271319a6d74c">
-<DateModified val="2011-3-29 16:16:31.321" />
 <Paragraphs>
 <objsur guid="b6eb36f8-ea5e-11de-95d2-0013722f8dec" t="o" />
 </Paragraphs>
+<RightToLeft val="False" />
 </rt>
 <rt class="StTxtPara" guid="b6eb36f8-ea5e-11de-95d2-0013722f8dec" ownerguid="b6df4b4a-ea5e-11de-8285-0013722f8dec">
 <Contents>
@@ -3029,11 +4106,11 @@
 <ParseIsCurrent val="False" />
 </rt>
 <rt class="StText" guid="b6f4c056-ea5e-11de-8a9c-0013722f8dec" ownerguid="01d4fbc1-3b0c-4f52-9163-7ab0d4f4711c">
-<DateModified val="2011-3-29 16:16:31.321" />
 <Paragraphs>
 <objsur guid="b700ac0e-ea5e-11de-8890-0013722f8dec" t="o" />
 <objsur guid="b70c97bc-ea5e-11de-803e-0013722f8dec" t="o" />
 </Paragraphs>
+<RightToLeft val="False" />
 </rt>
 <rt class="StTxtPara" guid="b700ac0e-ea5e-11de-8890-0013722f8dec" ownerguid="b6f4c056-ea5e-11de-8a9c-0013722f8dec">
 <Contents>
@@ -3052,28 +4129,28 @@
 <ParseIsCurrent val="False" />
 </rt>
 <rt class="StText" guid="b716211a-ea5e-11de-8768-0013722f8dec" ownerguid="a32f1d1c-4832-46a2-9732-c2276d6547e8">
-<DateModified val="2011-3-29 16:16:31.321" />
 <Paragraphs>
 <objsur guid="b7220cc8-ea5e-11de-8bbc-0013722f8dec" t="o" />
 </Paragraphs>
+<RightToLeft val="False" />
 </rt>
 <rt class="StTxtPara" guid="b7220cc8-ea5e-11de-8bbc-0013722f8dec" ownerguid="b716211a-ea5e-11de-8768-0013722f8dec">
 <ParseIsCurrent val="False" />
 </rt>
 <rt class="StText" guid="b72df880-ea5e-11de-8e18-0013722f8dec" ownerguid="837ebe72-8c1d-4864-95d9-fa313c499d78">
-<DateModified val="2011-3-29 16:16:31.321" />
 <Paragraphs>
 <objsur guid="b73781de-ea5e-11de-9216-0013722f8dec" t="o" />
 </Paragraphs>
+<RightToLeft val="False" />
 </rt>
 <rt class="StTxtPara" guid="b73781de-ea5e-11de-9216-0013722f8dec" ownerguid="b72df880-ea5e-11de-8e18-0013722f8dec">
 <ParseIsCurrent val="False" />
 </rt>
 <rt class="StText" guid="b7436d8c-ea5e-11de-8477-0013722f8dec" ownerguid="0c4663b3-4d9a-47af-b9a1-c8565d8112ed">
-<DateModified val="2011-3-29 16:16:31.321" />
 <Paragraphs>
 <objsur guid="b74f5944-ea5e-11de-9017-0013722f8dec" t="o" />
 </Paragraphs>
+<RightToLeft val="False" />
 </rt>
 <rt class="StTxtPara" guid="b74f5944-ea5e-11de-9017-0013722f8dec" ownerguid="b7436d8c-ea5e-11de-8477-0013722f8dec">
 <ParseIsCurrent val="False" />
@@ -3082,9 +4159,15 @@
 <Abbreviation>
 <AUni ws="en">RefTyp</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.268" />
+<DateModified val="2018-8-2 16:32:6.268" />
 <Depth val="1" />
-<IsSorted val="true" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="True" />
+<IsVernacular val="False" />
 <ItemClsid val="5119" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Lexical Relations</AUni>
 </Name>
@@ -3097,7 +4180,10 @@
 <objsur guid="b79ba420-ea5e-11de-8f71-0013722f8dec" t="o" />
 <objsur guid="b7a78fd8-ea5e-11de-9ef2-0013722f8dec" t="o" />
 </Possibilities>
-<PreventDuplicates val="true" />
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="True" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="LexRefType" guid="b764ce50-ea5e-11de-864f-0013722f8dec" ownerguid="b758e2a2-ea5e-11de-9d24-0013722f8dec">
@@ -3109,6 +4195,7 @@
 <Run ws="en">A part/whole relation establishes a link between the sense for the whole (e.g., room), and senses for the parts (e.g., ceiling, wall, floor).</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <MappingType val="3" />
 <Name>
 <AUni ws="en">Part</AUni>
@@ -3129,6 +4216,7 @@
 <Run ws="en">A generic/specific relation establishes a link between the sense for the generic (e.g., bird), and senses for the specifics (e.g., robin, cardinal, dove).</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <MappingType val="3" />
 <Name>
 <AUni ws="en">Specific</AUni>
@@ -3149,6 +4237,7 @@
 <Run ws="en">Use this type for synonym relationships (e.g., fast, fleet, hasty).</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <MappingType val="0" />
 <Name>
 <AUni ws="en">Synonyms</AUni>
@@ -3163,6 +4252,7 @@
 <Run ws="en">Use this type for antonym relationships (e.g., fast, slow).</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <MappingType val="1" />
 <Name>
 <AUni ws="en">Antonym</AUni>
@@ -3177,6 +4267,7 @@
 <Run ws="en">Use this type for calendar relationships (e.g., days of week, months in year).</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <MappingType val="4" />
 <Name>
 <AUni ws="en">Calendar</AUni>
@@ -3191,6 +4282,7 @@
 <Run ws="en">Use this type for relationships that cannot be classified by a specific label, or of which there are too few examples to warrant creating a custom lexical relation.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <MappingType val="5" />
 <Name>
 <AUni ws="en">Compare</AUni>
@@ -3205,6 +4297,7 @@
 <Run ws="en">Use this relation for linking classifiers to the words that they classify.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <MappingType val="3" />
 <Name>
 <AUni ws="en">Classified Noun</AUni>
@@ -3225,6 +4318,7 @@
 <Run ws="en">In a conversation, all participants are free to direct and change the course of the activity; a dialogue is egalitarian. Most of your interaction with people is in the form of conversations. Conversations carry few expectations except an assumption of mutual cooperation. Conversations are a good place to start in order to build friendships and establish trust with people.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Conversation</AUni>
 </Name>
@@ -3238,6 +4332,7 @@
 <Run ws="en">Interviews involve an intentional request for information on a predetermined topic. The interviewer asks questions and the interviewee(s) provides answers. For this reason an interview is different from a conversation. It is more one-sided. Interviews range from "unstructured" to "structured." The more focus and structure in an interview, the more structured it becomes.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Interview</AUni>
 </Name>
@@ -3255,6 +4350,7 @@
 <Run ws="en">A structured interview is used to obtain comparative data and is therefore intended to be given to more than one person. Consistency is important. The interviewer should ask questions the same way each time and the interviewee should be cued as to the appropriate way to respond (yes/no, multiple choice, short sentence answer, etc.).</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Structured</AUni>
 </Name>
@@ -3268,6 +4364,7 @@
 <Run ws="en">Unstructured interviews will likely be the most common type of interview you use. In unstructured interviews, you are usually not concerned with comparing responses and may only give the interview to one person. The goal is to get basic information. The topic is usually approached in a general way, without restricting the how of the respondent answers. Questions are generally open-ended.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Unstructured</AUni>
 </Name>
@@ -3281,6 +4378,7 @@
 <Run ws="en">Literature summaries are not limited to books. You may run across newspaper and magazine articles that have important information. Other sources of information are unpublished manuscripts like MA theses and PhD dissertations, brochures, field notes from other researchers, and letters. Still, don't forget the books. You can make use of this information by appending it directly into the Data Notebook.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Literature Summary</AUni>
 </Name>
@@ -3294,6 +4392,7 @@
 <Run ws="en">This will be one of your richest sources of information. It entails activities and conversations that you witness, but do not control. You may participate actively or passively in the activity you observe. The point is to be curious and approach the activity with questions. Important skills to develop that will make your observations more useful are memory and awareness.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Observation</AUni>
 </Name>
@@ -3307,6 +4406,7 @@
 <Run ws="en">A "performance" is a type of observation, but one where the performer(s) expects the performance to be evaluated based on culturally appropriate criteria. One example of a "performance" is a play. Gossip is less obvious but also falls into the performance category.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Performance</AUni>
 </Name>
@@ -3330,111 +4430,23 @@
 <Abbreviation>
 <AUni ws="en">ProdRests</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:9.985" />
+<DateModified val="2018-8-2 16:32:9.985" />
 <Depth val="1" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="False" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Productivity Restrictions</AUni>
 </Name>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
-</rt>
-<rt class="StStyle" guid="b8179dd2-ea5e-11de-8537-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
-<BasedOn>
-<objsur guid="d9aa70f0-ea5e-11de-8efb-0013722f8dec" t="r" />
-</BasedOn>
-<IsBuiltIn val="true" />
-<Name>
-<Uni>Heading 1</Uni>
-</Name>
-<Next>
-<objsur guid="d9aa70f0-ea5e-11de-8efb-0013722f8dec" t="r" />
-</Next>
-<Rules>
-<Prop bold="invert" fontFamily="&lt;default sans serif&gt;" fontsize="14000" fontsizeUnit="mpt" spaceAfter="3000" spaceBefore="12000" />
-</Rules>
-</rt>
-<rt class="StStyle" guid="b8238980-ea5e-11de-86e1-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
-<BasedOn>
-<objsur guid="d9aa70f0-ea5e-11de-8efb-0013722f8dec" t="r" />
-</BasedOn>
-<IsBuiltIn val="true" />
-<Name>
-<Uni>Heading 2</Uni>
-</Name>
-<Next>
-<objsur guid="d9aa70f0-ea5e-11de-8efb-0013722f8dec" t="r" />
-</Next>
-<Rules>
-<Prop bold="invert" fontFamily="&lt;default sans serif&gt;" fontsize="12000" fontsizeUnit="mpt" italic="invert" spaceAfter="3000" spaceBefore="12000" />
-</Rules>
-</rt>
-<rt class="StStyle" guid="b82d12de-ea5e-11de-88cd-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
-<BasedOn>
-<objsur guid="d9aa70f0-ea5e-11de-8efb-0013722f8dec" t="r" />
-</BasedOn>
-<IsBuiltIn val="true" />
-<Name>
-<Uni>Heading 3</Uni>
-</Name>
-<Next>
-<objsur guid="d9aa70f0-ea5e-11de-8efb-0013722f8dec" t="r" />
-</Next>
-<Rules>
-<Prop bold="off" fontFamily="&lt;default sans serif&gt;" fontsize="12000" fontsizeUnit="mpt" spaceAfter="3000" spaceBefore="12000" />
-</Rules>
-</rt>
-<rt class="StStyle" guid="b838fe8c-ea5e-11de-8ed9-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
-<IsBuiltIn val="true" />
-<Name>
-<Uni>Title Text</Uni>
-</Name>
-<Rules>
-<Prop align="leading" bold="invert" firstIndent="0" fontsize="12000" fontsizeUnit="mpt" spaceBefore="0" />
-</Rules>
-<Type val="1" />
-</rt>
-<rt class="StStyle" guid="b844ea44-ea5e-11de-8766-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
-<IsBuiltIn val="true" />
-<Name>
-<Uni>Emphasized Text</Uni>
-</Name>
-<Rules>
-<Prop italic="invert" spaceAfter="0" />
-</Rules>
-<Type val="1" />
-</rt>
-<rt class="StStyle" guid="b85a5f50-ea5e-11de-8168-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
-<IsBuiltIn val="true" />
-<Name>
-<Uni>Writing System Abbreviation</Uni>
-</Name>
-<Rules>
-<Prop>
-<WsStyles9999>
-<WsProp fontsize="8000" fontsizeUnit="mpt" forecolor="2f60ff" ws="en" />
-</WsStyles9999>
-</Prop>
-</Rules>
-<Type val="1" />
-</rt>
-<rt class="StStyle" guid="b87236b6-ea5e-11de-97c0-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
-<IsBuiltIn val="true" />
-<Name>
-<Uni>Added Text</Uni>
-</Name>
-<Rules>
-<Prop forecolor="2f9060" undercolor="2f9060" underline="single" />
-</Rules>
-<Type val="1" />
-</rt>
-<rt class="StStyle" guid="b87bc014-ea5e-11de-912a-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
-<IsBuiltIn val="true" />
-<Name>
-<Uni>Deleted Text</Uni>
-</Name>
-<Rules>
-<Prop forecolor="red" undercolor="red" underline="strikethrough" />
-</Rules>
-<Type val="1" />
 </rt>
 <rt class="CmFilter" guid="b887abc2-ea5e-11de-8ed2-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
 <App val="39886581-4dd5-11d4-8078-0000c0fb81b5" />
@@ -3442,6 +4454,7 @@
 <ColumnInfo>
 <Uni>4006,4004007</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>Anthro Category</Uni>
 </Name>
@@ -3452,6 +4465,7 @@
 <objsur guid="b893977a-ea5e-11de-8d62-0013722f8dec" t="o" />
 </Rows>
 <ShowPrompt val="1" />
+<Type val="0" />
 </rt>
 <rt class="CmRow" guid="b893977a-ea5e-11de-8d62-0013722f8dec" ownerguid="b887abc2-ea5e-11de-8ed2-0013722f8dec">
 <Cells>
@@ -3471,6 +4485,7 @@
 <ColumnInfo>
 <Uni>7,7008</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>Confidence</Uni>
 </Name>
@@ -3481,6 +4496,7 @@
 <objsur guid="b8b4f83e-ea5e-11de-8fad-0013722f8dec" t="o" />
 </Rows>
 <ShowPrompt val="1" />
+<Type val="0" />
 </rt>
 <rt class="CmRow" guid="b8b4f83e-ea5e-11de-8fad-0013722f8dec" ownerguid="b8a90c86-ea5e-11de-9e66-0013722f8dec">
 <Cells>
@@ -3500,6 +4516,7 @@
 <ColumnInfo>
 <Uni>4006,4006003</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>Location</Uni>
 </Name>
@@ -3510,6 +4527,7 @@
 <objsur guid="b8d65902-ea5e-11de-845e-0013722f8dec" t="o" />
 </Rows>
 <ShowPrompt val="1" />
+<Type val="0" />
 </rt>
 <rt class="CmRow" guid="b8d65902-ea5e-11de-845e-0013722f8dec" ownerguid="b8ca6d4a-ea5e-11de-9350-0013722f8dec">
 <Cells>
@@ -3529,6 +4547,7 @@
 <ColumnInfo>
 <Uni>4006,4006008</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>Before Date</Uni>
 </Name>
@@ -3539,6 +4558,7 @@
 <objsur guid="b8f7b9bc-ea5e-11de-87c2-0013722f8dec" t="o" />
 </Rows>
 <ShowPrompt val="1" />
+<Type val="0" />
 </rt>
 <rt class="CmRow" guid="b8f7b9bc-ea5e-11de-87c2-0013722f8dec" ownerguid="b8ebce0e-ea5e-11de-9a5f-0013722f8dec">
 <Cells>
@@ -3558,6 +4578,7 @@
 <ColumnInfo>
 <Uni>4006,4006008</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>After Date</Uni>
 </Name>
@@ -3568,6 +4589,7 @@
 <objsur guid="b9191a80-ea5e-11de-9691-0013722f8dec" t="o" />
 </Rows>
 <ShowPrompt val="1" />
+<Type val="0" />
 </rt>
 <rt class="CmRow" guid="b9191a80-ea5e-11de-9691-0013722f8dec" ownerguid="b90d2ed2-ea5e-11de-87ca-0013722f8dec">
 <Cells>
@@ -3587,6 +4609,7 @@
 <ColumnInfo>
 <Uni>4006,4006008</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>Month</Uni>
 </Name>
@@ -3597,6 +4620,7 @@
 <objsur guid="b93a7b44-ea5e-11de-99fa-0013722f8dec" t="o" />
 </Rows>
 <ShowPrompt val="1" />
+<Type val="0" />
 </rt>
 <rt class="CmRow" guid="b93a7b44-ea5e-11de-99fa-0013722f8dec" ownerguid="b92e8f8c-ea5e-11de-8dff-0013722f8dec">
 <Cells>
@@ -3616,6 +4640,7 @@
 <ColumnInfo>
 <Uni>4006,4006007,0</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>Source</Uni>
 </Name>
@@ -3626,6 +4651,7 @@
 <objsur guid="b95bdc08-ea5e-11de-91f0-0013722f8dec" t="o" />
 </Rows>
 <ShowPrompt val="1" />
+<Type val="0" />
 </rt>
 <rt class="CmRow" guid="b95bdc08-ea5e-11de-91f0-0013722f8dec" ownerguid="b94ff050-ea5e-11de-8288-0013722f8dec">
 <Cells>
@@ -3645,12 +4671,15 @@
 <ColumnInfo>
 <Uni>4004,4004007</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>No Anthro Category</Uni>
 </Name>
 <Rows>
 <objsur guid="b97d3ccc-ea5e-11de-8383-0013722f8dec" t="o" />
 </Rows>
+<ShowPrompt val="0" />
+<Type val="0" />
 </rt>
 <rt class="CmRow" guid="b97d3ccc-ea5e-11de-8383-0013722f8dec" ownerguid="b9715114-ea5e-11de-9a92-0013722f8dec">
 <Cells>
@@ -3670,6 +4699,7 @@
 <ColumnInfo>
 <Uni>4006,4006001</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>Description</Uni>
 </Name>
@@ -3680,6 +4710,7 @@
 <objsur guid="b99e9d86-ea5e-11de-8276-0013722f8dec" t="o" />
 </Rows>
 <ShowPrompt val="1" />
+<Type val="0" />
 </rt>
 <rt class="CmRow" guid="b99e9d86-ea5e-11de-8276-0013722f8dec" ownerguid="b992b1d8-ea5e-11de-806d-0013722f8dec">
 <Cells>
@@ -3699,6 +4730,7 @@
 <ColumnInfo>
 <Uni>4006,4006004</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>Event Type</Uni>
 </Name>
@@ -3709,6 +4741,7 @@
 <objsur guid="b9bffe4a-ea5e-11de-9002-0013722f8dec" t="o" />
 </Rows>
 <ShowPrompt val="1" />
+<Type val="0" />
 </rt>
 <rt class="CmRow" guid="b9bffe4a-ea5e-11de-9002-0013722f8dec" ownerguid="b9b4129c-ea5e-11de-8aff-0013722f8dec">
 <Cells>
@@ -3728,6 +4761,7 @@
 <ColumnInfo>
 <Uni>7,7007</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>No Restrictions</Uni>
 </Name>
@@ -3735,6 +4769,7 @@
 <objsur guid="b9e15f0e-ea5e-11de-84db-0013722f8dec" t="o" />
 <objsur guid="b9f6d41a-ea5e-11de-8aaf-0013722f8dec" t="o" />
 </Rows>
+<ShowPrompt val="0" />
 <Type val="1" />
 </rt>
 <rt class="CmRow" guid="b9e15f0e-ea5e-11de-84db-0013722f8dec" ownerguid="b9d57356-ea5e-11de-9799-0013722f8dec">
@@ -3746,7 +4781,7 @@
 <Contents>
 <Str>
 <Run ws="en">Empty or Matches </Run>
-<Run link="6EBC80F8-9CE0-45D9-BB49-3869591FB1FF" ws="en" />
+<Run link="6ebc80f8-9ce0-45d9-bb49-3869591fb1ff" ws="en"></Run>
 </Str>
 </Contents>
 </rt>
@@ -3761,6 +4796,7 @@
 <ColumnInfo>
 <Uni>13,7008</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>Confidence</Uni>
 </Name>
@@ -3771,6 +4807,7 @@
 <objsur guid="ba0eab80-ea5e-11de-960f-0013722f8dec" t="o" />
 </Rows>
 <ShowPrompt val="1" />
+<Type val="0" />
 </rt>
 <rt class="CmRow" guid="ba0eab80-ea5e-11de-960f-0013722f8dec" ownerguid="ba02bfd2-ea5e-11de-96d4-0013722f8dec">
 <Cells>
@@ -3790,6 +4827,7 @@
 <ColumnInfo>
 <Uni>13,7007</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>No Restrictions</Uni>
 </Name>
@@ -3797,6 +4835,7 @@
 <objsur guid="ba300c44-ea5e-11de-8097-0013722f8dec" t="o" />
 <objsur guid="ba458150-ea5e-11de-9cc9-0013722f8dec" t="o" />
 </Rows>
+<ShowPrompt val="0" />
 <Type val="1" />
 </rt>
 <rt class="CmRow" guid="ba300c44-ea5e-11de-8097-0013722f8dec" ownerguid="ba242096-ea5e-11de-8dd3-0013722f8dec">
@@ -3808,7 +4847,7 @@
 <Contents>
 <Str>
 <Run ws="en">Empty or Matches </Run>
-<Run link="6EBC80F8-9CE0-45D9-BB49-3869591FB1FF" ws="en" />
+<Run link="6ebc80f8-9ce0-45d9-bb49-3869591fb1ff" ws="en"></Run>
 </Str>
 </Contents>
 </rt>
@@ -3823,6 +4862,7 @@
 <ColumnInfo>
 <Uni>13,13006</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>Place of Birth</Uni>
 </Name>
@@ -3833,6 +4873,7 @@
 <objsur guid="ba5af666-ea5e-11de-837b-0013722f8dec" t="o" />
 </Rows>
 <ShowPrompt val="1" />
+<Type val="0" />
 </rt>
 <rt class="CmRow" guid="ba5af666-ea5e-11de-837b-0013722f8dec" ownerguid="ba516d08-ea5e-11de-91eb-0013722f8dec">
 <Cells>
@@ -3852,6 +4893,7 @@
 <ColumnInfo>
 <Uni>13,13009</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>Place of Residence</Uni>
 </Name>
@@ -3862,6 +4904,7 @@
 <objsur guid="ba7eb97a-ea5e-11de-8ff1-0013722f8dec" t="o" />
 </Rows>
 <ShowPrompt val="1" />
+<Type val="0" />
 </rt>
 <rt class="CmRow" guid="ba7eb97a-ea5e-11de-8ff1-0013722f8dec" ownerguid="ba72cdcc-ea5e-11de-9f45-0013722f8dec">
 <Cells>
@@ -3881,12 +4924,15 @@
 <ColumnInfo>
 <Uni>13,13011</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>Living</Uni>
 </Name>
 <Rows>
 <objsur guid="baa01a3e-ea5e-11de-87fb-0013722f8dec" t="o" />
 </Rows>
+<ShowPrompt val="0" />
+<Type val="0" />
 </rt>
 <rt class="CmRow" guid="baa01a3e-ea5e-11de-87fb-0013722f8dec" ownerguid="ba942e86-ea5e-11de-9772-0013722f8dec">
 <Cells>
@@ -3906,28 +4952,27 @@
 <ColumnInfo>
 <Uni>13,13008</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>Not Researcher</Uni>
 </Name>
 <Rows>
 <objsur guid="bac17b02-ea5e-11de-99aa-0013722f8dec" t="o" />
 </Rows>
+<ShowPrompt val="0" />
+<Type val="0" />
 </rt>
 <rt class="CmAnnotationDefn" guid="babcb400-f274-4498-92c5-77e99c90f75b" ownerguid="82e2fd92-48d8-43c9-ba84-cc4a2a5beead">
 <AllowsComment val="True" />
 <AllowsFeatureStructure val="False" />
 <AllowsInstanceOf val="False" />
-<BackColor val="0" />
 <CanCreateOrphan val="False" />
 <CopyCutPastable val="True" />
-<DateCreated val="2011-3-29 16:16:50.552" />
-<DateModified val="2011-3-29 16:16:50.552" />
 <Description>
 <AStr ws="en">
 <Run ws="en">Checks for potential inconsistencies in capitalization.</Run>
 </AStr>
 </Description>
-<ForeColor val="0" />
 <HelpId>
 <Uni>Capitalization</Uni>
 </HelpId>
@@ -3941,9 +4986,6 @@
 </Name>
 <PromptUser val="False" />
 <Severity val="0" />
-<SortSpec val="0" />
-<UnderColor val="0" />
-<UnderStyle val="0" />
 <UserCanCreate val="False" />
 <ZeroWidth val="False" />
 </rt>
@@ -3951,17 +4993,13 @@
 <AllowsComment val="True" />
 <AllowsFeatureStructure val="False" />
 <AllowsInstanceOf val="False" />
-<BackColor val="0" />
 <CanCreateOrphan val="False" />
 <CopyCutPastable val="True" />
-<DateCreated val="2011-3-29 16:16:50.652" />
-<DateModified val="2011-3-29 16:16:50.652" />
 <Description>
 <AStr ws="en">
 <Run ws="en">Checks for words with a potentially invalid mix of uppercase and lowercase letters.</Run>
 </AStr>
 </Description>
-<ForeColor val="0" />
 <HelpId>
 <Uni>Mixed_Capitalization</Uni>
 </HelpId>
@@ -3975,9 +5013,6 @@
 </Name>
 <PromptUser val="False" />
 <Severity val="0" />
-<SortSpec val="0" />
-<UnderColor val="0" />
-<UnderStyle val="0" />
 <UserCanCreate val="False" />
 <ZeroWidth val="False" />
 </rt>
@@ -3999,6 +5034,7 @@
 <ColumnInfo>
 <Uni>26,7008</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>Confidence</Uni>
 </Name>
@@ -4009,6 +5045,7 @@
 <objsur guid="bae2dbc6-ea5e-11de-9159-0013722f8dec" t="o" />
 </Rows>
 <ShowPrompt val="1" />
+<Type val="0" />
 </rt>
 <rt class="CmRow" guid="bae2dbc6-ea5e-11de-9159-0013722f8dec" ownerguid="bad6f00e-ea5e-11de-9708-0013722f8dec">
 <Cells>
@@ -4028,6 +5065,7 @@
 <ColumnInfo>
 <Uni>26,7007</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>No Restrictions</Uni>
 </Name>
@@ -4035,6 +5073,7 @@
 <objsur guid="bb043c80-ea5e-11de-9112-0013722f8dec" t="o" />
 <objsur guid="bb19b196-ea5e-11de-8f5d-0013722f8dec" t="o" />
 </Rows>
+<ShowPrompt val="0" />
 <Type val="1" />
 </rt>
 <rt class="CmRow" guid="bb043c80-ea5e-11de-9112-0013722f8dec" ownerguid="baf850d2-ea5e-11de-9ccf-0013722f8dec">
@@ -4046,7 +5085,7 @@
 <Contents>
 <Str>
 <Run ws="en">Empty or Matches </Run>
-<Run link="6EBC80F8-9CE0-45D9-BB49-3869591FB1FF" ws="en" />
+<Run link="6ebc80f8-9ce0-45d9-bb49-3869591fb1ff" ws="en"></Run>
 </Str>
 </Contents>
 </rt>
@@ -4061,6 +5100,7 @@
 <ColumnInfo>
 <Uni>12,7008</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>Confidence</Uni>
 </Name>
@@ -4071,6 +5111,7 @@
 <objsur guid="bb2f26a2-ea5e-11de-9ac8-0013722f8dec" t="o" />
 </Rows>
 <ShowPrompt val="1" />
+<Type val="0" />
 </rt>
 <rt class="CmRow" guid="bb2f26a2-ea5e-11de-9ac8-0013722f8dec" ownerguid="bb259d44-ea5e-11de-8dd1-0013722f8dec">
 <Cells>
@@ -4081,8 +5122,15 @@
 <Abbreviation>
 <AUni ws="en">EntTyp</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.268" />
+<DateModified val="2018-8-2 16:32:6.268" />
 <Depth val="127" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="False" />
+<IsVernacular val="False" />
 <ItemClsid val="5118" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Variant Types</AUni>
 </Name>
@@ -4093,7 +5141,10 @@
 <objsur guid="01d4fbc1-3b0c-4f52-9163-7ab0d4f4711c" t="o" />
 <objsur guid="0c4663b3-4d9a-47af-b9a1-c8565d8112ed" t="o" />
 </Possibilities>
-<PreventDuplicates val="true" />
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="True" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="CmCell" guid="bb3b1250-ea5e-11de-919b-0013722f8dec" ownerguid="bb2f26a2-ea5e-11de-9ac8-0013722f8dec">
@@ -4109,6 +5160,7 @@
 <ColumnInfo>
 <Uni>12,7007</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>No Restrictions</Uni>
 </Name>
@@ -4116,6 +5168,7 @@
 <objsur guid="bb52e9b6-ea5e-11de-8118-0013722f8dec" t="o" />
 <objsur guid="bb685ecc-ea5e-11de-8b8c-0013722f8dec" t="o" />
 </Rows>
+<ShowPrompt val="0" />
 <Type val="1" />
 </rt>
 <rt class="CmRow" guid="bb52e9b6-ea5e-11de-8118-0013722f8dec" ownerguid="bb46fe08-ea5e-11de-9314-0013722f8dec">
@@ -4127,7 +5180,7 @@
 <Contents>
 <Str>
 <Run ws="en">Empty or Matches </Run>
-<Run link="6EBC80F8-9CE0-45D9-BB49-3869591FB1FF" ws="en" />
+<Run link="6ebc80f8-9ce0-45d9-bb49-3869591fb1ff" ws="en"></Run>
 </Str>
 </Contents>
 </rt>
@@ -4142,12 +5195,15 @@
 <ColumnInfo>
 <Uni>3018,34003</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>kstidConsultantNoteFilter</Uni>
 </Name>
 <Rows>
 <objsur guid="5b786787-2977-4103-9d71-3e38c636b1b0" t="o" />
 </Rows>
+<ShowPrompt val="0" />
+<Type val="0" />
 </rt>
 <rt class="CmFilter" guid="bb7dd3d8-ea5e-11de-8cc5-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
 <App val="a7d421e1-1dd3-11d5-b720-0010a4b54856" />
@@ -4155,12 +5211,15 @@
 <ColumnInfo>
 <Uni>3018,34003</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>kstidTranslatorNoteFilter</Uni>
 </Name>
 <Rows>
 <objsur guid="47a43063-ba83-4be2-9604-46a7701a9385" t="o" />
 </Rows>
+<ShowPrompt val="0" />
+<Type val="0" />
 </rt>
 <rt class="CmFilter" guid="bb89bf90-ea5e-11de-9773-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
 <App val="a7d421e1-1dd3-11d5-b720-0010a4b54856" />
@@ -4168,12 +5227,15 @@
 <ColumnInfo>
 <Uni>3018,3018001</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>kstidOpenNoteFilter</Uni>
 </Name>
 <Rows>
 <objsur guid="c2f0eb83-212b-4c1b-b357-f28bcd96053e" t="o" />
 </Rows>
+<ShowPrompt val="0" />
+<Type val="0" />
 </rt>
 <rt class="CmFilter" guid="bb95ab3e-ea5e-11de-94f6-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
 <App val="a7d421e1-1dd3-11d5-b720-0010a4b54856" />
@@ -4181,6 +5243,7 @@
 <ColumnInfo>
 <Uni>3018,3018002</Uni>
 </ColumnInfo>
+<FieldId val="0" />
 <Name>
 <Uni>kstidCategoryNoteFilter</Uni>
 </Name>
@@ -4191,11 +5254,13 @@
 <objsur guid="0288b729-8eb0-41ad-b27c-9534c64900a5" t="o" />
 </Rows>
 <ShowPrompt val="1" />
+<Type val="0" />
 </rt>
 <rt class="CmPossibility" guid="bb9f349c-ea5e-11de-9293-0013722f8dec" ownerguid="d99e8542-ea5e-11de-9301-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">High</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">High</AUni>
 </Name>
@@ -4204,6 +5269,7 @@
 <Abbreviation>
 <AUni ws="en">Med</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Medium</AUni>
 </Name>
@@ -4212,6 +5278,7 @@
 <Abbreviation>
 <AUni ws="en">Low</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Low</AUni>
 </Name>
@@ -4220,6 +5287,7 @@
 <Abbreviation>
 <AUni ws="en">Unk</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Unknown</AUni>
 </Name>
@@ -4228,6 +5296,7 @@
 <Abbreviation>
 <AUni ws="en">NPub</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Do not publish</AUni>
 </Name>
@@ -4236,6 +5305,7 @@
 <Abbreviation>
 <AUni ws="en">Case</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Case by case</AUni>
 </Name>
@@ -4244,6 +5314,7 @@
 <Abbreviation>
 <AUni ws="en">Unk</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Unknown</AUni>
 </Name>
@@ -4252,8 +5323,7 @@
 <Abbreviation>
 <AUni ws="en">Method</AUni>
 </Abbreviation>
-<DateCreated val="2010-04-05 19:00:13.503" />
-<DateModified val="2010-04-05 19:00:13.503" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Methodology</AUni>
 </Name>
@@ -4262,6 +5332,7 @@
 <Abbreviation>
 <AUni ws="en">Accsd</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Accused</AUni>
 </Name>
@@ -4270,6 +5341,7 @@
 <Abbreviation>
 <AUni ws="en">Accsr</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Accuser</AUni>
 </Name>
@@ -4278,6 +5350,7 @@
 <Abbreviation>
 <AUni ws="en">Arbtr</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Arbitrator</AUni>
 </Name>
@@ -4286,6 +5359,7 @@
 <Abbreviation>
 <AUni ws="en">Aud</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Audience</AUni>
 </Name>
@@ -4294,6 +5368,7 @@
 <Abbreviation>
 <AUni ws="en">Ben</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Benefactor</AUni>
 </Name>
@@ -4302,6 +5377,7 @@
 <Abbreviation>
 <AUni ws="en">Eye</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Eyewitness</AUni>
 </Name>
@@ -4310,6 +5386,7 @@
 <Abbreviation>
 <AUni ws="en">Initr</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Initiator</AUni>
 </Name>
@@ -4318,6 +5395,7 @@
 <Abbreviation>
 <AUni ws="en">Mdtr</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Mediator</AUni>
 </Name>
@@ -4326,6 +5404,7 @@
 <Abbreviation>
 <AUni ws="en">Narrtr</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Narrator</AUni>
 </Name>
@@ -4334,6 +5413,7 @@
 <Abbreviation>
 <AUni ws="en">Rptr</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Reporter</AUni>
 </Name>
@@ -4342,6 +5422,7 @@
 <Abbreviation>
 <AUni ws="en">Conf</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Confirmed</AUni>
 </Name>
@@ -4350,6 +5431,7 @@
 <Abbreviation>
 <AUni ws="en">Dis</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Disproved</AUni>
 </Name>
@@ -4358,6 +5440,7 @@
 <Abbreviation>
 <AUni ws="en">Pend</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Pending</AUni>
 </Name>
@@ -4366,6 +5449,7 @@
 <Abbreviation>
 <AUni ws="en">No</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">No Formal</AUni>
 </Name>
@@ -4374,6 +5458,7 @@
 <Abbreviation>
 <AUni ws="en">Pri</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Primary</AUni>
 </Name>
@@ -4382,6 +5467,7 @@
 <Abbreviation>
 <AUni ws="en">JrHi</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Junior High</AUni>
 </Name>
@@ -4390,6 +5476,7 @@
 <Abbreviation>
 <AUni ws="en">HS</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">High School</AUni>
 </Name>
@@ -4398,6 +5485,7 @@
 <Abbreviation>
 <AUni ws="en">UndGrad</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Undergraduate</AUni>
 </Name>
@@ -4406,6 +5494,7 @@
 <Abbreviation>
 <AUni ws="en">Grad</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Graduate</AUni>
 </Name>
@@ -4414,6 +5503,7 @@
 <Abbreviation>
 <AUni ws="en">Prof</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Professor</AUni>
 </Name>
@@ -4422,6 +5512,7 @@
 <Abbreviation>
 <AUni ws="en">Pred</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Predawn</AUni>
 </Name>
@@ -4430,6 +5521,7 @@
 <Abbreviation>
 <AUni ws="en">Morn</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Morning</AUni>
 </Name>
@@ -4442,6 +5534,7 @@
 <Abbreviation>
 <AUni ws="en">EMorn</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Early Morning</AUni>
 </Name>
@@ -4450,6 +5543,7 @@
 <Abbreviation>
 <AUni ws="en">LMorn</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Late Morning</AUni>
 </Name>
@@ -4458,6 +5552,7 @@
 <Abbreviation>
 <AUni ws="en">Mid</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Midday</AUni>
 </Name>
@@ -4466,6 +5561,7 @@
 <Abbreviation>
 <AUni ws="en">Aft</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Afternoon</AUni>
 </Name>
@@ -4478,6 +5574,7 @@
 <Abbreviation>
 <AUni ws="en">EAft</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Early Afternoon</AUni>
 </Name>
@@ -4486,6 +5583,7 @@
 <Abbreviation>
 <AUni ws="en">LAft</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Late Afternoon</AUni>
 </Name>
@@ -4494,6 +5592,7 @@
 <Abbreviation>
 <AUni ws="en">Eve</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Evening</AUni>
 </Name>
@@ -4502,6 +5601,7 @@
 <Abbreviation>
 <AUni ws="en">Night</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Night</AUni>
 </Name>
@@ -4510,15 +5610,28 @@
 <Abbreviation>
 <AUni ws="en">Midnight</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Midnight</AUni>
 </Name>
 </rt>
 <rt class="CmPossibilityList" guid="be6a7290-ea5e-11de-98a2-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
+<DateCreated val="2018-8-2 16:32:6.324" />
+<DateModified val="2018-8-2 16:32:6.324" />
+<Depth val="0" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="False" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Affix Categories</AUni>
 </Name>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="PhPhonData" guid="be765e3e-ea5e-11de-9d42-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
@@ -4709,14 +5822,20 @@
 <Abbreviation>
 <AUni ws="en">gnrs</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.326" />
+<DateModified val="2018-8-2 16:32:6.326" />
 <Depth val="127" />
 <Description>
 <AStr ws="en">
 <Run ws="en">This list holds genre by which interlinear texts can be classified.</Run>
 </AStr>
 </Description>
-<IsSorted val="true" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="True" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Genres</AUni>
 </Name>
@@ -4726,6 +5845,10 @@
 <objsur guid="c1787202-ea5e-11de-95b1-0013722f8dec" t="o" />
 <objsur guid="c199d2c6-ea5e-11de-9810-0013722f8dec" t="o" />
 </Possibilities>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="CmPossibility" guid="c076f554-ea5e-11de-9793-0013722f8dec" ownerguid="c06b099c-ea5e-11de-890c-0013722f8dec">
@@ -4739,6 +5862,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Monologue</AUni>
 </Name>
@@ -4761,6 +5885,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Narrative</AUni>
 </Name>
@@ -4783,6 +5908,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">History</AUni>
 </Name>
@@ -4799,6 +5925,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Fiction</AUni>
 </Name>
@@ -4815,6 +5942,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Traditional Narrative</AUni>
 </Name>
@@ -4831,6 +5959,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Prophecy</AUni>
 </Name>
@@ -4847,6 +5976,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Procedure</AUni>
 </Name>
@@ -4867,6 +5997,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Descriptive Procedure</AUni>
 </Name>
@@ -4883,6 +6014,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Prescriptive Procedure</AUni>
 </Name>
@@ -4899,6 +6031,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Behavioral Text</AUni>
 </Name>
@@ -4921,6 +6054,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Hortatory Text</AUni>
 </Name>
@@ -4937,6 +6071,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Normative Text</AUni>
 </Name>
@@ -4953,6 +6088,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Promissory Text</AUni>
 </Name>
@@ -4969,6 +6105,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Behavioral Description</AUni>
 </Name>
@@ -4985,6 +6122,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Exposition</AUni>
 </Name>
@@ -5006,6 +6144,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Projection</AUni>
 </Name>
@@ -5022,6 +6161,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Descriptive Exposition</AUni>
 </Name>
@@ -5038,6 +6178,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Didactic Exposition</AUni>
 </Name>
@@ -5054,6 +6195,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Dialogue</AUni>
 </Name>
@@ -5076,6 +6218,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Conversation</AUni>
 </Name>
@@ -5092,6 +6235,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Verbal Conflict</AUni>
 </Name>
@@ -5108,6 +6252,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Negotiation</AUni>
 </Name>
@@ -5124,6 +6269,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Drama</AUni>
 </Name>
@@ -5140,6 +6286,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Word List</AUni>
 </Name>
@@ -5160,6 +6307,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Paradigm</AUni>
 </Name>
@@ -5176,6 +6324,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Ill-formed Words</AUni>
 </Name>
@@ -5192,6 +6341,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Metrical Category</AUni>
 </Name>
@@ -5212,6 +6362,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Poetry</AUni>
 </Name>
@@ -5221,9 +6372,15 @@
 <Abbreviation>
 <AUni ws="en">TxtTags</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.327" />
+<DateModified val="2018-8-2 16:32:6.327" />
 <Depth val="127" />
-<IsSorted val="true" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="True" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Text Markup Tags</AUni>
 </Name>
@@ -5233,6 +6390,10 @@
 <objsur guid="c2ba4de8-ea5e-11de-8073-0013722f8dec" t="o" />
 <objsur guid="c2e79a5a-ea5e-11de-9669-0013722f8dec" t="o" />
 </Possibilities>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="CmPossibility" guid="c1bb338a-ea5e-11de-88c4-0013722f8dec" ownerguid="c1af47dc-ea5e-11de-8e34-0013722f8dec">
@@ -5244,6 +6405,7 @@
 <Run ws="en">A list of Role tags based on the book "Describing Morphosyntax" by Thomas E. Payne(p. 129).</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Grammatical Relations-Functional</AUni>
 </Name>
@@ -5268,6 +6430,7 @@
 <Run ws="en">The most Agent-like argument of a multi-argument clause (transitive).</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">A</AUni>
 </Name>
@@ -5281,6 +6444,7 @@
 <Run ws="en">The most Patient-like argument of a multi-argument clause (transitive).</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">P</AUni>
 </Name>
@@ -5294,6 +6458,7 @@
 <Run ws="en">The only nominal argument of a single argument clause (intransitive).</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">S</AUni>
 </Name>
@@ -5307,6 +6472,7 @@
 <Run ws="en">The S or A argument in a Nominative/Accusative system of grammatical relations.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Subject</AUni>
 </Name>
@@ -5320,6 +6486,7 @@
 <Run ws="en">Usually the P argument in a Nominative/Accusative system. The object most closely tied to the Verb syntactically.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Direct Object</AUni>
 </Name>
@@ -5333,6 +6500,7 @@
 <Run ws="en">An object less closely tied to the Verb syntactically than the Direct Object.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Indirect Object</AUni>
 </Name>
@@ -5346,6 +6514,7 @@
 <Run ws="en">The A argument in an Ergative/Absolutive system of grammatical relations.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Ergative</AUni>
 </Name>
@@ -5359,6 +6528,7 @@
 <Run ws="en">The S or P argument in an Ergative/Absolutive system of grammatical relations.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Absolutive</AUni>
 </Name>
@@ -5372,6 +6542,7 @@
 <Run ws="en">A nominal with at best secondary relation to the Verb in a Clause.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Oblique</AUni>
 </Name>
@@ -5385,6 +6556,7 @@
 <Run ws="en">A list of basic descriptive Syntax tags.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Syntax-Descriptive</AUni>
 </Name>
@@ -5412,6 +6584,7 @@
 <Run ws="en">A phrase consisting of an Adjective and its modifiers.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Adjective Phrase</AUni>
 </Name>
@@ -5425,6 +6598,7 @@
 <Run ws="en">A phrase consisting of an Adverb and its modifiers.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Adverb Phrase</AUni>
 </Name>
@@ -5438,6 +6612,7 @@
 <Run ws="en">A group of words with a single central Verb Phrase.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Clause</AUni>
 </Name>
@@ -5451,6 +6626,7 @@
 <Run ws="en">A chain of Clauses.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Clause Chain</AUni>
 </Name>
@@ -5464,6 +6640,7 @@
 <Run ws="en">A phrase consisting of a Noun and its modifiers.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Noun Phrase</AUni>
 </Name>
@@ -5472,6 +6649,7 @@
 <Abbreviation>
 <AUni ws="en">PossP</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Possessive Phrase</AUni>
 </Name>
@@ -5485,6 +6663,7 @@
 <Run ws="en">An Adpositional Phrase where the central constituent follows the Nominal.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Postpositional Phrase</AUni>
 </Name>
@@ -5498,6 +6677,7 @@
 <Run ws="en">An Adpositional Phrase where the central constituent precedes the Nominal.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Prepositional Phrase</AUni>
 </Name>
@@ -5511,6 +6691,7 @@
 <Run ws="en">A clause that serves as a noun modifier.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Relative Clause</AUni>
 </Name>
@@ -5524,6 +6705,7 @@
 <Run ws="en">A complete grouping of one or more Clauses.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Sentence</AUni>
 </Name>
@@ -5537,6 +6719,7 @@
 <Run ws="en">A grouping of (usually) a Verb Phrase and its inflectional modifiers.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Inflectional Phrase</AUni>
 </Name>
@@ -5550,6 +6733,7 @@
 <Run ws="en">A phrase consisting of a Verb and its direct modifiers.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Verb Phrase</AUni>
 </Name>
@@ -5563,6 +6747,7 @@
 <Run ws="en">A list of Semantic tags based on an email from John Roberts about RRG. This will need further work when crossing trees are possible in FLEx.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Semantics-RRG</AUni>
 </Name>
@@ -5581,6 +6766,7 @@
 <Run ws="en">An RRG macrorole, most agentive.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">ACTOR</AUni>
 </Name>
@@ -5594,10 +6780,12 @@
 <Run ws="en">A clitic is a morpheme that has syntactic characteristics of a word, but shows evidence of being phonologically bound to another word. Orthographically, it stands alone.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">clitic</AUni>
 </Name>
+<SecondaryOrder val="0" />
 </rt>
 <rt class="CmPossibility" guid="c2d2254e-ea5e-11de-8432-0013722f8dec" ownerguid="c2ba4de8-ea5e-11de-8073-0013722f8dec">
 <Abbreviation>
@@ -5608,6 +6796,7 @@
 <Run ws="en">An RRG macrorole, least agentive.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">UNDERGOER</AUni>
 </Name>
@@ -5621,6 +6810,7 @@
 <Run ws="en">Non-Macrorole argument.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">NON-MACROROLE</AUni>
 </Name>
@@ -5634,6 +6824,7 @@
 <Run ws="en">A list of Syntax tags based on an email from John Roberts about RRG.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Syntax-RRG</AUni>
 </Name>
@@ -5673,6 +6864,7 @@
 <Abbreviation>
 <AUni ws="en">SENT</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">SENTENCE</AUni>
 </Name>
@@ -5681,6 +6873,7 @@
 <Abbreviation>
 <AUni ws="en">CL</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">CLAUSE</AUni>
 </Name>
@@ -5689,6 +6882,7 @@
 <Abbreviation>
 <AUni ws="en">CORE</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">CORE</AUni>
 </Name>
@@ -5697,6 +6891,7 @@
 <Abbreviation>
 <AUni ws="en">NUC</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">NUCLEUS</AUni>
 </Name>
@@ -5705,6 +6900,7 @@
 <Abbreviation>
 <AUni ws="en">PRED</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">PREDICATE</AUni>
 </Name>
@@ -5713,6 +6909,7 @@
 <Abbreviation>
 <AUni ws="en">LDP</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Left Detached Position</AUni>
 </Name>
@@ -5721,6 +6918,7 @@
 <Abbreviation>
 <AUni ws="en">RDP</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Right Detached Position</AUni>
 </Name>
@@ -5729,6 +6927,7 @@
 <Abbreviation>
 <AUni ws="en">PrCS</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Pre-core slot</AUni>
 </Name>
@@ -5737,6 +6936,7 @@
 <Abbreviation>
 <AUni ws="en">PoCS</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Post-core slot</AUni>
 </Name>
@@ -5745,6 +6945,7 @@
 <Abbreviation>
 <AUni ws="en">PERI</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">PERIPHERY</AUni>
 </Name>
@@ -5758,6 +6959,7 @@
 <Run ws="en">Reference Phrase replaces the Noun Phrase(NP) in earlier RRG models (Van Valin 2006).</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Reference Phrase</AUni>
 </Name>
@@ -5771,6 +6973,7 @@
 <Run ws="en">Used for arguments represented by bound morphemes.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Pronominal Argument</AUni>
 </Name>
@@ -5784,6 +6987,7 @@
 <Run ws="en">Non-predicative verbs required for the formation of particular syntactic constructions.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Auxiliary</AUni>
 </Name>
@@ -5797,6 +7001,7 @@
 <Run ws="en">The CORE of a Reference Phrase.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">CORE-R</AUni>
 </Name>
@@ -5810,6 +7015,7 @@
 <Run ws="en">The NUCLEUS of a Reference Phrase.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">NUCLEUS-R</AUni>
 </Name>
@@ -5818,6 +7024,7 @@
 <Abbreviation>
 <AUni ws="en">RPIP</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Reference Phrase Initial Position</AUni>
 </Name>
@@ -5826,6 +7033,7 @@
 <Abbreviation>
 <AUni ws="en">RPFP</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Reference Phrase Final Position</AUni>
 </Name>
@@ -5839,6 +7047,7 @@
 <Run ws="en">The PERIPHERY of a Reference Phrase.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">PERIPHERY-R</AUni>
 </Name>
@@ -5847,6 +7056,7 @@
 <Abbreviation>
 <AUni ws="en">MP</AUni>
 </Abbreviation>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Modifier Phrase</AUni>
 </Name>
@@ -5860,6 +7070,7 @@
 <Run ws="en">The CORE of a Modifier Phrase.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">CORE-M</AUni>
 </Name>
@@ -5873,6 +7084,7 @@
 <Run ws="en">The NUCLEUS of a Modifier Phrase.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">NUCLEUS-M</AUni>
 </Name>
@@ -5886,6 +7098,7 @@
 <Run ws="en">PP is either Prepositional Phrase or Postpositional Phrase depending on the typology of the language.</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Adpositional Phrase</AUni>
 </Name>
@@ -5899,6 +7112,7 @@
 <Run ws="en">The CORE of an Adpositional Phrase(PP).</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">CORE-P</AUni>
 </Name>
@@ -5912,6 +7126,7 @@
 <Run ws="en">The NUCLEUS of an Adpositional Phrase(PP).</Run>
 </AStr>
 </Description>
+<Hidden val="False" />
 <Name>
 <AUni ws="en">NUCLEUS-P</AUni>
 </Name>
@@ -5928,23 +7143,32 @@
 <Abbreviation>
 <AUni ws="en">ConChrtTempl</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:9.985" />
+<DateModified val="2018-8-2 16:32:9.985" />
 <Depth val="127" />
-<IsSorted val="true" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="True" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Text Constituent Chart Templates</AUni>
 </Name>
 <Possibilities>
 <objsur guid="c414012a-ea5e-11de-99fc-0013722f8dec" t="o" />
 </Possibilities>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="CmPossibility" guid="c414012a-ea5e-11de-99fc-0013722f8dec" ownerguid="c40a77d6-ea5e-11de-99c2-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">def</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Default Template</AUni>
 </Name>
@@ -5956,8 +7180,7 @@
 <Abbreviation>
 <AUni ws="en">story</AUni>
 </Abbreviation>
-<DateCreated val="2018-05-09 13:24:02.152" />
-<DateModified val="2018-05-09 13:24:02.152" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Story</AUni>
 </Name>
@@ -5971,8 +7194,7 @@
 <Abbreviation>
 <AUni ws="en">prenuc</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Pre-nuclear</AUni>
 </Name>
@@ -5985,8 +7207,7 @@
 <Abbreviation>
 <AUni ws="en">out</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Outer</AUni>
 </Name>
@@ -5995,8 +7216,7 @@
 <Abbreviation>
 <AUni ws="en">in</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Inner</AUni>
 </Name>
@@ -6005,8 +7225,7 @@
 <Abbreviation>
 <AUni ws="en">nuc</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Nucleus</AUni>
 </Name>
@@ -6020,8 +7239,7 @@
 <Abbreviation>
 <AUni ws="en">subj</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Subject</AUni>
 </Name>
@@ -6030,8 +7248,7 @@
 <Abbreviation>
 <AUni ws="en">v</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Verb</AUni>
 </Name>
@@ -6040,8 +7257,7 @@
 <Abbreviation>
 <AUni ws="en">o/c</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Object/Complement</AUni>
 </Name>
@@ -6050,8 +7266,7 @@
 <Abbreviation>
 <AUni ws="en">postnuc</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Post-nuclear</AUni>
 </Name>
@@ -6064,8 +7279,7 @@
 <Abbreviation>
 <AUni ws="en">in</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-28 13:45:01.860" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Inner</AUni>
 </Name>
@@ -6074,8 +7288,7 @@
 <Abbreviation>
 <AUni ws="en">out</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-28 13:45:38.110" />
-<DateModified val="2008-01-28 13:45:38.110" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Outer</AUni>
 </Name>
@@ -6084,8 +7297,15 @@
 <Abbreviation>
 <AUni ws="en">ChMrkrs</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:9.985" />
+<DateModified val="2018-8-2 16:32:9.985" />
 <Depth val="127" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="False" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Text Chart Markers</AUni>
 </Name>
@@ -6094,14 +7314,17 @@
 <objsur guid="c6b1f2ac-ea5e-11de-820a-0013722f8dec" t="o" />
 <objsur guid="c6eb2ad6-ea5e-11de-828c-0013722f8dec" t="o" />
 </Possibilities>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="CmPossibility" guid="c49be68a-ea5e-11de-86fb-0013722f8dec" ownerguid="c48ffadc-ea5e-11de-9033-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">TenseAspectMood</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">TenseAspectMood</AUni>
 </Name>
@@ -6121,8 +7344,7 @@
 <Abbreviation>
 <AUni ws="en">Direct imperative</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Direct imperative</AUni>
 </Name>
@@ -6135,8 +7357,7 @@
 <Abbreviation>
 <AUni ws="en">IMP.S</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Direct imperative</AUni>
 </Name>
@@ -6145,8 +7366,7 @@
 <Abbreviation>
 <AUni ws="en">IMP.P</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Direct imperative</AUni>
 </Name>
@@ -6155,8 +7375,7 @@
 <Abbreviation>
 <AUni ws="en">Subjunctive</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Subjunctive</AUni>
 </Name>
@@ -6169,8 +7388,7 @@
 <Abbreviation>
 <AUni ws="en">SBV</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Polite command</AUni>
 </Name>
@@ -6179,8 +7397,7 @@
 <Abbreviation>
 <AUni ws="en">SBV</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Purpose</AUni>
 </Name>
@@ -6189,8 +7406,7 @@
 <Abbreviation>
 <AUni ws="en">Potential/conditional</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Potential/conditional</AUni>
 </Name>
@@ -6203,8 +7419,7 @@
 <Abbreviation>
 <AUni ws="en">POT</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Potential</AUni>
 </Name>
@@ -6213,8 +7428,7 @@
 <Abbreviation>
 <AUni ws="en">CND</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">(w/?r?) conditional</AUni>
 </Name>
@@ -6223,8 +7437,7 @@
 <Abbreviation>
 <AUni ws="en">Potential/conditional, contrary-to-fact</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Potential/conditional, contrary-to-fact</AUni>
 </Name>
@@ -6243,8 +7456,7 @@
 <Abbreviation>
 <AUni ws="en">CND.C.F</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">(w/ng?) conditional, C.F.</AUni>
 </Name>
@@ -6253,8 +7465,7 @@
 <Abbreviation>
 <AUni ws="en">POT.C.F P2</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Potential, C.F. Past</AUni>
 </Name>
@@ -6263,8 +7474,7 @@
 <Abbreviation>
 <AUni ws="en">CND C.F P2</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">(w/ng?) conditional, C.F. Past</AUni>
 </Name>
@@ -6273,8 +7483,7 @@
 <Abbreviation>
 <AUni ws="en">CND C.F P2</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Conditional, C.F. Past</AUni>
 </Name>
@@ -6283,8 +7492,7 @@
 <Abbreviation>
 <AUni ws="en">CND.RS</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">If/when</AUni>
 </Name>
@@ -6293,8 +7501,7 @@
 <Abbreviation>
 <AUni ws="en">CND.TL</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">If/when</AUni>
 </Name>
@@ -6303,8 +7510,7 @@
 <Abbreviation>
 <AUni ws="en">YET.CND</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">If/when</AUni>
 </Name>
@@ -6313,8 +7519,7 @@
 <Abbreviation>
 <AUni ws="en">Timeless</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Timeless</AUni>
 </Name>
@@ -6326,8 +7531,7 @@
 <Abbreviation>
 <AUni ws="en">Timeless</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Timeless</AUni>
 </Name>
@@ -6336,8 +7540,7 @@
 <Abbreviation>
 <AUni ws="en">Temporal sequence</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Temporal sequence</AUni>
 </Name>
@@ -6351,8 +7554,7 @@
 <Abbreviation>
 <AUni ws="en">SQ</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Sequential</AUni>
 </Name>
@@ -6361,8 +7563,7 @@
 <Abbreviation>
 <AUni ws="en">SBSC</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Subsecutive</AUni>
 </Name>
@@ -6371,8 +7572,7 @@
 <Abbreviation>
 <AUni ws="en">SBSC.DST</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Subsecutive distal</AUni>
 </Name>
@@ -6381,8 +7581,7 @@
 <Abbreviation>
 <AUni ws="en">Past</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Past</AUni>
 </Name>
@@ -6402,8 +7601,7 @@
 <Abbreviation>
 <AUni ws="en">P1</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Past, recent</AUni>
 </Name>
@@ -6412,8 +7610,7 @@
 <Abbreviation>
 <AUni ws="en">RS.FRUS</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Frustrated (RS)</AUni>
 </Name>
@@ -6422,8 +7619,7 @@
 <Abbreviation>
 <AUni ws="en">P1.FRUS</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Frustrated (P1)</AUni>
 </Name>
@@ -6432,8 +7628,7 @@
 <Abbreviation>
 <AUni ws="en">PREV PROG</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Previous, progressive</AUni>
 </Name>
@@ -6442,8 +7637,7 @@
 <Abbreviation>
 <AUni ws="en">PREV INTS</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Previous, intentional</AUni>
 </Name>
@@ -6452,8 +7646,7 @@
 <Abbreviation>
 <AUni ws="en">P2</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Past, before yesterday</AUni>
 </Name>
@@ -6462,8 +7655,7 @@
 <Abbreviation>
 <AUni ws="en">P2.ST</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Past, before yest., state</AUni>
 </Name>
@@ -6472,8 +7664,7 @@
 <Abbreviation>
 <AUni ws="en">P2.ST-YET</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Past, before yest., unrealized exp.</AUni>
 </Name>
@@ -6482,8 +7673,7 @@
 <Abbreviation>
 <AUni ws="en">P3</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Remote past</AUni>
 </Name>
@@ -6492,8 +7682,7 @@
 <Abbreviation>
 <AUni ws="en">Present</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Present</AUni>
 </Name>
@@ -6510,8 +7699,7 @@
 <Abbreviation>
 <AUni ws="en">PROG</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Progressive state</AUni>
 </Name>
@@ -6520,8 +7708,7 @@
 <Abbreviation>
 <AUni ws="en">PERS PROG</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Persistive progressive state</AUni>
 </Name>
@@ -6530,8 +7717,7 @@
 <Abbreviation>
 <AUni ws="en">NEWLY PROG</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">New progressive state</AUni>
 </Name>
@@ -6540,8 +7726,7 @@
 <Abbreviation>
 <AUni ws="en">PROG INTS</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Intentional progressive state</AUni>
 </Name>
@@ -6550,8 +7735,7 @@
 <Abbreviation>
 <AUni ws="en">RS</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Resultative state</AUni>
 </Name>
@@ -6560,8 +7744,7 @@
 <Abbreviation>
 <AUni ws="en">NEG-YET</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Unrealized expectation</AUni>
 </Name>
@@ -6570,8 +7753,7 @@
 <Abbreviation>
 <AUni ws="en">Future</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Future</AUni>
 </Name>
@@ -6588,8 +7770,7 @@
 <Abbreviation>
 <AUni ws="en">F1</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Immediate</AUni>
 </Name>
@@ -6598,8 +7779,7 @@
 <Abbreviation>
 <AUni ws="en">NEWLY F1</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Future, immediate, newly</AUni>
 </Name>
@@ -6608,8 +7788,7 @@
 <Abbreviation>
 <AUni ws="en">F2</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Future, unmarked</AUni>
 </Name>
@@ -6618,8 +7797,7 @@
 <Abbreviation>
 <AUni ws="en">F2</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Intentional</AUni>
 </Name>
@@ -6628,8 +7806,7 @@
 <Abbreviation>
 <AUni ws="en">NEWLY F2</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Future, newly</AUni>
 </Name>
@@ -6638,8 +7815,7 @@
 <Abbreviation>
 <AUni ws="en">F3</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Remote future</AUni>
 </Name>
@@ -6648,8 +7824,7 @@
 <Abbreviation>
 <AUni ws="en">Pronouns</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Pronouns</AUni>
 </Name>
@@ -6664,8 +7839,7 @@
 <Abbreviation>
 <AUni ws="en">P:Ctr</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Contrastive</AUni>
 </Name>
@@ -6674,8 +7848,7 @@
 <Abbreviation>
 <AUni ws="en">P:Alt</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Alternative</AUni>
 </Name>
@@ -6684,8 +7857,7 @@
 <Abbreviation>
 <AUni ws="en">P:Excl</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Exclusive</AUni>
 </Name>
@@ -6694,8 +7866,7 @@
 <Abbreviation>
 <AUni ws="en">P:Add</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Additive</AUni>
 </Name>
@@ -6704,8 +7875,7 @@
 <Abbreviation>
 <AUni ws="en">Demonstratives</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Demonstratives</AUni>
 </Name>
@@ -6728,8 +7898,7 @@
 <Abbreviation>
 <AUni ws="en">D:P.C</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Proximal Contrastive</AUni>
 </Name>
@@ -6738,8 +7907,7 @@
 <Abbreviation>
 <AUni ws="en">D:Pr</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Proximal</AUni>
 </Name>
@@ -6748,8 +7916,7 @@
 <Abbreviation>
 <AUni ws="en">D:Ne</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Nearby</AUni>
 </Name>
@@ -6758,8 +7925,7 @@
 <Abbreviation>
 <AUni ws="en">D:Di</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Distal</AUni>
 </Name>
@@ -6768,8 +7934,7 @@
 <Abbreviation>
 <AUni ws="en">D:Re</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Remote</AUni>
 </Name>
@@ -6778,8 +7943,7 @@
 <Abbreviation>
 <AUni ws="en">D:Em.P.C</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Emphatic Proximal Contrastive</AUni>
 </Name>
@@ -6788,8 +7952,7 @@
 <Abbreviation>
 <AUni ws="en">D:Em.Pr</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Emphatic Proximal</AUni>
 </Name>
@@ -6798,8 +7961,7 @@
 <Abbreviation>
 <AUni ws="en">D:Em.Ne</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Emphatic Nearby</AUni>
 </Name>
@@ -6808,8 +7970,7 @@
 <Abbreviation>
 <AUni ws="en">D:Em.Di</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Emphatic Distal</AUni>
 </Name>
@@ -6818,8 +7979,7 @@
 <Abbreviation>
 <AUni ws="en">D:Em.Re</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Emphatic Remote</AUni>
 </Name>
@@ -6828,8 +7988,7 @@
 <Abbreviation>
 <AUni ws="en">D:SaSet</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Same.set</AUni>
 </Name>
@@ -6838,8 +7997,7 @@
 <Abbreviation>
 <AUni ws="en">D:DiSet</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Different set</AUni>
 </Name>
@@ -6848,7 +8006,7 @@
 <Contents>
 <Str>
 <Run ws="en">Matches </Run>
-<Run link="56DE9B1A-1CE7-42A1-AA76-512EBEFF0DDA" ws="en" />
+<Run link="56de9b1a-1ce7-42a1-aa76-512ebeff0dda" ws="en"></Run>
 </Str>
 </Contents>
 </rt>
@@ -6864,6 +8022,7 @@
 </AStr>
 </Description>
 <ForeColor val="-1073741824" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Prose</AUni>
 </Name>
@@ -6873,8 +8032,7 @@
 <Abbreviation>
 <AUni ws="en">POT.C.F</AUni>
 </Abbreviation>
-<DateCreated val="2008-01-11 15:08:55.380" />
-<DateModified val="2008-01-11 15:08:55.380" />
+<Hidden val="False" />
 <Name>
 <AUni ws="en">Potential, C.F.</AUni>
 </Name>
@@ -6942,8 +8100,15 @@
 <Abbreviation>
 <AUni ws="en">EdLev</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.323" />
+<DateModified val="2018-8-2 16:32:6.323" />
 <Depth val="127" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="False" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Education Levels</AUni>
 </Name>
@@ -6956,22 +8121,35 @@
 <objsur guid="bdd903d2-ea5e-11de-9be6-0013722f8dec" t="o" />
 <objsur guid="bde4ef8a-ea5e-11de-8623-0013722f8dec" t="o" />
 </Possibilities>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="CmPossibilityList" guid="d72de032-ea5e-11de-84f3-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">Part</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.322" />
+<DateModified val="2018-8-2 16:32:6.322" />
 <Depth val="1" />
-<IsSorted val="true" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="True" />
+<IsVernacular val="False" />
 <ItemClsid val="13" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">People</AUni>
 </Name>
 <Possibilities>
 <objsur guid="5d543e4f-50d7-41fe-93a7-cf851c1d229e" t="o" />
 </Possibilities>
-<UseExtendedFields val="true" />
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="True" />
 <WsSelector val="-6" />
 </rt>
 <rt class="RnResearchNbk" guid="d739cbea-ea5e-11de-85be-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
@@ -6986,8 +8164,15 @@
 <Abbreviation>
 <AUni ws="en">Res</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.320" />
+<DateModified val="2018-8-2 16:32:6.320" />
 <Depth val="1" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="False" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Restrictions</AUni>
 </Name>
@@ -6997,6 +8182,10 @@
 <objsur guid="bbd86cc6-ea5e-11de-8964-0013722f8dec" t="o" />
 <objsur guid="bbe1f61a-ea5e-11de-9640-0013722f8dec" t="o" />
 </Possibilities>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="PhPhoneme" guid="d74f40f6-ea5e-11de-8028-0013722f8dec" ownerguid="be7fe79c-ea5e-11de-8151-0013722f8dec">
@@ -7211,10 +8400,15 @@
 <Abbreviation>
 <AUni ws="en">MjeTyp</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.267" />
+<DateModified val="2018-8-2 16:32:6.267" />
 <Depth val="1" />
-<IsClosed val="true" />
-<IsSorted val="true" />
+<DisplayOption val="0" />
+<IsClosed val="True" />
+<IsSorted val="True" />
+<IsVernacular val="False" />
 <ItemClsid val="5042" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Morpheme Types</AUni>
 </Name>
@@ -7239,6 +8433,10 @@
 <objsur guid="a23b6faa-1052-4f4d-984b-4b338bdaf95f" t="o" />
 <objsur guid="0cc8c35a-cee9-434d-be58-5d29130fba5b" t="o" />
 </Possibilities>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="MoMorphType" guid="d7f713da-e8cf-11d3-9764-00c04f186933" ownerguid="d7f713d8-e8cf-11d3-9764-00c04f186933">
@@ -7250,7 +8448,8 @@
 <Run ws="en">An infix is an affix that is inserted within a root or stem.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">infix</AUni>
 </Name>
@@ -7271,7 +8470,8 @@
 <Run ws="en">A prefix is an affix that is joined before a root or stem.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">prefix</AUni>
 </Name>
@@ -7289,7 +8489,8 @@
 <Run ws="en">A simulfix is a change or replacement of vowels or consonants (usually vowels) which changes the meaning of a word. (Note: the parser does not currently handle simulfixes.)</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">simulfix</AUni>
 </Name>
@@ -7310,7 +8511,8 @@
 <Run ws="en">A suffix is an affix that is attached to the end of a root or stem.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">suffix</AUni>
 </Name>
@@ -7328,7 +8530,8 @@
 <Run ws="en">A suprafix is a kind of affix in which a suprasegmental is superimposed on one or more syllables of the root or stem, signalling a particular morphosyntactic operation. (Note: the parser does not currently handle suprafixes.)</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">suprafix</AUni>
 </Name>
@@ -7349,10 +8552,12 @@
 <Run ws="en">A circumfix is an affix made up of two separate parts which surround and attach to a root or stem.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">circumfix</AUni>
 </Name>
+<SecondaryOrder val="0" />
 </rt>
 <rt class="MoMorphType" guid="d7f713e1-e8cf-11d3-9764-00c04f186933" ownerguid="d7f713d8-e8cf-11d3-9764-00c04f186933">
 <Abbreviation>
@@ -7363,7 +8568,8 @@
 <Run ws="en">An enclitic is a clitic that is phonologically joined at the end of a preceding word to form a single unit. Orthographically, it may attach to the preceding word.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">enclitic</AUni>
 </Name>
@@ -7381,7 +8587,8 @@
 <Run ws="en">A proclitic is a clitic that precedes the word to which it is phonologically joined. Orthographically, it may attach to the following word.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">proclitic</AUni>
 </Name>
@@ -7399,7 +8606,8 @@
 <Run ws="en">A bound root is a root which cannot occur as a separate word apart from any other morpheme.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">bound root</AUni>
 </Name>
@@ -7417,10 +8625,12 @@
 <Run ws="en">A root is the portion of a word that (i) is common to a set of derived or inflected forms, if any, when all affixes are removed, (ii) is not further analyzable into meaningful elements, being morphologically simple, and, (iii) carries the principle portion of meaning of the words in which it functions.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">root</AUni>
 </Name>
+<SecondaryOrder val="0" />
 </rt>
 <rt class="MoMorphType" guid="d7f713e7-e8cf-11d3-9764-00c04f186933" ownerguid="d7f713d8-e8cf-11d3-9764-00c04f186933">
 <Abbreviation>
@@ -7431,7 +8641,8 @@
 <Run ws="en">A bound stem is a stem which cannot occur as a separate word apart from any other morpheme.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">bound stem</AUni>
 </Name>
@@ -7459,18 +8670,26 @@
 <Run ws="en">). All have in common the notion that it is to the stem that inflectional affixes are attached." (Crystal, 1997:362)</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">stem</AUni>
 </Name>
+<SecondaryOrder val="0" />
 </rt>
 <rt class="CmPossibilityList" guid="d7f71649-e8cf-11d3-9764-00c04f186933" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">Type</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.314" />
+<DateModified val="2018-8-2 16:32:6.314" />
 <Depth val="1" />
-<IsSorted val="true" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="True" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Translation Types</AUni>
 </Name>
@@ -7479,13 +8698,18 @@
 <objsur guid="d7f7164a-e8cf-11d3-9764-00c04f186933" t="o" />
 <objsur guid="d7f7164b-e8cf-11d3-9764-00c04f186933" t="o" />
 </Possibilities>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="CmPossibility" guid="d7f7164a-e8cf-11d3-9764-00c04f186933" ownerguid="d7f71649-e8cf-11d3-9764-00c04f186933">
 <Abbreviation>
 <AUni ws="en">FT</AUni>
 </Abbreviation>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Free translation</AUni>
 </Name>
@@ -7494,7 +8718,8 @@
 <Abbreviation>
 <AUni ws="en">LT</AUni>
 </Abbreviation>
-<IsProtected val="true" />
+<Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Literal translation</AUni>
 </Name>
@@ -7594,8 +8819,15 @@
 <Abbreviation>
 <AUni ws="en">Time</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.323" />
+<DateModified val="2018-8-2 16:32:6.323" />
 <Depth val="127" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="False" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Time Of Day</AUni>
 </Name>
@@ -7608,29 +8840,25 @@
 <objsur guid="be54fd84-ea5e-11de-86b7-0013722f8dec" t="o" />
 <objsur guid="be5e86d8-ea5e-11de-9b90-0013722f8dec" t="o" />
 </Possibilities>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
-</rt>
-<rt class="StStyle" guid="d85a4702-ea5e-11de-93d4-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
-<BasedOn>
-<objsur guid="d9aa70f0-ea5e-11de-8efb-0013722f8dec" t="r" />
-</BasedOn>
-<IsBuiltIn val="true" />
-<Name>
-<Uni>Block Quote</Uni>
-</Name>
-<Next>
-<objsur guid="d85a4702-ea5e-11de-93d4-0013722f8dec" t="r" />
-</Next>
-<Rules>
-<Prop firstIndent="0" leadingIndent="36000" spaceAfter="6000" trailingIndent="36000" />
-</Rules>
 </rt>
 <rt class="CmPossibilityList" guid="d86632ba-ea5e-11de-8a58-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">Stat</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.321" />
+<DateModified val="2018-8-2 16:32:6.321" />
 <Depth val="1" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="False" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Status</AUni>
 </Name>
@@ -7640,27 +8868,48 @@
 <objsur guid="bd964254-ea5e-11de-8cdf-0013722f8dec" t="o" />
 <objsur guid="b098623a-ea5e-11de-8126-0013722f8dec" t="o" />
 </Possibilities>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
-<rt class="CmPossibilityList" guid="d87ba7c6-ea5e-11de-9dd2-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec" />
+<rt class="CmPossibilityList" guid="d87ba7c6-ea5e-11de-9dd2-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec"/>
 <rt class="CmPossibilityList" guid="d887937e-ea5e-11de-9e1f-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">Loc</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.321" />
+<DateModified val="2018-8-2 16:32:6.321" />
 <Depth val="127" />
-<IsSorted val="true" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="True" />
+<IsVernacular val="False" />
 <ItemClsid val="12" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Locations</AUni>
 </Name>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-6" />
 </rt>
 <rt class="CmPossibilityList" guid="d992998a-ea5e-11de-899e-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">Role</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.320" />
+<DateModified val="2018-8-2 16:32:6.320" />
 <Depth val="1" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="False" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Roles</AUni>
 </Name>
@@ -7676,14 +8925,25 @@
 <objsur guid="bd68f5d8-ea5e-11de-9d1b-0013722f8dec" t="o" />
 <objsur guid="bd74e190-ea5e-11de-8bb1-0013722f8dec" t="o" />
 </Possibilities>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="CmPossibilityList" guid="d99e8542-ea5e-11de-9301-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">Conf</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.320" />
+<DateModified val="2018-8-2 16:32:6.320" />
 <Depth val="1" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="False" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Confidence Levels</AUni>
 </Name>
@@ -7693,69 +8953,47 @@
 <objsur guid="bbb70c02-ea5e-11de-8a97-0013722f8dec" t="o" />
 <objsur guid="bbc09560-ea5e-11de-8de5-0013722f8dec" t="o" />
 </Possibilities>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
-</rt>
-<rt class="StStyle" guid="d9aa70f0-ea5e-11de-8efb-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
-<IsBuiltIn val="true" />
-<Name>
-<Uni>Normal</Uni>
-</Name>
-<Next>
-<objsur guid="d9aa70f0-ea5e-11de-8efb-0013722f8dec" t="r" />
-</Next>
-<Rules>
-<Prop align="leading" backcolor="white" bold="off" borderBottom="0" borderColor="black" borderLeading="0" borderTop="0" borderTrailing="0" bulNumScheme="0" bulNumStartAt="1" firstIndent="0" fontFamily="&lt;default serif&gt;" fontsize="10000" fontsizeUnit="mpt" forecolor="black" italic="off" leadingIndent="0" lineHeight="10000" lineHeightUnit="rel" offset="0" offsetUnit="mpt" spaceAfter="6000" spaceBefore="0" superscript="off" trailingIndent="0" undercolor="black" underline="none">
-<BulNumFontInfo backcolor="white" bold="off" fontFamily="Times New Roman" fontsize="10000mpt" forecolor="black" italic="off" offset="0mpt" superscript="off" undercolor="black" underline="none" />
-</Prop>
-</Rules>
 </rt>
 <rt class="CmPossibilityList" guid="d9b3fa4e-ea5e-11de-8cea-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">Posn</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.324" />
+<DateModified val="2018-8-2 16:32:6.324" />
 <Depth val="1" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="False" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Positions</AUni>
 </Name>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
-</rt>
-<rt class="StStyle" guid="d9bfe5fc-ea5e-11de-9282-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
-<BasedOn>
-<objsur guid="d9aa70f0-ea5e-11de-8efb-0013722f8dec" t="r" />
-</BasedOn>
-<IsBuiltIn val="true" />
-<Name>
-<Uni>Bulleted List</Uni>
-</Name>
-<Next>
-<objsur guid="d9bfe5fc-ea5e-11de-9282-0013722f8dec" t="r" />
-</Next>
-<Rules>
-<Prop bulNumScheme="101" bulNumStartAt="1" firstIndent="-18000" spaceAfter="0" trailingIndent="0" />
-</Rules>
-</rt>
-<rt class="StStyle" guid="d9cbd1b4-ea5e-11de-8f8b-0013722f8dec" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
-<BasedOn>
-<objsur guid="d9aa70f0-ea5e-11de-8efb-0013722f8dec" t="r" />
-</BasedOn>
-<IsBuiltIn val="true" />
-<Name>
-<Uni>Numbered List</Uni>
-</Name>
-<Next>
-<objsur guid="d9cbd1b4-ea5e-11de-8f8b-0013722f8dec" t="r" />
-</Next>
-<Rules>
-<Prop bulNumScheme="10" bulNumStartAt="1" firstIndent="-18000" spaceAfter="0" spaceBefore="0" />
-</Rules>
 </rt>
 <rt class="CmPossibilityList" guid="d9d55b12-ea5e-11de-95ef-0013722f8dec" ownerguid="d739cbea-ea5e-11de-85be-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">Type</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:9.985" />
+<DateModified val="2018-8-2 16:32:9.985" />
 <Depth val="127" />
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="False" />
+<IsVernacular val="False" />
 <ItemClsid val="7" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Notebook Record Types</AUni>
 </Name>
@@ -7766,23 +9004,23 @@
 <objsur guid="bcb1cf88-582d-463a-b96f-0023f6ac2395" t="o" />
 <objsur guid="06974d9a-ff86-4e1c-a3e5-7ce8c961dcb9" t="o" />
 </Possibilities>
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="False" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="CmAnnotationDefn" guid="dcc8d4d2-13b2-46e4-8fb3-29c166d189ea" ownerguid="82e2fd92-48d8-43c9-ba84-cc4a2a5beead">
 <AllowsComment val="True" />
 <AllowsFeatureStructure val="False" />
 <AllowsInstanceOf val="False" />
-<BackColor val="0" />
 <CanCreateOrphan val="False" />
 <CopyCutPastable val="True" />
-<DateCreated val="2011-3-29 16:16:50.662" />
-<DateModified val="2011-3-29 16:16:50.662" />
 <Description>
 <AStr ws="en">
 <Run ws="en">Checks for potential inconsistencies in the use of punctuation.</Run>
 </AStr>
 </Description>
-<ForeColor val="0" />
 <HelpId>
 <Uni>Punctuation_Patterns</Uni>
 </HelpId>
@@ -7796,9 +9034,6 @@
 </Name>
 <PromptUser val="False" />
 <Severity val="0" />
-<SortSpec val="0" />
-<UnderColor val="0" />
-<UnderStyle val="0" />
 <UserCanCreate val="False" />
 <ZeroWidth val="False" />
 </rt>
@@ -7806,17 +9041,13 @@
 <AllowsComment val="True" />
 <AllowsFeatureStructure val="False" />
 <AllowsInstanceOf val="False" />
-<BackColor val="0" />
 <CanCreateOrphan val="False" />
 <CopyCutPastable val="True" />
-<DateCreated val="2011-3-29 16:16:50.644" />
-<DateModified val="2011-3-29 16:16:50.644" />
 <Description>
 <AStr ws="en">
 <Run ws="en">Checks for unmatched parentheses or other punctuation that normally occurs in pairs.</Run>
 </AStr>
 </Description>
-<ForeColor val="0" />
 <HelpId>
 <Uni>Matching_Punctuation_Pairs</Uni>
 </HelpId>
@@ -7830,9 +9061,6 @@
 </Name>
 <PromptUser val="False" />
 <Severity val="0" />
-<SortSpec val="0" />
-<UnderColor val="0" />
-<UnderStyle val="0" />
 <UserCanCreate val="False" />
 <ZeroWidth val="False" />
 </rt>
@@ -7840,17 +9068,13 @@
 <AllowsComment val="True" />
 <AllowsFeatureStructure val="False" />
 <AllowsInstanceOf val="False" />
-<BackColor val="0" />
 <CanCreateOrphan val="False" />
 <CopyCutPastable val="True" />
-<DateCreated val="2011-3-29 16:16:50.669" />
-<DateModified val="2011-3-29 16:16:50.669" />
 <Description>
 <AStr ws="en">
 <Run ws="en">Checks for potential inconsistencies in the markup of quotations.</Run>
 </AStr>
 </Description>
-<ForeColor val="0" />
 <HelpId>
 <Uni>Quotation_Marks</Uni>
 </HelpId>
@@ -7864,9 +9088,6 @@
 </Name>
 <PromptUser val="False" />
 <Severity val="0" />
-<SortSpec val="0" />
-<UnderColor val="0" />
-<UnderStyle val="0" />
 <UserCanCreate val="False" />
 <ZeroWidth val="False" />
 </rt>
@@ -7893,12 +9114,20 @@
 <Abbreviation>
 <AUni ws="en">AnnDefn</AUni>
 </Abbreviation>
+<DateCreated val="2018-8-2 16:32:6.325" />
+<DateModified val="2018-8-2 16:32:6.325" />
+<Depth val="0" />
 <Description>
 <AStr ws="en">
 <Run ws="en">Annotation types defined for use in FieldWorks.</Run>
 </AStr>
 </Description>
+<DisplayOption val="0" />
+<IsClosed val="False" />
+<IsSorted val="False" />
+<IsVernacular val="False" />
 <ItemClsid val="35" />
+<ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Annotation Definitions</AUni>
 </Name>
@@ -7908,43 +9137,50 @@
 <objsur guid="f094a0b0-01b8-4621-97f1-4d775bc29ce7" t="o" />
 <objsur guid="82e2fd92-48d8-43c9-ba84-cc4a2a5beead" t="o" />
 </Possibilities>
-<PreventDuplicates val="true" />
+<PreventChoiceAboveLevel val="0" />
+<PreventDuplicates val="True" />
+<PreventNodeChoices val="False" />
+<UseExtendedFields val="False" />
 <WsSelector val="-3" />
 </rt>
 <rt class="CmAnnotationDefn" guid="f094a0b0-01b8-4621-97f1-4d775bc29ce7" ownerguid="ea346c01-022f-4f34-b938-219ce7b65b73">
 <Abbreviation>
 <AUni ws="en">Cmt</AUni>
 </Abbreviation>
-<AllowsComment val="true" />
-<CanCreateOrphan val="true" />
-<CopyCutPastable val="true" />
+<AllowsComment val="True" />
+<AllowsFeatureStructure val="False" />
+<AllowsInstanceOf val="False" />
+<CanCreateOrphan val="True" />
+<CopyCutPastable val="True" />
 <Description>
 <AStr ws="en">
 <Run ws="en">General category for comments of any kind.</Run>
 </AStr>
 </Description>
-<IsProtected val="true" />
-<Multi val="true" />
+<Hidden val="False" />
+<InstanceOfSignature val="0" />
+<IsProtected val="True" />
+<MaxDupOccur val="0" />
+<Multi val="True" />
 <Name>
 <AUni ws="en">Comment</AUni>
 </Name>
-<UserCanCreate val="true" />
+<PromptUser val="False" />
+<Severity val="0" />
+<UserCanCreate val="True" />
+<ZeroWidth val="False" />
 </rt>
 <rt class="CmAnnotationDefn" guid="f17a054b-d21e-4298-a1a5-0d79c4af6f0f" ownerguid="82e2fd92-48d8-43c9-ba84-cc4a2a5beead">
 <AllowsComment val="True" />
 <AllowsFeatureStructure val="False" />
 <AllowsInstanceOf val="False" />
-<BackColor val="0" />
 <CanCreateOrphan val="False" />
 <CopyCutPastable val="True" />
-<DateCreated val="2011-3-29 16:16:50.624" />
-<DateModified val="2011-3-29 16:16:50.624" />
 <Description>
 <AStr ws="en">
 <Run ws="en">Checks for potential inconsistencies in chapter and verse numbers.</Run>
 </AStr>
 </Description>
-<ForeColor val="0" />
 <HelpId>
 <Uni>Chapter_and_Verse_Numbers</Uni>
 </HelpId>
@@ -7958,21 +9194,8 @@
 </Name>
 <PromptUser val="False" />
 <Severity val="0" />
-<SortSpec val="0" />
-<UnderColor val="0" />
-<UnderStyle val="0" />
 <UserCanCreate val="False" />
 <ZeroWidth val="False" />
 </rt>
 <rt class="CmAgentEvaluation" guid="fe84db44-36f3-4d77-b7bd-4b0f5e6200f1" ownerguid="1257a971-fcef-4f06-a5e2-c289de5aaf72" />
-<rt class="StStyle" guid="ff312e7a-4e45-4ec8-a9cb-71c7421c120f" ownerguid="af1d4e34-ea5e-11de-8ec5-0013722f8dec">
-<IsBuiltIn val="true" />
-<Name>
-<Uni>Strong</Uni>
-</Name>
-<Rules>
-<Prop bold="on" />
-</Rules>
-<Type val="1" />
-</rt>
 </languageproject>

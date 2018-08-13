@@ -58,10 +58,10 @@
 <UnderStyle><Integer val="1"/></UnderStyle>
 <Name>
 <AUni ws="en">Pro-form</AUni>
-																							</Name>
+</Name>
 <Abbreviation>
 <AUni ws="en">pro-form</AUni>
-																							</Abbreviation>
+</Abbreviation>
 <Description>
 <AStr ws="en">
 <Run ws="en">A pro-form is a part of speech whose members usually substitute for other constituents, including phrases, clauses, or sentences, and whose meaning is recoverable from the linguistic or extralinguistic context.</Run>
