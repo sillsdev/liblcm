@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using SIL.LCModel.Core.Properties;
@@ -196,14 +197,25 @@ namespace SIL.LCModel.Core.Text
 		}
 		#endregion
 
-		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Makes sure the icu directory is set, and any other initialization
 		/// which must be done before we use ICU is done.
 		/// </summary>
-		/// ------------------------------------------------------------------------------------
 		public static void InitIcuDataDir()
 		{
+			// Add the architecture specific path to the native icu dlls for windows into the PATH
+			// this is needed for code that accesses the libraries directly instead of through icudotnet
+			if (MiscUtils.IsWindows)
+			{
+				var arch = Environment.Is64BitProcess ? "x64" : "x86";
+				var callingAssemblyFolder = Uri.UnescapeDataString(new UriBuilder(Assembly.GetExecutingAssembly().CodeBase).Path);
+				// ReSharper disable once AssignNullToNotNullAttribute -- If FlexExe returns null we have bigger problems
+				var icuPath = Path.Combine(Path.GetDirectoryName(callingAssemblyFolder), "lib", arch);
+				// Append icu dll location to PATH, such as .../lib/x64, to help C# and C++ code find icu.
+				Environment.SetEnvironmentVariable("PATH",
+					Environment.GetEnvironmentVariable("PATH") + Path.PathSeparator + icuPath);
+			}
+
 			string szDir = DataDirectory;
 			if (string.IsNullOrEmpty(szDir))
 			{

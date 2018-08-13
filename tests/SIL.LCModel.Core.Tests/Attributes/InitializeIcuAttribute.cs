@@ -8,31 +8,41 @@ using System.Reflection;
 using Microsoft.Win32;
 using NUnit.Framework;
 using SIL.LCModel.Core.Text;
+using SIL.LCModel.Utils;
 
 namespace SIL.LCModel.Core.Attributes
 {
 	[AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class)]
 	public class InitializeIcuAttribute : TestActionAttribute
 	{
+		/// <summary/>
+		public override ActionTargets Targets => ActionTargets.Suite;
+
 		public string IcuDataPath { get; set; }
 
 		public override void BeforeTest(TestDetails testDetails)
 		{
 			base.BeforeTest(testDetails);
+
 			string dir = null;
 			if (string.IsNullOrEmpty(IcuDataPath))
 			{
-				if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ICU_DATA")))
-					return;
-
-				using (RegistryKey userKey = Registry.CurrentUser.OpenSubKey(@"Software\SIL"))
-				using (RegistryKey machineKey = Registry.LocalMachine.OpenSubKey(@"Software\SIL"))
+				var environDataPath = Environment.GetEnvironmentVariable("ICU_DATA");
+				if (!string.IsNullOrEmpty(environDataPath))
 				{
-					const string icuDirValueName = "Icu54DataDir";
-					if (userKey?.GetValue(icuDirValueName) != null)
-						dir = userKey.GetValue(icuDirValueName, null) as string;
-					else if (machineKey?.GetValue(icuDirValueName) != null)
-						dir = machineKey.GetValue(icuDirValueName, null) as string;
+					dir = environDataPath;
+				}
+				else
+				{
+					using (RegistryKey userKey = Registry.CurrentUser.OpenSubKey(@"Software\SIL"))
+					using (RegistryKey machineKey = Registry.LocalMachine.OpenSubKey(@"Software\SIL"))
+					{
+						const string icuDirValueName = "Icu54DataDir";
+						if (userKey?.GetValue(icuDirValueName) != null)
+							dir = userKey.GetValue(icuDirValueName, null) as string;
+						else if (machineKey?.GetValue(icuDirValueName) != null)
+							dir = machineKey.GetValue(icuDirValueName, null) as string;
+					}
 				}
 			}
 			else if (Path.IsPathRooted(IcuDataPath))
