@@ -2137,6 +2137,20 @@ namespace SIL.LCModel.DomainImpl
 					return;
 			}
 		}
+
+		/// <summary>
+		/// Create a new entry with the given guid.
+		/// </summary>
+		public ICmPicture Create(Guid guid)
+		{
+			if (guid == Guid.Empty)
+				return Create();
+
+			int hvo = ((IDataReader) m_cache.ServiceLocator.GetInstance<IDataSetup>())
+				.GetNextRealHvo();
+			return new CmPicture(m_cache, hvo, guid);
+		}
+
 	}
 	#endregion
 

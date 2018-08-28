@@ -845,6 +845,11 @@ namespace SIL.LCModel
 		ICmPicture Create(string sFolder, int anchorLoc, IPictureLocationBridge locationParser,
 			string sDescription, string srcFilename, string sLayoutPos, string sLocationRange,
 			string sCopyright, string sCaption,	PictureLocationRangeType locRangeType, string sScaleFactor);
+
+		/// <summary>
+		/// Create a new entry with the given guid.
+		/// </summary>
+		ICmPicture Create(Guid guid);
 	}
 
 	/// <summary>
