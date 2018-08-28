@@ -10,9 +10,14 @@ artifacts/
 *DS_Store
 *.sln.ide
 lib/downloads/
+.idea/
+.vs/
 
 src/SIL.LCModel.Core/KernelInterfaces/Kernel.cs
 src/SIL.LCModel/Infrastructure/Impl/Generated*.cs
 src/SIL.LCModel/Generated*.cs
 src/SIL.LCModel/DomainImpl/Generated*.cs
 src/SIL.LCModel/IOC/Generated*.cs
+src/SIL.LCModel.Core/FwKernelTlb.idl
+src/SIL.LCModel.Core/FwKernelTlb.iip
+icu4c.readme.txt
