@@ -342,7 +342,7 @@ namespace SIL.LCModel.DomainServices
 				sb.Append("[");
 				sb.Append(GetIndexAmongSiblings(expectedParaDefn));
 				sb.Append("] ");
-				sb.Append(XmlUtils.GetManditoryAttributeValue(expectedParaInfo as XmlNode, "id"));
+				sb.Append(XmlUtils.GetMandatoryAttributeValue(expectedParaInfo as XmlNode, "id"));
 				return sb.ToString();
 			}
 
@@ -1420,7 +1420,7 @@ namespace SIL.LCModel.DomainServices
 			{
 				XmlNode annotationType = segFormNode.SelectSingleNode("AnnotationType34/Link");
 				Debug.Assert(annotationType != null, "SegmentForm needs to specify an AnnotationType.");
-				string guid = XmlUtils.GetManditoryAttributeValue(annotationType, "guid");
+				string guid = XmlUtils.GetMandatoryAttributeValue(annotationType, "guid");
 				return guid;
 			}
 

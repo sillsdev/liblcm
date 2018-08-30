@@ -419,7 +419,7 @@ namespace SIL.LCModel.DomainImpl
 			parent.Name.set_String(
 				defAnalWs,
 				TsStringUtils.MakeString(
-					XmlUtils.GetManditoryAttributeValue(spec, "name"),
+					XmlUtils.GetMandatoryAttributeValue(spec, "name"),
 					defAnalWs));
 			foreach (XmlNode child in spec.ChildNodes)
 			{
@@ -511,7 +511,7 @@ namespace SIL.LCModel.DomainImpl
 			poss.Name.set_String(
 				defAnalWs,
 				TsStringUtils.MakeString(
-					XmlUtils.GetManditoryAttributeValue(item, "name"),
+					XmlUtils.GetMandatoryAttributeValue(item, "name"),
 					defAnalWs));
 
 			// Set Abbreviation.
