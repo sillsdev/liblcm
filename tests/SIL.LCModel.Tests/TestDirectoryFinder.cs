@@ -8,18 +8,18 @@ using System.Reflection;
 
 namespace SIL.LCModel
 {
-	internal static class TestDirectoryFinder
+	public static class TestDirectoryFinder
 	{
 		public static string CodeDirectory
 		{
 			get
 			{
-				Uri uriBase = new Uri(Assembly.GetExecutingAssembly().CodeBase);
+				Uri uriBase = new Uri(Assembly.GetCallingAssembly().CodeBase);
 				return Path.GetDirectoryName(Uri.UnescapeDataString(uriBase.AbsolutePath));
 			}
 		}
 
-		private static string RootDirectory
+		public static string RootDirectory
 		{
 			get
 			{
@@ -33,10 +33,10 @@ namespace SIL.LCModel
 
 		public static string ProjectsDirectory => Path.Combine(CodeDirectory, "Projects");
 
-		public static string TestDataDirectory => Path.Combine(RootDirectory, "tests", "SIL.LCModel.Tests", "TestData");
+		internal static string TestDataDirectory => Path.Combine(RootDirectory, "tests", "SIL.LCModel.Tests", "TestData");
 
 		public static string TemplateDirectory => Path.Combine(CodeDirectory, "Templates");
 
-		public static ILcmDirectories LcmDirectories { get; } = new TestLcmDirectories(ProjectsDirectory);
+		internal static ILcmDirectories LcmDirectories { get; } = new TestLcmDirectories(ProjectsDirectory);
 	}
 }
