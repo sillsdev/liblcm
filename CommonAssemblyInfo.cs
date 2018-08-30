@@ -11,7 +11,7 @@ using System.Reflection;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("SIL")]
 [assembly: AssemblyProduct("LCM")]
-[assembly: AssemblyCopyright("Copyright (c) 2002-2017 SIL International")]
+[assembly: AssemblyCopyright("Copyright (c) 2002-2018 SIL International")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
