@@ -44,12 +44,12 @@
 	<Target Name="GenerateIcuData" Inputs="@(IcuDataInputs)" Outputs="@(IcuDataOutputs)">
 		<MakeDir Directories="$(OutDir)IcuData/icudt$(IcuVersion)l" />
 		<PropertyGroup>
-			<gennorm2 Condition="'$(Platform)'=='x86' and '$(OS)'=='Windows_NT'">../../lib/downloads/x86/gennorm2.exe</gennorm2>
-			<gennorm2 Condition="'$(Platform)'=='AnyCPU' and '$(OS)'=='Windows_NT'">../../lib/downloads/x64/gennorm2.exe</gennorm2>
-			<gennorm2 Condition="'$(OS)'=='Unix'">/usr/lib/fieldworks/icu-bin/gennorm2</gennorm2>
+			<gennorm2 Condition="'$(Platform)'=='x86' and '$(OS)'=='Windows_NT'">"../../lib/downloads/x86/gennorm2.exe"</gennorm2>
+			<gennorm2 Condition="'$(Platform)'=='AnyCPU' and '$(OS)'=='Windows_NT'">"../../lib/downloads/x64/gennorm2.exe"</gennorm2>
+			<gennorm2 Condition="'$(OS)'=='Unix'">LD_LIBRARY_PATH=/usr/lib/fieldworks/lib /usr/lib/fieldworks/icu-bin/gennorm2</gennorm2>
 		</PropertyGroup>
-		<Exec Command='"$(gennorm2)" -o "$(OutDir)IcuData/icudt$(IcuVersion)l/nfc_fw.nrm" "IcuData/nfc.txt" "IcuData/nfcHebrew.txt" "IcuData/nfcOverrides.txt"' />
-		<Exec Command='"$(gennorm2)" -o "$(OutDir)IcuData/icudt$(IcuVersion)l/nfkc_fw.nrm" "IcuData/nfc.txt" "IcuData/nfcHebrew.txt" "IcuData/nfkc.txt" "IcuData/nfcOverrides.txt" "IcuData/nfkcOverrides.txt"' />
+		<Exec Command='$(gennorm2) -o "$(OutDir)IcuData/icudt$(IcuVersion)l/nfc_fw.nrm" "IcuData/nfc.txt" "IcuData/nfcHebrew.txt" "IcuData/nfcOverrides.txt"' />
+		<Exec Command='$(gennorm2) -o "$(OutDir)IcuData/icudt$(IcuVersion)l/nfkc_fw.nrm" "IcuData/nfc.txt" "IcuData/nfcHebrew.txt" "IcuData/nfkc.txt" "IcuData/nfcOverrides.txt" "IcuData/nfkcOverrides.txt"' />
 		<Copy SourceFiles="@(IcuDataInputs)" DestinationFolder="$(OutDir)IcuData/data" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
 	</Target>
 
