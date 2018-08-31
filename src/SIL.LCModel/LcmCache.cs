@@ -275,23 +275,31 @@ namespace SIL.LCModel
 				|| providerType == BackendProviderType.kSharedXMLWithMemoryOnlyWsMgr);
 			LcmCache createdCache = CreateCacheInternal(projectId, ui, dirs, settings);
 
-			// Init backend data provider
-			var dataSetup = createdCache.ServiceLocator.GetInstance<IDataSetup>();
-			dataSetup.UseMemoryWritingSystemManager = useMemoryWsManager;
-			doThe(dataSetup);
-			initialize?.Invoke(createdCache);
-
-			createdCache.FullyInitializedAndReadyToRock = true;
-
-			// Set the default user ws if we know one.
-			// This is especially important because (as of 12 Feb 2008) we are not localizing
-			// the resource string in the Language DLL which controls the default UI language.
-			if (!string.IsNullOrEmpty(userWsIcuLocale))
+			try
 			{
-				ILcmServiceLocator servLoc = createdCache.ServiceLocator;
-				CoreWritingSystemDefinition wsUser;
-				servLoc.WritingSystemManager.GetOrSet(userWsIcuLocale, out wsUser);
-				servLoc.WritingSystemManager.UserWritingSystem = wsUser;
+				// Init backend data provider
+				var dataSetup = createdCache.ServiceLocator.GetInstance<IDataSetup>();
+				dataSetup.UseMemoryWritingSystemManager = useMemoryWsManager;
+				doThe(dataSetup);
+				initialize?.Invoke(createdCache);
+
+				createdCache.FullyInitializedAndReadyToRock = true;
+
+				// Set the default user ws if we know one.
+				// This is especially important because (as of 12 Feb 2008) we are not localizing
+				// the resource string in the Language DLL which controls the default UI language.
+				if (!string.IsNullOrEmpty(userWsIcuLocale))
+				{
+					ILcmServiceLocator servLoc = createdCache.ServiceLocator;
+					CoreWritingSystemDefinition wsUser;
+					servLoc.WritingSystemManager.GetOrSet(userWsIcuLocale, out wsUser);
+					servLoc.WritingSystemManager.UserWritingSystem = wsUser;
+				}
+			}
+			catch (Exception)
+			{
+				createdCache.Dispose();
+				throw;
 			}
 
 			return createdCache;
