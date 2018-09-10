@@ -50,6 +50,7 @@
     <Compile Include="FwDataFixerTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="TestData\DanglingCustomListReference\Test.fwdata" />
     <None Include="TestData\DanglingCustomProperty\Test.fwdata" />

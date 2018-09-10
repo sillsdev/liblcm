@@ -5,10 +5,9 @@
 using System;
 using System.IO;
 using System.Reflection;
+using Icu;
 using Microsoft.Win32;
 using NUnit.Framework;
-using SIL.LCModel.Core.Text;
-using SIL.LCModel.Utils;
 
 namespace SIL.LCModel.Core.Attributes
 {
@@ -23,6 +22,8 @@ namespace SIL.LCModel.Core.Attributes
 		public override void BeforeTest(TestDetails testDetails)
 		{
 			base.BeforeTest(testDetails);
+
+			Wrapper.Init();
 
 			string dir = null;
 			if (string.IsNullOrEmpty(IcuDataPath))
@@ -62,12 +63,18 @@ namespace SIL.LCModel.Core.Attributes
 
 			try
 			{
-				Icu.InitIcuDataDir();
+				Text.Icu.InitIcuDataDir();
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine(e.Message);
 			}
+		}
+
+		public override void AfterTest(TestDetails testDetails)
+		{
+			Wrapper.Cleanup();
+			base.AfterTest(testDetails);
 		}
 	}
 }
