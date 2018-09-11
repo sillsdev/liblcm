@@ -14,7 +14,7 @@
 		<KernelInputs Include="KernelInterfaces/Language.idh"/>
 
 		<KernelOutputs Include="KernelInterfaces/Kernel.cs" />
-		<KernelOutputs Include="$(OutDir)KernelInterfaces/FwKernelTlb.iip" />
+		<KernelOutputs Include="$(OutDir)KernelInterfaces/FwKernelTlb.json" />
 	</ItemGroup>
 	<Target Name="SetInstallLocation">
 		<Exec Command="$(VSWhereDir)\vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath" ConsoleToMSBuild="true" Condition="'$(OS)'=='Windows_NT'">
@@ -57,6 +57,7 @@
 		<Delete Files="@(KernelOutputs)" ContinueOnError="true"/>
 		<Delete Files="$(IntermediateOutputPath)FwKernelTlb.idl" ContinueOnError="true" />
 		<Delete Files="$(IntermediateOutputPath)FwKernelTlb.iip" ContinueOnError="true" />
+		<Delete Files="$(IntermediateOutputPath)FwKernelTlb.json" ContinueOnError="true" />
 		<Delete Files="@(IcuDataOutputs)" ContinueOnError="true" />
 	</Target>
 
