@@ -31,6 +31,6 @@
 				UsingNamespaces="@(UsingNamespaces)"
 				IdhFiles="@(KernelIdhFiles)">
 		</IdlImp>
-		<Copy SourceFiles="$(IntermediateOutputPath)FwKernelTlb.iip" DestinationFolder="$(OutDir)KernelInterfaces" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
+		<Copy SourceFiles="$(IntermediateOutputPath)FwKernelTlb.json" DestinationFolder="$(OutDir)KernelInterfaces" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
 	</Target>
 </Project>

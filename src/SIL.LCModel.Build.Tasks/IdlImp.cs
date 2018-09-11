@@ -46,7 +46,7 @@ namespace SIL.LCModel.Build.Tasks
 	//</Target>
 	// This might well be combined with an AfterClean task like this to get rid of the files IdlImp creates:
 	//<Target Name="AfterClean">
-	//    <Delete Files="FwKernel.cs;$(OutDir)/../Common/FwKernelTlb.iip;" ContinueOnError="true"/>
+	//    <Delete Files="FwKernel.cs;$(OutDir)/../Common/FwKernelTlb.iip;$(OutDir)/../Common/FwKernelTlb.json;" ContinueOnError="true"/>
 	//</Target>
 	public class IdlImp : Task
 	{
