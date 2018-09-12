@@ -14,6 +14,7 @@
 		<KernelInputs Include="KernelInterfaces/Language.idh"/>
 
 		<KernelOutputs Include="KernelInterfaces/Kernel.cs" />
+		<KernelOutputs Include="$(OutDir)KernelInterfaces/FwKernelTlb.iip" />
 		<KernelOutputs Include="$(OutDir)KernelInterfaces/FwKernelTlb.json" />
 	</ItemGroup>
 	<Target Name="SetInstallLocation">
