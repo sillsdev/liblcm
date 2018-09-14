@@ -19,9 +19,14 @@ namespace SIL.LCModel.Core.Attributes
 
 		public string IcuDataPath { get; set; }
 
+		public int IcuVersion { get; set; }
+
 		public override void BeforeTest(TestDetails testDetails)
 		{
 			base.BeforeTest(testDetails);
+
+			if (IcuVersion > 0)
+				Wrapper.ConfineIcuVersions(IcuVersion);
 
 			Wrapper.Init();
 
