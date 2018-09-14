@@ -3,8 +3,8 @@
 	<PropertyGroup>
 		<OutDir Condition="'$(OutDir)' == ''">../../artifacts/$(Configuration)/</OutDir>
 		<IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">obj/x86/$(Configuration)/</IntermediateOutputPath>
-		<MsbuildCommand Condition="'$(OS)'=='Windows_NT'">"$(MSBuildBinPath)\msbuild.exe"</MsbuildCommand>
-		<MsbuildCommand Condition="'$(OS)'=='Unix'">xbuild</MsbuildCommand>
+		<MsbuildCommand Condition="'$(OS)'=='Windows_NT' And '$(MsBuildCommand)'==''">"$(MSBuildBinPath)\msbuild.exe"</MsbuildCommand>
+		<MsbuildCommand Condition="'$(OS)'=='Unix' And '$(MsBuildCommand)'==''">xbuild</MsbuildCommand>
 	</PropertyGroup>
 
 	<ItemGroup>
