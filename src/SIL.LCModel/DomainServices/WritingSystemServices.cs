@@ -1409,15 +1409,21 @@ namespace SIL.LCModel.DomainServices
 					((ILexDb)condemnedReversal.Owner).ReversalIndexesOC.Remove(condemnedReversal);
 				}
 			}
-
-			var homographConfig = cache.ServiceLocator.GetInstance<HomographConfiguration>();
-			if (newWsId == null)
+			if (cache.LangProject.HomographWs == origWsId)
 			{
-				homographConfig.WritingSystem = string.Empty;
-				homographConfig.CustomHomographNumbers = new List<string>();
+				var homographConfig = cache.ServiceLocator.GetInstance<HomographConfiguration>();
+
+				if (newWsId == null)
+				{
+					homographConfig.WritingSystem = string.Empty;
+					homographConfig.CustomHomographNumbers = new List<string>();
+				}
+				else
+				{
+					homographConfig.WritingSystem = newWsId;
+				}
+				cache.LangProject.HomographWs = newWsId;
 			}
-			else
-				homographConfig.WritingSystem = newWsId;
 
 			UpdateWritingSystemField(cache, servLocator.GetInstance<IWordformLookupListRepository>().AllInstances(),
 				WordformLookupListTags.kflidWritingSystem, origWsId, newWsId);
@@ -1611,59 +1617,58 @@ namespace SIL.LCModel.DomainServices
 		/// Every object that uses the WS in its representation must be marked dirty so a new representation with
 		/// the new ID can be written out. Also fields which store a string representation of the ID must be updated.
 		/// </summary>
-		public static void UpdateWritingSystemId(LcmCache cache, CoreWritingSystemDefinition changedWs, string oldId)
+		public static void UpdateWritingSystemId(LcmCache cache, CoreWritingSystemDefinition changedWs, int oldWsHandle, string oldWsId)
 		{
-			var ws = changedWs.Handle;
-			UpdateWritingSystemFields(cache, oldId, changedWs.Id);
-			StringServices.CrawlStrings(cache, (obj, str) => CheckForWs(obj, str, ws), (obj, ms) => CheckForWs(obj, ms, ws));
+			UpdateWritingSystemFields(cache, oldWsId, changedWs.Id);
+			StringServices.CrawlStrings(cache, (obj, str) => ChangeString(str, oldWsHandle, changedWs.Handle), (obj, ms) => ChangeStrings(ms, oldWsHandle, changedWs.Handle));
 		}
 
 		/// <summary>
 		/// If the string contains text in the specified ws, mark the object as dirty.
 		/// </summary>
-		private static ITsString CheckForWs(ICmObject obj, ITsString tss, int ws)
+		private static ITsString ChangeString(ITsString tss, int oldWSHandle, int newWSHandle)
 		{
-			if (StringServices.HasWs(tss, ws))
-				MarkDirty(obj);
-			return tss; // don't change data.
-		}
-
-		private static void MarkDirty(ICmObject obj)
-		{
-			obj.Services.GetInstance<IUnitOfWorkService>().RegisterObjectAsModified(obj);
+			return MergeRuns(oldWSHandle, newWSHandle, tss);
 		}
 
 		/// <summary>
 		/// If the multistring contains text in the specified ws, mark the object as dirty.
 		/// </summary>
-		private static void CheckForWs(ICmObject obj, ITsMultiString ms, int ws)
+		private static void ChangeStrings(ITsMultiString ms, int oldWSHandle, int newWSHandle)
 		{
 			var stringCount = ms.StringCount;
 			for (int i = 0; i < stringCount; i++ )
 			{
 				int wsT;
 				var tss = ms.GetStringFromIndex(i, out wsT);
-				if (wsT == ws)
-					MarkDirty(obj);
-				else
-					CheckForWs(obj, tss, ws);
+				var result = ChangeString(tss, oldWSHandle, newWSHandle);
+				if (result != tss)
+				{
+					ms.set_String(newWSHandle, result);
+					ms.set_String(oldWSHandle, null);
+				}
 			}
+		}
+
+		private static ITsString MergeRuns(int fromWsHandle, int toWsHandle, ITsString tsString)
+		{
+			int notNeeded;
+			var tsb = tsString.GetBldr();
+			var noRunsChanged = true;
+			foreach (var run in tsString.Runs())
+			{
+				int runWs = run.Props.GetIntPropValues((int)FwTextPropType.ktptWs, out notNeeded);
+				if (runWs != fromWsHandle)
+					continue;
+				tsb.SetIntPropValues(run.IchMin, run.IchLim, (int)FwTextPropType.ktptWs, (int)FwTextPropVar.ktpvDefault, toWsHandle);
+				noRunsChanged = false;
+			}
+			return noRunsChanged ? tsString : tsb.GetString();
 		}
 
 		private static ITsString MergeRun(CoreWritingSystemDefinition fromWs, CoreWritingSystemDefinition toWs, ITsString run)
 		{
-			int ws = run.get_WritingSystemAt(0);
-			int var;
-			int baseWs = run.get_PropertiesAt(0).GetIntPropValues((int) FwTextPropType.ktptBaseWs, out var);
-			if (ws != fromWs.Handle && baseWs != fromWs.Handle)
-				return run;
-
-			ITsStrBldr tsb = run.GetBldr();
-			if (ws == fromWs.Handle)
-				tsb.SetIntPropValues(0, tsb.Length, (int) FwTextPropType.ktptWs, (int) FwTextPropVar.ktpvDefault, toWs.Handle);
-			if (baseWs == fromWs.Handle)
-				tsb.SetIntPropValues(0, tsb.Length, (int) FwTextPropType.ktptWs, (int) FwTextPropVar.ktpvDefault, toWs.Handle);
-			return tsb.GetString();
+			return MergeRuns(fromWs.Handle, toWs.Handle, run);
 		}
 
 		private static void MergeMultiString(CoreWritingSystemDefinition fromWs, CoreWritingSystemDefinition toWs, ITsMultiString multiStr)
