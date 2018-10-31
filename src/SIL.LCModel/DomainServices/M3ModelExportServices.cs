@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using Icu;
 using Microsoft.Practices.ServiceLocation;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
@@ -29,7 +30,7 @@ namespace SIL.LCModel.DomainServices
 			if (languageProject == null) throw new ArgumentNullException("languageProject");
 
 			var servLoc = languageProject.Cache.ServiceLocator;
-			const Icu.UNormalizationMode mode = Icu.UNormalizationMode.UNORM_NFC;
+			const Normalizer.UNormalizationMode mode = Normalizer.UNormalizationMode.UNORM_NFC;
 			var morphologicalData = languageProject.MorphologicalDataOA;
 			var doc = new XDocument(
 				new XDeclaration("1.0", "utf-8", "yes"),
@@ -60,7 +61,7 @@ namespace SIL.LCModel.DomainServices
 			if (languageProject == null) throw new ArgumentNullException("languageProject");
 
 			var servLoc = languageProject.Cache.ServiceLocator;
-			const Icu.UNormalizationMode mode = Icu.UNormalizationMode.UNORM_NFD;
+			const Normalizer.UNormalizationMode mode = Normalizer.UNormalizationMode.UNORM_NFD;
 			var morphologicalData = languageProject.MorphologicalDataOA;
 			var doc = new XDocument(
 				new XDeclaration("1.0", "utf-8", "yes"),
@@ -82,7 +83,7 @@ namespace SIL.LCModel.DomainServices
 			return doc;
 		}
 
-		private static XElement ExportLanguageProject(ILangProject languageProject, Icu.UNormalizationMode mode)
+		private static XElement ExportLanguageProject(ILangProject languageProject, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("LangProject",
 				new XElement("Name", languageProject.ShortName),
@@ -102,7 +103,7 @@ namespace SIL.LCModel.DomainServices
 					new XElement("DefaultFont", ws.DefaultFontName)));
 		}
 
-		private static XElement ExportPartsOfSpeech(ILangProject languageProject, Icu.UNormalizationMode mode)
+		private static XElement ExportPartsOfSpeech(ILangProject languageProject, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("PartsOfSpeech",
 								ExportPartsOfSpeechList(languageProject.PartsOfSpeechOA.PossibilitiesOS, mode));
@@ -111,7 +112,7 @@ namespace SIL.LCModel.DomainServices
 		/// <summary>
 		/// Create elements for all PartOfSpeech objects in the owning vector.
 		/// </summary>
-		private static IEnumerable<XElement> ExportPartsOfSpeechList(IEnumerable<ICmPossibility> partsOfSpeech, Icu.UNormalizationMode mode)
+		private static IEnumerable<XElement> ExportPartsOfSpeechList(IEnumerable<ICmPossibility> partsOfSpeech, Normalizer.UNormalizationMode mode)
 		{
 			var retval = new List<XElement>();
 			foreach (IPartOfSpeech partOfSpeech in partsOfSpeech)
@@ -139,7 +140,7 @@ namespace SIL.LCModel.DomainServices
 		}
 
 
-		private static void ExportPartOfSpeech(IPartOfSpeech pos, ICollection<XElement> cats, Icu.UNormalizationMode mode)
+		private static void ExportPartOfSpeech(IPartOfSpeech pos, ICollection<XElement> cats, Normalizer.UNormalizationMode mode)
 		{
 			// Add 'pos'.
 			cats.Add(new XElement("PartOfSpeech",
@@ -183,14 +184,14 @@ namespace SIL.LCModel.DomainServices
 				ExportPartOfSpeech(innerPos, cats, mode);
 		}
 
-		private static XElement ExportParserParameters(IMoMorphData morphologicalData, Icu.UNormalizationMode mode)
+		private static XElement ExportParserParameters(IMoMorphData morphologicalData, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("ParserParameters",
 								XElement.Parse(Normalize(morphologicalData.ParserParameters, mode)));
 		}
 
 		private static XElement ExportCompoundRules(IRepository<IMoEndoCompound> endoCmpRepository, IRepository<IMoExoCompound> exoCmpRepository,
-			Icu.UNormalizationMode mode)
+			Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("CompoundRules",
 				from endoCompound in endoCmpRepository.AllInstances()
@@ -218,7 +219,7 @@ namespace SIL.LCModel.DomainServices
 					ExportItemAsReference(exoCompound.ToMsaOA, "ToMsa")));
 		}
 
-		private static XElement ExportAdhocCoProhibitions(IMoMorphData morphData, Icu.UNormalizationMode mode)
+		private static XElement ExportAdhocCoProhibitions(IMoMorphData morphData, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("AdhocCoProhibitions",
 				from adhocCoProhib in morphData.AdhocCoProhibitionsOC
@@ -226,7 +227,7 @@ namespace SIL.LCModel.DomainServices
 				select ExportAdhocCoProhibition(adhocCoProhib, mode));
 		}
 
-		private static XElement ExportAdhocCoProhibition(IMoAdhocProhib adhocProhib, Icu.UNormalizationMode mode)
+		private static XElement ExportAdhocCoProhibition(IMoAdhocProhib adhocProhib, Normalizer.UNormalizationMode mode)
 		{
 			switch (adhocProhib.ClassID)
 			{
@@ -240,7 +241,7 @@ namespace SIL.LCModel.DomainServices
 			return null;
 		}
 
-		private static XElement ExportAdhocCoProhibitionGroup(IMoAdhocProhibGr adhocProhibGr, Icu.UNormalizationMode mode)
+		private static XElement ExportAdhocCoProhibitionGroup(IMoAdhocProhibGr adhocProhibGr, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("MoAdhocProhibGr",
 				new XAttribute("Id", adhocProhibGr.Hvo),
@@ -271,7 +272,7 @@ namespace SIL.LCModel.DomainServices
 				select ExportItemAsReference(restOfMorph, morphAdhocProhib.RestOfMorphsRS.IndexOf(restOfMorph), "RestOfMorphs"));
 		}
 
-		private static XElement ExportProdRestrict(IMoMorphData morphData, Icu.UNormalizationMode mode)
+		private static XElement ExportProdRestrict(IMoMorphData morphData, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("ProdRestrict",
 				from restriction in morphData.ProdRestrictOA.ReallyReallyAllPossibilities
@@ -281,7 +282,7 @@ namespace SIL.LCModel.DomainServices
 					ExportBestAnalysis(restriction.Description, "Description", mode),
 					ExportBestAnalysis(restriction.Abbreviation, "Abbreviation", mode)));
 		}
-		private static XElement ExportMorphTypes(IRepository<IMoMorphType> morphTypeRepository, Icu.UNormalizationMode mode)
+		private static XElement ExportMorphTypes(IRepository<IMoMorphType> morphTypeRepository, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("MoMorphTypes",
 				from morphType in morphTypeRepository.AllInstances()
@@ -294,7 +295,7 @@ namespace SIL.LCModel.DomainServices
 					new XElement("NumberOfLexEntries", morphType.NumberOfLexEntries)));
 		}
 
-		private static XElement ExportLexEntryInflTypes(IRepository<ILexEntryInflType> irregularlyInflectedFormTypeRepository, Icu.UNormalizationMode mode)
+		private static XElement ExportLexEntryInflTypes(IRepository<ILexEntryInflType> irregularlyInflectedFormTypeRepository, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("LexEntryInflTypes",
 								from irregularlyInflectedForm in irregularlyInflectedFormTypeRepository.AllInstances()
@@ -315,7 +316,7 @@ namespace SIL.LCModel.DomainServices
 		/// <summary>
 		/// Export the full lexicon when exporting both grammar and lexicon.
 		/// </summary>
-		private static XElement ExportLexiconFull(IServiceLocator servLoc, Icu.UNormalizationMode mode)
+		private static XElement ExportLexiconFull(IServiceLocator servLoc, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("Lexicon",
 					ExportEntries(servLoc.GetInstance<ILexEntryRepository>()),
@@ -396,7 +397,7 @@ namespace SIL.LCModel.DomainServices
 			);
 		}
 
-		private static XElement ExportSenses(IRepository<ILexSense> senseRepos, Icu.UNormalizationMode mode)
+		private static XElement ExportSenses(IRepository<ILexSense> senseRepos, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("Senses",
 				from sense in senseRepos.AllInstances()
@@ -407,7 +408,7 @@ namespace SIL.LCModel.DomainServices
 					ExportBestAnalysis(sense.Definition, "Definition", mode)));
 		}
 
-		private static XElement ExportAllomorphs(IServiceLocator servLoc, Icu.UNormalizationMode mode)
+		private static XElement ExportAllomorphs(IServiceLocator servLoc, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("Allomorphs",
 				from stemAllo in servLoc.GetInstance<IMoStemAllomorphRepository>().AllInstances()
@@ -454,7 +455,7 @@ namespace SIL.LCModel.DomainServices
 
 		// ExportMorphTypes rules go above this line.
 
-		private static XElement ExportPhonologicalData(IPhPhonData phonologicalData, Icu.UNormalizationMode mode)
+		private static XElement ExportPhonologicalData(IPhPhonData phonologicalData, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("PhPhonData",
 								new XAttribute("Id", phonologicalData.Hvo),
@@ -488,14 +489,14 @@ namespace SIL.LCModel.DomainServices
 							   new XElement("PhIters"));
 		}
 
-		private static XElement ExportPhonRuleFeats(IPhPhonData phonData, Icu.UNormalizationMode mode)
+		private static XElement ExportPhonRuleFeats(IPhPhonData phonData, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("PhonRuleFeats",
 				from phonRuleFeat in phonData.PhonRuleFeatsOA.ReallyReallyAllPossibilities
 				select ExportPhonRuleFeat(phonRuleFeat as IPhPhonRuleFeat, mode));
 		}
 
-		private static XElement ExportPhonRuleFeat(IPhPhonRuleFeat phonRuleFeat, Icu.UNormalizationMode mode)
+		private static XElement ExportPhonRuleFeat(IPhPhonRuleFeat phonRuleFeat, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("PhonRuleFeat",
 								new XAttribute("Id", phonRuleFeat.Hvo),
@@ -504,7 +505,7 @@ namespace SIL.LCModel.DomainServices
 								phonRuleFeat.ItemRA != null ? new XAttribute("itemRef", phonRuleFeat.ItemRA.Hvo) : new XAttribute("missing", 1)));
 		}
 
-		private static XElement ExportPhonRule(IPhSegmentRule phonRule, Icu.UNormalizationMode mode)
+		private static XElement ExportPhonRule(IPhSegmentRule phonRule, Normalizer.UNormalizationMode mode)
 		{
 			if (phonRule.Disabled)
 				return null;
@@ -575,7 +576,7 @@ namespace SIL.LCModel.DomainServices
 				ExportItemAsReference(featureConstraint.FeatureRA, "Feature"));
 		}
 
-		private static XElement ExportPhonemeSet(IPhPhonemeSet phonemeSet, Icu.UNormalizationMode mode)
+		private static XElement ExportPhonemeSet(IPhPhonemeSet phonemeSet, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("PhPhonemeSet",
 								new XAttribute("Id", phonemeSet.Hvo),
@@ -587,7 +588,7 @@ namespace SIL.LCModel.DomainServices
 																 select ExportBoundaryMarker(marker, mode)));
 		}
 
-		private static XElement ExportBoundaryMarker(IPhBdryMarker bdryMarker, Icu.UNormalizationMode mode)
+		private static XElement ExportBoundaryMarker(IPhBdryMarker bdryMarker, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("PhBdryMarker",
 								new XAttribute("Id", bdryMarker.Hvo),
@@ -596,7 +597,7 @@ namespace SIL.LCModel.DomainServices
 								ExportCodes(bdryMarker.CodesOS, mode));
 		}
 
-		private static XElement ExportPhoneme(IPhPhoneme phoneme, Icu.UNormalizationMode mode)
+		private static XElement ExportPhoneme(IPhPhoneme phoneme, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("PhPhoneme",
 								new XAttribute("Id", phoneme.Hvo),
@@ -607,7 +608,7 @@ namespace SIL.LCModel.DomainServices
 								new XElement("PhonologicalFeatures", ExportFeatureStructure(phoneme.FeaturesOA)));
 		}
 
-		private static XElement ExportCodes(IEnumerable<IPhCode> codes, Icu.UNormalizationMode mode)
+		private static XElement ExportCodes(IEnumerable<IPhCode> codes, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("Codes", from phone in codes
 										  select new XElement("PhCode",
@@ -671,7 +672,7 @@ namespace SIL.LCModel.DomainServices
 			return retVal;
 		}
 
-		private static XElement ExportNaturalClass(IPhNaturalClass naturalClass, Icu.UNormalizationMode mode)
+		private static XElement ExportNaturalClass(IPhNaturalClass naturalClass, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement(naturalClass.ClassName,
 								new XAttribute("Id", naturalClass.Hvo),
@@ -727,7 +728,7 @@ namespace SIL.LCModel.DomainServices
 				CreateAttribute("ord", index));
 		}
 
-		private static XElement ExportStemName(IMoStemName stemName, Icu.UNormalizationMode mode)
+		private static XElement ExportStemName(IMoStemName stemName, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("MoStemName",
 								new XAttribute("Id", stemName.Hvo),
@@ -738,7 +739,7 @@ namespace SIL.LCModel.DomainServices
 														 select ExportFeatureStructure(region)));
 		}
 
-		private static XElement ExportFeatureSystem(IFsFeatureSystem featureSystem, string elementName, Icu.UNormalizationMode mode)
+		private static XElement ExportFeatureSystem(IFsFeatureSystem featureSystem, string elementName, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement(elementName,
 				new XAttribute("Id", featureSystem.Hvo),
@@ -757,7 +758,7 @@ namespace SIL.LCModel.DomainServices
 						select ExportFeatureDefn(featDefn, mode)));
 		}
 
-		private static XElement ExportFeatureDefn(IFsFeatDefn featureDefn, Icu.UNormalizationMode mode)
+		private static XElement ExportFeatureDefn(IFsFeatDefn featureDefn, Normalizer.UNormalizationMode mode)
 		{
 			switch (featureDefn.ClassName)
 			{
@@ -840,7 +841,7 @@ namespace SIL.LCModel.DomainServices
 			}
 		}
 
-		private static XElement ExportInflectionClass(IMoInflClass inflectionClass, Icu.UNormalizationMode mode)
+		private static XElement ExportInflectionClass(IMoInflClass inflectionClass, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("MoInflClass",
 								new XAttribute("Id", inflectionClass.Hvo),
@@ -851,7 +852,7 @@ namespace SIL.LCModel.DomainServices
 															select ExportInflectionClass(inflClass, mode)));
 		}
 
-		private static XElement ExportAffixtemplate(IMoInflAffixTemplate template, Icu.UNormalizationMode mode)
+		private static XElement ExportAffixtemplate(IMoInflAffixTemplate template, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("MoInflAffixTemplate",
 								new XAttribute("Id", template.Hvo),
@@ -866,7 +867,7 @@ namespace SIL.LCModel.DomainServices
 								   select ExportItemAsReference(sfxslot, template.PrefixSlotsRS.IndexOf(sfxslot), "SuffixSlots"));
 		}
 
-		private static XElement ExportBestAnalysis(IMultiAccessorBase multiString, string elementName, Icu.UNormalizationMode mode)
+		private static XElement ExportBestAnalysis(IMultiAccessorBase multiString, string elementName, Normalizer.UNormalizationMode mode)
 		{
 			if (multiString == null) throw new ArgumentNullException("multiString");
 			if (String.IsNullOrEmpty(elementName)) throw new ArgumentNullException("elementName");
@@ -874,7 +875,7 @@ namespace SIL.LCModel.DomainServices
 			return new XElement(elementName, Normalize(multiString.BestAnalysisAlternative, mode));
 		}
 
-		private static XElement ExportBestVernacular(IMultiAccessorBase multiString, string elementName, Icu.UNormalizationMode mode)
+		private static XElement ExportBestVernacular(IMultiAccessorBase multiString, string elementName, Normalizer.UNormalizationMode mode)
 		{
 			if (multiString == null) throw new ArgumentNullException("multiString");
 			if (String.IsNullOrEmpty(elementName)) throw new ArgumentNullException("elementName");
@@ -882,7 +883,7 @@ namespace SIL.LCModel.DomainServices
 			return new XElement(elementName, Normalize(multiString.BestVernacularAlternative, mode));
 		}
 
-		private static XElement ExportBestVernacularOrAnalysis(IMultiAccessorBase multiString, string elementName, Icu.UNormalizationMode mode)
+		private static XElement ExportBestVernacularOrAnalysis(IMultiAccessorBase multiString, string elementName, Normalizer.UNormalizationMode mode)
 		{
 			if (multiString == null) throw new ArgumentNullException("multiString");
 			if (String.IsNullOrEmpty(elementName)) throw new ArgumentNullException("elementName");
@@ -890,18 +891,18 @@ namespace SIL.LCModel.DomainServices
 			return new XElement(elementName, Normalize(multiString.BestVernacularAnalysisAlternative, mode));
 		}
 
-		private static string Normalize(ITsString text, Icu.UNormalizationMode mode)
+		private static string Normalize(ITsString text, Normalizer.UNormalizationMode mode)
 		{
 			if (text == null) throw new ArgumentNullException("text");
 
 			return Normalize(text.Text, mode);
 		}
 
-		private static string Normalize(string text, Icu.UNormalizationMode mode)
+		private static string Normalize(string text, Normalizer.UNormalizationMode mode)
 		{
 			if (text == null) throw new ArgumentNullException("text");
 
-			return Icu.Normalize(text, mode);
+			return Normalizer.Normalize(text, mode);
 		}
 
 		private static XElement ExportRuleMapping(IMoRuleMapping ruleMapping)

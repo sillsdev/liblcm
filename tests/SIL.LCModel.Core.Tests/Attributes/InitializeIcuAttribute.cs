@@ -68,7 +68,7 @@ namespace SIL.LCModel.Core.Attributes
 
 			try
 			{
-				Text.Icu.InitIcuDataDir();
+				Text.CustomIcu.InitIcuDataDir();
 			}
 			catch (Exception e)
 			{

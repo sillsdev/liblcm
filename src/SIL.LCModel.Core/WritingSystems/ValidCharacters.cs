@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using Icu;
 using SIL.LCModel.Core.Text;
 using SIL.WritingSystems;
 
@@ -176,7 +177,7 @@ namespace SIL.LCModel.Core.WritingSystems
 				int count = 0;
 				foreach (string chStr in m_wordFormingCharacters)
 				{
-					if (chStr.Length > 1 || Icu.IsLetter(chStr[0]))
+					if (chStr.Length > 1 || Character.IsLetter(chStr[0]))
 						count++;
 				}
 				return count;
@@ -274,10 +275,10 @@ namespace SIL.LCModel.Core.WritingSystems
 			if (code == 0x200C || code == 0x200D)
 				return true; // Zero-width non-joiner or zero-width joiner
 
-			if (Icu.IsSymbol(code))
+			if (Character.IsSymbol(code))
 				return true; // symbol
 
-			if (Icu.IsPunct(code))
+			if (Character.IsPunct(code))
 				return true; // punctuation
 
 			return false;
@@ -420,6 +421,7 @@ namespace SIL.LCModel.Core.WritingSystems
 		{
 			if (TsStringUtils.IsWordForming(codepoint))
 				return ValidCharacterType.WordForming;
+			if (Character.IsNumeric(codepoint))
 			if (DefaultWordformingChars.Any(chr => chr[0] == codepoint))
 				return ValidCharacterType.WordForming;
 			return ValidCharacterType.Other;
@@ -475,6 +477,7 @@ namespace SIL.LCModel.Core.WritingSystems
 		{
 			AddCharactersToWritingSystem(ws, "main", m_wordFormingCharacters);
 			AddCharactersToWritingSystem(ws, "punctuation", m_otherCharacters);
+			AddCharactersToWritingSystem(ws, "numeric", m_numericCharacters);
 		}
 
 		private void AddCharactersToWritingSystem(CoreWritingSystemDefinition ws, string charSetType, List<string> characters)
@@ -523,6 +526,7 @@ namespace SIL.LCModel.Core.WritingSystems
 		private void SortLists()
 		{
 			Sort(m_wordFormingCharacters);
+			Sort(m_numericCharacters);
 			Sort(m_otherCharacters);
 		}
 

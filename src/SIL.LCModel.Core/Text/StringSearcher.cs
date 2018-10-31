@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Icu;
+using Icu.Collation;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.Utils;
@@ -134,7 +136,8 @@ namespace SIL.LCModel.Core.Text
 
 			m_type = type;
 			m_sortKeySelector = (ws, text) => wsManager.Get(ws).DefaultCollation.Collator.GetSortKey(text).KeyData;
-			m_tokenizer = (ws, text) => Icu.Split(Icu.UBreakIteratorType.UBRK_WORD, wsManager.Get(ws).IcuLocale, text);
+			m_tokenizer = (ws, text) => BreakIterator.Split(BreakIterator.UBreakIteratorType.WORD,
+				wsManager.Get(ws).IcuLocale, text);
 		}
 
 		/// <summary>
@@ -238,12 +241,12 @@ namespace SIL.LCModel.Core.Text
 					{
 						byte[] sortKey = m_sortKeySelector(wsId, text);
 						var lower = new byte[text.Length * SortKeyFactor];
-						Icu.GetSortKeyBound(sortKey, Icu.UColBoundMode.UCOL_BOUND_LOWER, ref lower);
+						Collator.GetSortKeyBound(sortKey, UColBoundMode.UCOL_BOUND_LOWER, ref lower);
 						var upper = new byte[text.Length * SortKeyFactor];
-						Icu.GetSortKeyBound(sortKey,
+						Collator.GetSortKeyBound(sortKey,
 											m_type == SearchType.Exact
-												? Icu.UColBoundMode.UCOL_BOUND_UPPER
-												: Icu.UColBoundMode.UCOL_BOUND_UPPER_LONG, ref upper);
+												? UColBoundMode.UCOL_BOUND_UPPER
+												: UColBoundMode.UCOL_BOUND_UPPER_LONG, ref upper);
 
 						return index.GetItems(lower, upper);
 					}
@@ -255,12 +258,12 @@ namespace SIL.LCModel.Core.Text
 					{
 						byte[] sortKey = m_sortKeySelector(wsId, tokens[i]);
 						var lower = new byte[tokens[i].Length*SortKeyFactor];
-						Icu.GetSortKeyBound(sortKey, Icu.UColBoundMode.UCOL_BOUND_LOWER, ref lower);
+						Collator.GetSortKeyBound(sortKey, UColBoundMode.UCOL_BOUND_LOWER, ref lower);
 						var upper = new byte[tokens[i].Length*SortKeyFactor];
-						Icu.GetSortKeyBound(sortKey,
+						Collator.GetSortKeyBound(sortKey,
 											i < tokens.Length - 1
-												? Icu.UColBoundMode.UCOL_BOUND_UPPER
-												: Icu.UColBoundMode.UCOL_BOUND_UPPER_LONG, ref upper);
+												? UColBoundMode.UCOL_BOUND_UPPER
+												: UColBoundMode.UCOL_BOUND_UPPER_LONG, ref upper);
 						IEnumerable<T> items = index.GetItems(lower, upper);
 						results = results == null ? items : results.Intersect(items);
 					}
@@ -272,7 +275,7 @@ namespace SIL.LCModel.Core.Text
 
 		private static IEnumerable<string> RemoveWhitespaceAndPunctTokens(IEnumerable<string> tokens)
 		{
-			return tokens.Where(t => !t.All(c => Icu.IsSpace(c) || Icu.IsPunct(c)));
+			return tokens.Where(t => !t.All(c => Character.IsSpace(c) || Character.IsPunct(c)));
 		}
 
 		/// <summary>

@@ -11,6 +11,7 @@
 using System;
 using System.Diagnostics;
 using System.Text;
+using Icu;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
@@ -174,7 +175,7 @@ namespace SIL.LCModel.DomainImpl
 				string sMarker = FootnoteMarker.Text;
 				if (sMarker == null)
 					return FootnoteMarkerTypes.NoFootnoteMarker;
-				if (Icu.IsAlphabetic((int)sMarker[0]))
+				if (Character.IsAlphabetic(sMarker[0]))
 					return FootnoteMarkerTypes.AutoFootnoteMarker;
 				return FootnoteMarkerTypes.SymbolicFootnoteMarker;
 			}

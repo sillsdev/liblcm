@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Icu;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Phonology;
@@ -1446,12 +1447,12 @@ namespace SIL.LCModel.Infrastructure.Impl
 			// words which are capitalized at the beginning of sentences.  LT-7444 RickM
 			if (entries == null || entries.Count == 0)
 			{
-				//We need to be careful when converting to lowercase therefore use Icu.ToLower()
+				//We need to be careful when converting to lowercase therefore use CustomIcu.ToLower()
 				//get the WS of the tsString
 				int wsWf = TsStringUtils.GetWsAtOffset(tssWf, 0);
 				//use that to get the locale for the WS, which is used for
 				string wsLocale = cache.ServiceLocator.WritingSystemManager.Get(wsWf).IcuLocale;
-				string sLower = Icu.ToLower(tssWf.Text, wsLocale);
+				string sLower = UnicodeString.ToLower(tssWf.Text, wsLocale);
 				ITsTextProps ttp = tssWf.get_PropertiesAt(0);
 				tssWf = TsStringUtils.MakeString(sLower, ttp);
 				entries = FindEntriesForWordformWorker(cache, tssWf, wfa, ref duplicates);
@@ -1541,7 +1542,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				return null;
 
 			CoreWritingSystemDefinition wsVern = cache.ServiceLocator.WritingSystemManager.Get(tssWf.get_WritingSystemAt(0));
-			string wf = Icu.ToLower(tssWf.Text, wsVern.IcuLocale);
+			string wf = UnicodeString.ToLower(tssWf.Text, wsVern.IcuLocale);
 			ILexEntry matchingEntry = null;
 
 			// Check for Lexeme form.
@@ -1607,7 +1608,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			if (formTsstring == null || formTsstring.Length == 0)
 				return string.Empty;
 
-			return Icu.ToLower(formTsstring.Text, ws.IcuLocale);
+			return UnicodeString.ToLower(formTsstring.Text, ws.IcuLocale);
 		}
 	}
 	#endregion
