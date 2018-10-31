@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Icu;
+using Icu.Normalization;
 using SIL.Extensions;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Utils;
@@ -202,8 +204,9 @@ namespace SIL.LCModel.Core.Text
 				NoteAlreadyNormalized(nm);
 				return true;
 			}
-			Icu.UNormalizationMode icuMode = (nm == FwNormalizationMode.knmNFSC) ? Icu.UNormalizationMode.UNORM_NFC : (Icu.UNormalizationMode)nm;
-			if (Icu.IsNormalized(Text, icuMode))
+
+			var normalizer = CustomIcu.GetIcuNormalizer(nm);
+			if (normalizer.IsNormalized(Text))
 			{
 				// Don't do this work a second time
 				if (nm == FwNormalizationMode.knmNFSC)
@@ -277,17 +280,17 @@ namespace SIL.LCModel.Core.Text
 		/// Therefore, it is always safe to do GetChars(previousIndex, thisIndex) in a foreach loop to get
 		/// the "current" segment (assuming previousIndex is set to 0 the first time through the loop).
 		/// </summary>
-		/// <param name="icuNormalizer">IntPtr to the ICU normalizer to use (get this from Icu.GetIcuNormalizer)</param>
+		/// <param name="icuNormalizer">ICU normalizer to use (get this from CustomIcu.GetIcuNormalizer)</param>
 		/// <returns>An enumerable of indexes into "this" TsString, at all the normalization "segment" boundaries, suitable for passing into GetChars(prevIdx, thisIdx)</returns>
-		private IEnumerable<int> EnumerateSegmentLimits(IntPtr icuNormalizer)
+		private IEnumerable<int> EnumerateSegmentLimits(Normalizer2 icuNormalizer)
 		{
-			if (String.IsNullOrEmpty(Text))
+			if (string.IsNullOrEmpty(Text))
 				yield break;
 			int i = 0;
 			while (i < Text.Length)
 			{
 				int codepoint = Char.ConvertToUtf32(Text, i);
-				if (Icu.HasNormalizationBoundaryBefore(icuNormalizer, codepoint) && i > 0)
+				if (icuNormalizer.HasBoundaryBefore(codepoint) && i > 0)
 				{
 					yield return i;
 				}
@@ -344,7 +347,8 @@ namespace SIL.LCModel.Core.Text
 		/// <param name="normalizedSegment">Corresponding segment from normalized string</param>
 		/// <param name="icuNormalizer">ICU normalizer that created the corresponding segment</param>
 		/// <returns></returns>
-		private IEnumerable<RearrangedIndexMapping> MatchUpIndexesAfterNormalization(string segment, string normalizedSegment, IntPtr icuNormalizer)
+		private IEnumerable<RearrangedIndexMapping> MatchUpIndexesAfterNormalization(
+			string segment, string normalizedSegment, Normalizer2 icuNormalizer)
 		{
 			// We'll want to preserve (and later, return) the indexes of the *characters*, which won't
 			// be the same as the indexes of the codepoints if there are any surrogate pairs involved.
@@ -355,7 +359,7 @@ namespace SIL.LCModel.Core.Text
 			{
 				int origIdx = indexAndCodePoint.Key;
 				int origCodePoint = indexAndCodePoint.Value;
-				string normalizedStringFromOrigCodePoint = Icu.GetDecompositionFromUtf32(icuNormalizer, origCodePoint);
+				var normalizedStringFromOrigCodePoint = icuNormalizer.GetDecomposition(origCodePoint) ?? char.ConvertFromUtf32(origCodePoint);
 				foreach (KeyValuePair<int, int> indexAndResultingCodePoint in CodepointsByIndex(normalizedStringFromOrigCodePoint))
 				{
 					int resultingCodePoint = indexAndResultingCodePoint.Value;
@@ -431,15 +435,14 @@ namespace SIL.LCModel.Core.Text
 			// Keys = offsets into original string, values = offsets into normalized string
 			var stringOffsetMapping = willFixOffsets ? new Dictionary<int, int>() : null; // Don't allocate an object if we'll never use it
 
-			Icu.UNormalizationMode icuMode = (nm == FwNormalizationMode.knmNFSC) ? Icu.UNormalizationMode.UNORM_NFC : (Icu.UNormalizationMode)nm;
-			IntPtr icuNormalizer = Icu.GetIcuNormalizer(icuMode);
+			var icuNormalizer = CustomIcu.GetIcuNormalizer(nm);
 
 			TsStrBldr resultBuilder = new TsStrBldr();
 			int segmentMin = 0;
 			foreach (int segmentLim in EnumerateSegmentLimits(icuNormalizer))
 			{
 				string segment = GetChars(segmentMin, segmentLim);
-				string normalizedSegment = Icu.Normalize(segment, icuNormalizer);
+				string normalizedSegment = icuNormalizer.Normalize(segment);
 				int curRun = get_RunAt(segmentMin);
 				int curRunLim = get_LimOfRun(curRun);
 				ITsTextProps curTextProps = get_Properties(curRun);
@@ -499,7 +502,7 @@ namespace SIL.LCModel.Core.Text
 						{
 							// Unicode canonical ordering is such that any subsequence of a composed character can itself be composed, so this is safe.
 							string remainderOfFirstRun = GetChars(segmentMin, curRunLim);
-							string normalizedRemainder = Icu.Normalize(remainderOfFirstRun, icuNormalizer);
+							string normalizedRemainder = icuNormalizer.Normalize(remainderOfFirstRun);
 							resultBuilder.Replace(resultBuilder.Length, resultBuilder.Length, normalizedRemainder, curTextProps);
 							// Now the start of the un-composable part is just the limit of the first run (which is the start of the second run).
 							segmentMin = curRunLim;

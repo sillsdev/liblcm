@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using Icu;
 using SIL.LCModel.Application;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
@@ -3099,7 +3100,7 @@ namespace SIL.LCModel.DomainImpl
 						break;
 					case CellarPropertyType.Unicode:
 						writer.WriteStartElement("Uni"); // Open Uni element.
-						writer.WriteString(Icu.Normalize((string)data, Icu.UNormalizationMode.UNORM_NFC));
+						writer.WriteString(Normalizer.Normalize((string)data, Normalizer.UNormalizationMode.UNORM_NFC));
 						writer.WriteEndElement(); // Close Uni element.
 						break;
 					case CellarPropertyType.String:
@@ -3236,7 +3237,7 @@ namespace SIL.LCModel.DomainImpl
 					case CellarPropertyType.Unicode:
 						myElement = customPropertyElement.Element("Uni");
 						if (myElement != null)
-							data = Icu.Normalize(myElement.Value, Icu.UNormalizationMode.UNORM_NFD);
+							data = Normalizer.Normalize(myElement.Value, Normalizer.UNormalizationMode.UNORM_NFD);
 						break;
 					case CellarPropertyType.String:
 						if (customPropertyElement.HasElements)
