@@ -3,6 +3,7 @@
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System.Collections.Generic;
+using Icu;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 
@@ -198,7 +199,7 @@ namespace SIL.LCModel.DomainServices
 
 		bool IsWhite(char c)
 		{
-			return Icu.GetCharType(c) == Icu.UCharCategory.U_SPACE_SEPARATOR;
+			return Character.GetCharType(c) == Character.UCharCategory.SPACE_SEPARATOR;
 		}
 
 		// Get the segments of the paragraph, making sure they are real and have at least empty (but real)

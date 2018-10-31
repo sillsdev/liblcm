@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Icu;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Scripture;
@@ -1486,7 +1487,7 @@ namespace SIL.LCModel.DomainServices
 			{
 				// add the lowercase form to this dictionary.
 				CoreWritingSystemDefinition ws = m_wsManager.Get(tss.get_WritingSystemAt(0));
-				strLower = Icu.ToLower(str, ws.IcuLocale);
+				strLower = UnicodeString.ToLower(str, ws.IcuLocale);
 				s_wordformToLower[str] = strLower;
 			}
 			return strLower;
@@ -1546,7 +1547,7 @@ namespace SIL.LCModel.DomainServices
 		public bool IsWhite(int ich)
 		{
 			int ch = char.ConvertToUtf32(m_st, ich);
-			return Icu.GetCharType(ch) == Icu.UCharCategory.U_SPACE_SEPARATOR || ch == AnalysisOccurrence.KchZws;
+			return Character.GetCharType(ch) == Character.UCharCategory.SPACE_SEPARATOR || ch == AnalysisOccurrence.KchZws;
 		}
 
 		/// <summary>
@@ -1562,8 +1563,9 @@ namespace SIL.LCModel.DomainServices
 			string sStyleName = m_tss.get_StringPropertyAt(ich, (int)FwTextPropType.ktptNamedStyle);
 			if (sStyleName == "Chapter Number" || sStyleName == "Verse Number")
 				isLabel = true;
-			//The character is wordforming if it is not a label And it is either word forming or a number (numbers added for LT-10746)
-			return !isLabel && (m_tss.IsCharWordForming(ich, m_wsManager) || Icu.IsNumeric(m_tss.CharAt(ich)));
+			// The character is wordforming if it is not a label And it is either word forming or
+			// a number (numbers added for LT-10746)
+			return !isLabel && (m_tss.IsCharWordForming(ich, m_wsManager) || Character.IsNumeric(m_tss.CharAt(ich)));
 		}
 
 		/// <summary>
@@ -1697,7 +1699,7 @@ namespace SIL.LCModel.DomainServices
 			{
 				m_prevCh = ch;
 				ch = m_tssText.CharAt(ich);
-				Icu.UCharCategory cc = Icu.GetCharType(ch);
+				var cc = Character.GetCharType(ch);
 
 				// don't try to deduce this from cc, it can be overiden.
 				int wsHandle = m_tssText.get_WritingSystemAt(ich);
@@ -1752,7 +1754,7 @@ namespace SIL.LCModel.DomainServices
 							state = SegParseState.ProcessingLabel;
 							break;
 						}
-						if (cc == Icu.UCharCategory.U_SPACE_SEPARATOR)
+						if (cc == Character.UCharCategory.SPACE_SEPARATOR)
 						{
 							// We will end the segment here, provided we find valid content for
 							// a following segment.
@@ -1792,7 +1794,7 @@ namespace SIL.LCModel.DomainServices
 							ichStartSeg = ichLimSeg;
 							state = SegParseState.BuildingSegment;
 						}
-						else if (cc == Icu.UCharCategory.U_SPACE_SEPARATOR)
+						else if (cc == Character.UCharCategory.SPACE_SEPARATOR)
 						{
 							// found sequence of trailing spaces, put all in prev segment,
 							// but only if we haven't seen a non-blank.
@@ -1808,7 +1810,7 @@ namespace SIL.LCModel.DomainServices
 					case SegParseState.ProcessingLabel:
 						// A label segment is allowed to absorb following white space, but anything else non-label
 						// will break it.
-						if (fIsLabel || cc == Icu.UCharCategory.U_SPACE_SEPARATOR)
+						if (fIsLabel || cc == Character.UCharCategory.SPACE_SEPARATOR)
 							break;
 						m_ichMinSegBreaks.Add(ich);
 						ichLimSeg = ich;
@@ -1824,7 +1826,7 @@ namespace SIL.LCModel.DomainServices
 
 		}
 
-		private bool IsEosChar(int ch, Icu.UCharCategory cc, int ich)
+		private bool IsEosChar(int ch, Character.UCharCategory cc, int ich)
 		{
 			if (ch == 0x002E) // full stop
 				return !IsSpecialPeriod(ich);
@@ -1868,8 +1870,8 @@ namespace SIL.LCModel.DomainServices
 			}
 			// No following period, so not an ellipsis. Special exactly if numbers on both sides.
 			// No need currently to ensure correct cpe, category is not yet ws-dependent.
-			return Icu.GetCharType(m_prevCh) == Icu.UCharCategory.U_DECIMAL_DIGIT_NUMBER &&
-				   Icu.GetCharType(chNext) == Icu.UCharCategory.U_DECIMAL_DIGIT_NUMBER;
+			return Character.GetCharType(m_prevCh) == Character.UCharCategory.DECIMAL_DIGIT_NUMBER &&
+				   Character.GetCharType(chNext) == Character.UCharCategory.DECIMAL_DIGIT_NUMBER;
 		}
 
 		/// <summary>

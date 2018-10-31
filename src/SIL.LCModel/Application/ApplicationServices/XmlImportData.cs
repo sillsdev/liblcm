@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using Icu;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
@@ -2375,7 +2376,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 
 		private ICmObject GetEntryOrSense(int ws, string sForm, string sSenseNumber, int flid)
 		{
-			string sn = Icu.Normalize(sForm, Icu.UNormalizationMode.UNORM_NFD);
+			string sn = Normalizer.Normalize(sForm, Normalizer.UNormalizationMode.UNORM_NFD);
 			WsString wss = new WsString(ws, sn);
 			ILexEntry le;
 			if (m_mapFormEntry.TryGetValue(wss, out le))

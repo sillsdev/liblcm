@@ -12,6 +12,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
+using Icu;
 using SIL.LCModel.Core.Text;
 using SIL.Reporting;
 using SIL.WritingSystems;
@@ -393,7 +394,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		//            ws.SpellCheckingId = spellCheck;
 		//        string validChars = GetUnicode(wsElem, "ValidChars24");
 		//        if (!string.IsNullOrEmpty(validChars))
-		//            ws.ValidChars = Icu.Normalize(validChars, Icu.UNormalizationMode.UNORM_NFD);
+		//            ws.ValidChars = Normalizer.Normalize(validChars, Normalizer.UNormalizationMode.UNORM_NFD);
 		//    }
 
 		//    var localeName = (string) langDefElem.Element("LocaleName");
@@ -464,7 +465,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				ws.SpellCheckingId = spellCheck;
 			string validChars = GetUnicode(wsElem, "ValidChars");
 			if (!string.IsNullOrEmpty(validChars))
-				ws.ValidChars = Icu.Normalize(validChars, Icu.UNormalizationMode.UNORM_NFD);
+				ws.ValidChars = Normalizer.Normalize(validChars, Normalizer.UNormalizationMode.UNORM_NFD);
 
 			XElement collsElem = wsElem.Element("Collations");
 			if (collsElem != null)
@@ -1090,10 +1091,9 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				}
 			}
 
-			Icu.UErrorCode err;
-			string icuLanguageCode;
+			var locale = new Locale(icuLocale);
 			string languageCode;
-			Icu.GetLanguageCode(icuLocale, out icuLanguageCode, out err);
+			var icuLanguageCode = locale.Language;
 			if (icuLanguageCode.Length == 4 && icuLanguageCode.StartsWith("x"))
 				languageCode = icuLanguageCode.Substring(1);
 			else
@@ -1140,20 +1140,17 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			if (icuLanguageCode == icuLocale)
 				return ToLangTag(languageSubtag, null, null, null);
 
-			string scriptCode;
-			Icu.GetScriptCode(icuLocale, out scriptCode, out err);
+			var scriptCode = locale.Script;
 			Version19ScriptSubtag scriptSubtag = null;
 			if (!string.IsNullOrEmpty(scriptCode))
 				scriptSubtag = GetScriptSubtag(scriptCode);
 
-			string regionCode;
-			Icu.GetCountryCode(icuLocale, out regionCode, out err);
+			var regionCode = locale.Country;
 			Version19RegionSubtag regionSubtag = null;
 			if (!string.IsNullOrEmpty(regionCode))
 				regionSubtag = GetRegionSubtag(regionCode);
 
-			string variantCode;
-			Icu.GetVariantCode(icuLocale, out variantCode, out err);
+			var variantCode = locale.Variant;
 			Version19VariantSubtag variantSubtag = null;
 			if (!string.IsNullOrEmpty(variantCode))
 			{

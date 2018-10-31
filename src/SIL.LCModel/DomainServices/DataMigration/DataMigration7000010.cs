@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using Icu;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Utils;
 
@@ -1427,7 +1428,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			var bldr = new StringBuilder();
 			for (var i = 0; i < runs.Count; ++i)
 				bldr.Append(runs[i]);
-			var text = Icu.Normalize(bldr.ToString(), Icu.UNormalizationMode.UNORM_NFD);
+			var text = Normalizer.Normalize(bldr.ToString(), Normalizer.UNormalizationMode.UNORM_NFD);
 			ParseTextAndCheckForXfics(text, context);
 		}
 
@@ -1747,7 +1748,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			var bldr = new StringBuilder();
 			for (int i = 0; i < runs.Count; ++i)
 				bldr.Append(runs[i]);
-			var fullParaContents = Icu.Normalize(bldr.ToString(), Icu.UNormalizationMode.UNORM_NFD);
+			var fullParaContents = Normalizer.Normalize(bldr.ToString(), Normalizer.UNormalizationMode.UNORM_NFD);
 			if (endOffset > fullParaContents.Length)
 			{
 				// Total string is too short (end offset beyond end of string).
@@ -1767,7 +1768,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			var currentTotalLength = 0;
 			for (var i = 0; i < runs.Count; ++i)
 			{
-				var currentRunText = Icu.Normalize(runs[i], Icu.UNormalizationMode.UNORM_NFD);
+				var currentRunText = Normalizer.Normalize(runs[i], Normalizer.UNormalizationMode.UNORM_NFD);
 				currentTotalLength += currentRunText.Length;
 				if (beginOffset >= currentTotalLength)
 					continue; // Not in this run.
@@ -2532,12 +2533,12 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 		private bool CurrentCharIsAlphabetic()
 		{
-			return Icu.IsAlphabetic(m_text[m_index]);
+			return Character.IsAlphabetic(m_text[m_index]);
 		}
 
 		private bool CurrentCharIsWhitespace()
 		{
-			return Icu.IsSpace(m_text[m_index]);
+			return Character.IsSpace(m_text[m_index]);
 		}
 
 		private void EnterPunctState()

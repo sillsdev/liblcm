@@ -17,6 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using Icu;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.DomainServices;
@@ -894,7 +895,7 @@ namespace SIL.LCModel.DomainImpl
 
 			writer.WriteStartElement("AUni");
 			writer.WriteAttributeString("ws", m_object.Services.WritingSystemManager.Get(ws).Id);
-			text = Icu.Normalize(text, Icu.UNormalizationMode.UNORM_NFC);
+			text = Normalizer.Normalize(text, Normalizer.UNormalizationMode.UNORM_NFC);
 			writer.WriteString(text);
 			writer.WriteEndElement();
 		}
@@ -937,7 +938,7 @@ namespace SIL.LCModel.DomainImpl
 			// </Form>
 			if (wsHvo == 0)
 				return 0;
-			var text = Icu.Normalize(sValue, Icu.UNormalizationMode.UNORM_NFD);
+			var text = Normalizer.Normalize(sValue, Normalizer.UNormalizationMode.UNORM_NFD);
 			tss = TsStringUtils.MakeString(text, wsHvo);
 			return wsHvo;
 		}

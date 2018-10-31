@@ -14,6 +14,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
+using Icu;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Utils;
 
@@ -94,7 +95,7 @@ namespace SIL.LCModel.Core.Text
 					if (value > 0)
 					{
 						string id = lgwsf.GetStrFromWs(value);
-						writer.WriteAttributeString(tpt == FwTextPropType.ktptWs ? "ws" : "wsBase", Icu.Normalize(id, Icu.UNormalizationMode.UNORM_NFC));
+						writer.WriteAttributeString(tpt == FwTextPropType.ktptWs ? "ws" : "wsBase", Normalizer.Normalize(id, Normalizer.UNormalizationMode.UNORM_NFC));
 					}
 					break;
 				case FwTextPropType.ktptFontSize:
@@ -243,10 +244,10 @@ namespace SIL.LCModel.Core.Text
 			switch (tpt)
 			{
 				case FwTextPropType.ktptCharStyle:
-					writer.WriteAttributeString("charStyle", Icu.Normalize(value, Icu.UNormalizationMode.UNORM_NFC));
+					writer.WriteAttributeString("charStyle", Normalizer.Normalize(value, Normalizer.UNormalizationMode.UNORM_NFC));
 					break;
 				case FwTextPropType.ktptFontFamily:
-					writer.WriteAttributeString("fontFamily", Icu.Normalize(value, Icu.UNormalizationMode.UNORM_NFC));
+					writer.WriteAttributeString("fontFamily", Normalizer.Normalize(value, Normalizer.UNormalizationMode.UNORM_NFC));
 					break;
 				case FwTextPropType.ktptObjData:
 					if (string.IsNullOrEmpty(value))
@@ -264,7 +265,7 @@ namespace SIL.LCModel.Core.Text
 							writer.WriteAttributeString("link", GetGuidString(value));
 							break;
 						case FwObjDataTypes.kodtExternalPathName:
-							writer.WriteAttributeString("externalLink", Icu.Normalize(value.Substring(1), Icu.UNormalizationMode.UNORM_NFC));
+							writer.WriteAttributeString("externalLink", Normalizer.Normalize(value.Substring(1), Normalizer.UNormalizationMode.UNORM_NFC));
 							break;
 						case FwObjDataTypes.kodtOwnNameGuidHot:
 							writer.WriteAttributeString("ownlink", GetGuidString(value));
@@ -273,7 +274,7 @@ namespace SIL.LCModel.Core.Text
 							// This is only used for copying to the clipboard
 							// We assume that the buffer contains valid XML and that the receiving code
 							// knows what to do with it!
-							writer.WriteAttributeString("embedded", Icu.Normalize(value.Substring(1), Icu.UNormalizationMode.UNORM_NFC));
+							writer.WriteAttributeString("embedded", Normalizer.Normalize(value.Substring(1), Normalizer.UNormalizationMode.UNORM_NFC));
 							break;
 						case FwObjDataTypes.kodtContextString:
 							// This is a generated context-sensitive string.  The next 8 characters give a
@@ -295,13 +296,13 @@ namespace SIL.LCModel.Core.Text
 
 				// Properties from Views
 				case FwTextPropType.ktptNamedStyle:
-					writer.WriteAttributeString("namedStyle", Icu.Normalize(value, Icu.UNormalizationMode.UNORM_NFC));
+					writer.WriteAttributeString("namedStyle", Normalizer.Normalize(value, Normalizer.UNormalizationMode.UNORM_NFC));
 					break;
 				case FwTextPropType.ktptBulNumTxtBef:
-					writer.WriteAttributeString("bulNumTxtBef", Icu.Normalize(value, Icu.UNormalizationMode.UNORM_NFC));
+					writer.WriteAttributeString("bulNumTxtBef", Normalizer.Normalize(value, Normalizer.UNormalizationMode.UNORM_NFC));
 					break;
 				case FwTextPropType.ktptBulNumTxtAft:
-					writer.WriteAttributeString("bulNumTxtAft", Icu.Normalize(value, Icu.UNormalizationMode.UNORM_NFC));
+					writer.WriteAttributeString("bulNumTxtAft", Normalizer.Normalize(value, Normalizer.UNormalizationMode.UNORM_NFC));
 					break;
 				case FwTextPropType.ktptBulNumFontInfo:
 					// BulNumFontInfo is written separately.
@@ -310,13 +311,13 @@ namespace SIL.LCModel.Core.Text
 					// WsStyle is written separately.
 					break;
 				case FwTextPropType.ktptFontVariations:
-					writer.WriteAttributeString("fontVariations", Icu.Normalize(value, Icu.UNormalizationMode.UNORM_NFC));
+					writer.WriteAttributeString("fontVariations", Normalizer.Normalize(value, Normalizer.UNormalizationMode.UNORM_NFC));
 					break;
 				case FwTextPropType.ktptParaStyle:
-					writer.WriteAttributeString("paraStyle", Icu.Normalize(value, Icu.UNormalizationMode.UNORM_NFC));
+					writer.WriteAttributeString("paraStyle", Normalizer.Normalize(value, Normalizer.UNormalizationMode.UNORM_NFC));
 					break;
 				case FwTextPropType.ktptTabList:
-					writer.WriteAttributeString("tabList", Icu.Normalize(value, Icu.UNormalizationMode.UNORM_NFC));
+					writer.WriteAttributeString("tabList", Normalizer.Normalize(value, Normalizer.UNormalizationMode.UNORM_NFC));
 					break;
 				case FwTextPropType.ktptTags:
 					const int guidLength = 16;
@@ -418,7 +419,7 @@ namespace SIL.LCModel.Core.Text
 				if (string.IsNullOrEmpty(id))
 					continue;
 				writer.WriteStartElement("WsProp");
-				writer.WriteAttributeString("ws", Icu.Normalize(id, Icu.UNormalizationMode.UNORM_NFC));
+				writer.WriteAttributeString("ws", Normalizer.Normalize(id, Normalizer.UNormalizationMode.UNORM_NFC));
 				WSStyleInfo wsStyleInfo = kvp.Value;
 				WriteStringPropertyIfSpecified(writer, FwTextPropType.ktptFontFamily, wsStyleInfo.FontFamily);
 				WriteStringPropertyIfSpecified(writer, FwTextPropType.ktptFontVariations, wsStyleInfo.FontVariations);

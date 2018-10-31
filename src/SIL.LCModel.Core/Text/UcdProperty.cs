@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Icu;
 
 namespace SIL.LCModel.Core.Text
 {
@@ -234,65 +235,65 @@ namespace SIL.LCModel.Core.Text
 				s_ucdPropertyDict.Add(UcdCategories.bidiMirrored, new Dictionary<int, UcdProperty>());
 
 				#region generalCategory
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_UPPERCASE_LETTER,
+				generalCategoryDict.Add((int)Character.UCharCategory.UPPERCASE_LETTER,
 					new UcdProperty("Lu", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_LOWERCASE_LETTER,
+				generalCategoryDict.Add((int)Character.UCharCategory.LOWERCASE_LETTER,
 					new UcdProperty("Ll", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_TITLECASE_LETTER,
+				generalCategoryDict.Add((int)Character.UCharCategory.TITLECASE_LETTER,
 					new UcdProperty("Lt", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_MODIFIER_LETTER,
+				generalCategoryDict.Add((int)Character.UCharCategory.MODIFIER_LETTER,
 					new UcdProperty("Lm", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_OTHER_LETTER,
+				generalCategoryDict.Add((int)Character.UCharCategory.OTHER_LETTER,
 					new UcdProperty("Lo", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_NON_SPACING_MARK,
+				generalCategoryDict.Add((int)Character.UCharCategory.NON_SPACING_MARK,
 					new UcdProperty("Mn", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_COMBINING_SPACING_MARK,
+				generalCategoryDict.Add((int)Character.UCharCategory.COMBINING_SPACING_MARK,
 					new UcdProperty("Mc", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_ENCLOSING_MARK,
+				generalCategoryDict.Add((int)Character.UCharCategory.ENCLOSING_MARK,
 					new UcdProperty("Me", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_DECIMAL_DIGIT_NUMBER,
+				generalCategoryDict.Add((int)Character.UCharCategory.DECIMAL_DIGIT_NUMBER,
 					new UcdProperty("Nd", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_LETTER_NUMBER,
+				generalCategoryDict.Add((int)Character.UCharCategory.LETTER_NUMBER,
 					new UcdProperty("Nl", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_OTHER_NUMBER,
+				generalCategoryDict.Add((int)Character.UCharCategory.OTHER_NUMBER,
 					new UcdProperty("No", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_CONNECTOR_PUNCTUATION,
+				generalCategoryDict.Add((int)Character.UCharCategory.CONNECTOR_PUNCTUATION,
 					new UcdProperty("Pc", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_DASH_PUNCTUATION,
+				generalCategoryDict.Add((int)Character.UCharCategory.DASH_PUNCTUATION,
 					new UcdProperty("Pd", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_START_PUNCTUATION,
+				generalCategoryDict.Add((int)Character.UCharCategory.START_PUNCTUATION,
 					new UcdProperty("Ps", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_END_PUNCTUATION,
+				generalCategoryDict.Add((int)Character.UCharCategory.END_PUNCTUATION,
 					new UcdProperty("Pe", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_INITIAL_PUNCTUATION,
+				generalCategoryDict.Add((int)Character.UCharCategory.INITIAL_PUNCTUATION,
 					new UcdProperty("Pi", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_FINAL_PUNCTUATION,
+				generalCategoryDict.Add((int)Character.UCharCategory.FINAL_PUNCTUATION,
 					new UcdProperty("Pf", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_OTHER_PUNCTUATION,
+				generalCategoryDict.Add((int)Character.UCharCategory.OTHER_PUNCTUATION,
 					new UcdProperty("Po", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_MATH_SYMBOL,
+				generalCategoryDict.Add((int)Character.UCharCategory.MATH_SYMBOL,
 					new UcdProperty("Sm", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_CURRENCY_SYMBOL,
+				generalCategoryDict.Add((int)Character.UCharCategory.CURRENCY_SYMBOL,
 					new UcdProperty("Sc", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_MODIFIER_SYMBOL,
+				generalCategoryDict.Add((int)Character.UCharCategory.MODIFIER_SYMBOL,
 					new UcdProperty("Sk", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_OTHER_SYMBOL,
+				generalCategoryDict.Add((int)Character.UCharCategory.OTHER_SYMBOL,
 					new UcdProperty("So", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_SPACE_SEPARATOR,
+				generalCategoryDict.Add((int)Character.UCharCategory.SPACE_SEPARATOR,
 					new UcdProperty("Zs", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_LINE_SEPARATOR,
+				generalCategoryDict.Add((int)Character.UCharCategory.LINE_SEPARATOR,
 					new UcdProperty("Zl", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_PARAGRAPH_SEPARATOR,
+				generalCategoryDict.Add((int)Character.UCharCategory.PARAGRAPH_SEPARATOR,
 					new UcdProperty("Zp", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_CONTROL_CHAR,
+				generalCategoryDict.Add((int)Character.UCharCategory.CONTROL_CHAR,
 					new UcdProperty("Cc", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_FORMAT_CHAR,
+				generalCategoryDict.Add((int)Character.UCharCategory.FORMAT_CHAR,
 					new UcdProperty("Cf", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_SURROGATE,
+				generalCategoryDict.Add((int)Character.UCharCategory.SURROGATE,
 					new UcdProperty("Cs", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_PRIVATE_USE_CHAR,
+				generalCategoryDict.Add((int)Character.UCharCategory.PRIVATE_USE_CHAR,
 					new UcdProperty("Co", UcdCategories.generalCategory));
-				generalCategoryDict.Add((int)Icu.UCharCategory.U_UNASSIGNED,
+				generalCategoryDict.Add((int)Character.UCharCategory.UNASSIGNED,
 					new UcdProperty("Cn", UcdCategories.generalCategory));
 				#endregion
 
@@ -354,95 +355,95 @@ namespace SIL.LCModel.Core.Text
 				#endregion
 
 				#region bidiClass
-				bidiClassDict.Add((int)Icu.UCharDirection.U_LEFT_TO_RIGHT,
+				bidiClassDict.Add((int)Character.UCharDirection.LEFT_TO_RIGHT,
 					new UcdProperty("L", UcdCategories.bidiClass));
-				bidiClassDict.Add((int)Icu.UCharDirection.U_LEFT_TO_RIGHT_EMBEDDING,
+				bidiClassDict.Add((int)Character.UCharDirection.LEFT_TO_RIGHT_EMBEDDING,
 					new UcdProperty("LRE", UcdCategories.bidiClass));
-				bidiClassDict.Add((int)Icu.UCharDirection.U_LEFT_TO_RIGHT_OVERRIDE,
+				bidiClassDict.Add((int)Character.UCharDirection.LEFT_TO_RIGHT_OVERRIDE,
 					new UcdProperty("LRO", UcdCategories.bidiClass));
-				bidiClassDict.Add((int)Icu.UCharDirection.U_RIGHT_TO_LEFT,
+				bidiClassDict.Add((int)Character.UCharDirection.RIGHT_TO_LEFT,
 					new UcdProperty("R", UcdCategories.bidiClass));
-				bidiClassDict.Add((int)Icu.UCharDirection.U_RIGHT_TO_LEFT_ARABIC,
+				bidiClassDict.Add((int)Character.UCharDirection.RIGHT_TO_LEFT_ARABIC,
 					new UcdProperty("AL", UcdCategories.bidiClass));
-				bidiClassDict.Add((int)Icu.UCharDirection.U_RIGHT_TO_LEFT_EMBEDDING,
+				bidiClassDict.Add((int)Character.UCharDirection.RIGHT_TO_LEFT_EMBEDDING,
 					new UcdProperty("RLE", UcdCategories.bidiClass));
-				bidiClassDict.Add((int)Icu.UCharDirection.U_RIGHT_TO_LEFT_OVERRIDE,
+				bidiClassDict.Add((int)Character.UCharDirection.RIGHT_TO_LEFT_OVERRIDE,
 					new UcdProperty("RLO", UcdCategories.bidiClass));
-				bidiClassDict.Add((int)Icu.UCharDirection.U_POP_DIRECTIONAL_FORMAT,
+				bidiClassDict.Add((int)Character.UCharDirection.POP_DIRECTIONAL_FORMAT,
 					new UcdProperty("PDF", UcdCategories.bidiClass));
-				bidiClassDict.Add((int)Icu.UCharDirection.U_EUROPEAN_NUMBER,
+				bidiClassDict.Add((int)Character.UCharDirection.EUROPEAN_NUMBER,
 					new UcdProperty("EN", UcdCategories.bidiClass));
-				bidiClassDict.Add((int)Icu.UCharDirection.U_EUROPEAN_NUMBER_SEPARATOR,
+				bidiClassDict.Add((int)Character.UCharDirection.EUROPEAN_NUMBER_SEPARATOR,
 					new UcdProperty("ES", UcdCategories.bidiClass));
-				bidiClassDict.Add((int)Icu.UCharDirection.U_EUROPEAN_NUMBER_TERMINATOR,
+				bidiClassDict.Add((int)Character.UCharDirection.EUROPEAN_NUMBER_TERMINATOR,
 					new UcdProperty("ET", UcdCategories.bidiClass));
-				bidiClassDict.Add((int)Icu.UCharDirection.U_ARABIC_NUMBER,
+				bidiClassDict.Add((int)Character.UCharDirection.ARABIC_NUMBER,
 					new UcdProperty("AN", UcdCategories.bidiClass));
-				bidiClassDict.Add((int)Icu.UCharDirection.U_COMMON_NUMBER_SEPARATOR,
+				bidiClassDict.Add((int)Character.UCharDirection.COMMON_NUMBER_SEPARATOR,
 					new UcdProperty("CS", UcdCategories.bidiClass));
-				bidiClassDict.Add((int)Icu.UCharDirection.U_DIR_NON_SPACING_MARK,
+				bidiClassDict.Add((int)Character.UCharDirection.DIR_NON_SPACING_MARK,
 					new UcdProperty("NSM", UcdCategories.bidiClass));
-				bidiClassDict.Add((int)Icu.UCharDirection.U_BOUNDARY_NEUTRAL,
+				bidiClassDict.Add((int)Character.UCharDirection.BOUNDARY_NEUTRAL,
 					new UcdProperty("BN", UcdCategories.bidiClass));
-				bidiClassDict.Add((int)Icu.UCharDirection.U_BLOCK_SEPARATOR,
+				bidiClassDict.Add((int)Character.UCharDirection.BLOCK_SEPARATOR,
 					new UcdProperty("B", UcdCategories.bidiClass));
-				bidiClassDict.Add((int)Icu.UCharDirection.U_SEGMENT_SEPARATOR,
+				bidiClassDict.Add((int)Character.UCharDirection.SEGMENT_SEPARATOR,
 					new UcdProperty("S", UcdCategories.bidiClass));
-				bidiClassDict.Add((int)Icu.UCharDirection.U_WHITE_SPACE_NEUTRAL,
+				bidiClassDict.Add((int)Character.UCharDirection.WHITE_SPACE_NEUTRAL,
 					new UcdProperty("WS", UcdCategories.bidiClass));
-				bidiClassDict.Add((int)Icu.UCharDirection.U_OTHER_NEUTRAL,
+				bidiClassDict.Add((int)Character.UCharDirection.OTHER_NEUTRAL,
 					new UcdProperty("ON", UcdCategories.bidiClass));
 				#endregion
 
 				#region compatabilityDecompositionType
-				compatabilityDecompositionDict.Add((int)Icu.UDecompositionType.U_DT_NONE,
+				compatabilityDecompositionDict.Add((int)Character.UDecompositionType.NONE,
 					new UcdProperty("NONE", UcdCategories.compatabilityDecompositionType));
-				compatabilityDecompositionDict.Add((int)Icu.UDecompositionType.U_DT_CANONICAL,
+				compatabilityDecompositionDict.Add((int)Character.UDecompositionType.CANONICAL,
 					new UcdProperty("CANONICAL", UcdCategories.compatabilityDecompositionType));
-				compatabilityDecompositionDict.Add((int)Icu.UDecompositionType.U_DT_FONT,
+				compatabilityDecompositionDict.Add((int)Character.UDecompositionType.FONT,
 					new UcdProperty("<font>", UcdCategories.compatabilityDecompositionType));
-				compatabilityDecompositionDict.Add((int)Icu.UDecompositionType.U_DT_NOBREAK,
+				compatabilityDecompositionDict.Add((int)Character.UDecompositionType.NOBREAK,
 					new UcdProperty("<noBreak>", UcdCategories.compatabilityDecompositionType));
-				compatabilityDecompositionDict.Add((int)Icu.UDecompositionType.U_DT_INITIAL,
+				compatabilityDecompositionDict.Add((int)Character.UDecompositionType.INITIAL,
 					new UcdProperty("<initial>", UcdCategories.compatabilityDecompositionType));
-				compatabilityDecompositionDict.Add((int)Icu.UDecompositionType.U_DT_MEDIAL,
+				compatabilityDecompositionDict.Add((int)Character.UDecompositionType.MEDIAL,
 					new UcdProperty("<medial>", UcdCategories.compatabilityDecompositionType));
-				compatabilityDecompositionDict.Add((int)Icu.UDecompositionType.U_DT_FINAL,
+				compatabilityDecompositionDict.Add((int)Character.UDecompositionType.FINAL,
 					new UcdProperty("<final>", UcdCategories.compatabilityDecompositionType));
-				compatabilityDecompositionDict.Add((int)Icu.UDecompositionType.U_DT_ISOLATED,
+				compatabilityDecompositionDict.Add((int)Character.UDecompositionType.ISOLATED,
 					new UcdProperty("<isolated>", UcdCategories.compatabilityDecompositionType));
-				compatabilityDecompositionDict.Add((int)Icu.UDecompositionType.U_DT_CIRCLE,
+				compatabilityDecompositionDict.Add((int)Character.UDecompositionType.CIRCLE,
 					new UcdProperty("<circle>", UcdCategories.compatabilityDecompositionType));
-				compatabilityDecompositionDict.Add((int)Icu.UDecompositionType.U_DT_SUPER,
+				compatabilityDecompositionDict.Add((int)Character.UDecompositionType.SUPER,
 					new UcdProperty("<super>", UcdCategories.compatabilityDecompositionType));
-				compatabilityDecompositionDict.Add((int)Icu.UDecompositionType.U_DT_SUB,
+				compatabilityDecompositionDict.Add((int)Character.UDecompositionType.SUB,
 					new UcdProperty("<sub>", UcdCategories.compatabilityDecompositionType));
-				compatabilityDecompositionDict.Add((int)Icu.UDecompositionType.U_DT_VERTICAL,
+				compatabilityDecompositionDict.Add((int)Character.UDecompositionType.VERTICAL,
 					new UcdProperty("<vertical>", UcdCategories.compatabilityDecompositionType));
-				compatabilityDecompositionDict.Add((int)Icu.UDecompositionType.U_DT_WIDE,
+				compatabilityDecompositionDict.Add((int)Character.UDecompositionType.WIDE,
 					new UcdProperty("<wide>", UcdCategories.compatabilityDecompositionType));
-				compatabilityDecompositionDict.Add((int)Icu.UDecompositionType.U_DT_NARROW,
+				compatabilityDecompositionDict.Add((int)Character.UDecompositionType.NARROW,
 					new UcdProperty("<narrow>", UcdCategories.compatabilityDecompositionType));
-				compatabilityDecompositionDict.Add((int)Icu.UDecompositionType.U_DT_SMALL,
+				compatabilityDecompositionDict.Add((int)Character.UDecompositionType.SMALL,
 					new UcdProperty("<small>", UcdCategories.compatabilityDecompositionType));
-				compatabilityDecompositionDict.Add((int)Icu.UDecompositionType.U_DT_SQUARE,
+				compatabilityDecompositionDict.Add((int)Character.UDecompositionType.SQUARE,
 					new UcdProperty("<square>", UcdCategories.compatabilityDecompositionType));
-				compatabilityDecompositionDict.Add((int)Icu.UDecompositionType.U_DT_FRACTION,
+				compatabilityDecompositionDict.Add((int)Character.UDecompositionType.FRACTION,
 					new UcdProperty("<fraction>", UcdCategories.compatabilityDecompositionType));
-				compatabilityDecompositionDict.Add((int)Icu.UDecompositionType.U_DT_COMPAT,
+				compatabilityDecompositionDict.Add((int)Character.UDecompositionType.COMPAT,
 					new UcdProperty("<compat>", UcdCategories.compatabilityDecompositionType));
 				#endregion
 
 				#region numericType
-				numericTypeDict.Add((int)Icu.UNumericType.U_NT_DECIMAL,
+				numericTypeDict.Add((int)Character.UNumericType.DECIMAL,
 					new UcdProperty("DECIMAL", UcdCategories.numericType));
-				numericTypeDict.Add((int)Icu.UNumericType.U_NT_NUMERIC,
+				numericTypeDict.Add((int)Character.UNumericType.NUMERIC,
 					new UcdProperty("NUMERIC", UcdCategories.numericType));
-				numericTypeDict.Add((int)Icu.UNumericType.U_NT_DIGIT,
+				numericTypeDict.Add((int)Character.UNumericType.DIGIT,
 					new UcdProperty("DIGIT", UcdCategories.numericType));
-				numericTypeDict.Add((int)Icu.UNumericType.U_NT_NONE,
+				numericTypeDict.Add((int)Character.UNumericType.NONE,
 					new UcdProperty("NONE", UcdCategories.numericType));
-				numericTypeDict.Add((int)Icu.UNumericType.U_NT_COUNT,
+				numericTypeDict.Add((int)Character.UNumericType.COUNT,
 					new UcdProperty("COUNT", UcdCategories.numericType));
 				#endregion
 			}
@@ -459,7 +460,7 @@ namespace SIL.LCModel.Core.Text
 		/// Thus two calls will get the same instance.
 		/// </returns>
 		/// ------------------------------------------------------------------------------------
-		public static UcdProperty GetInstance(Icu.UCharCategory generalCategory)
+		public static UcdProperty GetInstance(Character.UCharCategory generalCategory)
 		{
 			InitializeHashTables();
 			Dictionary<int, UcdProperty> propertyHash = s_ucdPropertyDict[UcdCategories.generalCategory];
@@ -494,7 +495,7 @@ namespace SIL.LCModel.Core.Text
 		/// Thus two calls will get the same instance.
 		/// </returns>
 		/// ------------------------------------------------------------------------------------
-		public static UcdProperty GetInstance(Icu.UCharDirection bidiClass)
+		public static UcdProperty GetInstance(Character.UCharDirection bidiClass)
 		{
 			InitializeHashTables();
 			Dictionary<int, UcdProperty> propertyHash = s_ucdPropertyDict[UcdCategories.bidiClass];
@@ -511,7 +512,7 @@ namespace SIL.LCModel.Core.Text
 		/// Thus two calls will get the same instance.
 		/// </returns>
 		/// ------------------------------------------------------------------------------------
-		public static UcdProperty GetInstance(Icu.UDecompositionType decompositionType)
+		public static UcdProperty GetInstance(Character.UDecompositionType decompositionType)
 		{
 			InitializeHashTables();
 			Dictionary<int, UcdProperty> propertyHash = s_ucdPropertyDict[UcdCategories.compatabilityDecompositionType];
@@ -528,7 +529,7 @@ namespace SIL.LCModel.Core.Text
 		/// Thus two calls will get the same instance.
 		/// </returns>
 		/// ------------------------------------------------------------------------------------
-		public static UcdProperty GetInstance(Icu.UNumericType numericType)
+		public static UcdProperty GetInstance(Character.UNumericType numericType)
 		{
 			InitializeHashTables();
 			Dictionary<int, UcdProperty> propertyHash = s_ucdPropertyDict[UcdCategories.numericType];
@@ -572,7 +573,7 @@ namespace SIL.LCModel.Core.Text
 			if (ucdCategory == UcdCategories.compatabilityDecompositionType &&
 				ucdRepresentation == "")
 			{
-				return GetInstance(Icu.UDecompositionType.U_DT_NONE);
+				return GetInstance(Character.UDecompositionType.NONE);
 			}
 			// If the specified a UcdProptery, but none was found, fall through to this error
 			throw new ArgumentException("The specified UcdProperty does not exist. " +

@@ -10,6 +10,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Icu;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Core.WritingSystems;
@@ -652,7 +653,7 @@ namespace SIL.LCModel.DomainServices
 			{
 				ITsString tssWfBaseline = occurrence.BaselineText;
 				CoreWritingSystemDefinition ws = Cache.ServiceLocator.WritingSystemManager.Get(tssWfBaseline.get_WritingSystemAt(0));
-				string sLower = Icu.ToLower(tssWfBaseline.Text, ws.IcuLocale);
+				string sLower = UnicodeString.ToLower(tssWfBaseline.Text, ws.IcuLocale);
 				// don't bother looking up the lowercased wordform if the instanceOf is already in lowercase form.
 				if (sLower != tssWfBaseline.Text)
 				{

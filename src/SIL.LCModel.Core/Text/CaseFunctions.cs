@@ -6,6 +6,8 @@
 // Responsibility: FW Team
 // ---------------------------------------------------------------------------------------------
 
+using Icu;
+
 namespace SIL.LCModel.Core.Text
 {
 	/// <summary>
@@ -44,7 +46,7 @@ namespace SIL.LCModel.Core.Text
 		/// <returns></returns>
 		public string ToLower(string input)
 		{
-			return Icu.ToLower(input, m_icuLocale);
+			return UnicodeString.ToLower(input, m_icuLocale);
 		}
 		/// <summary>
 		/// Convert string to title case equivalent.
@@ -53,7 +55,7 @@ namespace SIL.LCModel.Core.Text
 		/// <returns></returns>
 		public string ToTitle(string input)
 		{
-			return Icu.ToTitle(input, m_icuLocale);
+			return UnicodeString.ToTitle(input, m_icuLocale);
 		}
 		/// <summary>
 		/// Convert string to upper case equivalent.
@@ -62,7 +64,7 @@ namespace SIL.LCModel.Core.Text
 		/// <returns></returns>
 		public string ToUpper(string input)
 		{
-			return Icu.ToUpper(input, m_icuLocale);
+			return UnicodeString.ToUpper(input, m_icuLocale);
 		}
 
 		/// <summary>
