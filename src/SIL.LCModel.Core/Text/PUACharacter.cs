@@ -82,20 +82,20 @@ namespace SIL.LCModel.Core.Text
 			// Set the numeric type based on which entries are empty
 			// Decimal Digit: X;X;X;
 			if( dataProperties[5].Trim()!= "" )
-				m_numericType = UcdProperty.GetInstance(Icu.UNumericType.U_NT_DECIMAL);
+				m_numericType = UcdProperty.GetInstance(Icu.Character.UNumericType.DECIMAL);
 				// Digit: ;X;X;
 			else if( dataProperties[6].Trim()!= "" )
-				m_numericType = UcdProperty.GetInstance(Icu.UNumericType.U_NT_DIGIT);
+				m_numericType = UcdProperty.GetInstance(Icu.Character.UNumericType.DIGIT);
 				// Numeric: ;;X;
 			else if(  dataProperties[7].Trim()!= "" )
-				m_numericType = UcdProperty.GetInstance(Icu.UNumericType.U_NT_NUMERIC);
+				m_numericType = UcdProperty.GetInstance(Icu.Character.UNumericType.NUMERIC);
 				// Not Numeric: ;;;
 			else
-				m_numericType = UcdProperty.GetInstance(Icu.UNumericType.U_NT_NONE);
+				m_numericType = UcdProperty.GetInstance(Icu.Character.UNumericType.NONE);
 			// (There is no 'COUNT' represented here)
 
 			// If there was a numeric type, set its value
-			if( m_numericType != UcdProperty.GetInstance(Icu.UNumericType.U_NT_NONE) )
+			if( m_numericType != UcdProperty.GetInstance(Icu.Character.UNumericType.NONE) )
 				m_numericValue = dataProperties[7];
 
 			//Set bidiMirrored property, blank is considered to "Y"
@@ -183,10 +183,12 @@ namespace SIL.LCModel.Core.Text
 				else
 					data[4] = m_decompositionType.UcdRepresentation + " " + m_decomposition;
 
-				data[5] = (m_numericType ==
-					UcdProperty.GetInstance(Icu.UNumericType.U_NT_DECIMAL))?m_numericValue:"";
-				data[6] = (m_numericType ==
-					UcdProperty.GetInstance(Icu.UNumericType.U_NT_DIGIT))?m_numericValue:"";
+				data[5] = m_numericType == UcdProperty.GetInstance(Icu.Character.UNumericType.DECIMAL)
+					? m_numericValue
+					: "";
+				data[6] = m_numericType == UcdProperty.GetInstance(Icu.Character.UNumericType.DIGIT)
+					? m_numericValue
+					: "";
 				data[7] = m_numericValue;
 				data[8] = m_bidiMirrored?"Y":"N";
 				data[9] = m_unicode1Name;
@@ -539,41 +541,39 @@ namespace SIL.LCModel.Core.Text
 		/// <returns>Whether the character was completely loaded from Icu.</returns>
 		public bool RefreshFromIcu(bool loadBlankNames)
 		{
-			if(!Icu.IsValidCodepoint(m_codepoint))
+			if(!CustomIcu.IsValidCodepoint(m_codepoint))
 				return false;
 
 			// use the codepoint
 			int parsedCodepoint = Character;
 
 			// set the name
-			Icu.UErrorCode error;
-			Icu.UCharNameChoice choice = Icu.UCharNameChoice.U_UNICODE_CHAR_NAME;
-			Icu.u_CharName(parsedCodepoint, choice, out m_name, out error);
+			m_name = Icu.Character.GetCharName(parsedCodepoint);
 
 			// Don't load blank names, unless requested to.
 			if(!loadBlankNames && m_name.Length <= 0)
 				return false;
 
 			// Set several properties
-			m_generalCategory = Icu.GetGeneralCategoryInfo(parsedCodepoint);
-			m_canonicalCombiningClass = Icu.GetCombiningClassInfo(parsedCodepoint);
-			m_bidiClass = Icu.GetBidiClassInfo(parsedCodepoint);
+			m_generalCategory = CustomIcu.GetGeneralCategoryInfo(parsedCodepoint);
+			m_canonicalCombiningClass = CustomIcu.GetCombiningClassInfo(parsedCodepoint);
+			m_bidiClass = CustomIcu.GetBidiClassInfo(parsedCodepoint);
 
-			m_decomposition = ConvertToHexString(Icu.GetDecomposition(parsedCodepoint));
-			m_decompositionType = Icu.GetDecompositionTypeInfo(parsedCodepoint);
-			m_numericType = Icu.GetNumericTypeInfo(parsedCodepoint);
-			if (m_numericType != UcdProperty.GetInstance(Icu.UNumericType.U_NT_NONE))
-				m_numericValue = decimalToFraction(Icu.u_GetNumericValue(parsedCodepoint));
+			m_decomposition = ConvertToHexString(CustomIcu.GetDecomposition(parsedCodepoint));
+			m_decompositionType = CustomIcu.GetDecompositionTypeInfo(parsedCodepoint);
+			m_numericType = CustomIcu.GetNumericTypeInfo(parsedCodepoint);
+			if (m_numericType != UcdProperty.GetInstance(Icu.Character.UNumericType.NONE))
+				m_numericValue = decimalToFraction(Icu.Character.GetNumericValue(parsedCodepoint));
 			else
 				m_numericValue = "";
 
 			// Set the bidi mirrored
-			BidiMirrored = Icu.u_IsMirrored(parsedCodepoint);
+			BidiMirrored = Icu.Character.IsMirrored(parsedCodepoint);
 
 			// Set upper, lower, and title
-			m_upper = ConvertToHexString(Icu.ToUpper(parsedCodepoint));
-			m_lower = ConvertToHexString(Icu.ToLower(parsedCodepoint));
-			m_title = ConvertToHexString(Icu.ToTitle(parsedCodepoint));
+			m_upper = ConvertToHexString(Icu.Character.ToUpper(parsedCodepoint));
+			m_lower = ConvertToHexString(Icu.Character.ToLower(parsedCodepoint));
+			m_title = ConvertToHexString(Icu.Character.ToTitle(parsedCodepoint));
 
 			// We don't have to do the following (if they already exist, we may delete the values)
 			//unicode1Name
@@ -803,7 +803,7 @@ namespace SIL.LCModel.Core.Text
 		/// <returns></returns>
 		public static bool IsPrivateUse(string codepoint)
 		{
-			return Icu.IsPrivateUse(codepoint);
+			return CustomIcu.IsPrivateUse(codepoint);
 		}
 
 		/// <summary>
@@ -811,7 +811,7 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		public bool CustomUse
 		{
-			get { return Icu.IsCustomUse(this.m_codepoint); }
+			get { return CustomIcu.IsCustomUse(this.m_codepoint); }
 		}
 
 		/// <summary>
@@ -821,7 +821,7 @@ namespace SIL.LCModel.Core.Text
 		{
 			get
 			{
-				return Icu.IsSurrogate(this.m_codepoint);
+				return CustomIcu.IsSurrogate(this.m_codepoint);
 			}
 		}
 		#endregion

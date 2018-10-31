@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using Icu;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Utils;
 #if !__MonoCS__
@@ -97,12 +98,13 @@ namespace SIL.LCModel.Core.SpellChecking
 #if __MonoCS__
 		private static byte[] MarshallAsUtf8Bytes(string word)
 		{
-			return Encoding.UTF8.GetBytes(Icu.Normalize(word, Icu.UNormalizationMode.UNORM_NFC) + "\0");
+			return Encoding.UTF8.GetBytes(Normalizer.Normalize(word, Normalizer.UNormalizationMode.UNORM_NFC) + "\0");
 		}
 #else
 		private static string MarshallAsUtf8Bytes(string word)
 		{
-			byte[] bytes = Encoding.UTF8.GetBytes(Icu.Normalize(word, Icu.UNormalizationMode.UNORM_NFC) + "\0");
+			byte[] bytes = Encoding.UTF8.GetBytes(Normalizer.Normalize(word,
+				Normalizer.UNormalizationMode.UNORM_NFC) + "\0");
 			return Encoding.UTF8.GetString(bytes);
 		}
 #endif
@@ -153,7 +155,7 @@ namespace SIL.LCModel.Core.SpellChecking
 
 		public void SetStatus(string word1, bool isCorrect)
 		{
-			var word = Icu.Normalize(word1, Icu.UNormalizationMode.UNORM_NFC);
+			var word = Normalizer.Normalize(word1, Normalizer.UNormalizationMode.UNORM_NFC);
 			if (Check(word) == isCorrect)
 				return; // nothing to do.
 			// Review: any IO exceptions we should handle? How??

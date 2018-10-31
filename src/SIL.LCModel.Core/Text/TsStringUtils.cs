@@ -13,6 +13,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
+using Icu;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Utils;
 
@@ -113,16 +114,16 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		public static bool IsWordForming(int ch)
 		{
-			switch (Icu.GetCharType(ch))
+			switch (Character.GetCharType(ch))
 			{
-				case Icu.UCharCategory.U_UPPERCASE_LETTER:
-				case Icu.UCharCategory.U_LOWERCASE_LETTER:
-				case Icu.UCharCategory.U_TITLECASE_LETTER:
-				case Icu.UCharCategory.U_MODIFIER_LETTER:
-				case Icu.UCharCategory.U_OTHER_LETTER:
-				case Icu.UCharCategory.U_NON_SPACING_MARK:
-				case Icu.UCharCategory.U_COMBINING_SPACING_MARK:
-				case Icu.UCharCategory.U_MODIFIER_SYMBOL:
+				case Character.UCharCategory.UPPERCASE_LETTER:
+				case Character.UCharCategory.LOWERCASE_LETTER:
+				case Character.UCharCategory.TITLECASE_LETTER:
+				case Character.UCharCategory.MODIFIER_LETTER:
+				case Character.UCharCategory.OTHER_LETTER:
+				case Character.UCharCategory.NON_SPACING_MARK:
+				case Character.UCharCategory.COMBINING_SPACING_MARK:
+				case Character.UCharCategory.MODIFIER_SYMBOL:
 					return true;
 				default:
 					return false;
@@ -379,7 +380,7 @@ namespace SIL.LCModel.Core.Text
 			// characters, the check would need to account for this and try to compose the data
 			// being checked.)
 			string ch = ValidateCharacterSequence(chr);
-			return ch.Length != 0 && Icu.Normalize(ch, Icu.UNormalizationMode.UNORM_NFD) == Icu.Normalize(chr, Icu.UNormalizationMode.UNORM_NFD);
+			return ch.Length != 0 && Normalizer.Normalize(ch, Normalizer.UNormalizationMode.UNORM_NFD) == Normalizer.Normalize(chr, Normalizer.UNormalizationMode.UNORM_NFD);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -395,8 +396,8 @@ namespace SIL.LCModel.Core.Text
 			// isolation only.
 			if (origChars.Length == 1)
 			{
-				if (Icu.GetCharType(origChars[0]) == Icu.UCharCategory.U_LINE_SEPARATOR || Icu.GetCharType(origChars[0]) == Icu.UCharCategory.U_SPACE_SEPARATOR
-					|| Icu.GetCharType(origChars[0]) == Icu.UCharCategory.U_FORMAT_CHAR)
+				if (Character.GetCharType(origChars[0]) == Character.UCharCategory.LINE_SEPARATOR || Character.GetCharType(origChars[0]) == Character.UCharCategory.SPACE_SEPARATOR
+					|| Character.GetCharType(origChars[0]) == Character.UCharCategory.FORMAT_CHAR)
 				{
 					return origChars;
 				}
@@ -413,8 +414,12 @@ namespace SIL.LCModel.Core.Text
 				if (!baseFound)
 				{
 					// If this is not a valid base character, keep looking.
-					if (!Icu.IsLetter(chr) && !Icu.IsNumeric(chr) && Icu.GetCharType(chr) != Icu.UCharCategory.U_PRIVATE_USE_CHAR && !Icu.IsPunct(chr) && !Icu.IsSymbol(chr))
+					if (!Character.IsLetter(chr) && !Character.IsNumeric(chr) &&
+						Character.GetCharType(chr) != Character.UCharCategory.PRIVATE_USE_CHAR &&
+						!Character.IsPunct(chr) && !Character.IsSymbol(chr))
+					{
 						continue;
+					}
 
 					baseFound = true;
 				}
@@ -422,12 +427,12 @@ namespace SIL.LCModel.Core.Text
 				{
 					// If this is not a diacritic or a ZWJ or ZWNJ between diacritics,
 					// discard the rest of the string.
-					if (Icu.IsMark(chr))
+					if (Character.IsMark(chr))
 					{
 						fPrecedingCharWasMark = true;
 					}
 
-					else if ((chr == '\u200C' || chr == '\u200D') && fPrecedingCharWasMark && origChars.Length > ich + 1 && Icu.IsMark(origChars[ich + 1]))
+					else if ((chr == '\u200C' || chr == '\u200D') && fPrecedingCharWasMark && origChars.Length > ich + 1 && Character.IsMark(origChars[ich + 1]))
 					{
 						fPrecedingCharWasMark = false;
 					}
@@ -436,7 +441,7 @@ namespace SIL.LCModel.Core.Text
 						// This handles special situations like Korean, where multiple base letters
 						// (representing phonemes) can compose into a single base letter (representing a
 						// syllable).
-						string composed = Icu.Normalize(origChars, Icu.UNormalizationMode.UNORM_NFKC);
+						string composed = Normalizer.Normalize(origChars, Normalizer.UNormalizationMode.UNORM_NFKC);
 						if (composed.Length == 1)
 							return composed;
 						break;
@@ -459,7 +464,7 @@ namespace SIL.LCModel.Core.Text
 		/// 	<c>true</c> if the character ends a sentence; otherwise, <c>false</c>.
 		/// </returns>
 		/// ------------------------------------------------------------------------------------
-		public static bool IsEndOfSentenceChar(int ch, Icu.UCharCategory cc)
+		public static bool IsEndOfSentenceChar(int ch, Character.UCharCategory cc)
 		{
 			// The preliminary check of cc is just for efficiency. All these characters have this property.
 			// EXCLAMATION MARK
@@ -501,7 +506,7 @@ namespace SIL.LCModel.Core.Text
 			// FULLWIDTH QUESTION MARK
 			// HALFWIDTH IDEOGRAPHIC FULL STOP
 			// Except this is not a normal punctuation character.
-			return (cc == Icu.UCharCategory.U_OTHER_PUNCTUATION && (ch == 0x0021 || ch == 0x002E || ch == 0x003F || ch == 0x055C || ch == 0x055E || ch == 0x0589 || ch == 0x061F || ch == 0x06D4 || ch == 0x0700 || ch == 0x0701 || ch == 0x0702 || ch == 0x0964 || ch == 0x0965 || ch == 0x104A || ch == 0x104B || ch == 0x1362 || ch == 0x1367 || ch == 0x1368 || ch == 0x166E || ch == 0x1803 || ch == 0x1809 || ch == 0x1944 || ch == 0x1945 || ch == 0x17D4 || ch == 0x17D5 || ch == 0x203C || ch == 0x203D || ch == 0x2047 || ch == 0x2048 || ch == 0x2049 || ch == 0x3002 || ch == 0xFE52 || ch == 0xFE56 || ch == 0xFE57 || ch == 0xFF01 || ch == 0xFF0E || ch == 0xFF1F || ch == 0xFF61)) || ch == 0x00A7;
+			return (cc == Character.UCharCategory.OTHER_PUNCTUATION && (ch == 0x0021 || ch == 0x002E || ch == 0x003F || ch == 0x055C || ch == 0x055E || ch == 0x0589 || ch == 0x061F || ch == 0x06D4 || ch == 0x0700 || ch == 0x0701 || ch == 0x0702 || ch == 0x0964 || ch == 0x0965 || ch == 0x104A || ch == 0x104B || ch == 0x1362 || ch == 0x1367 || ch == 0x1368 || ch == 0x166E || ch == 0x1803 || ch == 0x1809 || ch == 0x1944 || ch == 0x1945 || ch == 0x17D4 || ch == 0x17D5 || ch == 0x203C || ch == 0x203D || ch == 0x2047 || ch == 0x2048 || ch == 0x2049 || ch == 0x3002 || ch == 0xFE52 || ch == 0xFE56 || ch == 0xFE57 || ch == 0xFF01 || ch == 0xFF0E || ch == 0xFF1F || ch == 0xFF61)) || ch == 0x00A7;
 			// SECTION SIGN (used for forced segment breaks w/o punctuation)
 		}
 
@@ -1482,12 +1487,12 @@ namespace SIL.LCModel.Core.Text
 					{
 						int ichWfCharLim = wordFormTss.NextCharIndex(ichWordForm);
 
-						while (ichWfCharLim < wordFormTss.Length && !Icu.IsLetter(wordFormTss.CharAt(ichWfCharLim)) && wordFormTss.IsCharWordForming(ichWfCharLim, wsf))
+						while (ichWfCharLim < wordFormTss.Length && !Character.IsLetter(wordFormTss.CharAt(ichWfCharLim)) && wordFormTss.IsCharWordForming(ichWfCharLim, wsf))
 						{
 							ichWfCharLim = wordFormTss.NextCharIndex(ichWfCharLim);
 						}
 
-						while (ichLimT < sourceTss.Length && !Icu.IsLetter(sourceTss.CharAt(ichLimT)) && sourceTss.IsCharWordForming(ichLimT, wsf))
+						while (ichLimT < sourceTss.Length && !Character.IsLetter(sourceTss.CharAt(ichLimT)) && sourceTss.IsCharWordForming(ichLimT, wsf))
 						{
 							ichLimT = sourceTss.NextCharIndex(ichLimT);
 						}
@@ -1550,7 +1555,7 @@ namespace SIL.LCModel.Core.Text
 		/// ------------------------------------------------------------------------------------
 		public static void InitIcuDataDir()
 		{
-			Icu.InitIcuDataDir();
+			CustomIcu.InitIcuDataDir();
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1563,7 +1568,7 @@ namespace SIL.LCModel.Core.Text
 		/// ------------------------------------------------------------------------------------
 		public static string NormalizeToNFC(string s)
 		{
-			return Icu.Normalize(s, Icu.UNormalizationMode.UNORM_NFC);
+			return Normalizer.Normalize(s, Normalizer.UNormalizationMode.UNORM_NFC);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1734,10 +1739,10 @@ namespace SIL.LCModel.Core.Text
 				// See if there is white space at the end of the bit that would be treated as
 				// deleted if we adjusted ichMin. If so, do it....
 				int ichLookForSpace = ichMin + offsetIchMin + Math.Max(cvIns, cvDel) - 1;
-				if (Icu.IsSeparator(longerString.GetChars(ichLookForSpace, ichLookForSpace + 1)[0]))
+				if (Character.IsSeparator(longerString.GetChars(ichLookForSpace, ichLookForSpace + 1)[0]))
 				{
 					// ...unless it would ALSO be a whole word delete if we did not change ichMin
-					if (!Icu.IsSeparator(longerString.GetChars(ichLookForSpace - offsetIchMin, ichLookForSpace - offsetIchMin + 1)[0]))
+					if (!Character.IsSeparator(longerString.GetChars(ichLookForSpace - offsetIchMin, ichLookForSpace - offsetIchMin + 1)[0]))
 
 						ichMin += offsetIchMin;
 				}

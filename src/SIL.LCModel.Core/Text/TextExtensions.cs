@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Icu;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Utils;
 
@@ -173,9 +174,9 @@ namespace SIL.LCModel.Core.Text
 			while (ich < text.Length)
 			{
 				// if the current character is space...
-				if (Icu.IsSeparator(text[ich]))
+				if (Character.IsSeparator(text[ich]))
 					ich++;
-				else if (Icu.IsPunct(text[ich]) && ich > 0 && !Icu.IsSeparator(text[ich - 1]))
+				else if (Character.IsPunct(text[ich]) && ich > 0 && !Character.IsSeparator(text[ich - 1]))
 				{
 					// if word-final punctuation advance
 					ich++;
@@ -191,7 +192,7 @@ namespace SIL.LCModel.Core.Text
 			{
 				// While the insertion point is in the middle of a word then back up to the
 				// start of the word or the start of a paragraph.
-				while (ich > 0 && !Icu.IsSeparator(text[ich - 1]) && !specialStyles.Contains(tss.StyleAt(ich - 1)))
+				while (ich > 0 && !Character.IsSeparator(text[ich - 1]) && !specialStyles.Contains(tss.StyleAt(ich - 1)))
 				{
 					ich--;
 				}
@@ -614,7 +615,7 @@ namespace SIL.LCModel.Core.Text
 		#region Private helper methods
 		private static bool IsWhite(char ch)
 		{
-			return Icu.GetCharType(ch) == Icu.UCharCategory.U_SPACE_SEPARATOR;
+			return Character.GetCharType(ch) == Character.UCharCategory.SPACE_SEPARATOR;
 		}
 		#endregion
 	}

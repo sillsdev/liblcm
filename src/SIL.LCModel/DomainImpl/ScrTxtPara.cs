@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Icu;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Scripture;
 using SIL.LCModel.Core.Text;
@@ -988,7 +989,7 @@ namespace SIL.LCModel.DomainImpl
 				//If previous character is neither white space nor a chapter number...
 				ITsString tss = (wsAlt == 0) ? Contents : GetOrCreateBT().Translation.get_String(wsAlt);
 				ITsTextProps ttp = tss.get_PropertiesAt(ichIns - 1);
-				if (!Icu.IsSeparator(tss.Text[ichIns - 1]) &&
+				if (!Character.IsSeparator(tss.Text[ichIns - 1]) &&
 					ttp.Style() != ScrStyleNames.ChapterNumber)
 				{
 					//add a space.
