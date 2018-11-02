@@ -54,7 +54,6 @@ namespace SIL.LCModel
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void CreateNewLangProject_DbFilesExist()
 		{
 			var preExistingDirs = new List<string>(Directory.GetDirectories(m_projectsDirectory));
@@ -63,8 +62,9 @@ namespace SIL.LCModel
 				// Setup: Create "pre-existing" DB filenames
 				using (new DummyFileMaker(Path.Combine(m_projectsDirectory, "Gumby", LcmFileHelper.GetXmlDataFileName("Gumby"))))
 				{
-					LcmCache.CreateNewLangProj(new DummyProgressDlg(), "Gumby", m_lcmDirectories,
-						new SingleThreadedSynchronizeInvoke(), null, null, null, null, null, null, true);
+					Assert.That(() => LcmCache.CreateNewLangProj(new DummyProgressDlg(), "Gumby", m_lcmDirectories,
+						new SingleThreadedSynchronizeInvoke(), null, null, null, null, null, null, true),
+						Throws.TypeOf<ArgumentException>());
 				}
 			}
 			finally
@@ -347,7 +347,6 @@ namespace SIL.LCModel
 		/// Make sure the CheckDisposed method works.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ObjectDisposedException))]
 		public void CacheCheckDisposedTest()
 		{
 			// This can't be in the minimalist class, because it disposes the cache.
@@ -357,7 +356,7 @@ namespace SIL.LCModel
 			var dataSetup = cache.ServiceLocator.GetInstance<IDataSetup>();
 			dataSetup.LoadDomain(BackendBulkLoadDomain.All);
 			cache.Dispose();
-			cache.CheckDisposed();
+			Assert.That(() => cache.CheckDisposed(), Throws.TypeOf<ObjectDisposedException>());
 		}
 
 		/// <summary>

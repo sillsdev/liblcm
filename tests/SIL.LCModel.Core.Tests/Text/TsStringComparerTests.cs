@@ -147,11 +147,11 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		///--------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void FirstArgumentNotTsString()
 		{
 			ITsString tss = TsStringUtils.MakeString("bla", 1);
-			m_comparer.Compare(123, tss);
+			Assert.That(() => m_comparer.Compare(123, tss),
+				Throws.TypeOf<ArgumentException>());
 		}
 
 		///--------------------------------------------------------------------------------------
@@ -160,11 +160,11 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		///--------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void SecondArgumentNotTsString()
 		{
 			ITsString tss = TsStringUtils.MakeString("bla", 1);
-			m_comparer.Compare(tss, 123);
+			Assert.That(() => m_comparer.Compare(tss, 123),
+				Throws.TypeOf<ArgumentException>());
 		}
 
 		///--------------------------------------------------------------------------------------

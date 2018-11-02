@@ -553,12 +553,12 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(ExpectedException = typeof(XmlSchemaException),
-			ExpectedMessage = "Run element must contain a ws attribute. Run text: This is a test!")]
 		public void DeserializeTsStringFromXml_NoWsInRun()
 		{
-			TsStringSerializer.DeserializeTsStringFromXml(
-				"<Str><Run>This is a test!</Run></Str>", WritingSystemManager);
+			Assert.That(() => TsStringSerializer.DeserializeTsStringFromXml(
+					"<Str><Run>This is a test!</Run></Str>", WritingSystemManager),
+				Throws.TypeOf<XmlSchemaException>().With.Message.EqualTo(
+					"Run element must contain a ws attribute. Run text: This is a test!"));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -570,13 +570,13 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(ExpectedException = typeof(XmlSchemaException),
-			ExpectedMessage = "Run element must contain a ws attribute. Run text: This is a test!")]
 		public void DeserializeTsStringFromXml_MultiStringWithStyleAndNoWsInRun()
 		{
-			TsStringSerializer.DeserializeTsStringFromXml(
+			Assert.That(() => TsStringSerializer.DeserializeTsStringFromXml(
 				"<AStr ws='en'><Run namedStyle='Monkey'>This is a test!</Run></AStr>",
-				WritingSystemManager);
+				WritingSystemManager),
+				Throws.TypeOf<XmlSchemaException>().With.Message.EqualTo(
+					"Run element must contain a ws attribute. Run text: This is a test!"));
 		}
 
 		/// ------------------------------------------------------------------------------------

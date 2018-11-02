@@ -536,14 +536,13 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(IOException),
-			ExpectedMessage = "File ReadMe.txt is locked (open for write).")]
 		public void Delete_FailsIfOpenForWrite()
 		{
 			string filename = "ReadMe.txt";
 			m_fileOs.AddFile(filename, "For more information, read this.", Encoding.ASCII);
 			m_fileOs.LockFile(filename);
-			FileUtils.Delete(filename);
+			Assert.That(() => FileUtils.Delete(filename),
+				Throws.TypeOf<IOException>().With.Message.EqualTo("File ReadMe.txt is locked (open for write)."));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -552,15 +551,14 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(IOException),
-			ExpectedMessage = "File ReadMe.txt is locked (open for read).")]
 		public void Delete_FailsIfOpenForRead()
 		{
 			string filename = "ReadMe.txt";
 			m_fileOs.AddFile(filename, "For more information, read this.", Encoding.ASCII);
 			using (TextReader reader = FileUtils.OpenFileForRead(filename, Encoding.ASCII))
 			{
-				FileUtils.Delete(filename);
+				Assert.That(() => FileUtils.Delete(filename),
+					Throws.TypeOf<IOException>().With.Message.EqualTo("File ReadMe.txt is locked (open for read)."));
 			}
 		}
 
@@ -616,18 +614,14 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(IOException),
-			ExpectedMessage = "File file is locked (open for write).")]
 		public void WriteStream_FailsOnWriteLock()
 		{
 			using (TextWriter tw = FileUtils.OpenFileForWrite("file", Encoding.ASCII))
 			{
 				tw.Write("You idot!");
 
-				using (TextWriter tw2 = FileUtils.OpenFileForWrite("file", Encoding.ASCII))
-				{
-					// we never come here...
-				}
+				Assert.That(() => FileUtils.OpenFileForWrite("file", Encoding.ASCII),
+					Throws.TypeOf<IOException>().With.Message.EqualTo("File file is locked (open for write)."));
 			}
 		}
 
@@ -637,7 +631,6 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(AssertionException))]
 		public void WriteStream_OpenWrongEncoding()
 		{
 			using (TextWriter tw = FileUtils.OpenFileForWrite("file", Encoding.UTF8))
@@ -646,9 +639,8 @@ namespace SIL.LCModel.Utils
 				tw.Close();
 			}
 
-			using (FileUtils.OpenFileForRead("file", Encoding.ASCII))
-			{
-			}
+			Assert.That(() => FileUtils.OpenFileForRead("file", Encoding.ASCII),
+				Throws.TypeOf<AssertionException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -716,13 +708,10 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException),
-			ExpectedMessage = "Illegal characters in path.")]
 		public void OpenFileForBinaryWrite_BogusPath()
 		{
-			using (FileUtils.OpenFileForBinaryWrite("f\x00ile", Encoding.UTF8))
-			{
-			}
+			Assert.That(() => FileUtils.OpenFileForBinaryWrite("f\x00ile", Encoding.UTF8),
+				Throws.TypeOf<ArgumentException>().With.Message.EqualTo("Illegal characters in path."));
 		}
 		#endregion
 
@@ -748,13 +737,10 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException),
-			ExpectedMessage = "Illegal characters in path.")]
 		public void OpenWrite_BogusPath()
 		{
-			using (FileUtils.OpenWrite("ti\x00mbuk2"))
-			{
-			}
+			Assert.That(() => FileUtils.OpenWrite("ti\x00mbuk2"),
+				Throws.TypeOf<ArgumentException>().With.Message.EqualTo("Illegal characters in path."));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -763,13 +749,10 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(FileNotFoundException),
-			ExpectedMessage = "Could not find file timbuk2")]
 		public void OpenWrite_FileDoesNotExist()
 		{
-			using (FileUtils.OpenWrite("timbuk2"))
-			{
-			}
+			Assert.That(() => FileUtils.OpenWrite("timbuk2"),
+				Throws.TypeOf<FileNotFoundException>().With.Message.EqualTo("Could not find file timbuk2"));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -778,15 +761,12 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(IOException),
-			ExpectedMessage = "File file is locked (open for write).")]
 		public void OpenWrite_FileLocked()
 		{
 			using (FileUtils.OpenFileForWrite("file", Encoding.ASCII))
 			{
-				using (FileUtils.OpenWrite("file"))
-				{
-				}
+				Assert.That(() => FileUtils.OpenWrite("file"),
+					Throws.TypeOf<IOException>().With.Message.EqualTo("File file is locked (open for write)."));
 			}
 		}
 		#endregion
