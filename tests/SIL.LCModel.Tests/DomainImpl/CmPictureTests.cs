@@ -222,11 +222,10 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// -------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException),
-			ExpectedMessage = "The clipboard format for a Picture was invalid")]
 		public void CmPictureConstructor_FromTextRep_TooFewParams()
 		{
-			m_pictureFactory.Create("CmPicture||c:\\whatever.jpg||", CmFolderTags.LocalPictures);
+			Assert.That(() => m_pictureFactory.Create("CmPicture||c:\\whatever.jpg||", CmFolderTags.LocalPictures),
+				Throws.ArgumentException.With.Message.EqualTo("The clipboard format for a Picture was invalid"));
 		}
 
 		/// -------------------------------------------------------------------------------------
@@ -236,11 +235,10 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// -------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException),
-			ExpectedMessage = "The clipboard format for a Picture was invalid")]
 		public void CmPictureConstructor_FromTextRep_MissingCmPictureToken()
 		{
-			m_pictureFactory.Create("CmFile||c:\\whatever.jpg||||This is a caption||", CmFolderTags.LocalPictures);
+			Assert.That(() => m_pictureFactory.Create("CmFile||c:\\whatever.jpg||||This is a caption||", CmFolderTags.LocalPictures),
+				Throws.ArgumentException.With.Message.EqualTo("The clipboard format for a Picture was invalid"));
 		}
 
 		/// -------------------------------------------------------------------------------------
@@ -260,12 +258,11 @@ namespace SIL.LCModel.DomainImpl
 
 		/// -------------------------------------------------------------------------------------
 		/// <summary>
-		/// Test that the CmPicture contructor throws the correct exception when given a text
+		/// Test that the CmPicture constructor throws the correct exception when given a text
 		/// representation that has an invalid filename.
 		/// </summary>
 		/// -------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void CmPictureConstructor_FromTextRep_InvalidFilename()
 		{
 			// Note that on Linux only NULL and slash are invalid characters in a file
@@ -275,7 +272,8 @@ namespace SIL.LCModel.DomainImpl
 				sTextRepOfPicture = "CmPicture||/wha<>\u0000tever.jpg||||This is a caption||";
 			else
 				sTextRepOfPicture = "CmPicture||c:\\wha<>tever.jpg||||This is a caption||";
-			m_pictureFactory.Create(sTextRepOfPicture, CmFolderTags.LocalPictures);
+			Assert.That(() => m_pictureFactory.Create(sTextRepOfPicture, CmFolderTags.LocalPictures),
+				Throws.ArgumentException);
 		}
 
 		/// -------------------------------------------------------------------------------------

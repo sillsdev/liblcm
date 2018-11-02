@@ -75,13 +75,12 @@ namespace SIL.LCModel.Utils
 
 		/// <summary></summary>
 		[Test]
-		[ExpectedException(typeof(ApplicationException))]
 		public void CannotResizeIfExternalMemory()
 		{
 			var intptr = Marshal.AllocCoTaskMem(10);
 			using (var array = new ArrayPtr(intptr))
 			{
-				array.Resize(12);
+				Assert.That(() => array.Resize(12), Throws.TypeOf<ApplicationException>());
 			}
 		}
 

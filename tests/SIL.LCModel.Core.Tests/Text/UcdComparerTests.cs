@@ -130,7 +130,6 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void StringWithString()
 		{
 			// The behavior used to be:
@@ -138,7 +137,8 @@ namespace SIL.LCModel.Core.Text
 			//m_comparer.Compare("004F", "004f"); // throws an exception
 
 			// This doesn't make to much sense, so we now throw an exception in all cases
-			m_comparer.Compare("004F", "004F");  // throws an exception
+			Assert.That(() => m_comparer.Compare("004F", "004F"),
+				Throws.TypeOf<ArgumentException>());
 		}
 	}
 }

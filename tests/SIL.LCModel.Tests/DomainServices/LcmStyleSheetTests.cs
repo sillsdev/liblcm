@@ -130,7 +130,6 @@ namespace SIL.LCModel.DomainServices
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void DeleteBuiltInStyle()
 		{
 			// get the hvo of the Verse Number style
@@ -143,7 +142,7 @@ namespace SIL.LCModel.DomainServices
 			Assert.IsTrue(hvoStyle != -1, "Style 'Verse Number' should exist in DB");
 
 			// attempting to delete this built-in style should throw an exception
-			m_styleSheet.Delete(hvoStyle);
+			Assert.That(() => m_styleSheet.Delete(hvoStyle), Throws.TypeOf<ArgumentException>());
 		}
 
 		///--------------------------------------------------------------------------------------

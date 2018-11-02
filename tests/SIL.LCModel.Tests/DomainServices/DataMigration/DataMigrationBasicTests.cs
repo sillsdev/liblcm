@@ -20,10 +20,10 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(DataMigrationException))]
 		public void NullRepositoryTest()
 		{
-			m_dataMigrationManager.PerformMigration(null, Int32.MaxValue, null);
+			Assert.That(() => m_dataMigrationManager.PerformMigration(null, Int32.MaxValue, null),
+				Throws.TypeOf<DataMigrationException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -32,13 +32,13 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(DataMigrationException))]
 		public void DowngradeMigrationTest()
 		{
 			var mockMDC = new MockMDCForDataMigration();
 			IDomainObjectDTORepository dtoRepos = new DomainObjectDtoRepository(7100000,
 				new HashSet<DomainObjectDTO>(), mockMDC, null, TestDirectoryFinder.LcmDirectories);
-			m_dataMigrationManager.PerformMigration(dtoRepos, 7000000, null);
+			Assert.That(() => m_dataMigrationManager.PerformMigration(dtoRepos, 7000000, null),
+				Throws.TypeOf<DataMigrationException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -47,10 +47,10 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(DataMigrationException))]
 		public void StartingVersionNumberTooLowTest()
 		{
-			m_dataMigrationManager.NeedsRealMigration(1, 7000001);
+			Assert.That(() => m_dataMigrationManager.NeedsRealMigration(1, 7000001),
+				Throws.TypeOf<DataMigrationException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -59,10 +59,10 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(DataMigrationException))]
 		public void EndingVersionNumberTooHighTest()
 		{
-			m_dataMigrationManager.NeedsRealMigration(7000000, Int32.MaxValue);
+			Assert.That(() => m_dataMigrationManager.NeedsRealMigration(7000000, Int32.MaxValue),
+				Throws.TypeOf<DataMigrationException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -71,10 +71,10 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(DataMigrationException))]
 		public void StartingVersionNumberHigherThanEndingVersionNumberTest()
 		{
-			m_dataMigrationManager.NeedsRealMigration(7000002, 7000001);
+			Assert.That(() => m_dataMigrationManager.NeedsRealMigration(7000002, 7000001),
+				Throws.TypeOf<DataMigrationException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -86,7 +86,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		public void NeedsARealMigrationTest()
 		{
 			Assert.IsTrue(m_dataMigrationManager.NeedsRealMigration(7000000, 7000001),
-						  "7000000->7000001 does require a real migration.");
+				"7000000->7000001 does require a real migration.");
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -98,7 +98,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		public void MigrationToSameVersionDoesNotNeedARealMigrationTest()
 		{
 			Assert.IsFalse(m_dataMigrationManager.NeedsRealMigration(7000001, 7000001),
-						   "7000001->7000001 shouldn't require a real migration.");
+				"7000001->7000001 shouldn't require a real migration.");
 		}
 
 		// Use this test, as soon as we add a do-nothing migration to the manager.
@@ -111,7 +111,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		public void DoesNotNeedARealMigrationTest()
 		{
 			Assert.IsFalse(m_dataMigrationManager.NeedsRealMigration(7000003, 7000004),
-						   "7000003->7000004 shouldn't require a real migration.");
+				"7000003->7000004 shouldn't require a real migration.");
 		}
 	}
 }

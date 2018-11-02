@@ -23,11 +23,11 @@ namespace SIL.LCModel.Utils
 		/// Tests the Surrogates.NextChar() method
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestCase("ab\xD800\xDC00c", 0, Result = 1)]
-		[TestCase("ab\xD800\xDC00c", 1, Result = 2)]
-		[TestCase("ab\xD800\xDC00c", 2, Result = 4)]
-		[TestCase("ab\xD800\xDC00c", 4, Result = 5)]
-		[TestCase("ab\xD800\xDC00", 2, Result = 4)]
+		[TestCase("ab\xD800\xDC00c", 0, ExpectedResult = 1)]
+		[TestCase("ab\xD800\xDC00c", 1, ExpectedResult = 2)]
+		[TestCase("ab\xD800\xDC00c", 2, ExpectedResult = 4)]
+		[TestCase("ab\xD800\xDC00c", 4, ExpectedResult = 5)]
+		[TestCase("ab\xD800\xDC00", 2, ExpectedResult = 4)]
 		public int NextChar(string st, int ich)
 		{
 			return Surrogates.NextChar(st, ich);
@@ -38,8 +38,8 @@ namespace SIL.LCModel.Utils
 		/// Tests the Surrogates.NextChar() method with invalid data
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestCase(new[] { 'a', 'b', '\xD800'}, 2, Result = 3)] // Badly formed pair at end...don't go too far
-		[TestCase(new[] { 'a', 'b', '\xD800', 'c' }, 2, Result = 3)] // Badly formed pair in middle...don't go too far
+		[TestCase(new[] { 'a', 'b', '\xD800'}, 2, ExpectedResult = 3)] // Badly formed pair at end...don't go too far
+		[TestCase(new[] { 'a', 'b', '\xD800', 'c' }, 2, ExpectedResult = 3)] // Badly formed pair in middle...don't go too far
 		public int NextChar_InvalidData(char[] st, int ich)
 		{
 			// NUnit doesn't allow tests with invalid strings in a testcase, so we create the
@@ -52,12 +52,12 @@ namespace SIL.LCModel.Utils
 		/// Tests the Surrogates.PrevChar() method
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestCase("ab\xD800\xDC00c", 1, Result = 0)]
-		[TestCase("ab\xD800\xDC00c", 2, Result = 1)]
-		[TestCase("ab\xD800\xDC00c", 5, Result = 4)]
-		[TestCase("ab\xD800\xDC00c", 3, Result = 2)] // initial ich at a bad position, move back normally to sync
-		[TestCase("ab\xD800\xDC00c", 4, Result = 2)] // double move succeeds
-		[TestCase("\xD800\xDC00c", 2, Result = 0)] // double move succeeds at start (and end)
+		[TestCase("ab\xD800\xDC00c", 1, ExpectedResult = 0)]
+		[TestCase("ab\xD800\xDC00c", 2, ExpectedResult = 1)]
+		[TestCase("ab\xD800\xDC00c", 5, ExpectedResult = 4)]
+		[TestCase("ab\xD800\xDC00c", 3, ExpectedResult = 2)] // initial ich at a bad position, move back normally to sync
+		[TestCase("ab\xD800\xDC00c", 4, ExpectedResult = 2)] // double move succeeds
+		[TestCase("\xD800\xDC00c", 2, ExpectedResult = 0)] // double move succeeds at start (and end)
 		public int PrevChar(string st, int ich)
 		{
 			return Surrogates.PrevChar(st, ich);
@@ -68,9 +68,9 @@ namespace SIL.LCModel.Utils
 		/// Tests the Surrogates.PrevChar() method with invalid input
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestCase(new[] { 'a', 'b', '\xD800', 'c' }, 4, Result = 3)] // no double move on bad pair
-		[TestCase(new[] { '\xDC00', 'c' }, 1, Result = 0)] // no double move on bad trailer at start
-		[TestCase(new[] { '\xD800', 'c' }, 1, Result = 0)] // no double move on bad leader at start
+		[TestCase(new[] { 'a', 'b', '\xD800', 'c' }, 4, ExpectedResult = 3)] // no double move on bad pair
+		[TestCase(new[] { '\xDC00', 'c' }, 1, ExpectedResult = 0)] // no double move on bad trailer at start
+		[TestCase(new[] { '\xD800', 'c' }, 1, ExpectedResult = 0)] // no double move on bad leader at start
 		public int PrevChar_InvalidChar(char[] st, int ich)
 		{
 			// NUnit doesn't allow tests with invalid strings in a testcase, so we create the

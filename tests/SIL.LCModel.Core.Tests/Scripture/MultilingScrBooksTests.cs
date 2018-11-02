@@ -212,10 +212,10 @@ namespace SIL.LCModel.Core.Scripture
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(NullReferenceException))]
 		public void ParseRefString_NullArgument()
 		{
-			m_mlscrBook.ParseRefString(null);
+			Assert.That(() => m_mlscrBook.ParseRefString(null),
+				Throws.TypeOf<NullReferenceException>());
 		}
 
 		/// ------------------------------------------------------------------------------------

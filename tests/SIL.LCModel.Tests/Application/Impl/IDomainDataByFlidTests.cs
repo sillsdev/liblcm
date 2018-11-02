@@ -106,13 +106,12 @@ namespace SIL.LCModel.Application.Impl
 		}
 
 		/// <summary>
-		/// Make sure the methnod has not been implemented.
+		/// Make sure the method has not been implemented.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(NotSupportedException))]
 		public void get_IsDummyIdTest()
 		{
-			m_sda.get_IsDummyId(-1);
+			Assert.That(() => m_sda.get_IsDummyId(-1), Throws.TypeOf<NotSupportedException>());
 		}
 
 		/// <summary>
@@ -130,10 +129,9 @@ namespace SIL.LCModel.Application.Impl
 		/// Make sure the ActionHandler cannot be (re)set.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(NotSupportedException))]
 		public void SetActionHandlerTest()
 		{
-			m_sda.SetActionHandler(null);
+			Assert.That(() => m_sda.SetActionHandler(null), Throws.TypeOf<NotSupportedException>());
 		}
 
 		/// <summary>
@@ -150,10 +148,9 @@ namespace SIL.LCModel.Application.Impl
 		/// See if object is valid with a zero Hvo.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void get_IsValidObjectZeroHvoTest()
 		{
-			m_sda.get_IsValidObject(0);
+			Assert.That(() => m_sda.get_IsValidObject(0), Throws.TypeOf<ArgumentException>());
 		}
 
 		/// <summary>
@@ -289,11 +286,10 @@ namespace SIL.LCModel.Application.Impl
 		/// Set an atomic reference property (i.e., owner).
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void set_ObjectProp_Owning_Test()
 		{
 			var lexEntry = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
-			m_sda.SetObjProp(lexEntry.Hvo, (int)CmObjectFields.kflidCmObject_Owner, LcmCache.kNullHvo);
+			Assert.That(() => m_sda.SetObjProp(lexEntry.Hvo, (int)CmObjectFields.kflidCmObject_Owner, LcmCache.kNullHvo), Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
@@ -334,10 +330,9 @@ namespace SIL.LCModel.Application.Impl
 		/// Test the get accessor for boolean properties, which the client thinks is an int.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void GetIntAsBooleanBadTests()
 		{
-			m_sda.get_BooleanProp(Cache.LanguageProject.Hvo, (int)CmObjectFields.kflidCmObject_Class);
+			Assert.That(() => m_sda.get_BooleanProp(Cache.LanguageProject.Hvo, (int)CmObjectFields.kflidCmObject_Class), Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
@@ -363,11 +358,10 @@ namespace SIL.LCModel.Application.Impl
 		/// Test the set accessor for boolean properties, which the client thinks is an int.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void SetBooleanAsIntBadTests()
 		{
 			var wf = Cache.ServiceLocator.GetInstance<IWfiWordformFactory>().Create();
-			m_sda.SetBoolean(wf.Hvo, WfiWordformTags.kflidSpellingStatus, true);
+			Assert.That(() => m_sda.SetBoolean(wf.Hvo, WfiWordformTags.kflidSpellingStatus, true), Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
@@ -405,12 +399,11 @@ namespace SIL.LCModel.Application.Impl
 		/// Set an interface to the wrong kind of object.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void SetUnknownBadTest()
 		{
-			// Don't worry about the hvo or tag,
+			Assert.That(() => // Don't worry about the hvo or tag,
 			// since it should blow up wel, before discovering the LP has no such tag.
-			m_sda.SetUnknown(Cache.LanguageProject.Hvo, 1, Guid.NewGuid());
+			m_sda.SetUnknown(Cache.LanguageProject.Hvo, 1, Guid.NewGuid()), Throws.TypeOf<ArgumentException>());
 		}
 
 		/// <summary>
@@ -437,10 +430,9 @@ namespace SIL.LCModel.Application.Impl
 		/// Get an HVO from a non-extant Guid test.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(KeyNotFoundException))]
 		public void get_ObjFromGuidBadTest()
 		{
-			m_sda.get_ObjFromGuid(Guid.NewGuid());
+			Assert.That(() => m_sda.get_ObjFromGuid(Guid.NewGuid()), Throws.TypeOf<KeyNotFoundException>());
 		}
 
 		/// <summary>
@@ -496,30 +488,27 @@ namespace SIL.LCModel.Application.Impl
 		/// Set a Class Id from an object test.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void set_Class_IntPropTest()
 		{
-			m_sda.SetInt(Cache.LanguageProject.Hvo, (int)CmObjectFields.kflidCmObject_Class, 25);
+			Assert.That(() => m_sda.SetInt(Cache.LanguageProject.Hvo, (int)CmObjectFields.kflidCmObject_Class, 25), Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
 		/// Set an OwnFlid for an object test.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void set_OwnFlid_IntPropTest()
 		{
-			m_sda.SetInt(Cache.LanguageProject.Hvo, (int)CmObjectFields.kflidCmObject_OwnFlid, 25);
+			Assert.That(() => m_sda.SetInt(Cache.LanguageProject.Hvo, (int)CmObjectFields.kflidCmObject_OwnFlid, 25), Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
 		/// Set an OwnOrd for an object test.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void set_OwnOrd_IntPropTest()
 		{
-			m_sda.SetInt(Cache.LanguageProject.Hvo, CmObjectTags.kflidOwnOrd, 25);
+			Assert.That(() => m_sda.SetInt(Cache.LanguageProject.Hvo, CmObjectTags.kflidOwnOrd, 25), Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
@@ -967,30 +956,27 @@ namespace SIL.LCModel.Application.Impl
 		/// Make sure a non-existant HVO can't be used.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(KeyNotFoundException))]
 		public void get_IsPropInCacheBadHvoTest()
 		{
-			m_sda.get_IsPropInCache(-1, 2, 0, 0);
+			Assert.That(() => m_sda.get_IsPropInCache(-1, 2, 0, 0), Throws.TypeOf<KeyNotFoundException>());
 		}
 
 		/// <summary>
 		/// Make sure a bogus flid can't be used.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void get_IsPropInCacheBadTagTest()
 		{
-			m_sda.get_IsPropInCache(Cache.LanguageProject.Hvo, -2, 0, 0);
+			Assert.That(() => m_sda.get_IsPropInCache(Cache.LanguageProject.Hvo, -2, 0, 0), Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
 		/// Make sure a mismatched HVO+Flid can't be used.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void get_IsPropInCacheMismatchedHvoAndTagTest()
 		{
-			m_sda.get_IsPropInCache(Cache.LanguageProject.Hvo, CmPersonTags.kflidGender, 0, 0);
+			Assert.That(() => m_sda.get_IsPropInCache(Cache.LanguageProject.Hvo, CmPersonTags.kflidGender, 0, 0), Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
@@ -1006,20 +992,18 @@ namespace SIL.LCModel.Application.Impl
 		/// Make sure a bogus flid blows up.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void IllegalFlidTest1()
 		{
-			m_sda.get_Prop(Cache.LanguageProject.Hvo, Int32.MinValue);
+			Assert.That(() => m_sda.get_Prop(Cache.LanguageProject.Hvo, Int32.MinValue), Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
 		/// Make sure a bogus flid blows up.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void IllegalFlidTest2()
 		{
-			m_sda.get_IntProp(Cache.LanguageProject.Hvo, Int32.MinValue);
+			Assert.That(() => m_sda.get_IntProp(Cache.LanguageProject.Hvo, Int32.MinValue), Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
@@ -1111,23 +1095,21 @@ namespace SIL.LCModel.Application.Impl
 		/// Test the SDA on some custom property using an incorrect data type.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void WrongDataTypeForCustomPropertyTest()
 		{
 			var servLoc = Cache.ServiceLocator;
 			var wf = servLoc.GetInstance<IWfiWordformFactory>().Create();
 
-			m_sda.SetInt(wf.Hvo, m_customCertifiedFlid, 25);
+			Assert.That(() => m_sda.SetInt(wf.Hvo, m_customCertifiedFlid, 25), Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
 		/// Shouldn't be able to make a new abstract object using MakeNewObject.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void MakeNewAbstractObjectTest()
 		{
-			m_sda.MakeNewObject(CmObjectTags.kClassId, Cache.LangProject.Hvo, LangProjectTags.kflidStyles, -1);
+			Assert.That(() => m_sda.MakeNewObject(CmObjectTags.kClassId, Cache.LangProject.Hvo, LangProjectTags.kflidStyles, -1), Throws.TypeOf<ArgumentException>());
 		}
 
 		/// <summary>

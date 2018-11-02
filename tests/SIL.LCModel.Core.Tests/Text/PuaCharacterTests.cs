@@ -76,19 +76,19 @@ namespace SIL.LCModel.Core.Text
 			new PUACharacter("0669", "ARABIC-INDIC DIGIT NINE;Nd;0;AN;;9;9;9;N;;;;;");
 		}
 
-		[TestCase("1", Result = "\x0001")]
-		[TestCase("12", Result = "\x0012")]
-		[TestCase("123", Result = "\x0123")]
-		[TestCase("1234", Result = "\x1234")]
-		[TestCase("12345", Result = "\xd808\xdf45")]
-		[TestCase("10FFFF", Result = "\xdbff\xdfff")]
-		[TestCase("123456", Result = " ")]
-		[TestCase("110000", Result = " ")]
-		[TestCase("D800", Result = " ")]
-		[TestCase("D801", Result = " ")]
-		[TestCase("DFFF", Result = " ")]
-		[TestCase("", Result = " ")]
-		[TestCase(null, Result = " ")]
+		[TestCase("1", ExpectedResult = "\x0001")]
+		[TestCase("12", ExpectedResult = "\x0012")]
+		[TestCase("123", ExpectedResult = "\x0123")]
+		[TestCase("1234", ExpectedResult = "\x1234")]
+		[TestCase("12345", ExpectedResult = "\xd808\xdf45")]
+		[TestCase("10FFFF", ExpectedResult = "\xdbff\xdfff")]
+		[TestCase("123456", ExpectedResult = " ")]
+		[TestCase("110000", ExpectedResult = " ")]
+		[TestCase("D800", ExpectedResult = " ")]
+		[TestCase("D801", ExpectedResult = " ")]
+		[TestCase("DFFF", ExpectedResult = " ")]
+		[TestCase("", ExpectedResult = " ")]
+		[TestCase(null, ExpectedResult = " ")]
 		public string CodepointAsString(string codepoint)
 		{
 			return PUACharacter.CodepointAsString(codepoint);

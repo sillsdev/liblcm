@@ -109,23 +109,20 @@ namespace SIL.LCModel.DomainImpl
 		/// Make sure it blows up on bad index.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(IndexOutOfRangeException))]
 		public void Bad0IndexTest()
 		{
-			int ws;
-			Cache.LangProject.FieldWorkLocation.GetStringFromIndex(0, out ws);
+			Assert.That(() => Cache.LangProject.FieldWorkLocation.GetStringFromIndex(0, out var ws),
+				Throws.TypeOf<IndexOutOfRangeException>());
 		}
 
 		/// <summary>
 		///Make sure it blows up on bad index.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(IndexOutOfRangeException))]
 		public void BadHighIndexTest()
 		{
-			var count = Cache.LangProject.WorldRegion.StringCount;
-			int ws;
-			Cache.LangProject.WorldRegion.GetStringFromIndex(count, out ws);
+			Assert.That(() => Cache.LangProject.WorldRegion.GetStringFromIndex(Cache.LangProject.WorldRegion.StringCount, out var ws),
+				Throws.TypeOf<IndexOutOfRangeException>());
 		}
 
 		/// <summary>

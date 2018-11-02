@@ -25,22 +25,20 @@ namespace SIL.LCModel.DomainImpl
 		/// Make sure a null target parameter is not acceptable.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void NullTargetTest()
 		{
-			Cache.LanguageProject.DefaultParserAgent.SetEvaluation(null, Opinions.noopinion);
+			Assert.That(() => Cache.LanguageProject.DefaultParserAgent.SetEvaluation(null, Opinions.noopinion), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		/// <summary>
 		/// Make sure a target that is not a WfiAnalysis or a WfiWordfor is not acceptable.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void TargetClassNotGoodTest()
 		{
-			Cache.LanguageProject.DefaultParserAgent.SetEvaluation(
+			Assert.That(() => Cache.LanguageProject.DefaultParserAgent.SetEvaluation(
 				Cache.LanguageProject,
-				Opinions.noopinion);
+				Opinions.noopinion), Throws.TypeOf<ArgumentException>());
 		}
 
 		/// <summary>
@@ -207,46 +205,40 @@ namespace SIL.LCModel.DomainImpl
 		/// Make sure the smart Create method chokes on a null owner.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void Ensure_smart_method_throws_on_null_owner_paragraph()
 		{
-			const IStTxtPara para = null;
-			m_factory.Create(para, m_backTranslationType);
+			Assert.That(() => m_factory.Create((IStTxtPara) null, m_backTranslationType), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		/// <summary>
 		/// Make sure the smart Create method chokes on a null owner.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void Ensure_smart_method_throws_on_null_owner_example_sentence()
 		{
-			const ILexExampleSentence sentence = null;
-			m_factory.Create(sentence, m_backTranslationType);
+			Assert.That(() => m_factory.Create((ILexExampleSentence) null, m_backTranslationType), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		/// <summary>
 		/// Make sure the smart Create method chokes on a null translation type.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void Ensure_smart_method_throws_on_null_translation_type_paragraph()
 		{
-			m_factory.Create(
+			Assert.That(() => m_factory.Create(
 				Cache.ServiceLocator.GetInstance<IStTxtParaFactory>().Create(),
-				null);
+				null), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		/// <summary>
 		/// Make sure the smart Create method chokes on a null translation type.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void Ensure_smart_method_throws_on_null_translation_type_example_sentence()
 		{
-			m_factory.Create(
+			Assert.That(() => m_factory.Create(
 				Cache.ServiceLocator.GetInstance<ILexExampleSentenceFactory>().Create(),
-				null);
+				null), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		/// <summary>
@@ -715,14 +707,14 @@ namespace SIL.LCModel.DomainImpl
 		///
 		/// </summary>
 		public static readonly string ksPhFS1 =
-			string.Format("<item id=\"gPAMajorClassFeature\" posid=\"Adjective\" guid=\"f673a43d-ba35-44f1-a4d0-308a292c4b97\" status=\"visible\" type=\"group\"><abbrev ws=\"en\">mcf</abbrev><term ws=\"en\">major class features</term><def ws=\"en\">“The features that represent the major classes of sounds.”</def><citation>[http://en.wikipedia.org/wiki/Distinctive_feature] Date accessed: 12-Feb-2009</citation>" +
-				"<item id=\"fPAConsonantal\" guid=\"b4ddf8e5-1ff8-43fc-9723-04f1ee0471fc\" type=\"feature\"><abbrev ws=\"en\">cons</abbrev><term ws=\"en\">consonantal</term><def ws=\"en\">“Consonantal segments are produced with an audible constriction in the vocal tract, like plosives, affricates, fricatives, nasals, laterals and [r]. Vowels, glides and laryngeal segments are not consonantal.”</def><citation>[http://en.wikipedia.org/wiki/Distinctive_feature] Date accessed: 12-Feb-2009</citation>" +
+			string.Format("<item id=\"gPAMajorClassFeature\" posid=\"Adjective\" guid=\"f673a43d-ba35-44f1-a4d0-308a292c4b97\" status=\"visible\" type=\"group\"><abbrev ws=\"en\">mcf</abbrev><term ws=\"en\">major class features</term><def ws=\"en\">Â“The features that represent the major classes of sounds.Â”</def><citation>[http://en.wikipedia.org/wiki/Distinctive_feature] Date accessed: 12-Feb-2009</citation>" +
+				"<item id=\"fPAConsonantal\" guid=\"b4ddf8e5-1ff8-43fc-9723-04f1ee0471fc\" type=\"feature\"><abbrev ws=\"en\">cons</abbrev><term ws=\"en\">consonantal</term><def ws=\"en\">Â“Consonantal segments are produced with an audible constriction in the vocal tract, like plosives, affricates, fricatives, nasals, laterals and [r]. Vowels, glides and laryngeal segments are not consonantal.Â”</def><citation>[http://en.wikipedia.org/wiki/Distinctive_feature] Date accessed: 12-Feb-2009</citation>" +
 				"<item id='vPAConsonantalPositive' guid=\"ec5800b4-52a8-4859-a976-f3005c53bd5f\" type='value'><abbrev ws='en'>+</abbrev><term ws='en'>positive</term><fs id='vPAConsonantalPositiveFS' type='Phon' typeguid=\"0ea53dd6-79f5-4fac-a672-f2f7026d8d15\"><f name='fPAConsonantal'><sym value='+'/></f></fs></item>" +
 				"<item id='vPAConsonantalNegative' guid=\"81c50b82-83ff-4f73-8e27-6ff9217b810a\" type='value'><abbrev ws='en'>-</abbrev><term ws='en'>negative</term><fs id='vPAConsonantalNegativeFS' type='Phon' typeguid=\"0ea53dd6-79f5-4fac-a672-f2f7026d8d15\"><f name='fPAConsonantal'><sym value='-'/></f></fs></item></item>" +
-				"<item id=\"fPASonorant\" guid=\"7df7b583-dd42-424d-9730-ab7bcda314e7\" type=\"feature\"><abbrev ws=\"en\">son</abbrev><term ws=\"en\">sonorant</term><def ws=\"en\">“This feature describes the type of oral constriction that can occur in the vocal tract. [+son] designates the vowels and sonorant consonants, which are produced without the imbalance of air pressure in the vocal tract that might cause turbulence. [-son] alternatively describes the obstruents, articulated with a noticeable turbulence caused by an imbalance of air pressure in the vocal tract.”</def><citation>[http://en.wikipedia.org/wiki/Distinctive_feature] Date accessed: 12-Feb-2009</citation>" +
+				"<item id=\"fPASonorant\" guid=\"7df7b583-dd42-424d-9730-ab7bcda314e7\" type=\"feature\"><abbrev ws=\"en\">son</abbrev><term ws=\"en\">sonorant</term><def ws=\"en\">Â“This feature describes the type of oral constriction that can occur in the vocal tract. [+son] designates the vowels and sonorant consonants, which are produced without the imbalance of air pressure in the vocal tract that might cause turbulence. [-son] alternatively describes the obstruents, articulated with a noticeable turbulence caused by an imbalance of air pressure in the vocal tract.Â”</def><citation>[http://en.wikipedia.org/wiki/Distinctive_feature] Date accessed: 12-Feb-2009</citation>" +
 				"<item id='vPASonorantPositive' guid=\"d190d8a1-f058-4a9c-b16e-f16b525b041c\" type='value'><abbrev ws='en'>+</abbrev><term ws='en'>positive</term><fs id='vPASonorantPositiveFS' type='Phon' typeguid=\"0ea53dd6-79f5-4fac-a672-f2f7026d8d15\"><f name='fPASonorant'><sym value='+'/></f></fs></item>" +
 				"<item id='vPASonorantNegative' guid=\"ff4a2434-54e9-4e3d-bf11-cadfedef1765\" type='value'><abbrev ws='en'>-</abbrev><term ws='en'>negative</term><fs id='vPASonorantNegativeFS' type='Phon' typeguid=\"0ea53dd6-79f5-4fac-a672-f2f7026d8d15\"><f name='fPASonorant'><sym value='-'/></f></fs></item></item>" +
-				"<item id=\"fPASyllabic\" guid=\"0acbdb9b-28bc-41c2-9706-5873bb3b12e5\" type=\"feature\"><abbrev ws=\"en\">syl</abbrev><term ws=\"en\">syllabic</term><def ws=\"en\">“Syllabic segments may function as the nucleus of a syllable, while their counterparts, the [-syl] segments, may not.”</def><citation>[http://en.wikipedia.org/wiki/Distinctive_feature] Date accessed: 12-Feb-2009</citation>" +
+				"<item id=\"fPASyllabic\" guid=\"0acbdb9b-28bc-41c2-9706-5873bb3b12e5\" type=\"feature\"><abbrev ws=\"en\">syl</abbrev><term ws=\"en\">syllabic</term><def ws=\"en\">Â“Syllabic segments may function as the nucleus of a syllable, while their counterparts, the [-syl] segments, may not.Â”</def><citation>[http://en.wikipedia.org/wiki/Distinctive_feature] Date accessed: 12-Feb-2009</citation>" +
 				"<item id='vPASyllabicPositive' guid=\"31929bd3-e2f8-4ea7-beed-527404d34e74\" type='value'><abbrev ws='en'>+</abbrev><term ws='en'>positive</term><fs id='vPASyllabicPositiveFS' type='Phon' typeguid=\"0ea53dd6-79f5-4fac-a672-f2f7026d8d15\"><f name='fPASyllabic'><sym value='+'/></f></fs></item>" +
 				"<item id='vPASyllabicNegative' guid=\"73a064b8-21f0-479a-b5d2-142f30297ffa\" type='value'><abbrev ws='en'>-</abbrev><term ws='en'>negative</term><fs id='vPASyllabicNegativeFS' type='Phon' typeguid=\"0ea53dd6-79f5-4fac-a672-f2f7026d8d15\"><f name='fPASyllabic'><sym value='-'/></f></fs></item></item></item>",
 				Environment.NewLine);

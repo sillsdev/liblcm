@@ -972,13 +972,13 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void AttemptToUseSameParatextProjectTwice()
 		{
 			m_importSettings.ImportTypeEnum = TypeOfImport.Paratext6;
 
 			m_importSettings.ParatextBTProj = "KAM";
-			m_importSettings.ParatextNotesProj = "KAM";
+			Assert.That(() => m_importSettings.ParatextNotesProj = "KAM",
+				Throws.TypeOf<ArgumentException>());
 		}
 
 		/// ------------------------------------------------------------------------------------

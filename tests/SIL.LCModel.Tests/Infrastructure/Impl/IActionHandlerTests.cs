@@ -201,20 +201,18 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// End an undoable task without starting it first.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void EndUndoableTaskWithNoBeginTest()
 		{
-			m_actionHandler.EndUndoTask();
+			Assert.That(() => m_actionHandler.EndUndoTask(), Throws.TypeOf<InvalidOperationException>());
 		}
 
 		/// <summary>
-		/// End a non-undoable teask without starting it first.
+		/// End a non-undoable task without starting it first.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void EndNonUndoableTaskWithNoBeginTest()
 		{
-			m_actionHandler.EndNonUndoableTask();
+			Assert.That(() => m_actionHandler.EndNonUndoableTask(), Throws.TypeOf<InvalidOperationException>());
 		}
 
 		/// <summary>
@@ -695,30 +693,28 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// Make sure ContinueUndoTask is not yet supported at all.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(NotSupportedException))]
 		public void ContinueUndoTaskTest()
 		{
-			m_actionHandler.ContinueUndoTask();
+			Assert.That(() => m_actionHandler.ContinueUndoTask(), Throws.TypeOf<NotSupportedException>());
 		}
 
 		/// <summary>
 		/// Make sure EndOuterUndo is not yet supported at all.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(NotSupportedException))]
 		public void EndOuterUndoTest()
 		{
-			m_actionHandler.EndOuterUndoTask();
+			Assert.That(() => m_actionHandler.EndOuterUndoTask(), Throws.TypeOf<NotSupportedException>());
 		}
 
 		/// <summary>
 		/// Make sure StartSeq is not yet supported at all.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(NotSupportedException))]
 		public void StartSeqTest()
 		{
-			m_actionHandler.StartSeq("Undo Add Stuff", "Redo Add Stuff", null);
+			Assert.That(() => m_actionHandler.StartSeq("Undo Add Stuff", "Redo Add Stuff", null),
+				Throws.TypeOf<NotSupportedException>());
 		}
 
 		/// <summary>
@@ -767,7 +763,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// Make sure accessing a now invalid mark throws an exception
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void MarkTest_InvalidMark()
 		{
 			using (var undoHelper = new UndoableUnitOfWorkHelper(m_actionHandler, "add Object"))
@@ -785,7 +780,8 @@ namespace SIL.LCModel.Infrastructure.Impl
 			while (m_actionHandler.CanUndo())
 				Assert.AreEqual(UndoResult.kuresSuccess, m_actionHandler.Undo());
 			Assert.AreEqual(0, m_actionHandler.TopMarkHandle);
-			m_actionHandler.DiscardToMark(hMark);
+			Assert.That(() => m_actionHandler.DiscardToMark(hMark),
+				Throws.TypeOf<ArgumentException>());
 		}
 
 		/// <summary>
@@ -977,10 +973,9 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// Make sure Rollback does not work with no current UOW.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void RollbackCrashesTest()
 		{
-			m_actionHandler.Rollback(0);
+			Assert.That(() => m_actionHandler.Rollback(0), Throws.TypeOf<InvalidOperationException>());
 		}
 
 		/// ------------------------------------------------------------------------------------

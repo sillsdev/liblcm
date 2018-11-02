@@ -61,17 +61,11 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void DeleteStTextWithoutDeletingOwner()
 		{
-			try
-			{
-				Cache.DomainDataByFlid.DeleteObj(m_stText.Hvo);
-			}
-			catch (TargetInvocationException e)
-			{
-				throw e.InnerException;
-			}
+			Assert.That(() => Cache.DomainDataByFlid.DeleteObj(m_stText.Hvo),
+				Throws.TypeOf<InvalidOperationException>()
+					.Or.TypeOf<TargetInvocationException>().With.InnerException.TypeOf<InvalidOperationException>());
 		}
 
 		#region Helper methods

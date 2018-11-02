@@ -187,11 +187,11 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException), ExpectedMessage="Books are different")]
 		public void ChapterVerseBridgeAsStringTest_DifferentBooks()
 		{
-			m_scr.ChapterVerseBridgeAsString(new BCVRef(25, 4, 18), new BCVRef(3, 4, 18),
-				Cache.DefaultVernWs);
+			Assert.That(() => m_scr.ChapterVerseBridgeAsString(new BCVRef(25, 4, 18), new BCVRef(3, 4, 18),
+				Cache.DefaultVernWs),
+				Throws.TypeOf<ArgumentException>().With.Message.EqualTo("Books are different"));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -200,11 +200,11 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException), ExpectedMessage="Chapters are different")]
 		public void ChapterVerseBridgeAsStringTest_DifferentChapters()
 		{
-			m_scr.ChapterVerseBridgeAsString(new BCVRef(25, 4, 18), new BCVRef(25, 9, 18),
-				Cache.DefaultVernWs);
+			Assert.That(() => m_scr.ChapterVerseBridgeAsString(new BCVRef(25, 4, 18), new BCVRef(25, 9, 18),
+				Cache.DefaultVernWs),
+				Throws.TypeOf<ArgumentException>().With.Message.EqualTo("Chapters are different"));
 		}
 
 		/// ------------------------------------------------------------------------------------

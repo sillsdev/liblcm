@@ -114,64 +114,71 @@ namespace SIL.LCModel.Utils
 		/// <summary>
 		/// Test that we cannot set an item with a key equal to the default value for the key type.
 		/// </summary>
-		[Test, ExpectedException(typeof(ArgumentException))]
+		[Test]
 		public void ItemZeroKey()
 		{
 			var dict = new SmallDictionary<int, string>();
-			dict[0] = "abc";
+			Assert.That(() => { dict[0] = "abc"; },
+				Throws.TypeOf<ArgumentException>());
 		}
+
 		/// <summary>
 		/// Test that we cannot add an item with a key equal to the default value for the key type.
 		/// </summary>
-		[Test, ExpectedException(typeof(ArgumentException))]
+		[Test]
 		public void AddZeroKey()
 		{
 			var dict = new SmallDictionary<int, string>();
-			dict.Add(0,"abc");
+			Assert.That(() => dict.Add(0,"abc"),
+				Throws.TypeOf<ArgumentException>());
 		}
 
 		/// <summary>
 		/// Test that we cannot get an item with a key equal to the default value for the key type.
 		/// </summary>
-		[Test, ExpectedException(typeof(ArgumentException))]
+		[Test]
 		public void GetZeroKey()
 		{
 			var dict = new SmallDictionary<int, string>();
-			var temp = dict[0];
+			Assert.That(() => dict[0],
+				Throws.TypeOf<ArgumentException>());
 		}
 
 		/// <summary>
 		/// Test that we get an exception seeking a missing key (on an empty dictionary).
 		/// </summary>
-		[Test, ExpectedException(typeof(KeyNotFoundException))]
+		[Test]
 		public void GetMissingKeyEmpty()
 		{
 			var dict = new SmallDictionary<int, string>();
-			var temp = dict[2];
+			Assert.That(() => dict[2],
+				Throws.TypeOf<KeyNotFoundException>());
 		}
 
 		/// <summary>
 		/// Test that we get an exception seeking a missing key (on an dictionary with one key).
 		/// </summary>
-		[Test, ExpectedException(typeof(KeyNotFoundException))]
+		[Test]
 		public void GetMissingKeyOne()
 		{
 			var dict = new SmallDictionary<int, string>();
 			dict.Add(2, "abc");
-			var temp = dict[3];
+			Assert.That(() => dict[3],
+				Throws.TypeOf<KeyNotFoundException>());
 		}
 
 		/// <summary>
 		/// Test that we get an exception seeking a missing key (on an dictionary with three key).
 		/// </summary>
-		[Test, ExpectedException(typeof(KeyNotFoundException))]
+		[Test]
 		public void GetMissingKeyThree()
 		{
 			var dict = new SmallDictionary<int, string>();
 			dict.Add(2, "abc");
 			dict.Add(5, "def");
 			dict.Add(11, "third");
-			var temp = dict[3];
+			Assert.That(() => dict[3],
+				Throws.TypeOf<KeyNotFoundException>());
 		}
 
 		/// <summary>
@@ -194,24 +201,26 @@ namespace SIL.LCModel.Utils
 		/// <summary>
 		/// Test that we cannot add an item with a key equal to the default value for the key type.
 		/// </summary>
-		[Test, ExpectedException(typeof(ArgumentException))]
+		[Test]
 		public void AddExistingKeyOneKey()
 		{
 			var dict = new SmallDictionary<int, string>();
 			dict.Add(2, "abc");
-			dict.Add(2, "def");
+			Assert.That(() => { dict.Add(2, "def"); },
+				Throws.TypeOf<ArgumentException>());
 		}
 
 		/// <summary>
 		/// Test that we cannot add an item with a key equal to the default value for the key type.
 		/// </summary>
-		[Test, ExpectedException(typeof(ArgumentException))]
+		[Test]
 		public void AddExistingKeyTwoKeys()
 		{
 			var dict = new SmallDictionary<int, string>();
 			dict.Add(2, "abc");
 			dict.Add(3, "def");
-			dict.Add(3, "def");
+			Assert.That(() => { dict.Add(3, "def"); },
+				Throws.TypeOf<ArgumentException>());
 		}
 
 		/// <summary>

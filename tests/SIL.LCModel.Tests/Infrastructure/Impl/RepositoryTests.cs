@@ -83,20 +83,18 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// Make sure it throws the exception on asking for a non-existing Guid.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(KeyNotFoundException))]
 		public void GetNonExistantObjectByGuidTest()
 		{
-			Cache.ServiceLocator.GetInstance<ICmObjectRepository>().GetObject(Guid.NewGuid());
+			Assert.That(() => Cache.ServiceLocator.GetInstance<ICmObjectRepository>().GetObject(Guid.NewGuid()), Throws.TypeOf<KeyNotFoundException>());
 		}
 
 		/// <summary>
 		/// Make sure it throws the exception on asking for a non-existing Guid.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(KeyNotFoundException))]
 		public void GetNonExistantObjectByGuidTest2()
 		{
-			Cache.ServiceLocator.GetInstance<ICmObjectRepository>().GetObject(Guid.Empty);
+			Assert.That(() => Cache.ServiceLocator.GetInstance<ICmObjectRepository>().GetObject(Guid.Empty), Throws.TypeOf<KeyNotFoundException>());
 		}
 
 		/// <summary>
@@ -113,10 +111,9 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// Make sure it throws the exception on asking for a non-extisting hvo.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(KeyNotFoundException))]
 		public void GetNonExtistantObjectByHvoTest()
 		{
-			Cache.ServiceLocator.GetInstance<ICmObjectRepository>().GetObject(Int32.MinValue);
+			Assert.That(() => Cache.ServiceLocator.GetInstance<ICmObjectRepository>().GetObject(Int32.MinValue), Throws.TypeOf<KeyNotFoundException>());
 		}
 
 		/// <summary>

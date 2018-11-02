@@ -518,13 +518,13 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void Insert_Null()
 		{
 			ILcmServiceLocator servLoc = Cache.ServiceLocator;
 
 			servLoc.GetInstance<IScrBookFactory>().Create(1);
-			m_scr.ScriptureBooksOS.Insert(0, null);
+			Assert.That(() => m_scr.ScriptureBooksOS.Insert(0, null),
+				Throws.TypeOf<ArgumentNullException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -533,15 +533,14 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(LcmObjectDeletedException),
-			ExpectedMessage = "Owned object has been deleted.")]
 		public void Insert_Deleted()
 		{
 			ILcmServiceLocator servLoc = Cache.ServiceLocator;
 
 			IScrBook book0 = servLoc.GetInstance<IScrBookFactory>().Create(1);
 			m_scr.ScriptureBooksOS.Remove(book0);
-			m_scr.ScriptureBooksOS.Insert(0, book0);
+			Assert.That(() => m_scr.ScriptureBooksOS.Insert(0, book0),
+				Throws.TypeOf<LcmObjectDeletedException>().With.Message.EqualTo("Owned object has been deleted."));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -550,8 +549,6 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(LcmObjectUninitializedException),
-			ExpectedMessage = "Object has not been initialized.")]
 		public void InsertIntoRefSequence_Uninitialized()
 		{
 			ILcmServiceLocator servLoc = Cache.ServiceLocator;
@@ -560,7 +557,8 @@ namespace SIL.LCModel.DomainImpl
 
 			var senseUninitialized = MockRepository.GenerateStub<ILexSense>();
 			senseUninitialized.Stub(x => x.Hvo).Return((int)SpecialHVOValues.kHvoUninitializedObject);
-			le.MainEntriesOrSensesRS.Insert(0, senseUninitialized);
+			Assert.That(() => le.MainEntriesOrSensesRS.Insert(0, senseUninitialized),
+				Throws.TypeOf<LcmObjectUninitializedException>().With.Message.EqualTo("Object has not been initialized."));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -569,8 +567,6 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException),
-			ExpectedMessage = "ScrRefSystem can not be owned!")]
 		public void Insert_UnownableObject()
 		{
 			ILcmServiceLocator servLoc = Cache.ServiceLocator;
@@ -581,7 +577,8 @@ namespace SIL.LCModel.DomainImpl
 			bookFact.Create(1, out text);
 			IStTxtPara para = text.AddNewTextPara(ScrStyleNames.MainBookTitle);
 			IScrRefSystem systemToAdd = servLoc.GetInstance<IScrRefSystemRepository>().Singleton;
-			para.AnalyzedTextObjectsOS.Insert(0, systemToAdd);
+			Assert.That(() => para.AnalyzedTextObjectsOS.Insert(0, systemToAdd),
+				Throws.TypeOf<InvalidOperationException>().With.Message.EqualTo("ScrRefSystem can not be owned!"));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -820,10 +817,10 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void AddNullItemToVectorTest()
 		{
-			Cache.LanguageProject.AnalyzingAgentsOC.Add(null); // Should throw the exception.
+			Assert.That(() => Cache.LanguageProject.AnalyzingAgentsOC.Add(null),
+				Throws.TypeOf<ArgumentNullException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -832,7 +829,6 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(NotSupportedException))]
 		public void AddNullItem2ToVectorTest()
 		{
 			ILcmServiceLocator servLoc = Cache.ServiceLocator;
@@ -842,7 +838,8 @@ namespace SIL.LCModel.DomainImpl
 			le.SensesOS.Add(sense);
 
 			le.MainEntriesOrSensesRS.Add(sense);
-			le.MainEntriesOrSensesRS[0] = null; // Should throw the exception.
+			Assert.That(() => le.MainEntriesOrSensesRS[0] = null,
+				Throws.TypeOf<NotSupportedException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -851,7 +848,6 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(LcmObjectDeletedException))]
 		public void AddDeletedItemToVectorTest()
 		{
 			// Make new annotation.
@@ -863,7 +859,8 @@ namespace SIL.LCModel.DomainImpl
 			Cache.LanguageProject.AnnotationsOC.Remove(ann);
 			Assert.AreEqual((int)SpecialHVOValues.kHvoObjectDeleted, ann.Hvo);
 
-			Cache.LanguageProject.AnnotationsOC.Add(ann); // Should throw the exception for being deleted.
+			Assert.That(() => Cache.LanguageProject.AnnotationsOC.Add(ann),
+				Throws.TypeOf<LcmObjectDeletedException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -891,13 +888,13 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void IndexedSetter_EmptyList()
 		{
 			ILcmServiceLocator servLoc = Cache.ServiceLocator;
 			Cache.LangProject.CheckListsOC.Add(servLoc.GetInstance<ICmPossibilityListFactory>().Create());
-			Cache.LangProject.CheckListsOC.First().PossibilitiesOS[0] =
-				servLoc.GetInstance<ICmPossibilityFactory>().Create();
+			Assert.That(() => Cache.LangProject.CheckListsOC.First().PossibilitiesOS[0] =
+				servLoc.GetInstance<ICmPossibilityFactory>().Create(),
+				Throws.TypeOf<ArgumentOutOfRangeException>());
 		}
 	}
 	#endregion
