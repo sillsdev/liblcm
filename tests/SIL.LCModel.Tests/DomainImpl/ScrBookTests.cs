@@ -1352,11 +1352,11 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void MergeSectionIntoPreviousSectionContent_NoPreviousSection()
 		{
 			Cache.LangProject.FindStyle(ScrStyleNames.NormalParagraph);
-			m_philemon.MergeSectionContentIntoPreviousSectionContent(0);
+			Assert.That(() => m_philemon.MergeSectionContentIntoPreviousSectionContent(0),
+				Throws.TypeOf<ArgumentOutOfRangeException>());
 		}
 		#endregion
 
@@ -1451,8 +1451,6 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException), ExpectedMessage=
-			"Must not move all paragraphs in the heading.")]
 		public void MoveHeadingParasToPreviousSectionContent_AllParas()
 		{
 			IScrSection firstSection = m_philemon.SectionsOS[0];
@@ -1466,7 +1464,8 @@ namespace SIL.LCModel.DomainImpl
 			Assert.AreEqual(3, m_philemon.SectionsOS[1].HeadingOA.ParagraphsOS.Count);
 
 			IStStyle contentStyle = Cache.LangProject.FindStyle(ScrStyleNames.IntroParagraph);
-			m_philemon.MoveHeadingParasToPreviousSectionContent(1, 2, contentStyle);
+			Assert.That(() => m_philemon.MoveHeadingParasToPreviousSectionContent(1, 2, contentStyle),
+				Throws.TypeOf<InvalidOperationException>().With.Message.EqualTo("Must not move all paragraphs in the heading."));
 		}
 		#endregion
 
@@ -1504,10 +1503,9 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void MergeSectionContentIntoPreviousSectionContent_NoPreviousSection()
 		{
-			m_philemon.MergeSectionContentIntoPreviousSectionContent(0);
+			Assert.That(() => m_philemon.MergeSectionContentIntoPreviousSectionContent(0), Throws.TypeOf<ArgumentOutOfRangeException>());
 		}
 		#endregion
 
@@ -1549,11 +1547,11 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void MergeSectionIntoNextSectionHeading_NoNextSection()
 		{
 			IStStyle paraStyle = Cache.LangProject.FindStyle(ScrStyleNames.NormalParagraph);
-			m_philemon.MergeSectionIntoNextSectionHeading(3, paraStyle);
+			Assert.That(() => m_philemon.MergeSectionIntoNextSectionHeading(3, paraStyle),
+				Throws.TypeOf<ArgumentOutOfRangeException>());
 		}
 		#endregion
 
@@ -1603,7 +1601,6 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void MoveContentParasToNextSectionHeading_LastSection()
 		{
 			// Add a paragraph to last section content
@@ -1614,7 +1611,8 @@ namespace SIL.LCModel.DomainImpl
 			IStStyle headingStyle = Cache.LangProject.FindStyle(ScrStyleNames.SectionHead);
 
 			// We expect the section index to cause the exception to be thrown.
-			m_philemon.MoveContentParasToNextSectionHeading(3, 1, headingStyle);
+			Assert.That(() => m_philemon.MoveContentParasToNextSectionHeading(3, 1, headingStyle),
+				Throws.TypeOf<ArgumentOutOfRangeException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1624,14 +1622,14 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException),
-			ExpectedMessage = "iFirstPara cannot be the first paragraph.")]
 		public void MoveContentParasToNextSectionHeading_AllParas()
 		{
 			IStStyle headingStyle = Cache.LangProject.FindStyle(ScrStyleNames.SectionHead);
 
 			// We expect the para index to cause the exception to be thrown.
-			m_philemon.MoveContentParasToNextSectionHeading(0, 0, headingStyle);
+			Assert.That(() => m_philemon.MoveContentParasToNextSectionHeading(0, 0, headingStyle),
+				Throws.TypeOf<InvalidOperationException>()
+					.With.Message.EqualTo("iFirstPara cannot be the first paragraph."));
 		}
 		#endregion
 	}

@@ -579,20 +579,13 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException),
-			ExpectedMessage = "Scripture sections cannot be moved from another book.")]
 		public void AddSection_InAnotherBook()
 		{
-			IScrSection philemonSection = m_philemon.SectionsOS[0];
-			int philemonSectionCount = m_philemon.SectionsOS.Count;
-
 			// Attempt to insert this section from Philemon into Matthew.
-			m_matthew.SectionsOS.Add(philemonSection);
-
 			// We should get an exception because we don't want to remove the original section
-			// from Philemon. If we don't crash with this insert, we want to confirm that we
-			// haven't deleted any sections from Philemon.
-			Assert.AreEqual(philemonSectionCount, m_philemon.SectionsOS.Count);
+			// from Philemon.
+			Assert.That(() =>m_matthew.SectionsOS.Add(m_philemon.SectionsOS[0]),
+				Throws.TypeOf<InvalidOperationException>().With.Message.EqualTo("Scripture sections cannot be moved from another book."));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -602,20 +595,13 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException),
-			ExpectedMessage = "Scripture sections cannot be moved from another book.")]
 		public void InsertSection_InAnotherBook()
 		{
-			IScrSection philemonSection = m_philemon.SectionsOS[0];
-			int philemonSectionCount = m_philemon.SectionsOS.Count;
-
 			// Attempt to insert this section from Philemon into Matthew.
-			m_matthew.SectionsOS.Insert(0, philemonSection);
-
 			// We should get an exception because we don't want to remove the original section
-			// from Philemon. If we don't crash with this insert, we want to confirm that we
-			// haven't deleted any sections from Philemon.
-			Assert.AreEqual(philemonSectionCount, m_philemon.SectionsOS.Count);
+			// from Philemon.
+			Assert.That(() => m_matthew.SectionsOS.Insert(0, m_philemon.SectionsOS[0]),
+				Throws.TypeOf<InvalidOperationException>().With.Message.EqualTo("Scripture sections cannot be moved from another book."));
 		}
 		#endregion
 
@@ -971,7 +957,6 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(InvalidStructureException))]
 		public void MoveContentParasToHeading_ParaHasChapterVerses()
 		{
 			IScrSection scrSection1 = m_philemon[2];
@@ -979,7 +964,8 @@ namespace SIL.LCModel.DomainImpl
 
 			// Move first content paragraph to a heading paragraph.
 			IStStyle headingStyle = Cache.LangProject.FindStyle(ScrStyleNames.SectionHead);
-			scrSection1.MoveContentParasToHeading(0, headingStyle);
+			Assert.That(() => scrSection1.MoveContentParasToHeading(0, headingStyle),
+				Throws.TypeOf<InvalidStructureException>());
 		}
 		#endregion
 

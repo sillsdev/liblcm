@@ -161,14 +161,13 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void Index_OutOfRange()
 		{
 			ScrMappingList list = new ScrMappingList(MappingSet.Notes, null, null);
 			list.Add(new ImportMappingInfo(@"\a", null, false, MappingTargetType.TEStyle, MarkerDomain.Note, ScrStyleNames.Remark, null));
 
 			// Access the second element which should throw an exception
-			ImportMappingInfo info = list[1];
+			Assert.That(() => list[1], Throws.TypeOf<ArgumentOutOfRangeException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -420,11 +419,10 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void AddNullMappingInfo()
 		{
 			ScrMappingList list = new ScrMappingList(MappingSet.Main, null, null);
-			list.Add(null);
+			Assert.That(() => list.Add(null), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -434,11 +432,11 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void AddInfoWithNullMarker()
 		{
 			ScrMappingList list = new ScrMappingList(MappingSet.Main, null, null);
-			list.Add(new ImportMappingInfo(null, null, null));
+			Assert.That(() => list.Add(new ImportMappingInfo(null, null, null)),
+				Throws.TypeOf<ArgumentException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -448,11 +446,11 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void AddBlankMarker()
 		{
 			ScrMappingList list = new ScrMappingList(MappingSet.Main, null, null);
-			list.Add(new ImportMappingInfo(string.Empty, string.Empty, string.Empty));
+			Assert.That(() => list.Add(new ImportMappingInfo(string.Empty, string.Empty, string.Empty)),
+				Throws.TypeOf<ArgumentException>());
 		}
 		#endregion
 	}

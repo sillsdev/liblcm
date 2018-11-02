@@ -585,7 +585,6 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void PreventMovingParagraphsBetweenBooks_Add()
 		{
 			IScrSection sectionInBook = AddSectionToMockedBook(m_book);
@@ -593,7 +592,7 @@ namespace SIL.LCModel.DomainImpl
 			IScrSection sectionInArchive = AddSectionToMockedBook(archivedBook);
 			IScrTxtPara para = AddParaToMockedSectionContent(sectionInArchive, ScrStyleNames.NormalParagraph);
 			// Attempt to move the paragraph from the archive into the current book.
-			sectionInBook.ContentOA.ParagraphsOS.Add(para);
+			Assert.That(() => sectionInBook.ContentOA.ParagraphsOS.Add(para), Throws.TypeOf<InvalidOperationException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -611,7 +610,6 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void PreventMovingParagraphsBetweenBooks_Insert()
 		{
 			IScrSection sectionInBook = AddSectionToMockedBook(m_book);
@@ -619,7 +617,7 @@ namespace SIL.LCModel.DomainImpl
 			IScrSection sectionInArchive = AddSectionToMockedBook(archivedBook);
 			IScrTxtPara para = AddParaToMockedSectionContent(sectionInArchive, ScrStyleNames.NormalParagraph);
 			// Attempt to move the paragraph from the archive into the current book.
-			sectionInBook.ContentOA.ParagraphsOS.Insert(0, para);
+			Assert.That(() => sectionInBook.ContentOA.ParagraphsOS.Insert(0, para), Throws.TypeOf<InvalidOperationException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -637,7 +635,6 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void PreventMovingParagraphsBetweenBooks_Replace()
 		{
 			IScrSection sectionInBook = AddSectionToMockedBook(m_book);
@@ -645,7 +642,7 @@ namespace SIL.LCModel.DomainImpl
 			IScrSection sectionInArchive = AddSectionToMockedBook(archivedBook);
 			IScrTxtPara para = AddParaToMockedSectionContent(sectionInArchive, ScrStyleNames.NormalParagraph);
 			// Attempt to move the paragraph from the archive into the current book.
-			sectionInBook.ContentOA.ParagraphsOS.Replace(0, 0, new ICmObject[] {para});
+			Assert.That(() => sectionInBook.ContentOA.ParagraphsOS.Replace(0, 0, new ICmObject[] {para}), Throws.TypeOf<InvalidOperationException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -663,7 +660,6 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void PreventMovingParagraphsBetweenBooks_IndexedSetter()
 		{
 			IScrSection sectionInBook = AddSectionToMockedBook(m_book);
@@ -672,7 +668,7 @@ namespace SIL.LCModel.DomainImpl
 			IScrSection sectionInArchive = AddSectionToMockedBook(archivedBook);
 			IScrTxtPara para = AddParaToMockedSectionContent(sectionInArchive, ScrStyleNames.NormalParagraph);
 			// Attempt to move the paragraph from the archive into the current book.
-			sectionInBook.ContentOA.ParagraphsOS[0] = para;
+			Assert.That(() => sectionInBook.ContentOA.ParagraphsOS[0] = para, Throws.TypeOf<InvalidOperationException>());
 		}
 		#endregion
 

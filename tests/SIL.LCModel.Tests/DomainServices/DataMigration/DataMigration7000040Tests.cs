@@ -157,7 +157,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 						Assert.AreEqual("flex", propPair[1], "silfw link - app should equal \"flex\"");
 						break;
 					case "server":
-						Assert.IsNullOrEmpty(propPair[1], "silfw link - server should be empty");
+						Assert.That(propPair[1], Is.Null.Or.Empty, "silfw link - server should be empty");
 						break;
 					case "database":
 						Assert.AreEqual("this$", propPair[1], "silfw link - database should equal \"this$\"");
@@ -172,7 +172,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 						break;
 				}
 			}
-			Assert.IsNotNullOrEmpty(tool, "silfw link - tool should have a value");
+			Assert.That(tool, Is.Not.Null.And.Not.Empty, "silfw link - tool should have a value");
 			Assert.AreNotEqual(Guid.Empty, guid, "silfw link - guid should have a value");
 		}
 	}

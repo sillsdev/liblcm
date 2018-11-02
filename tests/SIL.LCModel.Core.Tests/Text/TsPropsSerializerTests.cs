@@ -716,10 +716,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_Align_Fail()
 		{
-			CheckDeserializeIntProp("align", "monkey", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("align", "monkey", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -744,10 +744,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_Backcolor_Fail()
 		{
-			CheckDeserializeIntProp("backcolor", "monkey", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("backcolor", "monkey", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -770,10 +770,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_Bold_Fail()
 		{
-			CheckDeserializeIntProp("bold", "monkey", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("bold", "monkey", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -795,10 +795,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_BorderBottom_Fail()
 		{
-			CheckDeserializeIntProp("borderBottom", "-1", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("borderBottom", "-1", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -823,10 +823,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_BorderColor_Fail()
 		{
-			CheckDeserializeIntProp("borderColor", "monkey", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("borderColor", "monkey", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -848,10 +848,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_BorderLeading_Fail()
 		{
-			CheckDeserializeIntProp("borderLeading", "-1", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("borderLeading", "-1", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -873,10 +873,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_BorderTop_Fail()
 		{
-			CheckDeserializeIntProp("borderTop", "-1", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("borderTop", "-1", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -898,10 +898,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_BorderTrailing_Fail()
 		{
-			CheckDeserializeIntProp("borderTrailing", "-1", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("borderTrailing", "-1", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -946,10 +946,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_BulNumScheme_Fail()
 		{
-			CheckDeserializeIntProp("bulNumScheme", "-1", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("bulNumScheme", "-1", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -971,10 +971,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_BulNumStartAt_Fail()
 		{
-			CheckDeserializeIntProp("bulNumStartAt", "-1", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("bulNumStartAt", "-1", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1060,10 +1060,11 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_Fontsize_Fail1()
 		{
-			CheckDeserializeIntProp("fontsize='-10' fontsizeUnit='mpt'", FwTextPropType.ktptFontSize, 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("fontsize='-10' fontsizeUnit='mpt'",
+				FwTextPropType.ktptFontSize, 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1073,10 +1074,11 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_Fontsize_Fail2()
 		{
-			CheckDeserializeIntProp("fontsize='10' fontsizeUnit='monkey'", FwTextPropType.ktptFontSize, 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("fontsize='10' fontsizeUnit='monkey'",
+				FwTextPropType.ktptFontSize, 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1113,10 +1115,11 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_Forecolor_Fail()
 		{
-			CheckDeserializeIntProp("forecolor", "monkey", FwTextPropType.ktptForeColor, 0x0000FF);
+			Assert.That(() => CheckDeserializeIntProp("forecolor", "monkey",
+				FwTextPropType.ktptForeColor, 0x0000FF),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1139,10 +1142,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_Italic_Fail()
 		{
-			CheckDeserializeIntProp("italic", "monkey", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("italic", "monkey", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1164,10 +1167,11 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_KeepTogether_Fail()
 		{
-			CheckDeserializeIntProp("keepWithNext", "monkey", FwTextPropType.ktptKeepTogether, 1);
+			Assert.That(() => CheckDeserializeIntProp("keepWithNext", "monkey",
+				FwTextPropType.ktptKeepTogether, 1),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1189,10 +1193,11 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_KeepWithNext_Fail()
 		{
-			CheckDeserializeIntProp("keepWithNext", "monkey", FwTextPropType.ktptKeepWithNext, 1);
+			Assert.That(() => CheckDeserializeIntProp("keepWithNext", "monkey",
+				FwTextPropType.ktptKeepWithNext, 1),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1214,10 +1219,11 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_LeadingIndent_Fail()
 		{
-			CheckDeserializeIntProp("leadingIndent", "-1", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("leadingIndent", "-1", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
+
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1243,10 +1249,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_LineHeight_Fail1()
 		{
-			CheckDeserializeIntProp("lineHeight='-10' lineHeightUnit='mpt'", FwTextPropType.ktptFontSize, 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("lineHeight='-10' lineHeightUnit='mpt'", FwTextPropType.ktptFontSize, 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1256,10 +1262,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_LineHeight_Fail2()
 		{
-			CheckDeserializeIntProp("lineHeight='10' lineHeightUnit='monkey'", FwTextPropType.ktptFontSize, 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("lineHeight='10' lineHeightUnit='monkey'", FwTextPropType.ktptFontSize, 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1269,10 +1275,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_LineHeight_Fail3()
 		{
-			CheckDeserializeIntProp("lineHeight='10' lineHeightType='monkey'", FwTextPropType.ktptFontSize, 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("lineHeight='10' lineHeightType='monkey'", FwTextPropType.ktptFontSize, 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1305,10 +1311,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_MarginBottom_Fail()
 		{
-			CheckDeserializeIntProp("marginBottom", "-1", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("marginBottom", "-1", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1330,10 +1336,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_MarginLeading_Fail()
 		{
-			CheckDeserializeIntProp("marginLeading", "-1", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("marginLeading", "-1", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1355,10 +1361,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_MarginTop_Fail()
 		{
-			CheckDeserializeIntProp("marginTop", "-1", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("marginTop", "-1", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1380,10 +1386,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_MarginTrailing_Fail()
 		{
-			CheckDeserializeIntProp("marginTrailing", "-1", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("marginTrailing", "-1", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1447,10 +1453,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_Offset_Fail2()
 		{
-			CheckDeserializeIntProp("offset='10' offsetUnit='monkey'", FwTextPropType.ktptFontSize, 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("offset='10' offsetUnit='monkey'", FwTextPropType.ktptFontSize, 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1483,10 +1489,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_PadBottom_Fail()
 		{
-			CheckDeserializeIntProp("padBottom", "-1", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("padBottom", "-1", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1508,10 +1514,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_PadLeading_Fail()
 		{
-			CheckDeserializeIntProp("padLeading", "-1", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("padLeading", "-1", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1533,10 +1539,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_PadTop_Fail()
 		{
-			CheckDeserializeIntProp("padTop", "-1", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("padTop", "-1", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1558,10 +1564,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_PadTrailing_Fail()
 		{
-			CheckDeserializeIntProp("padTrailing", "-1", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("padTrailing", "-1", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1586,10 +1592,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_Paracolor_Fail()
 		{
-			CheckDeserializeIntProp("paracolor", "monkey", FwTextPropType.ktptParaColor, 0x0000FF);
+			Assert.That(() => CheckDeserializeIntProp("paracolor", "monkey", FwTextPropType.ktptParaColor, 0x0000FF),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1612,10 +1618,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_RightToLeft_Fail()
 		{
-			CheckDeserializeIntProp("rightToLeft", "-1", FwTextPropType.ktptRightToLeft, 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("rightToLeft", "-1", FwTextPropType.ktptRightToLeft, 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1664,10 +1670,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_Spellcheck_Fail()
 		{
-			CheckDeserializeIntProp("spellcheck", "monkey", FwTextPropType.ktptSpellCheck, 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("spellcheck", "monkey", FwTextPropType.ktptSpellCheck, 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1690,10 +1696,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_Superscript_Fail()
 		{
-			CheckDeserializeIntProp("superscript", "monkey", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("superscript", "monkey", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1758,10 +1764,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_TrailingIndent_Fail()
 		{
-			CheckDeserializeIntProp("trailingIndent", "-1", 0, 0);
+			Assert.That(() => CheckDeserializeIntProp("trailingIndent", "-1", 0, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1786,10 +1792,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_Undercolor_Fail()
 		{
-			CheckDeserializeIntProp("undercolor", "monkey", FwTextPropType.ktptUnderColor, 0x0000FF);
+			Assert.That(() => CheckDeserializeIntProp("undercolor", "monkey", FwTextPropType.ktptUnderColor, 0x0000FF),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1816,10 +1822,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_Underline_Fail()
 		{
-			CheckDeserializeIntProp("underline", "monkey", FwTextPropType.ktptUnderline, (int) FwUnderlineType.kuntNone, FwTextPropVar.ktpvEnum);
+			Assert.That(() => CheckDeserializeIntProp("underline", "monkey", FwTextPropType.ktptUnderline, (int) FwUnderlineType.kuntNone, FwTextPropVar.ktpvEnum),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1841,10 +1847,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_WidowOrphan_Fail()
 		{
-			CheckDeserializeIntProp("widowOrphan", "monkey", FwTextPropType.ktptWidowOrphanControl, 1);
+			Assert.That(() => CheckDeserializeIntProp("widowOrphan", "monkey", FwTextPropType.ktptWidowOrphanControl, 1),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1872,10 +1878,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void DeserializePropsFromXml_WsBase_Fail()
 		{
-			CheckDeserializeIntProp("wsBase", "fr__X_ETIC", FwTextPropType.ktptBaseWs, 0);
+			Assert.That(() => CheckDeserializeIntProp("wsBase", "fr__X_ETIC", FwTextPropType.ktptBaseWs, 0),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		/// ------------------------------------------------------------------------------------

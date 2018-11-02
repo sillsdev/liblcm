@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015-2017 SIL International
+// Copyright (c) 2015-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -141,12 +141,12 @@ namespace SIL.LCModel.Utils
 
 		/// <summary></summary>
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void NullInput_key()
 		{
 			// Attempt to cache a key,value pair with null key
 			var cache = new RecentItemsCache<string, string>(7);
-			cache.GetItem(null, key => { return "value"; });
+			Assert.That(() => cache.GetItem(null, key => { return "value"; }),
+				Throws.TypeOf<ArgumentNullException>());
 		}
 
 		/// <summary></summary>
