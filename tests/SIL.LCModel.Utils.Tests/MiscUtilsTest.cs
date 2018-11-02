@@ -273,10 +273,10 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void CompareHex_Null()
 		{
-			MiscUtils.CompareHex(null, null);
+			Assert.That(() => MiscUtils.CompareHex(null, null),
+				Throws.TypeOf<ArgumentNullException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -297,10 +297,10 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(FormatException))]
 		public void CompareHex_BadHexFormat()
 		{
-			MiscUtils.CompareHex("XYZ", "@!#");
+			Assert.That(() => MiscUtils.CompareHex("XYZ", "@!#"),
+				Throws.TypeOf<FormatException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -309,10 +309,10 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(OverflowException))]
 		public void CompareHex_IntegerOverflow()
 		{
-			MiscUtils.CompareHex("34", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+			Assert.That(() => MiscUtils.CompareHex("34", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"),
+				Throws.TypeOf<OverflowException>());
 		}
 
 		#region IsAlpha tests

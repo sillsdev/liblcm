@@ -1277,12 +1277,12 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void PreventMultipleFootnoteParagraphs_AddToEnd()
 		{
 			IScrFootnote footnote = (IScrFootnote)m_genesis.FootnotesOS[1];
 			footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
-			footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
+			Assert.That(() => footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph),
+				Throws.TypeOf<InvalidOperationException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1292,12 +1292,12 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void PreventMultipleFootnoteParagraphs_InsertAtBeginning()
 		{
 			IScrFootnote footnote = (IScrFootnote)m_genesis.FootnotesOS[1];
 			footnote.AddNewTextPara(ScrStyleNames.NormalFootnoteParagraph);
-			footnote.InsertNewTextPara(0, ScrStyleNames.NormalFootnoteParagraph);
+			Assert.That(() => footnote.InsertNewTextPara(0, ScrStyleNames.NormalFootnoteParagraph),
+				Throws.TypeOf<InvalidOperationException>());
 		}
 		#endregion
 

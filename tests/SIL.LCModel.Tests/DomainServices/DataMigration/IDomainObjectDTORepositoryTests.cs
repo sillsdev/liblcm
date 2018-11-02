@@ -45,10 +45,10 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void NulldtosParamTest()
 		{
-			new DomainObjectDtoRepository(1, null, m_mdc, null, TestDirectoryFinder.LcmDirectories);
+			Assert.That(() => new DomainObjectDtoRepository(1, null, m_mdc, null, TestDirectoryFinder.LcmDirectories),
+				Throws.TypeOf<ArgumentNullException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -57,10 +57,10 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void NullmdcParamTest()
 		{
-			new DomainObjectDtoRepository(1, new HashSet<DomainObjectDTO>(), null, null, TestDirectoryFinder.LcmDirectories);
+			Assert.That(() => new DomainObjectDtoRepository(1, new HashSet<DomainObjectDTO>(), null, null, TestDirectoryFinder.LcmDirectories),
+				Throws.TypeOf<ArgumentNullException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -69,7 +69,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void NonExistantGuidTest()
 		{
 			IDomainObjectDTORepository dtoRepos = new DomainObjectDtoRepository(
@@ -77,7 +76,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				new HashSet<DomainObjectDTO>(),
 				m_mdc,
 				null, TestDirectoryFinder.LcmDirectories);
-			dtoRepos.GetDTO(Guid.NewGuid().ToString());
+			Assert.That(() => dtoRepos.GetDTO(Guid.NewGuid().ToString()),
+				Throws.TypeOf<ArgumentException>());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -236,15 +236,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			dtoRepos.Remove(lpDto);
 			Assert.IsTrue(((DomainObjectDtoRepository)dtoRepos).Goners.Contains(lpDto), "Goner not in goners set.");
 			Assert.IsNull(dtoRepos.AllInstancesSansSubclasses("LexEntry").FirstOrDefault(), "Found goner by class.");
-			try
-			{
-				dtoRepos.GetDTO(lpDto.Guid);
-				Assert.Fail("Found deleted DTO by guid.");
-			}
-			catch (ArgumentException)
-			{
-				// Eat expected exception.
-			}
+			Assert.That(() => dtoRepos.GetDTO(lpDto.Guid),
+				Throws.ArgumentException, "Found deleted DTO by guid.");
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -271,7 +264,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void UpdateUnknownDtoTest()
 		{
 			var dtos = new HashSet<DomainObjectDTO>();
@@ -282,7 +274,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 			var newGuid = Guid.NewGuid();
 			var newby = new DomainObjectDTO(newGuid.ToString(), "LexEntry", "<rt />");
-			dtoRepos.Update(newby);
+			Assert.That(() => dtoRepos.Update(newby), Throws.TypeOf<InvalidOperationException>());
 		}
 	}
 }

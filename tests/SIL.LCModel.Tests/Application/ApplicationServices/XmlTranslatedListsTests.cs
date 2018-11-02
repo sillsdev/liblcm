@@ -1227,13 +1227,13 @@ namespace SIL.LCModel.Application.ApplicationServices
 				var nameEnglish = item.Name.get_String(m_wsEn).Text;
 				Assert.AreEqual(name, nameEnglish, "The list should have English names before import.");
 				var nameFrench = item.Name.get_String(m_wsFr).Text;
-				Assert.IsNullOrEmpty(nameFrench, "The original list should have no French names.");
+				Assert.That(nameFrench, Is.Null.Or.Empty, "The original list should have no French names.");
 				var abbrEnglish = item.Abbreviation.get_String(m_wsEn).Text;
-				Assert.IsNotNullOrEmpty(abbrEnglish, "The list should have English abbreviations before import.");
+				Assert.That(abbrEnglish, Is.Not.Null.And.Not.Empty, "The list should have English abbreviations before import.");
 				var abbrFrench = item.Abbreviation.get_String(m_wsFr).Text;
-				Assert.IsNullOrEmpty(abbrFrench, "The original list should have no French abbreviations.");
+				Assert.That(abbrFrench, Is.Null.Or.Empty, "The original list should have no French abbreviations.");
 				var descFrench = item.Description.get_String(m_wsFr).Text;
-				Assert.IsNullOrEmpty(descFrench, "The original list should have no French descriptions.");
+				Assert.That(descFrench, Is.Null.Or.Empty, "The original list should have no French descriptions.");
 				var inflType = item as ILexEntryInflType;
 				if (inflType != null)
 				{
@@ -1248,7 +1248,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 							NonUndoableUnitOfWorkHelper.Do(m_cache.ActionHandlerAccessor, () => inflType.GlossAppend.set_String(m_wsEn, ".pst"));
 					}
 					var glossFrench = inflType.GlossAppend.get_String(m_wsFr).Text;
-					Assert.IsNullOrEmpty(glossFrench, "The original list should have no French 'GlossAppend' values.");
+					Assert.That(glossFrench, Is.Null.Or.Empty, "The original list should have no French 'GlossAppend' values.");
 				}
 			}
 			Assert.AreEqual(3, countSubtypeItems, "The list should have three ILexEntryInflType objects.");
@@ -1271,13 +1271,13 @@ namespace SIL.LCModel.Application.ApplicationServices
 				var nameEnglish = item.Name.get_String(m_wsEn).Text;
 				Assert.AreEqual(name, nameEnglish, "Import should not change the English name.");
 				var nameFrench = item.Name.get_String(m_wsFr).Text;
-				Assert.IsNotNullOrEmpty(nameFrench, "The list should have French names after import.");
+				Assert.That(nameFrench, Is.Not.Null.And.Not.Empty, "The list should have French names after import.");
 				var abbrEnglish = item.Abbreviation.get_String(m_wsEn).Text;
-				Assert.IsNotNullOrEmpty(abbrEnglish, "The list should still have English abbreviations after import.");
+				Assert.That(abbrEnglish, Is.Not.Null.And.Not.Empty, "The list should still have English abbreviations after import.");
 				var abbrFrench = item.Abbreviation.get_String(m_wsFr).Text;
-				Assert.IsNotNullOrEmpty(abbrFrench, "The list should have French abbreviations after import.");
+				Assert.That(abbrFrench, Is.Not.Null.And.Not.Empty, "The list should have French abbreviations after import.");
 				var descFrench = item.Description.get_String(m_wsFr).Text;
-				Assert.IsNotNullOrEmpty(descFrench, "The list should have French descriptions after import.");
+				Assert.That(descFrench, Is.Not.Null.And.Not.Empty, "The list should have French descriptions after import.");
 				var inflType = item as ILexEntryInflType;
 				if (inflType != null)
 				{
@@ -1286,11 +1286,11 @@ namespace SIL.LCModel.Application.ApplicationServices
 					if (String.IsNullOrEmpty(glossEnglish))
 					{
 						++countNoFrench;
-						Assert.IsNullOrEmpty(glossFrench, "The list should have no French if it has no English for 'GlossAppend' values.");
+						Assert.That(glossFrench, Is.Null.Or.Empty, "The list should have no French if it has no English for 'GlossAppend' values.");
 					}
 					else
 					{
-						Assert.IsNotNullOrEmpty(glossFrench, "The list should have French if it has English for 'GlossAppend' values.");
+						Assert.That(glossFrench, Is.Not.Null.And.Not.Empty, "The list should have French if it has English for 'GlossAppend' values.");
 					}
 				}
 			}
@@ -1316,7 +1316,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			typeinfl = type as ILexEntryInflType;
 			Assert.IsNotNull(typeinfl);
 			var frenchGlossAppend = typeinfl.GlossAppend.get_String(m_wsFr).Text;
-			Assert.IsNullOrEmpty(frenchGlossAppend, "Irregular Inflectional Variant should not have a GlossAppend value.");
+			Assert.That(frenchGlossAppend, Is.Null.Or.Empty, "Irregular Inflectional Variant should not have a GlossAppend value.");
 
 			type = (ILexEntryType)mapNameToItem[":Plural Variant"];
 			frenchName = type.Name.get_String(m_wsFr).Text;
@@ -1509,11 +1509,11 @@ namespace SIL.LCModel.Application.ApplicationServices
 				var nameEnglish = item.Name.get_String(m_wsEn).Text;
 				Assert.AreEqual(name, nameEnglish, "Import should not change the English name.");
 				var nameFrench = item.Name.get_String(m_wsFr).Text;
-				Assert.IsNotNullOrEmpty(nameFrench, "Every item should have a French name after import.");
+				Assert.That(nameFrench, Is.Not.Null.And.Not.Empty, "Every item should have a French name after import.");
 				var abbrEnglish = item.Abbreviation.get_String(m_wsEn).Text;
-				Assert.IsNotNullOrEmpty(abbrEnglish, "Every item should still have an English abbreviation after import.");
+				Assert.That(abbrEnglish, Is.Not.Null.And.Not.Empty, "Every item should still have an English abbreviation after import.");
 				var abbrFrench = item.Abbreviation.get_String(m_wsFr).Text;
-				Assert.IsNotNullOrEmpty(abbrFrench, "Every item should have an French abbreviation after import.");
+				Assert.That(abbrFrench, Is.Not.Null.And.Not.Empty, "Every item should have an French abbreviation after import.");
 			}
 			// Check first occurrence of "applied linguistics"
 			var poss = mapNameToItem[":linguistics:applied linguistics"];
