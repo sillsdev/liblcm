@@ -40,13 +40,22 @@
 
 		<IcuDataOutputs Include="$(OutDir)IcuData/icudt$(IcuVersion)l/nfc_fw.nrm" />
 		<IcuDataOutputs Include="$(OutDir)IcuData/icudt$(IcuVersion)l/nfkc_fw.nrm" />
+
 	</ItemGroup>
 
 	<Target Name="GenerateIcuData" Inputs="@(IcuDataInputs)" Outputs="@(IcuDataOutputs)">
+		<PropertyGroup>
+			<Folder Condition="'$(Platform)'=='x86'">win-x86</Folder>
+			<Folder Condition="'$(Platform)'!='x86'">win-x64</Folder>
+		</PropertyGroup>
+		<ItemGroup>
+			<Gennorm2Source Include="../../packages/Icu4c.Win.Fw.Bin.54.1.13-beta/build/$(Folder)/gennorm2.exe" Condition="'$(OS)'=='Windows_NT'" />
+		</ItemGroup>
+
+		<Copy SourceFiles="@(Gennorm2Source)" DestinationFolder="$(OutDir)lib/$(Folder)" Condition="'$(OS)'=='Windows_NT'" />
 		<MakeDir Directories="$(OutDir)IcuData/icudt$(IcuVersion)l" />
 		<PropertyGroup>
-			<gennorm2 Condition="'$(Platform)'=='x86' and '$(OS)'=='Windows_NT'">"../../lib/downloads/x86/gennorm2.exe"</gennorm2>
-			<gennorm2 Condition="'$(Platform)'=='AnyCPU' and '$(OS)'=='Windows_NT'">"../../lib/downloads/x64/gennorm2.exe"</gennorm2>
+			<gennorm2 Condition="'$(OS)'=='Windows_NT'">"$(OutDir)lib/$(Folder)/gennorm2.exe"</gennorm2>
 			<gennorm2 Condition="'$(OS)'=='Unix'">LD_LIBRARY_PATH=/usr/lib/fieldworks/lib /usr/lib/fieldworks/icu-bin/gennorm2</gennorm2>
 		</PropertyGroup>
 		<Exec Command='$(gennorm2) -o "$(OutDir)IcuData/icudt$(IcuVersion)l/nfc_fw.nrm" "IcuData/nfc.txt" "IcuData/nfcHebrew.txt" "IcuData/nfcOverrides.txt"' />
