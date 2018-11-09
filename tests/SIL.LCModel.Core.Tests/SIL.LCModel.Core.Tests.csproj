@@ -130,7 +130,7 @@
     <Compile Include="Scripture\ScrReferenceTests.cs" />
     <Compile Include="Scripture\VersificationTests.cs" />
     <Compile Include="Text\CaseFunctionsTest.cs" />
-    <Compile Include="Text\IcuTests.cs" />
+    <Compile Include="Text\CustomIcuTests.cs" />
     <Compile Include="Text\TsIncStrBldrTests.cs" />
     <Compile Include="Text\TsPropsBldrTests.cs" />
     <Compile Include="Text\TsPropsFactoryTests.cs" />
