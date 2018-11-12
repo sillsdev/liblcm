@@ -32,7 +32,14 @@ namespace SIL.LCModel.Core.Attributes
 			if (IcuVersion > 0)
 				Wrapper.ConfineIcuVersions(IcuVersion);
 
-			Wrapper.Init();
+			try
+			{
+				Wrapper.Init();
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine($"InitializeIcuAttribute failed when calling Wrapper.Init() with {e.GetType()}: {e.Message}");
+			}
 
 			string dir = null;
 			if (string.IsNullOrEmpty(IcuDataPath))
@@ -76,7 +83,7 @@ namespace SIL.LCModel.Core.Attributes
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e.Message);
+				Console.WriteLine($"InitializeIcuAttribute failed with {e.GetType()}: {e.Message}");
 			}
 		}
 
