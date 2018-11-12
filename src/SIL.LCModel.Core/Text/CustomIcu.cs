@@ -6,18 +6,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 using Icu;
 using Icu.Normalization;
 using SIL.LCModel.Core.KernelInterfaces;
-using SIL.LCModel.Core.Properties;
 using SIL.LCModel.Utils;
-using SIL.Reporting;
 
 namespace SIL.LCModel.Core.Text
 {
@@ -180,39 +175,65 @@ namespace SIL.LCModel.Core.Text
 			if (MiscUtils.IsWindows)
 			{
 				var arch = Environment.Is64BitProcess ? "x64" : "x86";
-				var callingAssemblyFolder = Uri.UnescapeDataString(new UriBuilder(Assembly.GetExecutingAssembly().CodeBase).Path);
+				var executingAssemblyFolder = Uri.UnescapeDataString(new UriBuilder(Assembly.GetExecutingAssembly().CodeBase).Path);
 				// ReSharper disable once AssignNullToNotNullAttribute -- If FlexExe returns null we have bigger problems
-				var icuPath = Path.Combine(Path.GetDirectoryName(callingAssemblyFolder), "lib", arch);
+				var icuPath = Path.Combine(Path.GetDirectoryName(executingAssemblyFolder), "lib", $"win-{arch}");
 				// Append icu dll location to PATH, such as .../lib/x64, to help C# and C++ code find icu.
 				Environment.SetEnvironmentVariable("PATH",
 					Environment.GetEnvironmentVariable("PATH") + Path.PathSeparator + icuPath);
 			}
 
-			string szDir = Wrapper.DataDirectory;
-			if (string.IsNullOrEmpty(szDir))
+			var dataDirectory = Wrapper.DataDirectory;
+			if (string.IsNullOrEmpty(dataDirectory) || dataDirectory == "." + Path.DirectorySeparatorChar)
 			{
-				szDir = DefaultDataDirectory;
-				Wrapper.DataDirectory = szDir;
+				dataDirectory = DefaultDataDirectory;
+				Wrapper.DataDirectory = dataDirectory;
 			}
+			else if (!Path.IsPathRooted(dataDirectory))
+			{
+				dataDirectory = Path.Combine(Environment.CurrentDirectory, dataDirectory);
+				Wrapper.DataDirectory = dataDirectory;
+			}
+
 			// ICU docs say to do this after the directory is set, but before others are called.
 			// And it can be called n times with little hit.
 			Wrapper.Init();
 
-			string overrideDataPath = Path.Combine(szDir, "UnicodeDataOverrides.txt");
+			string overrideDataPath = Path.Combine(dataDirectory, "UnicodeDataOverrides.txt");
 			if (!File.Exists(overrideDataPath))
 			{
 				// See if we can get the 'original' one in the data directory.
-				overrideDataPath = Path.Combine(szDir, Path.Combine("data", "UnicodeDataOverrides.txt"));
+				overrideDataPath = Path.Combine(dataDirectory, Path.Combine("data", "UnicodeDataOverrides.txt"));
 			}
-			bool result = SilIcuInit(overrideDataPath);
-			if (!result)
+
+			try
 			{
-				// This provides a bit of extra info, especially if it fails on a no-gui build machine.
-				Debug.Fail("SilIcuInit returned false. It was trying to load from " + overrideDataPath + ". The file " +
-					(File.Exists(overrideDataPath) ? "exists." : "does not exist."));
-				ErrorReport.ReportNonFatalMessageWithStackTrace(Resources.ksIcuInitFailed, overrideDataPath);
+				HaveCustomIcuLibrary = SilIcuInit(overrideDataPath);
 			}
+			catch (DllNotFoundException)
+			{
+				// we don't have a custom ICU installed
+				HaveCustomIcuLibrary = false;
+			}
+			catch (BadImageFormatException)
+			{
+				// we found a custom ICU but with an incorrect format (e.g. x64 instead of x86)
+				HaveCustomIcuLibrary = false;
+			}
+
+			if (!HaveCustomIcuLibrary)
+			{
+				Debug.WriteLine("SilIcuInit returned false. It was trying to load from " + overrideDataPath + ". The file " +
+								(File.Exists(overrideDataPath) ? "exists." : "does not exist."));
+				Debug.WriteLine("Falling back to default ICU");
+				return;
+			}
+
+			var version = int.Parse(Version);
+			Wrapper.ConfineIcuVersions(version, version);
 		}
+
+		public static bool HaveCustomIcuLibrary { get; private set; }
 
 		#endregion
 

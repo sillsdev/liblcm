@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2017 SIL International
+// Copyright (c) 2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -21,9 +21,13 @@ namespace SIL.LCModel.Core.Attributes
 
 		public int IcuVersion { get; set; }
 
+		public static string PreTestPathEnvironment { get; private set; }
+
 		public override void BeforeTest(TestDetails testDetails)
 		{
 			base.BeforeTest(testDetails);
+
+			PreTestPathEnvironment = Environment.GetEnvironmentVariable("PATH");
 
 			if (IcuVersion > 0)
 				Wrapper.ConfineIcuVersions(IcuVersion);
@@ -79,6 +83,7 @@ namespace SIL.LCModel.Core.Attributes
 		public override void AfterTest(TestDetails testDetails)
 		{
 			Wrapper.Cleanup();
+			Environment.SetEnvironmentVariable("PATH", PreTestPathEnvironment);
 			base.AfterTest(testDetails);
 		}
 	}

@@ -84,7 +84,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="icu.net, Version=2.5.0.0, Culture=neutral, PublicKeyToken=416fdd914afa6b66, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\icu.net.2.5.0-beta0018\lib\net451\icu.net.dll</HintPath>
+      <HintPath>..\..\packages\icu.net.2.5.0-beta0019\lib\net451\icu.net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.DotNet.PlatformAbstractions, Version=2.0.4.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
       <HintPath>..\..\packages\Microsoft.DotNet.PlatformAbstractions.2.0.4\lib\net45\Microsoft.DotNet.PlatformAbstractions.dll</HintPath>

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015-2017 SIL International
+// Copyright (c) 2015-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -10,7 +10,7 @@ using SIL.TestUtilities;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CoreImplTests")]
+[assembly: AssemblyTitle("SIL.LCModel.Core.Tests")]
 [assembly: AssemblyDescription("")]
 
 // Cleanup all singletons after running tests
