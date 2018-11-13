@@ -224,12 +224,11 @@ namespace SIL.LCModel.Core.SpellChecking
 			{
 				try
 				{
-					result = new SpellEngine(affixPath, dictPath, exceptionPath);
+					result = SpellEngine.Create(affixPath, dictPath, exceptionPath);
 				}
 				catch (Exception)
 				{
-					if (result != null)
-						result.Dispose();
+					result?.Dispose();
 					throw;
 				}
 			}
