@@ -106,6 +106,8 @@
       <DependentUpon>ScrUtilsStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="SpellChecking\SpellEngine.cs" />
+    <Compile Include="SpellChecking\SpellEngineLinux.cs" />
+    <Compile Include="SpellChecking\SpellEngineWindows.cs" />
     <Compile Include="Text\IcuIdAndName.cs" />
     <Compile Include="Text\CustomIcu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
