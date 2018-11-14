@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -109,7 +109,7 @@
     <None Include="App.config" />
     <Compile Include="BagTests.cs" />
     <Compile Include="FileUtilsTest.cs" />
-    <Compile Include="MiscUtilsTest.cs" />
+    <Compile Include="MiscUtilsTests.cs" />
     <Compile Include="MockFileOs.cs" />
     <Compile Include="StringUtilsTests.cs" />
     <Compile Include="SurrogateTests.cs" />
