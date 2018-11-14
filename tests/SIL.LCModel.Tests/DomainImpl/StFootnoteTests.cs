@@ -48,6 +48,15 @@ namespace SIL.LCModel.DomainImpl
 			m_wsEs = ws.Handle;
 		}
 
+		/// <inheritdoc />
+		public override void FixtureTeardown()
+		{
+			base.FixtureTeardown();
+
+			ReflectionHelper.SetField(typeof(ScrFootnote),
+				"s_maxAllowedParagraphs", 1);
+		}
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Creates and initializes a footnote.
