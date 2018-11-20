@@ -40,8 +40,8 @@ namespace SIL.LCModel.Core.WritingSystems
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CoreWritingSystemDefinition"/> class.
 		/// </summary>
-		public CoreWritingSystemDefinition(CoreWritingSystemDefinition ws)
-			: base(ws)
+		public CoreWritingSystemDefinition(CoreWritingSystemDefinition ws, bool cloneId = false)
+			: base(ws, cloneId)
 		{
 			SetupCollectionChangeListeners();
 		}
