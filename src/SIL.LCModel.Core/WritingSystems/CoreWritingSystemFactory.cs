@@ -14,9 +14,9 @@ namespace SIL.LCModel.Core.WritingSystems
 			return new CoreWritingSystemDefinition(ietfLanguageTag);
 		}
 
-		protected override CoreWritingSystemDefinition ConstructDefinition(CoreWritingSystemDefinition ws)
+		protected override CoreWritingSystemDefinition ConstructDefinition(CoreWritingSystemDefinition ws, bool cloneId = false)
 		{
-			return new CoreWritingSystemDefinition(ws);
+			return new CoreWritingSystemDefinition(ws, cloneId);
 		}
 	}
 }
