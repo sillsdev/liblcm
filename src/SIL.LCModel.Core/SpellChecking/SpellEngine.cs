@@ -27,9 +27,9 @@ namespace SIL.LCModel.Core.SpellChecking
 			try
 			{
 				if (Platform.IsWindows)
-					spellEngine = new SpellEngineWindows(affixPath, dictPath, exceptionPath);
+					spellEngine = CreateSpellEngineWindows(affixPath, dictPath, exceptionPath);
 				else
-					spellEngine = new SpellEngineLinux(affixPath, dictPath, exceptionPath);
+					spellEngine = CreateSpellEngineLinux(affixPath, dictPath, exceptionPath);
 
 				spellEngine.Initialize();
 			}
@@ -41,6 +41,20 @@ namespace SIL.LCModel.Core.SpellChecking
 			}
 
 			return spellEngine;
+		}
+
+		private static SpellEngine CreateSpellEngineWindows(string affixPath, string dictPath,
+			string exceptionPath)
+		{
+			// Separate method so that we don't try to instantiate the class when running on Linux
+			return new SpellEngineWindows(affixPath, dictPath, exceptionPath);
+		}
+
+		private static SpellEngine CreateSpellEngineLinux(string affixPath, string dictPath,
+			string exceptionPath)
+		{
+			// Separate method so that we don't try to instantiate the class when running on Windows
+			return new SpellEngineLinux(affixPath, dictPath, exceptionPath);
 		}
 
 		internal SpellEngine(string exceptionPath)
