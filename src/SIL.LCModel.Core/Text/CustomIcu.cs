@@ -389,27 +389,27 @@ namespace SIL.LCModel.Core.Text
 			{
 				case FwNormalizationMode.knmNFC:
 				case FwNormalizationMode.knmNFSC:
-					name = "nfc_fw";
+					name = HaveCustomIcuLibrary ? "nfc_fw" : "nfc";
 					mode = Normalizer2.Mode.COMPOSE;
 					break;
 
 				case FwNormalizationMode.knmNFD:
-					name = "nfc_fw";
+					name = HaveCustomIcuLibrary ? "nfc_fw" : "nfc";
 					mode = Normalizer2.Mode.DECOMPOSE;
 					break;
 
 				case FwNormalizationMode.knmNFKC:
-					name = "nfkc_fw";
+					name = HaveCustomIcuLibrary ? "nfkc_fw" : "nfkc";
 					mode = Normalizer2.Mode.COMPOSE;
 					break;
 
 				case FwNormalizationMode.knmNFKD:
-					name = "nfkc_fw";
+					name = HaveCustomIcuLibrary ? "nfkc_fw" : "nfkc";
 					mode = Normalizer2.Mode.DECOMPOSE;
 					break;
 
 				case FwNormalizationMode.knmFCD:
-					name = "nfc_fw";
+					name = HaveCustomIcuLibrary ? "nfc_fw" : "nfc";
 					mode = Normalizer2.Mode.FCD;
 					break;
 
