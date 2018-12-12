@@ -21,7 +21,7 @@ namespace SIL.LCModel.Core.WritingSystems
 
 		protected override CoreWritingSystemDefinition ConstructDefinition(CoreWritingSystemDefinition ws, bool cloneId = false)
 		{
-			return new CoreWritingSystemDefinition(ws);
+			return new CoreWritingSystemDefinition(ws, cloneId);
 		}
 	}
 }
