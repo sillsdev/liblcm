@@ -12,10 +12,11 @@ namespace SIL.LCModel.Infrastructure.Impl
 {
 	#region MDC base class
 
+	/// <inheritdoc />
 	/// <summary>
 	/// Base class for all MDC tests. (I store the MDC in a data member for ease of access.)
 	/// </summary>
-	public class FieldTestBase : MemoryOnlyBackendProviderTestBase
+	public abstract class FieldTestBase : MemoryOnlyBackendProviderTestBase
 	{
 		/// <summary>
 		/// The MDC.
