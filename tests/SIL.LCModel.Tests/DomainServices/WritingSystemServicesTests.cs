@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2015 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -327,6 +327,7 @@ namespace SIL.LCModel.DomainServices
 			int m_wsEn = Cache.WritingSystemFactory.GetWsFromStr("en");
 			int m_wsFr = Cache.WritingSystemFactory.GetWsFromStr("fr");
 
+			Cache.LangProject.HomographWs = "fr";
 			CoreWritingSystemDefinition enBlz;
 			WritingSystemServices.FindOrCreateWritingSystem(Cache, null, "blz", false, false, out enBlz);
 
@@ -352,17 +353,18 @@ namespace SIL.LCModel.DomainServices
 			Assert.DoesNotThrow(() => WritingSystemServices.UpdateWritingSystemFields(Cache, "fr", null));
 			Assert.That(testEntry.ReversalIndex.WritingSystem, Is.EqualTo("blz"));
 			Assert.That(testEntry.ReversalIndex.ShortName, Is.EqualTo("Balantak"));
+			Assert.That(Cache.LangProject.HomographWs, Is.Null);
 		}
 
 		/// <summary>
 		/// Test that UpdateWritingSystemTag marks things as dirty if they use a problem WS.
 		/// </summary>
 		[Test]
-		public void UpdateWritingSystemTag_MarksObjectsAsDirty()
+		public void UpdateWritingSystemTag_ChangesWsContent()
 		{
 			var entry0 = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
 			CoreWritingSystemDefinition newWs;
-			WritingSystemServices.FindOrCreateWritingSystem(Cache, null, "en-NO", true, false, out newWs);
+			WritingSystemServices.FindOrCreateWritingSystem(Cache, null, "en-SU", true, false, out newWs);
 			// A string property NOT using the WS we will change.
 			entry0.ImportResidue = TsStringUtils.MakeString("hello", Cache.DefaultAnalWs);
 			// A multilingual one using the WS.
@@ -396,14 +398,18 @@ namespace SIL.LCModel.DomainServices
 			var newbies = new HashSet<ICmObjectId>();
 			var dirtballs = new HashSet<ICmObjectOrSurrogate>(new ObjectSurrogateEquater());
 			var goners = new HashSet<ICmObjectId>();
-			Assert.That(dirtballs.Count, Is.EqualTo(0)); // After save nothing should be dirty.
 
 			var uowServices = Cache.ServiceLocator.GetInstance<IUnitOfWorkService>();
+			Assert.That(dirtballs.Count, Is.EqualTo(0)); // After save nothing should be dirty.
 
 			uowServices.GatherChanges(newbies, dirtballs, goners);
+			int oldWsHandle = newWs.Handle;
+			var tempWs = new CoreWritingSystemDefinition("en-GB");
+			newWs.Copy(tempWs);
+			Cache.ServiceLocator.GetInstance<WritingSystemManager>().Set(newWs);
 
 			UndoableUnitOfWorkHelper.Do("doit", "undoit", m_actionHandler,
-				() => WritingSystemServices.UpdateWritingSystemId(Cache, newWs, "en-SU"));
+				() => WritingSystemServices.UpdateWritingSystemId(Cache, newWs, oldWsHandle, "en-SU"));
 
 			newbies = new HashSet<ICmObjectId>();
 			dirtballs = new HashSet<ICmObjectOrSurrogate>(new ObjectSurrogateEquater());
@@ -415,7 +421,7 @@ namespace SIL.LCModel.DomainServices
 			Assert.That(!dirtballs.Contains((ICmObjectOrSurrogate)entry0)); // make sure the implementation doesn't just dirty everything.
 			Assert.That(dirtballs.Contains((ICmObjectOrSurrogate)entry2));
 			Assert.That(dirtballs.Contains((ICmObjectOrSurrogate)sense3));
-			Assert.That(Cache.LangProject.AnalysisWss, Is.EqualTo("en en-NO"), "should have updated WS lists");
+			Assert.That(Cache.LangProject.AnalysisWss, Is.EqualTo("en en-GB"), "should have updated WS lists");
 		}
 
 		/// <summary>
