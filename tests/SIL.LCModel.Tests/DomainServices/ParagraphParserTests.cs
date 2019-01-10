@@ -20,10 +20,8 @@ using SIL.Xml;
 
 namespace SIL.LCModel.DomainServices
 {
-	/// <summary>
-	///
-	/// </summary>
-	public class InterlinearTestBase : MemoryOnlyBackendProviderRestoredForEachTestTestBase
+	/// <inheritdoc />
+	public abstract class InterlinearTestBase : MemoryOnlyBackendProviderRestoredForEachTestTestBase
 	{
 		/// <summary>
 		/// This is used to record the information we (may) want to verify about a part of a paragraph.
