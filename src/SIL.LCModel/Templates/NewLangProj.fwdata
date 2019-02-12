@@ -7170,19 +7170,7 @@
 </Abbreviation>
 <Hidden val="False" />
 <Name>
-<AUni ws="en">Default Template</AUni>
-</Name>
-<SubPossibilities>
-<objsur guid="397636f5-2994-4aee-b6f3-376ca71bddea" t="o" />
-</SubPossibilities>
-</rt>
-<rt class="CmPossibility" guid="397636f5-2994-4aee-b6f3-376ca71bddea" ownerguid="c414012a-ea5e-11de-99fc-0013722f8dec">
-<Abbreviation>
-<AUni ws="en">story</AUni>
-</Abbreviation>
-<Hidden val="False" />
-<Name>
-<AUni ws="en">Story</AUni>
+<AUni ws="en">Default</AUni>
 </Name>
 <SubPossibilities>
 <objsur guid="c41fece2-ea5e-11de-8db3-0013722f8dec" t="o" />
