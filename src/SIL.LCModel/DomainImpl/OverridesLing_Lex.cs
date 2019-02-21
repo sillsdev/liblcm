@@ -5559,14 +5559,15 @@ namespace SIL.LCModel.DomainImpl
 			var hc = Services.GetInstance<HomographConfiguration>();
 			if (hc.ShowSenseNumber(hv) && lexEntry.HasMoreThanOneSense)
 			{
-				tisb.Append(" ");
+				var referencedSenseNumber = FormatSenseNumber();
+				if (!string.IsNullOrEmpty(referencedSenseNumber))
+					tisb.Append(" ");
 				tisb.SetStrPropValue((int)FwTextPropType.ktptNamedStyle,
 					HomographConfiguration.ksSenseReferenceNumberStyle);
 				var senseNumberWs = string.IsNullOrEmpty(hc.WritingSystem)
 					 ? Cache.DefaultAnalWs
 					 : Cache.WritingSystemFactory.GetWsFromStr(hc.WritingSystem);
 				tisb.SetIntPropValues((int)FwTextPropType.ktptWs, 0, senseNumberWs);
-				var referencedSenseNumber = FormatSenseNumber();
 				tisb.Append(referencedSenseNumber);
 			}
 		}
