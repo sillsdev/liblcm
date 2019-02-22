@@ -32,7 +32,7 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		[Test]
-		public void ISenseOrEntryHeadwordRef_IncludesReferencedSenseNumber()
+		public void ISenseOrEntryHeadwordRef_SenseNumberNotShownWhenHCSenseIsNotShown()
 		{
 			var mainEntry = CreateInterestingLexEntry(Cache, "MainEntry", "MainSense");
 			AddSenseToEntry(mainEntry, "SecondSense", EnsureWritingSystemSetup(Cache, "en", false), Cache);
