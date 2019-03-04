@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2015 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System;
 using SIL.LCModel.Infrastructure.Impl;
+using SIL.Lexicon;
 
 namespace SIL.LCModel
 {
@@ -16,6 +17,9 @@ namespace SIL.LCModel
 		private bool m_disableDataMigration;
 		private int m_sharedXMLBackendCommitLogSize;
 		private bool m_updateGlobalWSStore;
+		private bool m_openForSharing;
+		private ProjectLexiconSettings m_projectLexiconSettings;
+		private ProjectLexiconSettingsDataMapper m_projectLexiconSettingsDataMapper;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LcmSettings"/> class.
@@ -50,6 +54,19 @@ namespace SIL.LCModel
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether data migration is disabled.
+		/// </summary>
+		public bool OpenForSharing
+		{
+			get { return m_openForSharing; }
+			set
+			{
+				CheckFrozen();
+				m_openForSharing = value;
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets the size of the shared XML backend commit log.
 		/// </summary>
 		public int SharedXMLBackendCommitLogSize
@@ -73,6 +90,17 @@ namespace SIL.LCModel
 				CheckFrozen();
 				m_updateGlobalWSStore = value;
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating stop using scripture content as the indicator in LCM.
+		/// </summary>
+		public bool CanSharingScriptureContent(LcmCache cache)
+		{
+			m_projectLexiconSettingsDataMapper = new ProjectLexiconSettingsDataMapper(cache.ServiceLocator.DataSetup.ProjectSettingsStore);
+			m_projectLexiconSettings = new ProjectLexiconSettings();
+			m_projectLexiconSettingsDataMapper.Read(m_projectLexiconSettings);
+			return m_projectLexiconSettings.AddEnableProjectSharing;
 		}
 	}
 }
