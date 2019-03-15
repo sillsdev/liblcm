@@ -15,7 +15,7 @@ namespace SIL.LCModel.Core.WritingSystems
 	/// <summary>
 	/// The writing system manager.
 	/// </summary>
-	public class WritingSystemManager : ILgWritingSystemFactory
+	public class WritingSystemManager : ILgWritingSystemFactory, IWritingSystemManager
 	{
 		private IWritingSystemRepository<CoreWritingSystemDefinition> m_repo;
 		private readonly Dictionary<int, CoreWritingSystemDefinition> m_handleWSs = new Dictionary<int, CoreWritingSystemDefinition>();
