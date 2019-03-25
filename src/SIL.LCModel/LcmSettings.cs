@@ -76,9 +76,7 @@ namespace SIL.LCModel
 			}
 		}
 
-		/// <summary>
-		/// Gets or sets a value indicating stop using scripture content as the indicator in LCM.
-		/// </summary>
+		/// <summary/>
 		public static bool IsProjectSharingEnabled(string projectFolder)
 		{
 			ISettingsStore settingStore =
