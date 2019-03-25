@@ -203,11 +203,7 @@ namespace SIL.LCModel
 		private static LcmCache CreateCacheInternal(IProjectIdentifier projectId, ILcmUI ui, ILcmDirectories dirs, LcmSettings settings)
 		{
 			settings.Freeze();
-			BackendProviderType providerType = projectId.Type;
-			if (providerType == BackendProviderType.kXMLWithMemoryOnlyWsMgr)
-				providerType = BackendProviderType.kXML;
-			if (providerType == BackendProviderType.kSharedXMLWithMemoryOnlyWsMgr)
-				providerType = BackendProviderType.kSharedXML;
+			var providerType = GetProviderTypeFromProjectId(projectId);
 
 			var iocFactory = new LcmServiceLocatorFactory(providerType, ui, dirs, settings);
 			var servLoc = (ILcmServiceLocator)iocFactory.CreateServiceLocator();
@@ -215,6 +211,28 @@ namespace SIL.LCModel
 			createdCache.m_serviceLocator = servLoc;
 			createdCache.m_lgwsFactory = servLoc.GetInstance<ILgWritingSystemFactory>();
 			return createdCache;
+		}
+
+		/// <summary>
+		/// This method sets the underlying project type based on what an application has requested.
+		/// Memory only options are mapped to their base equivalents. (e.g. kXmlWithMemoryOnlyWsMgr -> kXml)
+		/// If an xml backend was requested, but the project settings say it should be shared, kSharedXML is used
+		/// </summary>
+		private static BackendProviderType GetProviderTypeFromProjectId(IProjectIdentifier projectId)
+		{
+			switch (projectId.Type)
+			{
+				case BackendProviderType.kXMLWithMemoryOnlyWsMgr:
+					return BackendProviderType.kXML;
+				case BackendProviderType.kSharedXMLWithMemoryOnlyWsMgr:
+					return BackendProviderType.kSharedXML;
+				case BackendProviderType.kXML:
+					return LcmSettings.IsProjectSharingEnabled(projectId.ProjectFolder)
+						? BackendProviderType.kSharedXML
+						: BackendProviderType.kXML;
+				default:
+					return projectId.Type;
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------

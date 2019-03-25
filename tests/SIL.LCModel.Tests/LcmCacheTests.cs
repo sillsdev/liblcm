@@ -5,11 +5,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
+using System.Xml.Linq;
 using NUnit.Framework;
 using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.DomainServices;
 using SIL.LCModel.Infrastructure;
+using SIL.LCModel.Infrastructure.Impl;
 using SIL.LCModel.Utils;
+using SIL.Lexicon;
 
 namespace SIL.LCModel
 {
@@ -294,6 +298,37 @@ namespace SIL.LCModel
 				Assert.That(cache.DefaultPronunciationWs, Is.EqualTo(wsObjGerman.Handle));
 				cache.ActionHandlerAccessor.Redo();
 				Assert.That(cache.DefaultPronunciationWs, Is.EqualTo(wsObjSpanish.Handle));
+			}
+		}
+
+		[Test]
+		public void TestThatSharedSettingOpensXmlDataTypeAsSharedXml()
+		{
+			const string dbName = "ProjectSharingTest";
+			SureRemoveDb(dbName);
+			var preExistingDirs = new List<string>(Directory.GetDirectories(m_projectsDirectory));
+			try
+			{
+				// create project
+				string dbFileName = LcmCache.CreateNewLangProj(new DummyProgressDlg(), dbName, m_lcmDirectories,
+					new SingleThreadedSynchronizeInvoke(), null, null, null, null, null, null, true);
+				// Set up test file for project sharing setting
+				var testFileStore = new FileSettingsStore(LexiconSettingsFileHelper.GetProjectLexiconSettingsPath(Path.GetDirectoryName(dbFileName)));
+				var dataMapper = new ProjectLexiconSettingsDataMapper(testFileStore);
+				dataMapper.Write(new ProjectLexiconSettings { ProjectSharing = true });
+				// SUT
+				// Request XML backend with project settings that have ProjectSharing set to true
+				var projectId = new TestProjectId(BackendProviderType.kXML, dbFileName);
+				using (var cache = LcmCache.CreateCacheFromExistingData(projectId, "en", m_ui, m_lcmDirectories, new LcmSettings(),
+					new DummyProgressDlg()))
+				{
+					var dataSetup = cache.ServiceLocator.GetInstance<IDataSetup>();
+					Assert.IsTrue(dataSetup is SharedXMLBackendProvider, "The project should have been opened as shared xml.");
+				}
+			}
+			finally
+			{
+				RemoveTestDirs(preExistingDirs, Directory.GetDirectories(m_projectsDirectory));
 			}
 		}
 	}

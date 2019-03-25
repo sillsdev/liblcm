@@ -17,9 +17,6 @@ namespace SIL.LCModel
 		private bool m_disableDataMigration;
 		private int m_sharedXMLBackendCommitLogSize;
 		private bool m_updateGlobalWSStore;
-		private bool m_openForSharing;
-		private ProjectLexiconSettings m_projectLexiconSettings;
-		private ProjectLexiconSettingsDataMapper m_projectLexiconSettingsDataMapper;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LcmSettings"/> class.
@@ -82,14 +79,14 @@ namespace SIL.LCModel
 		/// <summary>
 		/// Gets or sets a value indicating stop using scripture content as the indicator in LCM.
 		/// </summary>
-		public bool OpenForSharing(string projectFolder)
+		public static bool IsProjectSharingEnabled(string projectFolder)
 		{
 			ISettingsStore settingStore =
 				new FileSettingsStore(LexiconSettingsFileHelper.GetProjectLexiconSettingsPath(projectFolder));
-			m_projectLexiconSettingsDataMapper = new ProjectLexiconSettingsDataMapper(settingStore);
-			m_projectLexiconSettings = new ProjectLexiconSettings();
-			m_projectLexiconSettingsDataMapper.Read(m_projectLexiconSettings);
-			return m_projectLexiconSettings.ProjectSharing;
+			var settingsMapper = new ProjectLexiconSettingsDataMapper(settingStore);
+			var settings = new ProjectLexiconSettings();
+			settingsMapper.Read(settings);
+			return settings.ProjectSharing;
 		}
 	}
 }
