@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <languageproject version="7000070">
 
 	<rt class="LexEntry" guid="7ecbb299-bf35-4795-a5cc-8d38ce8b891c">
@@ -85,6 +85,9 @@
 		<VernWss>
 			<Uni>am-Ethi</Uni>
 		</VernWss>
+        <HomographWs>
+          <Uni>am-Ethi</Uni>
+        </HomographWs>
 		<Styles>
 			<objsur guid="4d312f11-439e-11d4-b5e7-00400543a266" t="o" />
 		</Styles>
