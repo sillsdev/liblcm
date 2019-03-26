@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -63,6 +63,20 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				if (wsElt != null)
 				{
 					var uniElt = wsElt.Element("Uni");
+					if (uniElt != null)
+					{
+						string newTag1;
+						if (TryGetNewTag(uniElt.Value, out newTag1))
+						{
+							changed = true;
+							uniElt.Value = newTag1;
+						}
+					}
+				}
+				var wsHomographWsElt = data.Element("HomographWs");
+				if (wsHomographWsElt != null)
+				{
+					var uniElt = wsHomographWsElt.Element("Uni");
 					if (uniElt != null)
 					{
 						string newTag1;

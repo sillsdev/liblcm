@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016-2017 SIL International
+// Copyright (c) 2016-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -147,6 +147,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				Assert.That(langProj.Element("CurAnalysisWss").Element("Uni").Value, Is.EqualTo("en am"));
 				Assert.That(langProj.Element("CurPronunWss").Element("Uni").Value, Is.EqualTo("am"));
 				Assert.That(langProj.Element("VernWss").Element("Uni").Value, Is.EqualTo("am"));
+				Assert.That(langProj.Element("HomographWs").Element("Uni").Value, Is.EqualTo("am"));
 				// Verify that WritingSystem/Uni is changed to am in ReversalIndex" guid="62105696-da6c-405e-b87f-a2a0294bb179
 				XElement ri = XElement.Parse(dtoRepos.GetDTO("62105696-da6c-405e-b87f-a2a0294bb179").Xml);
 				Assert.That(ri.Element("WritingSystem").Element("Uni").Value, Is.EqualTo("am"));
