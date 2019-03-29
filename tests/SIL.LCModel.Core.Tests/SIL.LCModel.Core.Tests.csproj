@@ -131,6 +131,7 @@
     <Compile Include="Text\TsTextPropsHelper.cs" />
     <Compile Include="Text\TsTextPropsHelperTests.cs" />
     <Compile Include="Text\TsTextPropsTests.cs" />
+    <Compile Include="WritingSystems\CoreWritingSystemDefinitionTests.cs" />
     <Compile Include="WritingSystems\ValidCharactersTests.cs" />
     <Compile Include="WritingSystems\WritingSystemManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

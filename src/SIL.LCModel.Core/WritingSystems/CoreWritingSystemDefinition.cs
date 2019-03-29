@@ -200,8 +200,14 @@ namespace SIL.LCModel.Core.WritingSystems
 
 				// Enhance: Is it worth negotiating with Palaso to put this part
 				// in the base class?
-				if (Script != null && !IsVoice && IetfLanguageTag.IsValidLanguageCode(LanguageTag) && !IetfLanguageTag.IsScriptImplied(LanguageTag))
-					sb.Append(Script.ToString());
+				if (Script != null && !IsVoice)
+				{
+					var scriptPart = IetfLanguageTag.GetScriptPart(LanguageTag);
+					if (!string.IsNullOrEmpty(scriptPart))
+					{
+						sb.Append(Script.ToString());
+					}
+				}
 
 				if (Region != null)
 				{
