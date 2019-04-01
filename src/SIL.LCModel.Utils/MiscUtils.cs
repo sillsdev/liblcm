@@ -317,18 +317,47 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		public static string FilterForFileName(string sName, FilenameFilterStrength strength)
 		{
-			return StringUtils.FilterForFileName(sName, GetInvalidProjectNameChars(strength));
+			return StringUtils.FilterForFileName(sName, GetInvalidProjectNameChars(sName, strength));
 		}
 
-		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Gets the list of characters that are not allowed for project names.
 		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public static string GetInvalidProjectNameChars(FilenameFilterStrength strength)
+		/// <remarks>At the ProjectName filter strength and greater non-ASCII characters are considered invalid due to
+		/// issues caused by mercurial Send/Receive</remarks>
+		public static string GetInvalidProjectNameChars(string projectName,
+			FilenameFilterStrength strength)
+		{
+			var invalidChars = string.Empty;
+			if (strength >= FilenameFilterStrength.kFilterProjName)
+			{
+				// Filter out any utf-8 characters that would cause issues for Send/Receive
+				string asAscii = Encoding.ASCII.GetString(Encoding.Convert(Encoding.UTF8,
+						Encoding.GetEncoding(
+							Encoding.ASCII.EncodingName,
+							new EncoderReplacementFallback("_"),
+							new DecoderExceptionFallback()
+						),
+						Encoding.UTF8.GetBytes(projectName))
+				);
+				for (var i = 0; i < projectName.Length; ++i)
+				{
+					if (asAscii[i] == '_' && projectName[i] != '_')
+					{
+						invalidChars += projectName[i];
+					}
+				}
+			}
+			return GetInvalidProjectNameChars(strength, invalidChars);
+		}
+
+		/// <summary>
+		/// Gets the list of characters that are not allowed for project names.
+		/// </summary>
+		public static string GetInvalidProjectNameChars(FilenameFilterStrength strength, string invalidChars = "")
 		{
 			// These are always invalid.
-			string invalidChars = new string(Path.GetInvalidFileNameChars());
+			invalidChars = AddMissingChars(invalidChars, new string(Path.GetInvalidFileNameChars()));
 			// On Unix there are more characters valid in file names, but we
 			// want the result to be identical on both platforms, so we have
 			// to add those characters

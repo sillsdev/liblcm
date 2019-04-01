@@ -119,6 +119,17 @@ namespace SIL.LCModel.Utils
 			Assert.AreEqual(kStrGuid, MiscUtils.GetObjDataFromGuid(kGuid));
 		}
 
+		/// <summary>
+		/// Tests that non-ascii characters are returned as invalid project name characters.
+		/// They can cause issues in Send/Receive because of mercurial limitations
+		/// </summary>
+		[Test]
+		public void GetInvalidCharacters_ReturnsNonAscii()
+		{
+			Assert.That(MiscUtils.GetInvalidProjectNameChars("MyFancy\u0344\u0366\u0345\u0307",
+				MiscUtils.FilenameFilterStrength.kFilterProjName), Is.StringStarting("\u0344\u0366\u0345\u0307"));
+		}
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Tests that we get the exact same filename when the filename contains all valid
@@ -169,8 +180,8 @@ namespace SIL.LCModel.Utils
 		[Test]
 		public void FilterForFileName_ProjName_Invalid()
 		{
-			Assert.AreEqual("My__File__Dude_____.'___funny_____",
-				MiscUtils.FilterForFileName(@"My?|File<>Dude\?*:/.'[];funny()" + "\n\t" + '"',
+			Assert.AreEqual("My__File__Dude_____.'___funny_________",
+				MiscUtils.FilterForFileName(@"My?|File<>Dude\?*:/.'[];funny()" + "\n\t" + '"' + "\u0344\u0361\u0513\u0307",
 				MiscUtils.FilenameFilterStrength.kFilterProjName));
 		}
 
