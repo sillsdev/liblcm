@@ -141,8 +141,8 @@ namespace SIL.LCModel.Utils
 		[Test]
 		public void FilterForFileName_Windows_Invalid()
 		{
-			Assert.AreEqual("My__File__Dude_____.'[];funny()___",
-				MiscUtils.FilterForFileName(@"My?|File<>Dude\?*:/.'[];funny()" + "\n\t" + '"',
+			Assert.AreEqual("My__File__Dude_____.'[];funñy()___\u0344\u0361\u0513\u0307",
+				MiscUtils.FilterForFileName(@"My?|File<>Dude\?*:/.'[];funñy()" + "\n\t" + '"' + "\u0344\u0361\u0513\u0307",
 				MiscUtils.FilenameFilterStrength.kFilterBackup));
 		}
 
@@ -155,8 +155,8 @@ namespace SIL.LCModel.Utils
 		[Test]
 		public void FilterForFileName_MSDE_Invalid()
 		{
-			Assert.AreEqual("My__File__Dude_____.'___funny()___",
-				MiscUtils.FilterForFileName(@"My?|File<>Dude\?*:/.'[];funny()" + "\n\t" + '"',
+			Assert.AreEqual("My__File__Dude_____.'___funñy()___\u0344\u0361\u0513\u0307",
+				MiscUtils.FilterForFileName(@"My?|File<>Dude\?*:/.'[];funñy()" + "\n\t" + '"' + "\u0344\u0361\u0513\u0307",
 				MiscUtils.FilenameFilterStrength.kFilterMSDE));
 		}
 
@@ -169,8 +169,8 @@ namespace SIL.LCModel.Utils
 		[Test]
 		public void FilterForFileName_ProjName_Invalid()
 		{
-			Assert.AreEqual("My__File__Dude_____.'___funny_____",
-				MiscUtils.FilterForFileName(@"My?|File<>Dude\?*:/.'[];funny()" + "\n\t" + '"',
+			Assert.AreEqual("My__File__Dude_____.'___fun_y_________",
+				MiscUtils.FilterForFileName(@"My?|File<>Dude\?*:/.'[];funñy()" + "\n\t" + '"' + "\u0344\u0361\u0513\u0307",
 				MiscUtils.FilenameFilterStrength.kFilterProjName));
 		}
 
