@@ -683,7 +683,7 @@ namespace SIL.LCModel
 		/// ------------------------------------------------------------------------------------
 		private static string CreateNewDbFile(string projectsDir, string templateDir, ref string projectName)
 		{
-			projectName = MiscUtils.FilterForFileName(projectName, MiscUtils.FilenameFilterStrength.kFilterBackup);
+			projectName = MiscUtils.FilterForFileName(projectName, MiscUtils.FilenameFilterStrength.kFilterProjName);
 			if (ProjectInfo.GetProjectInfoByName(projectsDir, projectName) != null)
 				throw new ArgumentException("The specified project already exists.", "projectName");
 			string dbDirName = Path.Combine(projectsDir, projectName);

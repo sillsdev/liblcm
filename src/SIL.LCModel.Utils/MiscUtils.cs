@@ -317,7 +317,7 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		public static string FilterForFileName(string sName, FilenameFilterStrength strength)
 		{
-			return StringUtils.FilterForFileName(sName, GetInvalidProjectNameChars(strength));
+			return StringUtils.FilterForFileName(sName, GetInvalidProjectNameChars(strength), strength);
 		}
 
 		/// ------------------------------------------------------------------------------------

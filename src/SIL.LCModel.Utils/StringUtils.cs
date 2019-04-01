@@ -196,9 +196,11 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// <param name="sName">Name to be filtered</param>
 		/// <param name="invalidChars">characters to filter out</param>
+		/// <param name="strength">strength of the filter (<c>kFilterProjName</c> will also remove all non-ASCII characters)</param>
 		/// <returns>the filtered name</returns>
 		/// ------------------------------------------------------------------------------------
-		public static string FilterForFileName(string sName, string invalidChars)
+		public static string FilterForFileName(string sName, string invalidChars,
+			MiscUtils.FilenameFilterStrength strength = MiscUtils.FilenameFilterStrength.kFilterBackup)
 		{
 			StringBuilder cleanName = new StringBuilder(sName);
 
@@ -206,6 +208,8 @@ namespace SIL.LCModel.Utils
 			for (int i = 0; i < sName.Length; i++)
 			{
 				if (invalidChars.IndexOf(sName[i]) >= 0 || sName[i] < ' ') // eliminate all control characters too
+					cleanName[i] = '_';
+				else if (strength == MiscUtils.FilenameFilterStrength.kFilterProjName && sName[i] > '~')
 					cleanName[i] = '_';
 			}
 			return cleanName.ToString();
