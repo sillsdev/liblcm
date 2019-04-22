@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016-2017 SIL International
+// Copyright (c) 2016-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -144,12 +144,12 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		private bool TryGetNewLangTag(string oldTag, out string newTag)
 		{
 			if (m_tagMap.TryGetValue(oldTag, out newTag))
-				return !newTag.Equals(oldTag, StringComparison.InvariantCultureIgnoreCase);
+				return !newTag.Equals(oldTag);
 
 			var cleaner = new IetfLanguageTagCleaner(oldTag);
 			cleaner.Clean();
 			newTag = cleaner.GetCompleteTag();
-			while (m_tagMap.Values.Contains(newTag, StringComparer.InvariantCultureIgnoreCase))
+			while (m_tagMap.Values.Contains(newTag))
 			{
 				// We can't use this tag because it would conflict with what we are mapping something else to.
 				cleaner = new IetfLanguageTagCleaner(cleaner.Language, cleaner.Script, cleaner.Region, cleaner.Variant,
@@ -157,10 +157,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				newTag = cleaner.GetCompleteTag();
 			}
 
-			newTag = IetfLanguageTag.Canonicalize(newTag);
-
 			m_tagMap[oldTag] = newTag;
-			return !newTag.Equals(oldTag, StringComparison.InvariantCultureIgnoreCase);
+			return !newTag.Equals(oldTag);
 		}
 	}
 }
