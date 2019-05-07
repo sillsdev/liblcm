@@ -510,6 +510,8 @@ namespace SIL.LCModel
 				// Rewrite all objects to make sure they all have all of the basic properties.
 				if (progressDlg != null)
 				{
+					progressDlg.Title = "Saving data";
+					progressDlg.AllowCancel = false;
 					progressDlg.IsIndeterminate = true;
 					progressDlg.Message = AppStrings.InitializeSavingMigratedDataProgressMessage;
 					progressDlg.RunTask(cache.SaveAndForceNewestXmlForCmObjectWithoutUnitOfWork,
