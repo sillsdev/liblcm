@@ -1,9 +1,6 @@
-// Copyright (c) 2004-2013 SIL International
+// Copyright (c) 2004-2019 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
-//
-// File: ProjectInfo.cs
-// Responsibility: FW Team
 
 using System;
 using System.Collections.Generic;
@@ -47,6 +44,19 @@ namespace SIL.LCModel
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public bool InUse { get; set; }
+		#endregion
+
+		#region Public methods
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Return a string representation of the project
+		/// </summary>
+		/// <returns></returns>
+		/// ------------------------------------------------------------------------------------
+		public override string ToString()
+		{
+			return DatabaseName;
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -69,19 +79,6 @@ namespace SIL.LCModel
 				}
 			}
 			return projectList;
-		}
-		#endregion
-
-		#region Public methods
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Return a string representation of the project
-		/// </summary>
-		/// <returns></returns>
-		/// ------------------------------------------------------------------------------------
-		public override string ToString()
-		{
-			return DatabaseName;
 		}
 
 		/// ------------------------------------------------------------------------------------
