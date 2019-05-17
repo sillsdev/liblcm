@@ -1711,9 +1711,6 @@
 <GenreList>
 <objsur guid="c06b099c-ea5e-11de-890c-0013722f8dec" t="o" />
 </GenreList>
-<HomographWs>
-<Uni>fr</Uni>
-</HomographWs>
 <LexDb>
 <objsur guid="af26d792-ea5e-11de-8f7e-0013722f8dec" t="o" />
 </LexDb>
@@ -1904,7 +1901,6 @@
 <rt class="CmPossibilityList" guid="487c15b0-2ced-4417-8b77-9075f4a21e5f" ownerguid="af26d792-ea5e-11de-8f7e-0013722f8dec">
 <Abbreviation>
 <AUni ws="en">Lgs</AUni>
-<AUni ws="fr">Lgs</AUni>
 </Abbreviation>
 <DateCreated val="2018-8-2 16:32:6.270" />
 <DateModified val="2018-8-2 16:32:6.270" />
@@ -1917,7 +1913,6 @@
 <ListVersion val="00000000-0000-0000-0000-000000000000" />
 <Name>
 <AUni ws="en">Languages</AUni>
-<AUni ws="fr">Langues</AUni>
 </Name>
 <PreventChoiceAboveLevel val="0" />
 <PreventDuplicates val="True" />
