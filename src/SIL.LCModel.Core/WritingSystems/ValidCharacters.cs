@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2013 SIL International
+// Copyright (c) 2009-2019 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 //
@@ -28,6 +28,7 @@ namespace SIL.LCModel.Core.WritingSystems
 		/// <summary>Word-forming</summary>
 		WordForming = 1,
 		/// <summary>Numeric</summary>
+		/// <remarks>REVIEW (Hasso) 2019.06: needed?</remarks>
 		Numeric = 2,
 		/// <summary>Punctuation, Symbol, Control, or Whitespace</summary>
 		Other = 4,
@@ -81,7 +82,7 @@ namespace SIL.LCModel.Core.WritingSystems
 		/// <param name="e">The exception</param>
 		public delegate void LoadExceptionDelegate(ArgumentException e);
 
-		/// <summary>Fired if valid character data cannot be loaded</summary>
+		/// <summary>*DEPRECATED* Fired if valid character data cannot be loaded</summary>
 		public event LoadExceptionDelegate LoadException;
 		#endregion
 
@@ -104,7 +105,7 @@ namespace SIL.LCModel.Core.WritingSystems
 		/// instance of the <see cref="ValidCharacters"/> class.
 		/// </summary>
 		/// <param name="ws">The writing system.</param>
-		/// <param name="exceptionHandler">The exception handler to use if valid character data
+		/// <param name="exceptionHandler">*DEPREcATED* The exception handler to use if valid character data
 		/// cannot be loaded.</param>
 		/// <returns>A <see cref="ValidCharacters"/> initialized with the valid characters data
 		/// from the language definition.</returns>
@@ -112,55 +113,16 @@ namespace SIL.LCModel.Core.WritingSystems
 		public static ValidCharacters Load(CoreWritingSystemDefinition ws, LoadExceptionDelegate exceptionHandler = null)
 		{
 			var validChars = new ValidCharacters();
-			validChars.LoadException += exceptionHandler;
 
-			var invalidChars = new List<string>();
-			validChars.AddCharactersFromWritingSystem(ws, "main", ValidCharacterType.WordForming, invalidChars);
-			validChars.AddCharactersFromWritingSystem(ws, "numeric", ValidCharacterType.Numeric, invalidChars);
-			validChars.AddCharactersFromWritingSystem(ws, "punctuation", ValidCharacterType.Other, invalidChars);
-
-			if (invalidChars.Count > 0)
-			{
-				var bldr = new StringBuilder();
-				bldr.AppendFormat("Invalid ValidChars field while loading the {0} writing system. The following characters are invalid:",
-					ws.DisplayLabel);
-				foreach (string chr in invalidChars)
-				{
-					bldr.Append(Environment.NewLine);
-					bldr.Append("\t");
-					bldr.AppendFormat("{0} (U+{1:X4}", chr, (int) chr[0]);
-					for (int ich = 1; ich < chr.Length; ich++)
-						bldr.AppendFormat(", U+{0:X4}", (int) chr[ich]);
-					bldr.Append(")");
-				}
-				validChars.ReportError(new ArgumentException(bldr.ToString(), "ws"));
-			}
-
-			if (invalidChars.Count > 0 && validChars.m_wordFormingCharacters.Count == 0)
-			{
-				validChars.m_wordFormingCharacters.AddRange(DefaultWordformingChars);
-				validChars.Sort(validChars.m_wordFormingCharacters);
-			}
+			validChars.AddCharactersFromWritingSystem(ws, "main", ValidCharacterType.WordForming);
+			validChars.AddCharactersFromWritingSystem(ws, "punctuation", ValidCharacterType.Other);
 
 			validChars.InitSortComparer(ws);
 
 			return validChars;
 		}
 
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Reports a data error resulting from a hapless attempt to load the valid characters.
-		/// </summary>
-		/// <param name="e">The argument exception.</param>
-		/// ------------------------------------------------------------------------------------
-		private void ReportError(ArgumentException e)
-		{
-			if (LoadException == null)
-				throw e;
-			LoadException(e);
-		}
-
-		private void AddCharactersFromWritingSystem(CoreWritingSystemDefinition ws, string charSetType, ValidCharacterType validCharType, List<string> invalidChars)
+		private void AddCharactersFromWritingSystem(CoreWritingSystemDefinition ws, string charSetType, ValidCharacterType validCharType)
 		{
 			CharacterSetDefinition charSet;
 			if (!ws.CharacterSets.TryGet(charSetType, out charSet))
@@ -168,10 +130,7 @@ namespace SIL.LCModel.Core.WritingSystems
 
 			foreach (string chr in charSet.Characters)
 			{
-				if (TsStringUtils.IsValidChar(chr))
-					AddCharacter(chr, validCharType);
-				else
-					invalidChars.Add(chr);
+				AddCharacter(chr, validCharType);
 			}
 		}
 		#endregion

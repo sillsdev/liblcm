@@ -1,9 +1,10 @@
-// Copyright (c) 2015-2017 SIL International
+// Copyright (c) 2015-2019 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using SIL.LCModel.Utils;
 using SIL.WritingSystems;
@@ -21,9 +22,7 @@ namespace SIL.LCModel.Core.WritingSystems
 		private Exception m_lastException;
 		private WritingSystemManager m_wsManager;
 
-		/// <summary>
-		/// Sets up the fixture.
-		/// </summary>
+		/// <summary/>
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
@@ -45,6 +44,7 @@ namespace SIL.LCModel.Core.WritingSystems
 		/// <summary>
 		/// Class to facilitate getting at private members of the ValidCharacters class using
 		/// Reflection
+		///TODO REVIEW (Hasso) 2019.06: all of the reflectively retrieved members are accessible by public properties on <see cref="ValidCharacters"/>
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private class ValidCharsWrapper
@@ -115,7 +115,6 @@ namespace SIL.LCModel.Core.WritingSystems
 		{
 			CoreWritingSystemDefinition ws1 = m_wsManager.Create("en");
 			ws1.CharacterSets.Add(new CharacterSetDefinition("main") {Characters = {"e", "f", "g", "h"}});
-			ws1.CharacterSets.Add(new CharacterSetDefinition("numeric") {Characters = {"4", "5"}});
 			ws1.CharacterSets.Add(new CharacterSetDefinition("punctuation") {Characters = {",", "!", "*"}});
 			ValidCharacters validChars = ValidCharacters.Load(ws1);
 			var validCharsW = new ValidCharsWrapper(validChars);
@@ -124,9 +123,6 @@ namespace SIL.LCModel.Core.WritingSystems
 			Assert.IsTrue(validCharsW.WordFormingCharacters.Contains("f"));
 			Assert.IsTrue(validCharsW.WordFormingCharacters.Contains("g"));
 			Assert.IsTrue(validCharsW.WordFormingCharacters.Contains("h"));
-			Assert.AreEqual(2, validCharsW.NumericCharacters.Count);
-			Assert.IsTrue(validCharsW.NumericCharacters.Contains("4"));
-			Assert.IsTrue(validCharsW.NumericCharacters.Contains("5"));
 			Assert.AreEqual(3, validCharsW.OtherCharacters.Count);
 			Assert.IsTrue(validCharsW.OtherCharacters.Contains(","));
 			Assert.IsTrue(validCharsW.OtherCharacters.Contains("!"));
@@ -146,10 +142,9 @@ namespace SIL.LCModel.Core.WritingSystems
 		{
 			CoreWritingSystemDefinition ws1 = m_wsManager.Create("en");
 			ValidCharacters validChars = ValidCharacters.Load(ws1, RememberError);
-			var validCharsW = new ValidCharsWrapper(validChars);
-			Assert.That(validCharsW.WordFormingCharacters, Is.Empty);
-			Assert.That(validCharsW.NumericCharacters, Is.Empty);
-			Assert.That(validCharsW.OtherCharacters, Is.Empty);
+			Assert.That(validChars.WordFormingCharacters, Is.Empty);
+			Assert.That(validChars.NumericCharacters, Is.Empty);
+			Assert.That(validChars.OtherCharacters, Is.Empty);
 			CoreWritingSystemDefinition ws2 = m_wsManager.Create("en");
 			validChars.SaveTo(ws2);
 			Assert.That(ws1.ValueEquals(ws2), Is.True);
@@ -173,74 +168,30 @@ namespace SIL.LCModel.Core.WritingSystems
 			Assert.IsTrue(validCharsW.OtherCharacters.Contains("\u2028"));
 		}
 
-		///--------------------------------------------------------------------------------------
-		/// <summary>
-		/// Tests initialization with only bogus characters (actually only one) (LT-9985).
-		/// </summary>
-		///--------------------------------------------------------------------------------------
 		[Test]
-		public void Load_SingleBogusCharacter()
+		public void Load_AllowMultigraphs()
 		{
-			CoreWritingSystemDefinition ws = m_wsManager.Create("en-US");
-			ws.CharacterSets.Add(new CharacterSetDefinition("main") {Characters = {"\u05F6"}});
-
-			ValidCharacters validChars = ValidCharacters.Load(ws, RememberError);
-			VerifyDefaultWordFormingCharacters(validChars);
-			Assert.AreEqual("Invalid ValidChars field while loading the English (United States) writing system. " +
-							"The following characters are invalid:" +
-							Environment.NewLine + "\t\u05F6 (U+05F6)" +
-							Environment.NewLine + "Parameter name: ws",
-							m_lastException.Message);
+			CoreWritingSystemDefinition ws1 = m_wsManager.Create("en");
+			ws1.CharacterSets.Add(new CharacterSetDefinition("punctuation") {Characters = {"Ch", "Sh", "Th"}});
+			var validChars = ValidCharacters.Load(ws1).OtherCharacters.ToList();
+			Assert.AreEqual(3, validChars.Count);
+			CollectionAssert.Contains(validChars, "Ch");
+			CollectionAssert.Contains(validChars, "Sh");
+			CollectionAssert.Contains(validChars, "Th");
 		}
 
-		///--------------------------------------------------------------------------------------
-		/// <summary>
-		/// Tests initialization with a bogus character that consists of a base character and a
-		/// diacritic (TE-8380).
-		/// </summary>
-		///--------------------------------------------------------------------------------------
+		/// <summary/>
 		[Test]
-		public void Load_SingleCompoundBogusCharacter()
+		public void Load_AllowCombiningDiacritics()
 		{
 			CoreWritingSystemDefinition ws = m_wsManager.Create("en-US");
-			ws.CharacterSets.Add(new CharacterSetDefinition("main") {Characters = {"\u200c\u0301"}});
-
-			var validChars = ValidCharacters.Load(ws, RememberError);
-			VerifyDefaultWordFormingCharacters(validChars);
-			Assert.AreEqual("Invalid ValidChars field while loading the English (United States) writing system. " +
-							"The following characters are invalid:" +
-							Environment.NewLine + "\t\u200c\u0301 (U+200C, U+0301)" +
-							Environment.NewLine + "Parameter name: ws",
-							m_lastException.Message);
+			ws.CharacterSets.Add(new CharacterSetDefinition("main") { Characters = { "a", "\u0301" } }); // combining acute accent
+			var validChars = ValidCharacters.Load(ws).WordFormingCharacters.ToList();
+			Assert.AreEqual(2, validChars.Count);
+			CollectionAssert.Contains(validChars, "a");
+			CollectionAssert.Contains(validChars, "\u0301");
 		}
 
-		///--------------------------------------------------------------------------------------
-		/// <summary>
-		/// Tests initialization with a mix of valid and bogus characters (TE-8322).
-		/// </summary>
-		///--------------------------------------------------------------------------------------
-		[Test]
-		public void Load_ValidAndBogusCharacters()
-		{
-			CoreWritingSystemDefinition ws = m_wsManager.Create("en-US");
-			ws.CharacterSets.Add(new CharacterSetDefinition("main") {Characters = {"\u05F6", "g", "\u05F7", "h"}});
-			ws.CharacterSets.Add(new CharacterSetDefinition("numeric") {Characters = {"1"}});
-			ValidCharacters validChars = ValidCharacters.Load(ws, RememberError);
-			var validCharsW = new ValidCharsWrapper(validChars);
-			Assert.AreEqual(2, validCharsW.WordFormingCharacters.Count);
-			Assert.IsTrue(validCharsW.WordFormingCharacters.Contains("g"));
-			Assert.IsTrue(validCharsW.WordFormingCharacters.Contains("h"));
-			Assert.AreEqual(1, validCharsW.NumericCharacters.Count);
-			Assert.IsTrue(validCharsW.NumericCharacters.Contains("1"));
-			Assert.AreEqual(0, validCharsW.OtherCharacters.Count);
-
-			Assert.AreEqual("Invalid ValidChars field while loading the English (United States) writing system. " +
-				"The following characters are invalid:" +
-				Environment.NewLine + "\t\u05F6 (U+05F6)" +
-				Environment.NewLine + "\t\u05F7 (U+05F7)" +
-				Environment.NewLine + "Parameter name: ws",
-				m_lastException.Message);
-		}
 
 		///--------------------------------------------------------------------------------------
 		/// <summary>
@@ -284,26 +235,6 @@ namespace SIL.LCModel.Core.WritingSystems
 
 		///--------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests initialization where the same character occurs in both the numeric and
-		/// punctuation lists.
-		/// </summary>
-		///--------------------------------------------------------------------------------------
-		[Test]
-		public void Load_SameCharacterInNumericAndPunctuationLists()
-		{
-			CoreWritingSystemDefinition ws = m_wsManager.Create("en-US");
-			ws.CharacterSets.Add(new CharacterSetDefinition("numeric") {Characters = {"1"}});
-			ws.CharacterSets.Add(new CharacterSetDefinition("punctuation") {Characters = {"1"}});
-			ValidCharacters validChars = ValidCharacters.Load(ws);
-			var validCharsW = new ValidCharsWrapper(validChars);
-			Assert.AreEqual(0, validCharsW.WordFormingCharacters.Count);
-			Assert.AreEqual(1, validCharsW.NumericCharacters.Count);
-			Assert.IsTrue(validCharsW.NumericCharacters.Contains("1"));
-			Assert.AreEqual(0, validCharsW.OtherCharacters.Count);
-		}
-
-		///--------------------------------------------------------------------------------------
-		/// <summary>
 		/// Tests initialization where the same character occurs more than once in the same list.
 		/// </summary>
 		///--------------------------------------------------------------------------------------
@@ -312,14 +243,11 @@ namespace SIL.LCModel.Core.WritingSystems
 		{
 			CoreWritingSystemDefinition ws = m_wsManager.Create("en-US");
 			ws.CharacterSets.Add(new CharacterSetDefinition("main") {Characters = {"a", "a"}});
-			ws.CharacterSets.Add(new CharacterSetDefinition("numeric") {Characters = {"4", "4"}});
 			ws.CharacterSets.Add(new CharacterSetDefinition("punctuation") {Characters = {"'", "'"}});
 			ValidCharacters validChars = ValidCharacters.Load(ws);
 			var validCharsW = new ValidCharsWrapper(validChars);
 			Assert.AreEqual(1, validCharsW.WordFormingCharacters.Count);
 			Assert.IsTrue(validCharsW.WordFormingCharacters.Contains("a"));
-			Assert.AreEqual(1, validCharsW.NumericCharacters.Count);
-			Assert.IsTrue(validCharsW.NumericCharacters.Contains("4"));
 			Assert.AreEqual(1, validCharsW.OtherCharacters.Count);
 			Assert.IsTrue(validCharsW.OtherCharacters.Contains("'"));
 		}
@@ -505,11 +433,10 @@ namespace SIL.LCModel.Core.WritingSystems
 		{
 			var expectedWordFormingChars = (string[]) ReflectionHelper.GetField(
 				typeof(ValidCharacters), "DefaultWordformingChars");
-			var validCharsW = new ValidCharsWrapper(validChars);
-			Assert.AreEqual(expectedWordFormingChars, validCharsW.WordFormingCharacters.ToArray(),
+			Assert.AreEqual(expectedWordFormingChars, validChars.WordFormingCharacters.ToArray(),
 				"We expect the load method to have a fallback to the default word-forming characters");
-			Assert.AreEqual(0, validCharsW.NumericCharacters.Count);
-			Assert.AreEqual(0, validCharsW.OtherCharacters.Count);
+			Assert.That(validChars.NumericCharacters, Is.Empty);
+			Assert.That(validChars.OtherCharacters, Is.Empty);
 		}
 
 		/// ------------------------------------------------------------------------------------
