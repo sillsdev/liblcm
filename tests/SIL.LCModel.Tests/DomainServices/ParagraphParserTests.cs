@@ -2375,21 +2375,19 @@ namespace SIL.LCModel.DomainServices
 		/// word-forming overrides XML file).
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		void SetupOldWordformingOverrides()
+		private void SetupOldWordformingOverrides()
 		{
 			CoreWritingSystemDefinition wsObj = Cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem;
 			var validChars = ValidCharacters.Load(wsObj);
 			var fChangedSomething = false;
 			if (!validChars.IsWordForming('-'))
 			{
-				validChars.AddCharacter("-");
-				validChars.MoveBetweenWordFormingAndOther(new List<string>(new[] { "-" }), true);
+				validChars.AddCharacter("-", ValidCharacterType.WordForming);
 				fChangedSomething = true;
 			}
 			if (!validChars.IsWordForming('\''))
 			{
-				validChars.AddCharacter("'");
-				validChars.MoveBetweenWordFormingAndOther(new List<string>(new[] { "'" }), true);
+				validChars.AddCharacter("'", ValidCharacterType.WordForming);
 				fChangedSomething = true;
 			}
 			if (!fChangedSomething)

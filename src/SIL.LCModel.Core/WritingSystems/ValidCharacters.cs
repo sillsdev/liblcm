@@ -27,13 +27,11 @@ namespace SIL.LCModel.Core.WritingSystems
 		None = 0,
 		/// <summary>Word-forming</summary>
 		WordForming = 1,
-		/// <summary>Numeric</summary>
-		/// <remarks>REVIEW (Hasso) 2019.06: needed?</remarks>
-		Numeric = 2,
+		//Numeric = 2,
 		/// <summary>Punctuation, Symbol, Control, or Whitespace</summary>
 		Other = 4,
 		/// <summary>Flag to indicate all types of characters (not used for an individual character)</summary>
-		All = WordForming | Numeric | Other,
+		All = WordForming | Other,
 		/// <summary>A character which is defined but whose type has not been determined</summary>
 		DefinedUnknown = 8,
 	}
@@ -71,8 +69,6 @@ namespace SIL.LCModel.Core.WritingSystems
 		#region Data members
 
 		private readonly List<string> m_wordFormingCharacters = new List<string>();
-		/// <remarks>REVIEW (Hasso) 2019.06: needed?</remarks>
-		private readonly List<string> m_numericCharacters = new List<string>();
 		private readonly List<string> m_otherCharacters = new List<string>();
 		private TsStringComparer m_comparer;
 
@@ -137,16 +133,6 @@ namespace SIL.LCModel.Core.WritingSystems
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Gets a collection of valid numeric characters.
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public IEnumerable<string> NumericCharacters
-		{
-			get { return m_numericCharacters; }
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
 		/// Gets a collection of valid punctuation, symbol, control and whitespace characters.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
@@ -162,7 +148,7 @@ namespace SIL.LCModel.Core.WritingSystems
 		/// ------------------------------------------------------------------------------------
 		public IEnumerable<string> AllCharacters
 		{
-			get { return m_wordFormingCharacters.Concat(m_numericCharacters).Concat(m_otherCharacters); }
+			get { return m_wordFormingCharacters.Concat(m_otherCharacters); }
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -305,8 +291,7 @@ namespace SIL.LCModel.Core.WritingSystems
 		/// ------------------------------------------------------------------------------------
 		public bool IsValid(string chr)
 		{
-			return m_wordFormingCharacters.Contains(chr) || m_numericCharacters.Contains(chr) ||
-				m_otherCharacters.Contains(chr);
+			return m_wordFormingCharacters.Contains(chr) || m_otherCharacters.Contains(chr);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -319,7 +304,6 @@ namespace SIL.LCModel.Core.WritingSystems
 			get
 			{
 				return ((m_otherCharacters == null || m_otherCharacters.Count == 0) &&
-					(m_numericCharacters == null || m_numericCharacters.Count == 0) &&
 					(m_wordFormingCharacters == null || m_wordFormingCharacters.Count == 0));
 			}
 		}
@@ -332,7 +316,6 @@ namespace SIL.LCModel.Core.WritingSystems
 		public void Reset()
 		{
 			m_wordFormingCharacters.Clear();
-			m_numericCharacters.Clear();
 			m_otherCharacters.Clear();
 		}
 
@@ -416,7 +399,6 @@ namespace SIL.LCModel.Core.WritingSystems
 			switch(type)
 			{
 				case ValidCharacterType.WordForming: list = m_wordFormingCharacters; break;
-				case ValidCharacterType.Numeric: list = m_numericCharacters; break;
 				default: list = m_otherCharacters; break;
 			}
 
@@ -433,21 +415,13 @@ namespace SIL.LCModel.Core.WritingSystems
 		/// numbers to be considered as word-forming since these are generally used to mark
 		/// tone in the vernaculars we work with (see TE-8384).
 		/// </summary>
-		/// <param name="codepoint">The codepoint.</param>
 		/// ------------------------------------------------------------------------------------
 		protected virtual ValidCharacterType GetNaturalCharType(int codepoint)
 		{
 			if (TsStringUtils.IsWordForming(codepoint))
 				return ValidCharacterType.WordForming;
-			if (Icu.IsNumeric(codepoint))
-			{
-				foreach (string chr in DefaultWordformingChars)
-				{
-					if (chr[0] == codepoint)
-						return ValidCharacterType.WordForming;
-				}
-				return ValidCharacterType.Numeric;
-			}
+			if (DefaultWordformingChars.Any(chr => chr[0] == codepoint))
+				return ValidCharacterType.WordForming;
 			return ValidCharacterType.Other;
 		}
 
@@ -485,12 +459,6 @@ namespace SIL.LCModel.Core.WritingSystems
 				return ValidCharacterType.WordForming;
 			}
 
-			if (m_numericCharacters.Contains(chr))
-			{
-				m_numericCharacters.Remove(chr);
-				return ValidCharacterType.Numeric;
-			}
-
 			if (m_otherCharacters.Contains(chr))
 			{
 				m_otherCharacters.Remove(chr);
@@ -507,7 +475,6 @@ namespace SIL.LCModel.Core.WritingSystems
 		{
 			AddCharactersToWritingSystem(ws, "main", m_wordFormingCharacters);
 			AddCharactersToWritingSystem(ws, "punctuation", m_otherCharacters);
-			AddCharactersToWritingSystem(ws, "numeric", m_numericCharacters);
 		}
 
 		private void AddCharactersToWritingSystem(CoreWritingSystemDefinition ws, string charSetType, List<string> characters)
@@ -556,7 +523,6 @@ namespace SIL.LCModel.Core.WritingSystems
 		private void SortLists()
 		{
 			Sort(m_wordFormingCharacters);
-			Sort(m_numericCharacters);
 			Sort(m_otherCharacters);
 		}
 

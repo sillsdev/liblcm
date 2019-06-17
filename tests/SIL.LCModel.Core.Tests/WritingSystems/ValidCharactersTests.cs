@@ -64,19 +64,6 @@ namespace SIL.LCModel.Core.WritingSystems
 
 			/// --------------------------------------------------------------------------------
 			/// <summary>
-			/// Gets the numeric characters list.
-			/// </summary>
-			/// --------------------------------------------------------------------------------
-			public List<string> NumericCharacters
-			{
-				get
-				{
-					return (List<string>)m_validChars.NumericCharacters;
-				}
-			}
-
-			/// --------------------------------------------------------------------------------
-			/// <summary>
 			/// Gets the punctuation/symbols/etc. characters list.
 			/// </summary>
 			/// --------------------------------------------------------------------------------
@@ -127,7 +114,6 @@ namespace SIL.LCModel.Core.WritingSystems
 			CoreWritingSystemDefinition ws1 = m_wsManager.Create("en");
 			ValidCharacters validChars = ValidCharacters.Load(ws1);
 			Assert.That(validChars.WordFormingCharacters, Is.Empty);
-			Assert.That(validChars.NumericCharacters, Is.Empty);
 			Assert.That(validChars.OtherCharacters, Is.Empty);
 			CoreWritingSystemDefinition ws2 = m_wsManager.Create("en");
 			validChars.SaveTo(ws2);
@@ -202,27 +188,6 @@ namespace SIL.LCModel.Core.WritingSystems
 			var validCharsW = new ValidCharsWrapper(validChars);
 			Assert.AreEqual(1, validCharsW.WordFormingCharacters.Count);
 			Assert.IsTrue(validCharsW.WordFormingCharacters.Contains("'"));
-			Assert.AreEqual(0, validCharsW.NumericCharacters.Count);
-			Assert.AreEqual(0, validCharsW.OtherCharacters.Count);
-		}
-
-		///--------------------------------------------------------------------------------------
-		/// <summary>
-		/// Tests initialization where the same character occurs in both the word-forming and
-		/// numeric lists.
-		/// </summary>
-		///--------------------------------------------------------------------------------------
-		[Test]
-		public void Load_SameCharacterInWordFormingAndNumbericLists()
-		{
-			CoreWritingSystemDefinition ws = m_wsManager.Create("en-US");
-			ws.CharacterSets.Add(new CharacterSetDefinition("main") {Characters = {"1"}});
-			ws.CharacterSets.Add(new CharacterSetDefinition("numeric") {Characters = {"1"}});
-			ValidCharacters validChars = ValidCharacters.Load(ws);
-			var validCharsW = new ValidCharsWrapper(validChars);
-			Assert.AreEqual(1, validCharsW.WordFormingCharacters.Count);
-			Assert.IsTrue(validCharsW.WordFormingCharacters.Contains("1"));
-			Assert.AreEqual(0, validCharsW.NumericCharacters.Count);
 			Assert.AreEqual(0, validCharsW.OtherCharacters.Count);
 		}
 
@@ -260,7 +225,6 @@ namespace SIL.LCModel.Core.WritingSystems
 			validChars.AddCharacter("a");
 			Assert.AreEqual(1, validCharsW.WordFormingCharacters.Count);
 			Assert.IsTrue(validCharsW.WordFormingCharacters.Contains("a"));
-			Assert.AreEqual(0, validCharsW.NumericCharacters.Count);
 			Assert.AreEqual(0, validCharsW.OtherCharacters.Count);
 			validChars.SaveTo(ws1);
 			CoreWritingSystemDefinition ws2 = m_wsManager.Create("en-US");
@@ -283,7 +247,6 @@ namespace SIL.LCModel.Core.WritingSystems
 			ValidCharacters validChars = ValidCharacters.Load(ws);
 			var validCharsW = new ValidCharsWrapper(validChars);
 			Assert.AreEqual(2, validCharsW.WordFormingCharacters.Count);
-			Assert.AreEqual(0, validCharsW.NumericCharacters.Count);
 			Assert.AreEqual(1, validCharsW.OtherCharacters.Count);
 			Assert.IsTrue(validChars.IsWordForming("-"));
 			Assert.IsFalse(validChars.IsWordForming("{"));
@@ -292,7 +255,6 @@ namespace SIL.LCModel.Core.WritingSystems
 			Assert.IsTrue(validCharsW.WordFormingCharacters.Contains("a"));
 			Assert.IsTrue(validCharsW.WordFormingCharacters.Contains("-"));
 			Assert.IsTrue(validChars.IsWordForming("-"));
-			Assert.AreEqual(0, validCharsW.NumericCharacters.Count);
 			Assert.AreEqual(1, validCharsW.OtherCharacters.Count);
 			Assert.IsTrue(validCharsW.OtherCharacters.Contains("{"));
 			Assert.IsFalse(validChars.IsWordForming("{"));
@@ -315,7 +277,6 @@ namespace SIL.LCModel.Core.WritingSystems
 			Assert.AreEqual(2, validCharsW.WordFormingCharacters.Count);
 			Assert.IsTrue(validCharsW.WordFormingCharacters.Contains("\u00b9"));
 			Assert.IsTrue(validCharsW.WordFormingCharacters.Contains("\u2079"));
-			Assert.AreEqual(0, validCharsW.NumericCharacters.Count);
 			Assert.AreEqual(0, validCharsW.OtherCharacters.Count);
 		}
 
@@ -324,21 +285,20 @@ namespace SIL.LCModel.Core.WritingSystems
 		/// Tests the GetNaturalCharType method.
 		/// </summary>
 		///--------------------------------------------------------------------------------------
-		[Test]
-		public void GetNaturalCharType()
+		[TestCase('a', ValidCharacterType.WordForming)]
+		[TestCase('-', ValidCharacterType.WordForming)]
+		[TestCase('\'', ValidCharacterType.WordForming)]
+		[TestCase(0xA78B, ValidCharacterType.WordForming)] // Capital Saltillo
+		[TestCase(0x00B2, ValidCharacterType.WordForming)] // Superscript 2
+		[TestCase(0x2079, ValidCharacterType.WordForming)] // Superscript 9
+		[TestCase('1', ValidCharacterType.Other)]
+		[TestCase(' ', ValidCharacterType.Other)]
+		[TestCase(',', ValidCharacterType.Other)]
+		public void GetNaturalCharType(int codepoint, ValidCharacterType type)
 		{
 			CoreWritingSystemDefinition ws = m_wsManager.Create("en-US");
 			ValidCharacters validChars = ValidCharacters.Load(ws);
-			Assert.AreEqual(ValidCharacterType.WordForming,
-							ReflectionHelper.GetResult(validChars, "GetNaturalCharType", (int) 'a'));
-			Assert.AreEqual(ValidCharacterType.WordForming,
-							ReflectionHelper.GetResult(validChars, "GetNaturalCharType", 0x00B2));
-			Assert.AreEqual(ValidCharacterType.WordForming,
-							ReflectionHelper.GetResult(validChars, "GetNaturalCharType", 0x2079));
-			Assert.AreEqual(ValidCharacterType.Numeric,
-							ReflectionHelper.GetResult(validChars, "GetNaturalCharType", (int) '1'));
-			Assert.AreEqual(ValidCharacterType.Other,
-							ReflectionHelper.GetResult(validChars, "GetNaturalCharType", (int) ' '));
+			Assert.AreEqual(type, ReflectionHelper.GetResult(validChars, "GetNaturalCharType", codepoint));
 		}
 
 		///--------------------------------------------------------------------------------------
@@ -353,7 +313,6 @@ namespace SIL.LCModel.Core.WritingSystems
 			ws.CharacterSets.Add(new CharacterSetDefinition("main") {Characters = {"a", "b", "c", "d", "e", "#"}});
 			ValidCharacters validChars = ValidCharacters.Load(ws);
 			Assert.IsTrue(validChars.IsWordForming('#'));
-			//Assert.IsTrue(validChars.IsWordForming("#"));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -410,10 +369,10 @@ namespace SIL.LCModel.Core.WritingSystems
 			validChars.AddCharacter("6");
 			validChars.AddCharacter("5");
 
-			Assert.AreEqual("5", validCharsW.NumericCharacters[0]);
-			Assert.AreEqual("6", validCharsW.NumericCharacters[1]);
-			Assert.AreEqual("7", validCharsW.NumericCharacters[2]);
-			Assert.AreEqual("8", validCharsW.NumericCharacters[3]);
+			Assert.AreEqual("5", validCharsW.OtherCharacters[0]);
+			Assert.AreEqual("6", validCharsW.OtherCharacters[1]);
+			Assert.AreEqual("7", validCharsW.OtherCharacters[2]);
+			Assert.AreEqual("8", validCharsW.OtherCharacters[3]);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -428,7 +387,6 @@ namespace SIL.LCModel.Core.WritingSystems
 				typeof(ValidCharacters), "DefaultWordformingChars");
 			Assert.AreEqual(expectedWordFormingChars, validChars.WordFormingCharacters.ToArray(),
 				"We expect the load method to have a fallback to the default word-forming characters");
-			Assert.That(validChars.NumericCharacters, Is.Empty);
 			Assert.That(validChars.OtherCharacters, Is.Empty);
 		}
 	}
