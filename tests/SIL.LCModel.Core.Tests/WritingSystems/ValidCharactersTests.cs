@@ -2,7 +2,6 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -19,7 +18,6 @@ namespace SIL.LCModel.Core.WritingSystems
 	[TestFixture]
 	public class ValidCharactersTests
 	{
-		private Exception m_lastException;
 		private WritingSystemManager m_wsManager;
 
 		/// <summary/>
@@ -31,20 +29,9 @@ namespace SIL.LCModel.Core.WritingSystems
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Sets up this instance.
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		[SetUp]
-		public void Setup()
-		{
-			m_lastException = null;
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
 		/// Class to facilitate getting at private members of the ValidCharacters class using
 		/// Reflection
-		///TODO REVIEW (Hasso) 2019.06: all of the reflectively retrieved members are accessible by public properties on <see cref="ValidCharacters"/>
+		/// REVIEW (Hasso) 2019.06: all of the reflectively retrieved members are accessible by public properties on <see cref="ValidCharacters"/>
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private class ValidCharsWrapper
@@ -71,8 +58,7 @@ namespace SIL.LCModel.Core.WritingSystems
 			{
 				get
 				{
-					return (List<string>)ReflectionHelper.GetField(m_validChars,
-						"m_wordFormingCharacters");
+					return (List<string>)m_validChars.WordFormingCharacters;
 				}
 			}
 
@@ -85,8 +71,7 @@ namespace SIL.LCModel.Core.WritingSystems
 			{
 				get
 				{
-					return (List<string>)ReflectionHelper.GetField(m_validChars,
-						"m_numericCharacters");
+					return (List<string>)m_validChars.NumericCharacters;
 				}
 			}
 
@@ -99,8 +84,7 @@ namespace SIL.LCModel.Core.WritingSystems
 			{
 				get
 				{
-					return (List<string>)ReflectionHelper.GetField(m_validChars,
-						"m_otherCharacters");
+					return (List<string>)m_validChars.OtherCharacters;
 				}
 			}
 		}
@@ -141,14 +125,13 @@ namespace SIL.LCModel.Core.WritingSystems
 		public void Load_Empty()
 		{
 			CoreWritingSystemDefinition ws1 = m_wsManager.Create("en");
-			ValidCharacters validChars = ValidCharacters.Load(ws1, RememberError);
+			ValidCharacters validChars = ValidCharacters.Load(ws1);
 			Assert.That(validChars.WordFormingCharacters, Is.Empty);
 			Assert.That(validChars.NumericCharacters, Is.Empty);
 			Assert.That(validChars.OtherCharacters, Is.Empty);
 			CoreWritingSystemDefinition ws2 = m_wsManager.Create("en");
 			validChars.SaveTo(ws2);
 			Assert.That(ws1.ValueEquals(ws2), Is.True);
-			Assert.That(m_lastException, Is.Null);
 		}
 
 		///--------------------------------------------------------------------------------------
@@ -172,17 +155,17 @@ namespace SIL.LCModel.Core.WritingSystems
 		public void Load_AllowMultigraphs()
 		{
 			CoreWritingSystemDefinition ws1 = m_wsManager.Create("en");
-			ws1.CharacterSets.Add(new CharacterSetDefinition("punctuation") {Characters = {"Ch", "Sh", "Th"}});
+			ws1.CharacterSets.Add(new CharacterSetDefinition("punctuation") {Characters = {"Ll", "Sch", "Th"}});
 			var validChars = ValidCharacters.Load(ws1).OtherCharacters.ToList();
 			Assert.AreEqual(3, validChars.Count);
-			CollectionAssert.Contains(validChars, "Ch");
-			CollectionAssert.Contains(validChars, "Sh");
+			CollectionAssert.Contains(validChars, "Ll");
+			CollectionAssert.Contains(validChars, "Sch");
 			CollectionAssert.Contains(validChars, "Th");
 		}
 
 		/// <summary/>
 		[Test]
-		public void Load_AllowCombiningDiacritics()
+		public void Load_AllowLoneCombiningDiacritics()
 		{
 			CoreWritingSystemDefinition ws = m_wsManager.Create("en-US");
 			ws.CharacterSets.Add(new CharacterSetDefinition("main") { Characters = { "a", "\u0301" } }); // combining acute accent
@@ -192,6 +175,16 @@ namespace SIL.LCModel.Core.WritingSystems
 			CollectionAssert.Contains(validChars, "\u0301");
 		}
 
+		/// <summary/>
+		[Test]
+		public void Load_AllowGroupedCombiningDiacritics()
+		{
+			CoreWritingSystemDefinition ws = m_wsManager.Create("en-US");
+			ws.CharacterSets.Add(new CharacterSetDefinition("main") { Characters = { "a\u0301" } }); // combining acute accent
+			var validChars = ValidCharacters.Load(ws).WordFormingCharacters.ToList();
+			Assert.AreEqual(1, validChars.Count);
+			CollectionAssert.Contains(validChars, "a\u0301");
+		}
 
 		///--------------------------------------------------------------------------------------
 		/// <summary>
@@ -437,16 +430,6 @@ namespace SIL.LCModel.Core.WritingSystems
 				"We expect the load method to have a fallback to the default word-forming characters");
 			Assert.That(validChars.NumericCharacters, Is.Empty);
 			Assert.That(validChars.OtherCharacters, Is.Empty);
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Records an exception that is created during attempt to load valid characters.
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		private void RememberError(Exception e)
-		{
-			m_lastException = e;
 		}
 	}
 }

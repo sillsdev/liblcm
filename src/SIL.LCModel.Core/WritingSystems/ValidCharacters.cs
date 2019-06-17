@@ -71,19 +71,11 @@ namespace SIL.LCModel.Core.WritingSystems
 		#region Data members
 
 		private readonly List<string> m_wordFormingCharacters = new List<string>();
+		/// <remarks>REVIEW (Hasso) 2019.06: needed?</remarks>
 		private readonly List<string> m_numericCharacters = new List<string>();
 		private readonly List<string> m_otherCharacters = new List<string>();
 		private TsStringComparer m_comparer;
 
-		#endregion
-
-		#region error-handling delegate/event
-		/// <summary>Fired if valid character data cannot be loaded</summary>
-		/// <param name="e">The exception</param>
-		public delegate void LoadExceptionDelegate(ArgumentException e);
-
-		/// <summary>*DEPRECATED* Fired if valid character data cannot be loaded</summary>
-		public event LoadExceptionDelegate LoadException;
 		#endregion
 
 		/// ------------------------------------------------------------------------------------
@@ -104,13 +96,10 @@ namespace SIL.LCModel.Core.WritingSystems
 		/// Loads the valid characters from the specified language definition into a new
 		/// instance of the <see cref="ValidCharacters"/> class.
 		/// </summary>
-		/// <param name="ws">The writing system.</param>
-		/// <param name="exceptionHandler">*DEPREcATED* The exception handler to use if valid character data
-		/// cannot be loaded.</param>
 		/// <returns>A <see cref="ValidCharacters"/> initialized with the valid characters data
 		/// from the language definition.</returns>
 		/// ------------------------------------------------------------------------------------
-		public static ValidCharacters Load(CoreWritingSystemDefinition ws, LoadExceptionDelegate exceptionHandler = null)
+		public static ValidCharacters Load(CoreWritingSystemDefinition ws)
 		{
 			var validChars = new ValidCharacters();
 
@@ -229,10 +218,10 @@ namespace SIL.LCModel.Core.WritingSystems
 			foreach (string chr in chars)
 			{
 				if (!CanBeWordFormingOverride(chr))
-					throw new ArgumentException("Only symbol or punctuation characters can be moved between word-forming and other lists.", "chars");
+					throw new ArgumentException("Only symbol or punctuation characters can be moved between word-forming and other lists.", nameof(chars));
 
 				if (!listFrom.Remove(chr))
-					throw new ArgumentException("Attempt to remove character that is not in the list.", "chars");
+					throw new ArgumentException("Attempt to remove character that is not in the list.", nameof(chars));
 				listTo.Add(chr);
 			}
 		}
