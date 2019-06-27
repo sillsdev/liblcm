@@ -417,6 +417,8 @@ namespace SIL.LCModel
 					progressDlg.Step(0);
 				}
 
+				SetDefaultProjectSettings(cache);
+
 				cache.ActionHandlerAccessor.BeginNonUndoableTask();
 
 				CreateAnalysisWritingSystem(cache, analWrtSys, true);
@@ -524,6 +526,22 @@ namespace SIL.LCModel
 				}
 			}
 			return dbFileName;
+		}
+
+		/// <summary>Set the default for sharing WS data w/ SLDR, if appropriate</summary>
+		private static void SetDefaultProjectSettings(LcmCache cache)
+		{
+			var feedbackEnvVar = Environment.GetEnvironmentVariable("FEEDBACK");
+			if (feedbackEnvVar != null && !(feedbackEnvVar.ToLower().Equals("true") || feedbackEnvVar.ToLower().Equals("yes")))
+			{
+				// This is a developer or tester; they should not be sharing junk data with the SLDR
+				return;
+			}
+			var settings = new ProjectLexiconSettings
+			{
+				AddWritingSystemsToSldr = true
+			};
+			new ProjectLexiconSettingsDataMapper(cache.ServiceLocator.DataSetup.ProjectSettingsStore).Write(settings);
 		}
 
 		/// <summary>
@@ -657,25 +675,25 @@ namespace SIL.LCModel
 				mapLocalWs.Add(wsT.Id, wsT);
 			using (var rdr = new StreamReader(fileName, Encoding.UTF8))
 			{
-			string sLine;
-			while ((sLine = rdr.ReadLine()) != null)
-			{
-				var idx = sLine.IndexOf(" ws=\"");
-				if (idx < 0)
-					continue;
-				idx += 5;
-				var idxLim = sLine.IndexOf("\"", idx);
-				if (idxLim < 0)
-					continue;
-				var sWs = sLine.Substring(idx, idxLim - idx);
-				if (mapLocalWs.ContainsKey(sWs))
-					continue;
-				CoreWritingSystemDefinition wsNew;
-				wsm.GetOrSet(sWs, out wsNew);
-				mapLocalWs.Add(sWs, wsNew);
+				string sLine;
+				while ((sLine = rdr.ReadLine()) != null)
+				{
+					var idx = sLine.IndexOf(" ws=\"");
+					if (idx < 0)
+						continue;
+					idx += 5;
+					var idxLim = sLine.IndexOf("\"", idx);
+					if (idxLim < 0)
+						continue;
+					var sWs = sLine.Substring(idx, idxLim - idx);
+					if (mapLocalWs.ContainsKey(sWs))
+						continue;
+					CoreWritingSystemDefinition wsNew;
+					wsm.GetOrSet(sWs, out wsNew);
+					mapLocalWs.Add(sWs, wsNew);
+				}
+				rdr.Close();
 			}
-			rdr.Close();
-		}
 		}
 
 		/// ------------------------------------------------------------------------------------
