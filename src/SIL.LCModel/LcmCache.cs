@@ -417,6 +417,8 @@ namespace SIL.LCModel
 					progressDlg.Step(0);
 				}
 
+				SetDefaultProjectSettings(cache.ServiceLocator.DataSetup.ProjectSettingsStore);
+
 				cache.ActionHandlerAccessor.BeginNonUndoableTask();
 
 				CreateAnalysisWritingSystem(cache, analWrtSys, true);
@@ -524,6 +526,12 @@ namespace SIL.LCModel
 				}
 			}
 			return dbFileName;
+		}
+
+		/// <summary>Share Writing System data with SLDR by default (LT-19632)</summary>
+		private static void SetDefaultProjectSettings(ISettingsStore projectSettingsStore)
+		{
+			new ProjectLexiconSettingsDataMapper(projectSettingsStore).Write(new ProjectLexiconSettings { AddWritingSystemsToSldr = true });
 		}
 
 		/// <summary>
@@ -657,25 +665,25 @@ namespace SIL.LCModel
 				mapLocalWs.Add(wsT.Id, wsT);
 			using (var rdr = new StreamReader(fileName, Encoding.UTF8))
 			{
-			string sLine;
-			while ((sLine = rdr.ReadLine()) != null)
-			{
-				var idx = sLine.IndexOf(" ws=\"");
-				if (idx < 0)
-					continue;
-				idx += 5;
-				var idxLim = sLine.IndexOf("\"", idx);
-				if (idxLim < 0)
-					continue;
-				var sWs = sLine.Substring(idx, idxLim - idx);
-				if (mapLocalWs.ContainsKey(sWs))
-					continue;
-				CoreWritingSystemDefinition wsNew;
-				wsm.GetOrSet(sWs, out wsNew);
-				mapLocalWs.Add(sWs, wsNew);
+				string sLine;
+				while ((sLine = rdr.ReadLine()) != null)
+				{
+					var idx = sLine.IndexOf(" ws=\"");
+					if (idx < 0)
+						continue;
+					idx += 5;
+					var idxLim = sLine.IndexOf("\"", idx);
+					if (idxLim < 0)
+						continue;
+					var sWs = sLine.Substring(idx, idxLim - idx);
+					if (mapLocalWs.ContainsKey(sWs))
+						continue;
+					CoreWritingSystemDefinition wsNew;
+					wsm.GetOrSet(sWs, out wsNew);
+					mapLocalWs.Add(sWs, wsNew);
+				}
+				rdr.Close();
 			}
-			rdr.Close();
-		}
 		}
 
 		/// ------------------------------------------------------------------------------------

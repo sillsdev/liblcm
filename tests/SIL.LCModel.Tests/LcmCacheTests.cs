@@ -93,7 +93,7 @@ namespace SIL.LCModel
 			try
 			{
 				string dbFileName = LcmCache.CreateNewLangProj(new DummyProgressDlg(), dbName, m_lcmDirectories,
-					new SingleThreadedSynchronizeInvoke(), null, null, null, null, null, null, true);
+					new SingleThreadedSynchronizeInvoke());
 
 				currentDirs = new List<string>(Directory.GetDirectories(m_projectsDirectory));
 				if (currentDirs.Contains(writingSystemsCommonDir) && !expectedDirs.Contains(writingSystemsCommonDir))
@@ -122,7 +122,7 @@ namespace SIL.LCModel
 			{
 				// create project
 				string dbFileName = LcmCache.CreateNewLangProj(new DummyProgressDlg(), dbName, m_lcmDirectories,
-					new SingleThreadedSynchronizeInvoke(), null, null, null, null, null, null, true);
+					new SingleThreadedSynchronizeInvoke());
 
 				var projectId = new TestProjectId(BackendProviderType.kXMLWithMemoryOnlyWsMgr, dbFileName);
 				using (var cache = LcmCache.CreateCacheFromExistingData(projectId, "en", m_ui, m_lcmDirectories, new LcmSettings(),
@@ -311,7 +311,7 @@ namespace SIL.LCModel
 			{
 				// create project
 				string dbFileName = LcmCache.CreateNewLangProj(new DummyProgressDlg(), dbName, m_lcmDirectories,
-					new SingleThreadedSynchronizeInvoke(), null, null, null, null, null, null, true);
+					new SingleThreadedSynchronizeInvoke());
 				// Set up test file for project sharing setting
 				var testFileStore = new FileSettingsStore(LexiconSettingsFileHelper.GetProjectLexiconSettingsPath(Path.GetDirectoryName(dbFileName)));
 				var dataMapper = new ProjectLexiconSettingsDataMapper(testFileStore);
