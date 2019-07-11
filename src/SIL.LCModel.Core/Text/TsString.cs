@@ -1,10 +1,11 @@
-﻿// Copyright (c) 2016 SIL International
+// Copyright (c) 2016 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -286,12 +287,24 @@ namespace SIL.LCModel.Core.Text
 			int i = 0;
 			while (i < Text.Length)
 			{
-				int codepoint = Char.ConvertToUtf32(Text, i);
-				if (Icu.HasNormalizationBoundaryBefore(icuNormalizer, codepoint) && i > 0)
+				// if we have no surrogates, or if we have a matched surrogate pair
+				if (!char.IsHighSurrogate(Text, i) || i < Text.Length && char.IsLowSurrogate(Text, i + 1))
 				{
-					yield return i;
+					int codepoint = Char.ConvertToUtf32(Text, i);
+					if (Icu.HasNormalizationBoundaryBefore(icuNormalizer, codepoint) && i > 0)
+					{
+						yield return i;
+					}
+
+					i += codepoint > 0xffff ? 2 : 1;
 				}
-				i += codepoint > 0xffff ? 2 : 1;
+				else
+				{
+					++i;
+					Debug.Assert(i >= 0, "Unmatched surrogate pair found. Was there an invalid insertion point used?");
+					// ReSharper disable once RedundantJumpStatement (Only in debug you wonderful but sometimes annoying tool)
+					continue;
+				}
 			}
 			yield return Text.Length;
 		}
