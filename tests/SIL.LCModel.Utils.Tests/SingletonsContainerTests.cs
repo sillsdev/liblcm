@@ -85,7 +85,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		///--------------------------------------------------------------------------------------
 		[Test]
-		public void SingletonProperlyDisposed()
+		public void DisposeSingletons_ProperlyDisposed()
 		{
 			using (var singleton = new MyDisposable())
 			{
@@ -99,6 +99,16 @@ namespace SIL.LCModel.Utils
 			}
 		}
 
+		[Test]
+		public void DisposeSingletons_NullSingleton_DoesNotCrash()
+		{
+			SingletonsContainer.Add(typeof(MyDisposable).FullName, null);
+
+			Assert.That(() => SingletonsContainer.Release(), Throws.Nothing);
+
+			Assert.That(SingletonsContainer.Contains<MyDisposable>(), Is.False);
+		}
+
 		///--------------------------------------------------------------------------------------
 		/// <summary>
 		/// Tests that singletons get properly disposed. This tests the Add method that
@@ -106,7 +116,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		///--------------------------------------------------------------------------------------
 		[Test]
-		public void SingletonProperlyDisposedAutoKey()
+		public void DisposeSingletons_ProperlyDisposedAutoKey()
 		{
 			using (var singleton = new MyDisposable())
 			{
