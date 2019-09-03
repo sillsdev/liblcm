@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 SIL International
+// Copyright (c) 2011-2019 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -175,7 +175,7 @@ namespace SIL.LCModel.Utils
 			/// <typeparam name="T">The type of the singleton. Needs to implement
 			/// IDisposable.</typeparam>
 			/// <param name="key">The key of the singleton.</param>
-			/// <remarks>This method checks the existance of a previously constructed singleton
+			/// <remarks>This method checks the existence of a previously constructed singleton
 			/// of the specified type and key.</remarks>
 			/// --------------------------------------------------------------------------------
 			public bool Contains<T>(string key) where T : IDisposable
@@ -183,9 +183,8 @@ namespace SIL.LCModel.Utils
 				m_lock.EnterReadLock();
 				try
 				{
-					IDisposable singleton;
-					if (m_SingletonsToDispose.TryGetValue(key, out singleton))
-						return singleton is T;
+					if (m_SingletonsToDispose.TryGetValue(key, out var singleton))
+						return singleton is T || Equals(singleton, default(T));
 					return false;
 				}
 				finally
