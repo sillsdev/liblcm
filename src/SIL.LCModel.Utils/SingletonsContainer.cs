@@ -52,7 +52,7 @@ namespace SIL.LCModel.Utils
 				try
 				{
 					foreach (var keyValuePair in m_SingletonsToDispose)
-						keyValuePair.Value.Dispose();
+						keyValuePair.Value?.Dispose();
 
 					m_SingletonsToDispose.Clear();
 				}
@@ -215,8 +215,7 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		public static void Release()
 		{
-			if (s_container != null)
-				s_container.DisposeSingletons();
+			s_container?.DisposeSingletons();
 			s_container = null;
 		}
 
@@ -411,7 +410,7 @@ namespace SIL.LCModel.Utils
 		/// <summary>Determines if a singleton of the specified type was created before.</summary>
 		/// <typeparam name="T">The type of the singleton. Needs to implement
 		/// IDisposable.</typeparam>
-		/// <remarks>This method checks the existance of a previously constructed singleton of the
+		/// <remarks>This method checks the existence of a previously constructed singleton of the
 		/// specified type.</remarks>
 		/// ------------------------------------------------------------------------------------
 		public static bool Contains<T>() where T: IDisposable
@@ -424,7 +423,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="key">The key of the singleton.</param>
 		/// <typeparam name="T">The type of the singleton. Needs to implement
 		/// IDisposable.</typeparam>
-		/// <remarks>This method checks the existance of a previously constructed singleton of the
+		/// <remarks>This method checks the existence of a previously constructed singleton of the
 		/// specified type and key.</remarks>
 		/// ------------------------------------------------------------------------------------
 		public static bool Contains<T>(string key) where T: IDisposable

@@ -128,6 +128,7 @@
     <Compile Include="WritingSystems\CoreWritingSystemFactory.cs" />
     <Compile Include="Text\CaseFunctions.cs" />
     <Compile Include="SpellChecking\ISpellEngine.cs" />
+    <Compile Include="WritingSystems\IWritingSystemManager.cs" />
     <Compile Include="WritingSystems\MemoryWritingSystemRepository.cs" />
     <Compile Include="Phonology\PhonEnv.lexer.cs" />
     <Compile Include="Phonology\phonenv.parser.cs" />

@@ -113,6 +113,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\downloads\SIL.Core.dll</HintPath>
     </Reference>
+    <Reference Include="SIL.Lexicon">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\downloads\SIL.Lexicon.dll</HintPath>
+    </Reference>
     <Reference Include="SIL.TestUtilities">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\downloads\SIL.TestUtilities.dll</HintPath>

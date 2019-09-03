@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2016 SIL International
+// Copyright (c) 2016 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using SIL.Extensions;
@@ -16,7 +17,7 @@ namespace SIL.LCModel.Core.Text
 	/// </summary>
 	public class TsStrBldr : TsStrBase, ITsStrBldr
 	{
-		private readonly StringBuilder m_text;
+		private readonly CachedStringBuilder m_text;
 		private readonly List<TsRun> m_runs;
 
 		/// <summary>
@@ -34,7 +35,7 @@ namespace SIL.LCModel.Core.Text
 
 		internal TsStrBldr(string text, IEnumerable<TsRun> runs)
 		{
-			m_text = new StringBuilder(text ?? string.Empty);
+			m_text = new CachedStringBuilder(text ?? string.Empty);
 			m_runs = runs.ToList();
 		}
 
@@ -43,7 +44,7 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		public override string Text
 		{
-			get { return m_text.Length == 0 ? null : m_text.ToString(); }
+			get { return m_text.StringValue; }
 		}
 
 		internal override IList<TsRun> Runs
@@ -318,6 +319,67 @@ namespace SIL.LCModel.Core.Text
 			m_text.Clear();
 			m_runs.Clear();
 			m_runs.Add(TsRun.EmptyRun);
+		}
+
+		/// <summary>
+		/// This class gives a considerable performance enhancement when large strings are being
+		/// used. e.g. Pasting example text into the interlinear baseline.
+		/// <remarks>Calling ToString on a builder can be expensive when the text is large</remarks>
+		/// </summary>
+		private class CachedStringBuilder
+		{
+			private string _cachedString;
+			private StringBuilder _stringBuilder;
+
+			public CachedStringBuilder(string initialContent)
+			{
+				_cachedString = initialContent;
+				_stringBuilder = new StringBuilder();
+			}
+
+			public string StringValue
+			{
+				get
+				{
+					if (_cachedString == null)
+					{
+						_cachedString = _stringBuilder.ToString();
+						_stringBuilder.Clear();
+					}
+
+					return _cachedString.Length == 0 ? null : _cachedString;
+				}
+			}
+
+			public void Clear()
+			{
+				_cachedString = null;
+				_stringBuilder.Clear();
+			}
+
+			public void Remove(int ichMin, int i)
+			{
+				Debug.Assert(_cachedString == null || _stringBuilder.Length == 0);
+				if (_cachedString != null)
+				{
+					_stringBuilder.Append(_cachedString);
+					_cachedString = null;
+				}
+
+				_stringBuilder.Remove(ichMin, i);
+			}
+
+			public void Insert(int ichMin, string insertText)
+			{
+				Debug.Assert(_cachedString == null || _stringBuilder.Length == 0);
+				if (_cachedString != null)
+				{
+					_stringBuilder.Append(_cachedString);
+					_cachedString = null;
+				}
+
+				_stringBuilder.Insert(ichMin, insertText);
+			}
 		}
 	}
 }

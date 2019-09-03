@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015-2017 SIL International
+// Copyright (c) 2015-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -318,7 +318,7 @@ namespace SIL.LCModel.DomainImpl
 			if (m_oldEndOffsets.Length > 0 && m_oldContents != null) //There may be no old contents, if so m_oldEndOffsets will not be adjusted
 				m_oldEndOffsets[m_oldEndOffsets.Length - 1] = m_oldContents.Length;
 
-			if (m_paraDiffInfo.CchDeleteFromOld > 0)
+			if (m_paraDiffInfo.CchDeleteFromOld > 0 && m_para.SegmentsOS.Count > 1 || m_paraDiffInfo.CchInsert == 0)
 				DiscardDeletedSegments();
 
 			// If the length of the text has changed then the begin offsets of segments after the change need to be adjusted.

@@ -15,7 +15,7 @@ namespace SIL.LCModel.Core.WritingSystems
 	/// <summary>
 	/// The writing system manager.
 	/// </summary>
-	public class WritingSystemManager : ILgWritingSystemFactory
+	public class WritingSystemManager : ILgWritingSystemFactory, IWritingSystemManager
 	{
 		private IWritingSystemRepository<CoreWritingSystemDefinition> m_repo;
 		private readonly Dictionary<int, CoreWritingSystemDefinition> m_handleWSs = new Dictionary<int, CoreWritingSystemDefinition>();
@@ -227,9 +227,10 @@ namespace SIL.LCModel.Core.WritingSystems
 		}
 
 		/// <summary>
-		/// Gets the specified writing system. Throws KeyNotFoundException if it can not be found,
+		/// Gets the specified writing system. Throws KeyNotFoundException if it cannot be found,
 		/// there is a TryGet available to avoid this.
 		/// </summary>
+		/// <exception cref="KeyNotFoundException"></exception>
 		/// <param name="identifier">The identifier.</param>
 		/// <returns></returns>
 		public CoreWritingSystemDefinition Get(string identifier)
@@ -238,7 +239,7 @@ namespace SIL.LCModel.Core.WritingSystems
 			{
 				WritingSystemDefinition wrsys;
 				if (!m_repo.TryGet(identifier, out wrsys))
-					throw new ArgumentException("The writing system " + identifier + " was not found in this manager.", "identifier");
+					throw new KeyNotFoundException("The writing system " + identifier + " was not found in this manager.");
 				return (CoreWritingSystemDefinition) wrsys;
 			}
 		}

@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2015 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System;
 using SIL.LCModel.Infrastructure.Impl;
+using SIL.Lexicon;
 
 namespace SIL.LCModel
 {
@@ -73,6 +74,17 @@ namespace SIL.LCModel
 				CheckFrozen();
 				m_updateGlobalWSStore = value;
 			}
+		}
+
+		/// <summary/>
+		public static bool IsProjectSharingEnabled(string projectFolder)
+		{
+			ISettingsStore settingStore =
+				new FileSettingsStore(LexiconSettingsFileHelper.GetProjectLexiconSettingsPath(projectFolder));
+			var settingsMapper = new ProjectLexiconSettingsDataMapper(settingStore);
+			var settings = new ProjectLexiconSettings();
+			settingsMapper.Read(settings);
+			return settings.ProjectSharing;
 		}
 	}
 }
