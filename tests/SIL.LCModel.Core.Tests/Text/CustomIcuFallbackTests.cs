@@ -29,6 +29,7 @@ namespace SIL.LCModel.Core.Text
 		private const string CustomIcuLibraryVersionMajor = "54";
 		private List<string> _dirsToDelete;
 		private string _preTestDataDir;
+		private string _preTestDataDirEnv;
 
 		private static void CopyFile(string srcPath, string dstDir)
 		{
@@ -126,7 +127,7 @@ namespace SIL.LCModel.Core.Text
 					CopyFile(sourceFile, targetDir);
 			}
 		}
-		
+
 		[SetUp]
 		public void Setup()
 		{
@@ -158,6 +159,7 @@ namespace SIL.LCModel.Core.Text
 			Environment.SetEnvironmentVariable("PATH", InitializeIcuAttribute.PreTestPathEnvironment);
 			_dirsToDelete = new List<string>();
 			_preTestDataDir = Wrapper.DataDirectory;
+			_preTestDataDirEnv = Environment.GetEnvironmentVariable("ICU_DATA");
 		}
 
 		[TestFixtureTearDown]
@@ -168,7 +170,7 @@ namespace SIL.LCModel.Core.Text
 			{
 				new DirectoryInfo(dir).Delete(true);
 			}
-			Environment.SetEnvironmentVariable("ICU_DATA", null);
+			Environment.SetEnvironmentVariable("ICU_DATA", _preTestDataDirEnv);
 			Wrapper.DataDirectory = _preTestDataDir;
 		}
 
