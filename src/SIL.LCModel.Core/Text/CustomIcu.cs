@@ -180,7 +180,7 @@ namespace SIL.LCModel.Core.Text
 				var icuPath = Path.Combine(Path.GetDirectoryName(executingAssemblyFolder), "lib", $"win-{arch}");
 				// Append icu dll location to PATH, such as .../lib/x64, to help C# and C++ code find icu.
 				Environment.SetEnvironmentVariable("PATH",
-					Environment.GetEnvironmentVariable("PATH") + Path.PathSeparator + icuPath);
+					icuPath + Path.PathSeparator + Environment.GetEnvironmentVariable("PATH"));
 			}
 
 			var dataDirectory = Wrapper.DataDirectory;
