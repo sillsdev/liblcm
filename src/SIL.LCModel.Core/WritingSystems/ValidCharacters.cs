@@ -421,7 +421,6 @@ namespace SIL.LCModel.Core.WritingSystems
 		{
 			if (TsStringUtils.IsWordForming(codepoint))
 				return ValidCharacterType.WordForming;
-			if (Character.IsNumeric(codepoint))
 			if (DefaultWordformingChars.Any(chr => chr[0] == codepoint))
 				return ValidCharacterType.WordForming;
 			return ValidCharacterType.Other;
@@ -477,7 +476,6 @@ namespace SIL.LCModel.Core.WritingSystems
 		{
 			AddCharactersToWritingSystem(ws, "main", m_wordFormingCharacters);
 			AddCharactersToWritingSystem(ws, "punctuation", m_otherCharacters);
-			AddCharactersToWritingSystem(ws, "numeric", m_numericCharacters);
 		}
 
 		private void AddCharactersToWritingSystem(CoreWritingSystemDefinition ws, string charSetType, List<string> characters)
@@ -526,7 +524,6 @@ namespace SIL.LCModel.Core.WritingSystems
 		private void SortLists()
 		{
 			Sort(m_wordFormingCharacters);
-			Sort(m_numericCharacters);
 			Sort(m_otherCharacters);
 		}
 
