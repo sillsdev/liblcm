@@ -104,9 +104,9 @@ namespace SIL.LCModel.Utils
 
 		/// <summary />
 		[TestCase("MyFile \u2200", MiscUtils.FilenameFilterStrength.kFilterMSDE, ExpectedResult = "MyFile \u2200")]
-		[TestCase("My?|File<>Dude\\?*:/.'[];funny()\n\t\"", MiscUtils.FilenameFilterStrength.kFilterBackup, ExpectedResult = "My__File__Dude_____.'[];funny()___")]
-		[TestCase("My?|File<>Dude\\?*:/.'[];funny()\n\t\"", MiscUtils.FilenameFilterStrength.kFilterMSDE, ExpectedResult = "My__File__Dude_____.'___funny()___")]
-		[TestCase("My?|File<>Dude\\?*:/.'[];funny()\n\t\"", MiscUtils.FilenameFilterStrength.kFilterProjName, ExpectedResult = "My__File__Dude_____.'___funny_____")]
+		[TestCase("My?|File<>Dude\\?*:/.'[];funñy()\n\t\"\u0344\u0361\u0513\u0307", MiscUtils.FilenameFilterStrength.kFilterBackup, ExpectedResult = "My__File__Dude_____.'[];funñy()___\u0344\u0361\u0513\u0307")]
+		[TestCase("My?|File<>Dude\\?*:/.'[];funñy()\n\t\"\u0344\u0361\u0513\u0307", MiscUtils.FilenameFilterStrength.kFilterMSDE, ExpectedResult = "My__File__Dude_____.'___funñy()___\u0344\u0361\u0513\u0307")]
+		[TestCase("My?|File<>Dude\\?*:/.'[];funñy()\n\t\"\u0344\u0361\u0513\u0307", MiscUtils.FilenameFilterStrength.kFilterProjName, ExpectedResult = "My__File__Dude_____.'___fun_y_________")]
 		public string FilterForFileName(string filter, MiscUtils.FilenameFilterStrength strength)
 		{
 			return MiscUtils.FilterForFileName(filter, strength);
