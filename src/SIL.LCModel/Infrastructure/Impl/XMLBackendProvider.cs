@@ -186,6 +186,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 					// Step 0: Get the version number.
 					m_startupVersionNumber = GetActualModelVersionNumber(ProjectId.Path);
+					Logger.WriteMinorEvent("ProjectId.Path = " + ProjectId.Path);
 					var useLocalTempFile = !IsLocalDrive(ProjectId.Path);
 
 					// Step 1:
@@ -530,6 +531,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			// use a temp file in case the write doesn't work. Want to write temp file to a local drive
 			// if the final destination is not a fixed drive writing record by record to a remote drive
 			// can be slow.
+			Logger.WriteMinorEvent("ProjectId.Path = " + ProjectId.Path);
 			bool fUseLocalTempFile = !IsLocalDrive(ProjectId.Path);
 			var tempPathname = fUseLocalTempFile ? Path.GetTempFileName() : Path.ChangeExtension(ProjectId.Path, "tmp");
 

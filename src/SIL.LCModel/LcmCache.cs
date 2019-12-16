@@ -429,13 +429,16 @@ namespace SIL.LCModel
 
 				cache.ActionHandlerAccessor.BeginNonUndoableTask();
 
+				Debug.WriteLine("LCM Debugging: About to add AnalysisWs");
 				CreateAnalysisWritingSystem(cache, analWrtSys, true);
 				if (progressDlg != null)
 					progressDlg.Step(0);
+				Debug.WriteLine("LCM Debugging: About to add VernWs");
 				CreateVernacularWritingSystem(cache, vernWrtSys, true);
 
 				if (progressDlg != null)
 					progressDlg.Step(0);
+				Debug.WriteLine("LCM Debugging: About to assign VernWssToPhPhonemes");
 				AssignVernacularWritingSystemToDefaultPhPhonemes(cache);
 				if (progressDlg != null)
 					progressDlg.Step(0);
@@ -443,15 +446,18 @@ namespace SIL.LCModel
 				var additionalAnalysisWss = (parameters.Length > 6 && parameters[6] != null)
 												? (HashSet<CoreWritingSystemDefinition>) parameters[6]
 												: new HashSet<CoreWritingSystemDefinition>();
+				Debug.WriteLine("LCM Debugging: About to add additional AnalyWss");
 				foreach (CoreWritingSystemDefinition additionalWs in additionalAnalysisWss)
 					CreateAnalysisWritingSystem(cache, additionalWs, false);
 				var additionalVernWss = (parameters.Length > 7 && parameters[7] != null)
 											? (HashSet<CoreWritingSystemDefinition>) parameters[7]
 											: new HashSet<CoreWritingSystemDefinition>();
+				Debug.WriteLine("LCM Debugging: About to add additional VernWss");
 				foreach (CoreWritingSystemDefinition additionalWs in additionalVernWss)
 					CreateVernacularWritingSystem(cache, additionalWs, false);
 
 				// Create a reversal index for the original default analysis writing system. (LT-4480)
+				Debug.WriteLine("LCM Debugging: About to add ReversalIndexes");
 				var riRepo = cache.ServiceLocator.GetInstance<IReversalIndexRepository>();
 				riRepo.FindOrCreateIndexForWs(cache.DefaultAnalWs);
 				if (progressDlg != null)
@@ -463,6 +469,7 @@ namespace SIL.LCModel
 				cache.ActionHandlerAccessor.EndNonUndoableTask();
 				cache.ActionHandlerAccessor.Commit();
 
+				Debug.WriteLine("LCM Debugging: About to add SemanticDomains");
 				var xlist = new XmlList();
 
 				// Load the semantic domain list.
