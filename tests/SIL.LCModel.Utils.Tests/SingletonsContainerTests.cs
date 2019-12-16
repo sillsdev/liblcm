@@ -333,7 +333,7 @@ namespace SIL.LCModel.Utils
 		}
 
 		/// <summary>
-		/// Tests checking the existance of a singleton. In this case the singleton wasn't
+		/// Tests checking the existence of a singleton. In this case the singleton wasn't
 		/// created before.
 		/// </summary>
 		[Test]
@@ -343,7 +343,7 @@ namespace SIL.LCModel.Utils
 		}
 
 		/// <summary>
-		/// Tests checking the existance of a singleton. In this case the singleton was
+		/// Tests checking the existence of a singleton. In this case the singleton was
 		/// created before.
 		/// </summary>
 		[Test]
@@ -356,7 +356,7 @@ namespace SIL.LCModel.Utils
 		}
 
 		/// <summary>
-		/// Tests checking the existance of a singleton with the specified key. In this case the
+		/// Tests checking the existence of a singleton with the specified key. In this case the
 		/// singleton wasn't created before.
 		/// </summary>
 		[Test]
@@ -366,7 +366,7 @@ namespace SIL.LCModel.Utils
 		}
 
 		/// <summary>
-		/// Tests checking the existance of a singleton with the specified key. In this case the
+		/// Tests checking the existence of a singleton with the specified key. In this case the
 		/// singleton was created before.
 		/// </summary>
 		[Test]
@@ -379,7 +379,7 @@ namespace SIL.LCModel.Utils
 		}
 
 		/// <summary>
-		/// Tests checking the existance of a singleton with the specified key. In this case a
+		/// Tests checking the existence of a singleton with the specified key. In this case a
 		/// singleton with a different key was created before.
 		/// </summary>
 		[Test]
@@ -392,7 +392,7 @@ namespace SIL.LCModel.Utils
 		}
 
 		/// <summary>
-		/// Tests checking the existance of a singleton with the specified key. In this case a
+		/// Tests checking the existence of a singleton with the specified key. In this case a
 		/// singleton with a different type was created before.
 		/// </summary>
 		[Test]
@@ -402,6 +402,16 @@ namespace SIL.LCModel.Utils
 			{
 				Assert.IsFalse(SingletonsContainer.Contains<DummyDisposable>("foo"));
 			}
+		}
+
+		/// <summary>
+		/// Tests checking the existence of a key with the value null.
+		/// </summary>
+		[Test]
+		public void ContainsNullSingleton()
+		{
+			SingletonsContainer.Add(typeof(MyDisposable).FullName, null);
+			Assert.That(SingletonsContainer.Contains<MyDisposable>(), Is.True);
 		}
 	}
 }

@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
+using Icu;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
@@ -55,7 +56,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			if (reader == null) throw new ArgumentNullException("reader");
 
-			return Icu.Normalize(reader.Element("Uni").Value, Icu.UNormalizationMode.UNORM_NFD);	// return NFD.
+			return Normalizer.Normalize(reader.Element("Uni").Value, Normalizer.UNormalizationMode.UNORM_NFD);	// return NFD.
 		}
 
 		/// <summary>
@@ -314,7 +315,7 @@ namespace SIL.LCModel.DomainImpl
 
 			writer.WriteStartElement(elementName); // Open prop. element.
 			writer.WriteStartElement("Uni"); // Open Uni element.
-			writer.WriteString(Icu.Normalize(propertyData, Icu.UNormalizationMode.UNORM_NFC)); // Store NFC.
+			writer.WriteString(Normalizer.Normalize(propertyData, Normalizer.UNormalizationMode.UNORM_NFC)); // Store NFC.
 			writer.WriteEndElement(); // Close Uni element.
 			writer.WriteEndElement(); // Close prop. element.
 		}

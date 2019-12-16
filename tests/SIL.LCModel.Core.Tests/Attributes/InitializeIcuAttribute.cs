@@ -1,14 +1,13 @@
-﻿// Copyright (c) 2017 SIL International
+// Copyright (c) 2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System;
 using System.IO;
 using System.Reflection;
+using Icu;
 using Microsoft.Win32;
 using NUnit.Framework;
-using SIL.LCModel.Core.Text;
-using SIL.LCModel.Utils;
 
 namespace SIL.LCModel.Core.Attributes
 {
@@ -20,9 +19,27 @@ namespace SIL.LCModel.Core.Attributes
 
 		public string IcuDataPath { get; set; }
 
+		public int IcuVersion { get; set; }
+
+		public static string PreTestPathEnvironment { get; private set; }
+
 		public override void BeforeTest(TestDetails testDetails)
 		{
 			base.BeforeTest(testDetails);
+
+			PreTestPathEnvironment = Environment.GetEnvironmentVariable("PATH");
+
+			if (IcuVersion > 0)
+				Wrapper.ConfineIcuVersions(IcuVersion);
+
+			try
+			{
+				Wrapper.Init();
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine($"InitializeIcuAttribute failed when calling Wrapper.Init() with {e.GetType()}: {e.Message}");
+			}
 
 			string dir = null;
 			if (string.IsNullOrEmpty(IcuDataPath))
@@ -62,12 +79,19 @@ namespace SIL.LCModel.Core.Attributes
 
 			try
 			{
-				Icu.InitIcuDataDir();
+				Text.CustomIcu.InitIcuDataDir();
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e.Message);
+				Console.WriteLine($"InitializeIcuAttribute failed with {e.GetType()}: {e.Message}");
 			}
+		}
+
+		public override void AfterTest(TestDetails testDetails)
+		{
+			Wrapper.Cleanup();
+			Environment.SetEnvironmentVariable("PATH", PreTestPathEnvironment);
+			base.AfterTest(testDetails);
 		}
 	}
 }

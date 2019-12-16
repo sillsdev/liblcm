@@ -48,6 +48,15 @@ namespace SIL.LCModel.DomainImpl
 			m_wsEs = ws.Handle;
 		}
 
+		/// <inheritdoc />
+		public override void FixtureTeardown()
+		{
+			base.FixtureTeardown();
+
+			ReflectionHelper.SetField(typeof(ScrFootnote),
+				"s_maxAllowedParagraphs", 1);
+		}
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Creates and initializes a footnote.
@@ -558,15 +567,14 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException),
-			ExpectedMessage="Unrecognized XML format for footnote.")]
 		public void CreateFromStringRep_ExcptnUnknownElement()
 		{
 			// Define text representation and create a footnote from it.
 			string footnoteRep = @"<FN><BLAH>o</BLAH>";
 
-			Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
-				footnoteRep, 0, "Note Marker");
+			Assert.That(() => Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
+				footnoteRep, 0, "Note Marker"),
+				Throws.TypeOf<ArgumentException>().With.Message.EqualTo("Unrecognized XML format for footnote."));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -576,16 +584,15 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException),
-			ExpectedMessage="Unknown ICU locale encountered: 'AINT_IT'")]
 		public void CreateFromStringRep_ExcptnInvalidICU()
 		{
 			// Define text representation and create a footnote from it.
 			string footnoteRep = @"<FN><M>o</M><P><PS>Note General Paragraph</PS>" +
 				@"<RUN WS='AINT_IT' CS='Emphasis'>Test Text</RUN></P></FN>";
 
-			Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
-				footnoteRep, 0, "Note Marker");
+			Assert.That(() => Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
+				footnoteRep, 0, "Note Marker"),
+				Throws.TypeOf<ArgumentException>().With.Message.EqualTo("Unknown ICU locale encountered: 'AINT_IT'"));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -595,8 +602,6 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException),
-			ExpectedMessage="Unexpected translation element 'BLAH' encountered for ws 'en'")]
 		public void CreateFromStringRep_ExcptnUnknownTRANS_Element()
 		{
 			// Define text representation and create a footnote from it.
@@ -604,8 +609,9 @@ namespace SIL.LCModel.DomainImpl
 				@"<RUN WS='fr'>Fine so far...</RUN>" +
 				"<TRANS WS='en'><BLAH>...but here's the problem</BLAH></TRANS></P></FN>";
 
-			Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
-				footnoteRep, 0, "Note Marker");
+			Assert.That(() => Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
+				footnoteRep, 0, "Note Marker"),
+				Throws.TypeOf<ArgumentException>().With.Message.EqualTo("Unexpected translation element 'BLAH' encountered for ws 'en'"));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -615,16 +621,15 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException),
-			ExpectedMessage="Required attribute WS missing from RUN element.")]
 		public void CreateFromStringRep_ExcptnWSMissingFromRunElement()
 		{
 			// Define text representation and create a footnote from it.
 			string footnoteRep = @"<FN><M>o</M><P><PS>Note General Paragraph</PS>" +
 				@"<RUN>Run without a writing system.</RUN></P></FN>";
 
-			Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
-				footnoteRep, 0, "Note Marker");
+			Assert.That(() => Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
+				footnoteRep, 0, "Note Marker"),
+				Throws.TypeOf<ArgumentException>().With.Message.EqualTo("Required attribute WS missing from RUN element."));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -634,16 +639,15 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException),
-			ExpectedMessage="Unrecognized XML format for footnote.")]
 		public void CreateFromStringRep_ExcptnWSWithoutValue()
 		{
 			// Define text representation and create a footnote from it.
 			string footnoteRep = @"<FN><M>o</M><P><PS>Note General Paragraph</PS>" +
 				@"<RUN WS=>Run has a writing system attribute but no value.</RUN></P></FN>";
 
-			Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
-				footnoteRep, 0, "Note Marker");
+			Assert.That(() => Cache.ServiceLocator.GetInstance<IScrFootnoteFactory>().CreateFromStringRep(m_book,
+				footnoteRep, 0, "Note Marker"),
+				Throws.TypeOf<ArgumentException>().With.Message.EqualTo("Unrecognized XML format for footnote."));
 		}
 		#endregion
 

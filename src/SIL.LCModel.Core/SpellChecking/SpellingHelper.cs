@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using Icu;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Utils;
@@ -223,12 +224,11 @@ namespace SIL.LCModel.Core.SpellChecking
 			{
 				try
 				{
-					result = new SpellEngine(affixPath, dictPath, exceptionPath);
+					result = SpellEngine.Create(affixPath, dictPath, exceptionPath);
 				}
 				catch (Exception)
 				{
-					if (result != null)
-						result.Dispose();
+					result?.Dispose();
 					throw;
 				}
 			}
@@ -370,7 +370,7 @@ namespace SIL.LCModel.Core.SpellChecking
 				writer.WriteLine(Math.Max(10, words.Count()).ToString());
 				writer.WriteLine(PrototypeWord + "/" + keepCaseFlag);
 				foreach (var word in words)
-					writer.WriteLine(Icu.Normalize(word, Icu.UNormalizationMode.UNORM_NFC));
+					writer.WriteLine(Normalizer.Normalize(word, Normalizer.UNormalizationMode.UNORM_NFC));
 			}
 		}
 

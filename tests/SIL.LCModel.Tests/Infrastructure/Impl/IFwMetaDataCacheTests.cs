@@ -12,10 +12,11 @@ namespace SIL.LCModel.Infrastructure.Impl
 {
 	#region MDC base class
 
+	/// <inheritdoc />
 	/// <summary>
 	/// Base class for all MDC tests. (I store the MDC in a data member for ease of access.)
 	/// </summary>
-	public class FieldTestBase : MemoryOnlyBackendProviderTestBase
+	public abstract class FieldTestBase : MemoryOnlyBackendProviderTestBase
 	{
 		/// <summary>
 		/// The MDC.
@@ -111,20 +112,19 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// This should test for any case where the given flid is not valid.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void GetClsNameForBadFlidTest()
 		{
-			m_mdc.GetOwnClsName(50);
+			Assert.That(() => m_mdc.GetOwnClsName(50), Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
 		/// This should crash where the given flid does not exist.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void GetNonExistingFlidTest()
 		{
-			m_mdc.GetFieldId("WfiWordform", "Certified", false);
+			Assert.That(() => m_mdc.GetFieldId("WfiWordform", "Certified", false),
+				Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
@@ -350,20 +350,18 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// Check for validity of adding the given clid to an illegal field of 0.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void get_IsValidClassBadTest()
 		{
-			m_mdc.get_IsValidClass(0, 0);
+			Assert.That(() => m_mdc.get_IsValidClass(0, 0), Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
 		/// Check if 'opinionated' is working.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void Nonmodel_flid_is_bad_for_finding_FieldType()
 		{
-			m_mdc.GetFieldType(int.MaxValue);
+			Assert.That(() => m_mdc.GetFieldType(int.MaxValue), Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
@@ -391,50 +389,51 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// Add custom field to bogus class.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(KeyNotFoundException))]
 		public void AddCustomFieldToNonExtantDestClassClassTest()
 		{
-			m_mdc.AddCustomField("WfiWordform", "NewAtomic", CellarPropertyType.OwningAtomic, Int32.MaxValue);
+			Assert.That(() => m_mdc.AddCustomField("WfiWordform", "NewAtomic", CellarPropertyType.OwningAtomic, Int32.MaxValue),
+				Throws.TypeOf<KeyNotFoundException>());
 		}
 
 		/// <summary>
 		/// Add custom field to bogus class.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidClassException))]
 		public void AddCustomFieldToBogusClassTest()
 		{
-			m_mdc.AddCustomField("FakeObj", "FakeField", CellarPropertyType.Boolean, 0);
+			Assert.That(() => m_mdc.AddCustomField("FakeObj", "FakeField", CellarPropertyType.Boolean, 0),
+				Throws.TypeOf<LcmInvalidClassException>());
 		}
 
 		/// <summary>
 		/// Add custom field to null class.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void AddCustomFieldToEmptyClassTest()
 		{
-			m_mdc.AddCustomField(null, "FakeField", CellarPropertyType.Boolean, 0);
+			Assert.That(() => m_mdc.AddCustomField(null, "FakeField", CellarPropertyType.Boolean, 0),
+				Throws.TypeOf<ArgumentNullException>());
 		}
 
 		/// <summary>
 		/// Add null custom field.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void AddNullCustomFieldTest()
 		{
-			m_mdc.AddCustomField("CmObject", null, CellarPropertyType.Boolean, 0);
+			Assert.That(() => m_mdc.AddCustomField("CmObject", null, CellarPropertyType.Boolean, 0),
+				Throws.TypeOf<ArgumentNullException>());
+			;
 		}
 
 		/// <summary>
 		/// Add custom field that matches extant field.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void AddDuplicatedCustomFieldTest()
 		{
-			m_mdc.AddCustomField("MoStemMsa", "PartOfSpeech", CellarPropertyType.Boolean, 0);
+			Assert.That(() => m_mdc.AddCustomField("MoStemMsa", "PartOfSpeech", CellarPropertyType.Boolean, 0),
+				Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
@@ -508,10 +507,9 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// Check for finding the class name based on the given clid.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void GetBaseClsIdBadTest()
 		{
-			m_mdc.GetBaseClsId(0);
+			Assert.That(() => m_mdc.GetBaseClsId(0), Throws.TypeOf<ArgumentException>());
 		}
 
 		/// <summary>
@@ -528,10 +526,9 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// Check for finding the class name based on the given clid.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void GetBaseClsNameBadTest()
 		{
-			m_mdc.GetBaseClsName(0);
+			Assert.That(() => m_mdc.GetBaseClsName(0), Throws.TypeOf<ArgumentException>());
 		}
 
 		/// <summary>
@@ -621,10 +618,9 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// Tests creating a MetaDataCache with non-existant input pathname to the XML file.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidClassException))]
 		public void GetClassIdBadTest()
 		{
-			m_mdc.GetClassId("NonExistantClassName");
+			Assert.That(() => m_mdc.GetClassId("NonExistantClassName"), Throws.TypeOf<LcmInvalidClassException>());
 		}
 
 		/// <summary>
@@ -651,20 +647,18 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// Check for case where the specified clid has no such field, directly.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void GetFieldIdSansSuperClassCheckBadTest1()
 		{
-			m_mdc.GetFieldId("MoStemMsa", "CitationForm", false);
+			Assert.That(() => m_mdc.GetFieldId("MoStemMsa", "CitationForm", false), Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
 		/// Check for case where the specified clid has no such field, directly, or on its superclasses.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void GetFieldIdWithSuperClassCheckBadTest()
 		{
-			m_mdc.GetFieldId("MoStemMsa", "CitationForm", true);
+			Assert.That(() => m_mdc.GetFieldId("MoStemMsa", "CitationForm", true), Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
@@ -691,20 +685,18 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// Check for case where the specified clid has no such field, directly.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void GetFieldId2SansSuperClassCheckBadTest1()
 		{
-			m_mdc.GetFieldId2(5001, "CitationForm", false);
+			Assert.That(() => m_mdc.GetFieldId2(5001, "CitationForm", false), Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
 		/// Check for case where the specified clid has no such field, directly, or on its superclasses.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(LcmInvalidFieldException))]
 		public void GetFieldId2WithSuperClassCheckBadTest()
 		{
-			m_mdc.GetFieldId2(5001, "CitationForm", true);
+			Assert.That(() => m_mdc.GetFieldId2(5001, "CitationForm", true), Throws.TypeOf<LcmInvalidFieldException>());
 		}
 
 		/// <summary>
@@ -852,20 +844,18 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// Not implemented test for Init method.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(NotSupportedException))]
 		public void InitXmlTest()
 		{
-			m_mdc.InitXml(null, true);
+			Assert.That(() => m_mdc.InitXml(null, true), Throws.TypeOf<NotSupportedException>());
 		}
 
 		/// <summary>
 		/// Not implemented test for Init method.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(NotSupportedException))]
 		public void AddVirtualProp()
 		{
-			m_mdc.AddVirtualProp(null, null, 0, 0);
+			Assert.That(() => m_mdc.AddVirtualProp(null, null, 0, 0), Throws.TypeOf<NotSupportedException>());
 		}
 	}
 

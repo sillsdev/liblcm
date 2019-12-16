@@ -195,7 +195,7 @@ namespace SIL.LCModel.DomainImpl
 				// based upon either LexemeForm.Form or LexSense.Definition. We could probably
 				// do this as part of the solution to handling duplicate columns in LT-3763.
 				XmlNode column = columns[i] as XmlNode;
-				string columnLabel = XmlUtils.GetManditoryAttributeValue(column, "label");
+				string columnLabel = XmlUtils.GetMandatoryAttributeValue(column, "label");
 				ITsTextProps ttp = rgtss[i].get_PropertiesAt(0);
 				int var;
 				int ws = ttp.GetIntPropValues((int) FwTextPropType.ktptWs, out var);

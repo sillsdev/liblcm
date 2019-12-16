@@ -21,7 +21,6 @@ SIL.WritingSystems.dll => downloads/
 SIL.WritingSystems.pdb => downloads/
 SIL.TestUtilities.dll => downloads/
 Newtonsoft.Json.dll => downloads/
-icu.net.dll => downloads/
 Spart.dll => downloads/
 
 
@@ -40,31 +39,8 @@ SIL.WritingSystems.dll => downloads/
 SIL.WritingSystems.dll.mdb => downloads/
 SIL.TestUtilities.dll => downloads/
 Newtonsoft.Json.dll => downloads/
-icu.net.dll => downloads/
 Spart.dll => downloads/
 
-
-[TC::Libraries_Icu4cWin32FieldWorksContinuous]
-Name=icu4c-win32-FieldWorks Continuous
-RevisionName=lastSuccessful
-RevisionValue=latest.lastSuccessful
-Condition=Windows
-Path=gennorm2.exe => downloads/x86
-icudt54.dll => downloads/x86
-icuin54.dll => downloads/x86
-icutu54.dll => downloads/x86
-icuuc54.dll => downloads/x86
-
-[TC::Libraries_Icu4cWin64FieldWorksContinuous]
-Name=icu4c-win64-FieldWorks Continuous
-RevisionName=lastSuccessful
-RevisionValue=latest.lastSuccessful
-Condition=Windows
-Path=gennorm2.exe => downloads/x64
-icudt54.dll => downloads/x64
-icuin54.dll => downloads/x64
-icutu54.dll => downloads/x64
-icuuc54.dll => downloads/x64
 
 [TC::Libpalaso_PalasoWin32masterContinuous]
 Name=palaso-win32-master Continuous
@@ -81,5 +57,4 @@ SIL.WritingSystems.dll => downloads/
 SIL.WritingSystems.pdb => downloads/
 SIL.TestUtilities.dll => downloads/
 Newtonsoft.Json.dll => downloads/
-icu.net.dll => downloads/
 Spart.dll => downloads/

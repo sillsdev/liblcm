@@ -10,6 +10,7 @@
 // </remarks>
 
 using System;
+using Icu;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 
@@ -264,7 +265,7 @@ namespace SIL.LCModel.DomainServices
 		public void TrimTrailingSpaceInPara()
 		{
 			// check if the last char sent to the builder is a space
-			if (Length != 0 && Icu.IsSeparator(FinalCharInPara))
+			if (Length != 0 && Character.IsSeparator(FinalCharInPara))
 				m_ParaStrBldr.Replace(Length - 1, Length, null, null);
 		}
 		#endregion

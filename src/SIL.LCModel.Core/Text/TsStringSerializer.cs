@@ -14,6 +14,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
+using Icu;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Utils;
 
@@ -50,7 +51,7 @@ namespace SIL.LCModel.Core.Text
 				{
 					string id = lgwsf.GetStrFromWs(ws);
 					writer.WriteStartElement("AStr");
-					writer.WriteAttributeString("ws", Icu.Normalize(id, Icu.UNormalizationMode.UNORM_NFC));
+					writer.WriteAttributeString("ws", Normalizer.Normalize(id, Normalizer.UNormalizationMode.UNORM_NFC));
 				}
 				else
 				{
@@ -172,7 +173,7 @@ namespace SIL.LCModel.Core.Text
 						if (runText != string.Empty && runText.All(char.IsWhiteSpace))
 							writer.WriteAttributeString("xml", "space", "", "preserve");
 						// TODO: should we escape quotation marks? this is not necessary but different than the behavior of the C++ implementation
-						writer.WriteString(Icu.Normalize(runText, Icu.UNormalizationMode.UNORM_NFC));
+						writer.WriteString(Normalizer.Normalize(runText, Normalizer.UNormalizationMode.UNORM_NFC));
 					}
 
 					writer.WriteEndElement();
@@ -259,7 +260,7 @@ namespace SIL.LCModel.Core.Text
 					if (wsAttribute.Name.LocalName != "ws")
 						return null; // we handle only single runs with only the ws attribute.
 					// Make sure the text is in the decomposed form (FWR-148)
-					string runText = Icu.Normalize(xml.Value, Icu.UNormalizationMode.UNORM_NFD);
+					string runText = Normalizer.Normalize(xml.Value, Normalizer.UNormalizationMode.UNORM_NFD);
 					return TsStringUtils.MakeString(runText, GetWsForId(wsAttribute.Value, lgwsf));
 				}
 				return null;	// If we don't have any runs, we don't have a string!
@@ -276,7 +277,7 @@ namespace SIL.LCModel.Core.Text
 					throw new XmlSchemaException("Run element must contain a ws attribute. Run text: " + runElement.Value);
 
 				// Make sure the text is in the decomposed form (FWR-148)
-				runText = Icu.Normalize(runText, Icu.UNormalizationMode.UNORM_NFD);
+				runText = Normalizer.Normalize(runText, Normalizer.UNormalizationMode.UNORM_NFD);
 				bool isOrcNeeded = TsPropsSerializer.GetPropAttributesForElement(runElement, lgwsf, strBldr);
 
 				// Add an ORC character, if needed, for the run
@@ -316,7 +317,7 @@ namespace SIL.LCModel.Core.Text
 			if (wsAttribute.Name.LocalName != "ws")
 				return null; // we handle only single runs with only the ws attribute.
 			// Make sure the text is in the decomposed form (FWR-148)
-			string runText = Icu.Normalize(textElement.Value, Icu.UNormalizationMode.UNORM_NFD);
+			string runText = Normalizer.Normalize(textElement.Value, Normalizer.UNormalizationMode.UNORM_NFD);
 			return TsStringUtils.MakeString(runText, GetWsForId(wsAttribute.Value, lgwsf));
 		}
 		#endregion

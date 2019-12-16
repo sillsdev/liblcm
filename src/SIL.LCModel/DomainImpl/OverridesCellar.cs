@@ -2665,7 +2665,7 @@ namespace SIL.LCModel.DomainImpl
 				// The XML is from a file shipped with FieldWorks. It is quite likely multiple users
 				// of a project could independently add the same items, so we create them with fixed guids
 				// so merge will recognize them as the same objects.
-				string guid = XmlUtils.GetManditoryAttributeValue(item.SelectSingleNode("fs"), "typeguid");
+				string guid = XmlUtils.GetMandatoryAttributeValue(item.SelectSingleNode("fs"), "typeguid");
 				fst = Services.GetInstance<IFsFeatStrucTypeFactory>().Create(new Guid(guid), this);
 				fst.CatalogSourceId = type;
 
@@ -2781,7 +2781,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			if (node != null)
 			{
-				var ws = cache.WritingSystemFactory.GetWsFromStr(XmlUtils.GetManditoryAttributeValue(node, "ws"));
+				var ws = cache.WritingSystemFactory.GetWsFromStr(XmlUtils.GetMandatoryAttributeValue(node, "ws"));
 				var newValue = node.InnerText;
 				if (ws <= 0)
 				{

@@ -3,8 +3,8 @@
 	<PropertyGroup>
 		<OutDir Condition="'$(OutDir)' == ''">../../artifacts/$(Configuration)/</OutDir>
 		<IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">obj/x86/$(Configuration)/</IntermediateOutputPath>
-		<MsbuildCommand Condition="'$(OS)'=='Windows_NT'">"$(MSBuildBinPath)\msbuild.exe"</MsbuildCommand>
-		<MsbuildCommand Condition="'$(OS)'=='Unix'">xbuild</MsbuildCommand>
+		<MsbuildCommand Condition="'$(OS)'=='Windows_NT' And '$(MsBuildCommand)'==''">"$(MSBuildBinPath)\msbuild.exe"</MsbuildCommand>
+		<MsbuildCommand Condition="'$(OS)'=='Unix' And '$(MsBuildCommand)'==''">xbuild</MsbuildCommand>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -15,6 +15,7 @@
 
 		<KernelOutputs Include="KernelInterfaces/Kernel.cs" />
 		<KernelOutputs Include="$(OutDir)KernelInterfaces/FwKernelTlb.iip" />
+		<KernelOutputs Include="$(OutDir)KernelInterfaces/FwKernelTlb.json" />
 	</ItemGroup>
 	<Target Name="SetInstallLocation">
 		<Exec Command="$(VSWhereDir)\vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath" ConsoleToMSBuild="true" Condition="'$(OS)'=='Windows_NT'">
@@ -39,17 +40,26 @@
 
 		<IcuDataOutputs Include="$(OutDir)IcuData/icudt$(IcuVersion)l/nfc_fw.nrm" />
 		<IcuDataOutputs Include="$(OutDir)IcuData/icudt$(IcuVersion)l/nfkc_fw.nrm" />
+
 	</ItemGroup>
 
 	<Target Name="GenerateIcuData" Inputs="@(IcuDataInputs)" Outputs="@(IcuDataOutputs)">
+		<PropertyGroup>
+			<Folder Condition="'$(Platform)'=='x86'">win-x86</Folder>
+			<Folder Condition="'$(Platform)'!='x86'">win-x64</Folder>
+		</PropertyGroup>
+		<ItemGroup>
+			<Gennorm2Source Include="../../packages/Icu4c.Win.Fw.Bin.54.1.13-beta/build/$(Folder)/gennorm2.exe" Condition="'$(OS)'=='Windows_NT'" />
+		</ItemGroup>
+
+		<Copy SourceFiles="@(Gennorm2Source)" DestinationFolder="$(OutDir)lib/$(Folder)" Condition="'$(OS)'=='Windows_NT'" />
 		<MakeDir Directories="$(OutDir)IcuData/icudt$(IcuVersion)l" />
 		<PropertyGroup>
-			<gennorm2 Condition="'$(Platform)'=='x86' and '$(OS)'=='Windows_NT'">../../lib/downloads/x86/gennorm2.exe</gennorm2>
-			<gennorm2 Condition="'$(Platform)'=='AnyCPU' and '$(OS)'=='Windows_NT'">../../lib/downloads/x64/gennorm2.exe</gennorm2>
-			<gennorm2 Condition="'$(OS)'=='Unix'">/usr/lib/fieldworks/icu-bin/gennorm2</gennorm2>
+			<gennorm2 Condition="'$(OS)'=='Windows_NT'">"$(OutDir)lib/$(Folder)/gennorm2.exe"</gennorm2>
+			<gennorm2 Condition="'$(OS)'=='Unix'">LD_LIBRARY_PATH=/usr/lib/fieldworks/lib /usr/lib/fieldworks/icu-bin/gennorm2</gennorm2>
 		</PropertyGroup>
-		<Exec Command='"$(gennorm2)" -o "$(OutDir)IcuData/icudt$(IcuVersion)l/nfc_fw.nrm" "IcuData/nfc.txt" "IcuData/nfcHebrew.txt" "IcuData/nfcOverrides.txt"' />
-		<Exec Command='"$(gennorm2)" -o "$(OutDir)IcuData/icudt$(IcuVersion)l/nfkc_fw.nrm" "IcuData/nfc.txt" "IcuData/nfcHebrew.txt" "IcuData/nfkc.txt" "IcuData/nfcOverrides.txt" "IcuData/nfkcOverrides.txt"' />
+		<Exec Command='$(gennorm2) -o "$(OutDir)IcuData/icudt$(IcuVersion)l/nfc_fw.nrm" "IcuData/nfc.txt" "IcuData/nfcHebrew.txt" "IcuData/nfcOverrides.txt"' />
+		<Exec Command='$(gennorm2) -o "$(OutDir)IcuData/icudt$(IcuVersion)l/nfkc_fw.nrm" "IcuData/nfc.txt" "IcuData/nfcHebrew.txt" "IcuData/nfkc.txt" "IcuData/nfcOverrides.txt" "IcuData/nfkcOverrides.txt"' />
 		<Copy SourceFiles="@(IcuDataInputs)" DestinationFolder="$(OutDir)IcuData/data" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
 	</Target>
 
@@ -57,6 +67,7 @@
 		<Delete Files="@(KernelOutputs)" ContinueOnError="true"/>
 		<Delete Files="$(IntermediateOutputPath)FwKernelTlb.idl" ContinueOnError="true" />
 		<Delete Files="$(IntermediateOutputPath)FwKernelTlb.iip" ContinueOnError="true" />
+		<Delete Files="$(IntermediateOutputPath)FwKernelTlb.json" ContinueOnError="true" />
 		<Delete Files="@(IcuDataOutputs)" ContinueOnError="true" />
 	</Target>
 

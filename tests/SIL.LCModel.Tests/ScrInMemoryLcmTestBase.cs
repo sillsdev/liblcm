@@ -17,13 +17,14 @@ using SIL.LCModel.Utils;
 namespace SIL.LCModel
 {
 	/// ----------------------------------------------------------------------------------------
+	/// <inheritdoc />
 	/// <summary>
 	/// An in-memory (BackendProviderType.kMemoryOnly) base class
 	/// that supports Scripture tests. This class has methods to populate various Scripture-
 	/// related objects.
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
-	public class ScrInMemoryLcmTestBase : MemoryOnlyBackendProviderRestoredForEachTestTestBase
+	public abstract class ScrInMemoryLcmTestBase : MemoryOnlyBackendProviderRestoredForEachTestTestBase
 	{
 		/// <summary></summary>
 		public const string kParagraphText =

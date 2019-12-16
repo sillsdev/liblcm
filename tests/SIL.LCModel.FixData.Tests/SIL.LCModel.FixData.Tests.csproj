@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8ECAF4C5-E651-4EA0-91FF-9251428E3890}</ProjectGuid>
+    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SIL.LCModel.FixData.Tests</RootNamespace>
+    <AssemblyName>SIL.LCModel.FixData.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\artifacts\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\artifacts\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+      <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SIL.TestUtilities">
+      <HintPath>..\..\lib\downloads\SIL.TestUtilities.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfoForTests.cs" />
+    <Compile Include="FwDataFixerTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <None Include="TestData\DanglingCustomListReference\Test.fwdata" />
+    <None Include="TestData\DanglingCustomProperty\Test.fwdata" />
+    <None Include="TestData\DanglingReference\Test.fwdata" />
+    <None Include="TestData\DeletedMsaRefBySenseAndBundle\Test.fwdata" />
+    <None Include="TestData\DuplicateGuid\Test.fwdata" />
+    <None Include="TestData\DuplicateNameCustomList\Test.fwdata" />
+    <None Include="TestData\DuplicateStyles\Test.fwdata" />
+    <None Include="TestData\DuplicateWs\Test.fwdata" />
+    <None Include="TestData\EntryExtraMsaAndBustedSenseRef\Test.fwdata" />
+    <None Include="TestData\EntryWithExtraMSA\Test.fwdata" />
+    <None Include="TestData\EntryWithMsaAndNoSenses\Test.fwdata" />
+    <None Include="TestData\GenericDates\Test.fwdata" />
+    <None Include="TestData\HomographFixer\Test.fwdata" />
+    <None Include="TestData\MissingBasicCustomField\Test.fwdata" />
+    <None Include="TestData\MorphBundleProblems\Test.fwdata" />
+    <None Include="TestData\SequenceFixer\Test.fwdata" />
+    <None Include="TestData\SingleTargetLexRefs\Test.fwdata" />
+    <None Include="TestData\TagAndCellRefs\Test.fwdata" />
+    <None Include="TestData\WordformsWithSameForm\Test.fwdata" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SIL.LCModel.FixData\SIL.LCModel.FixData.csproj">
+      <Project>{8e5f8af6-6ed0-4205-826c-6bd80d04bdd1}</Project>
+      <Name>SIL.LCModel.FixData</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\SIL.LCModel.Utils\SIL.LCModel.Utils.csproj">
+      <Project>{4e4ce84f-bb35-416a-8e4f-b8c096da32b7}</Project>
+      <Name>SIL.LCModel.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SIL.LCModel.Core.Tests\SIL.LCModel.Core.Tests.csproj">
+      <Project>{6524d5af-ad53-498c-b95f-244542a2428c}</Project>
+      <Name>SIL.LCModel.Core.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SIL.LCModel.Tests\SIL.LCModel.Tests.csproj">
+      <Project>{5b119aef-2895-44ab-bb28-6c1071a9b62b}</Project>
+      <Name>SIL.LCModel.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SIL.LCModel.Utils.Tests\SIL.LCModel.Utils.Tests.csproj">
+      <Project>{f023f83b-ec39-48d4-a98c-f65e43609b20}</Project>
+      <Name>SIL.LCModel.Utils.Tests</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+		 Other similar extension points exist, see Microsoft.Common.targets.
+	<Target Name="BeforeBuild">
+	</Target>
+	<Target Name="AfterBuild">
+	</Target>
+	-->
+</Project>
