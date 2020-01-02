@@ -5,6 +5,7 @@
 <AUni ws="en">Evnt</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Event</AUni>
 </Name>
@@ -80,6 +81,7 @@
 <AUni ws="en">Wthr</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Weather</AUni>
 </Name>
@@ -1184,6 +1186,7 @@
 </Description>
 <ForeColor val="16777215" />
 <Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Analysis</AUni>
 </Name>
@@ -4314,6 +4317,7 @@
 </AStr>
 </Description>
 <Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Conversation</AUni>
 </Name>
@@ -4328,6 +4332,7 @@
 </AStr>
 </Description>
 <Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Interview</AUni>
 </Name>
@@ -4346,6 +4351,7 @@
 </AStr>
 </Description>
 <Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Structured</AUni>
 </Name>
@@ -4360,6 +4366,7 @@
 </AStr>
 </Description>
 <Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Unstructured</AUni>
 </Name>
@@ -4374,6 +4381,7 @@
 </AStr>
 </Description>
 <Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Literature Summary</AUni>
 </Name>
@@ -4388,6 +4396,7 @@
 </AStr>
 </Description>
 <Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Observation</AUni>
 </Name>
@@ -4402,6 +4411,7 @@
 </AStr>
 </Description>
 <Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Performance</AUni>
 </Name>
@@ -5319,6 +5329,7 @@
 <AUni ws="en">Method</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<IsProtected val="True" />
 <Name>
 <AUni ws="en">Methodology</AUni>
 </Name>
