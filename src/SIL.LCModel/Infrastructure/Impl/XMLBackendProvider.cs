@@ -708,8 +708,27 @@ namespace SIL.LCModel.Infrastructure.Impl
 		{
 			if (path.StartsWith("\\\\"))
 				return false;
-			var driveinfo = new DriveInfo(new FileInfo(path).Directory.Root.FullName);
-			return driveinfo.DriveType == DriveType.Fixed;
+			DriveInfo driveForPath = null;
+			if (MiscUtils.IsUnix)
+			{
+				var drives = Environment.GetLogicalDrives().Select(ds => new DriveInfo(ds)).ToArray();
+				foreach (var d in drives)
+				{
+					if (path.StartsWith(d.Name, StringComparison.OrdinalIgnoreCase))
+					{
+						driveForPath = d;
+						break;
+					}
+				}
+			}
+			else
+			{
+				// ReSharper disable once PossibleNullReferenceException -- It is unlikely path will not contain a directory
+				driveForPath = new DriveInfo(new FileInfo(path).Directory.Root.FullName);
+			}
+			// If no drive matched the path on linux it is probably an unsupported file system, it will be treated as a
+			// network drive, which will slow down the start-up but otherwise work
+			return driveForPath?.DriveType == DriveType.Fixed;
 		}
 
 		/// <summary>
