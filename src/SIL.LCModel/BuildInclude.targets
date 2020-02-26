@@ -25,7 +25,7 @@
 	<Target Name="GenerateModel" Inputs="MasterLCModel.xml" Outputs="@(GeneratedFiles)">
 		<!-- Call the LcmGenerate task from SIL.LCModel.Build.Tasks in a separate msbuild process,
 		     so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
-		<Exec Command="$(MsbuildCommand) GenerateModel.proj /p:Configuration=$(Configuration) /p:OutDir=$(OutDir)" />
+		<Exec Command="$(MsbuildCommand) /v:diag GenerateModel.proj /p:Configuration=$(Configuration) /p:OutDir=$(OutDir)" />
 	</Target>
 
 	<Target Name="CheckWinForms">

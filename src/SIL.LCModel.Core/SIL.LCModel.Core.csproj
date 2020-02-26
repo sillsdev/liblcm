@@ -61,8 +61,8 @@
       <HintPath>..\..\packages\Microsoft.Extensions.DependencyModel.2.0.4\lib\net451\Microsoft.Extensions.DependencyModel.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <HintPath>..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NHunspell, Version=1.2.5554.16953, Culture=neutral, PublicKeyToken=1ac793ea843b4366, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NHunspell.1.2.5554.16953\lib\net\NHunspell.dll</HintPath>
@@ -273,6 +273,10 @@
     <ProjectReference Include="..\CSTools\Tools\Tools.csproj">
       <Project>{1ec55d3b-5f12-41ea-ab6f-75a8949f888a}</Project>
       <Name>Tools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SIL.LCModel.Build.Tasks\SIL.LCModel.Build.Tasks.csproj">
+      <Project>{5a9bade9-763a-4b25-a65d-5e3ec044e4cf}</Project>
+      <Name>SIL.LCModel.Build.Tasks</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.LCModel.Utils\SIL.LCModel.Utils.csproj">
       <Project>{4e4ce84f-bb35-416a-8e4f-b8c096da32b7}</Project>

@@ -20,7 +20,6 @@ SIL.Lexicon.pdb => downloads/
 SIL.WritingSystems.dll => downloads/
 SIL.WritingSystems.pdb => downloads/
 SIL.TestUtilities.dll => downloads/
-Newtonsoft.Json.dll => downloads/
 Spart.dll => downloads/
 
 
@@ -38,7 +37,6 @@ SIL.Lexicon.dll.mdb => downloads/
 SIL.WritingSystems.dll => downloads/
 SIL.WritingSystems.dll.mdb => downloads/
 SIL.TestUtilities.dll => downloads/
-Newtonsoft.Json.dll => downloads/
 Spart.dll => downloads/
 
 
@@ -56,5 +54,4 @@ SIL.Lexicon.pdb => downloads/
 SIL.WritingSystems.dll => downloads/
 SIL.WritingSystems.pdb => downloads/
 SIL.TestUtilities.dll => downloads/
-Newtonsoft.Json.dll => downloads/
 Spart.dll => downloads/
