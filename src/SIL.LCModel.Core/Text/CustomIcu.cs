@@ -170,17 +170,24 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		public static void InitIcuDataDir()
 		{
-			// Add the architecture specific path to the native icu dlls for windows into the PATH
+			// Add the architecture specific paths to the native icu dlls for windows into the PATH
 			// this is needed for code that accesses the libraries directly instead of through icudotnet
+			// Both 32bit and 64bit are added because a 64bit application may be communicating with a 32bit
+			// application (e.g. Flex & Paratext)
 			if (MiscUtils.IsWindows)
 			{
-				var arch = Environment.Is64BitProcess ? "x64" : "x86";
 				var executingAssemblyFolder = Uri.UnescapeDataString(new UriBuilder(Assembly.GetExecutingAssembly().CodeBase).Path);
-				// ReSharper disable once AssignNullToNotNullAttribute -- If FlexExe returns null we have bigger problems
-				var icuPath = Path.Combine(Path.GetDirectoryName(executingAssemblyFolder), "lib", $"win-{arch}");
-				// Append icu dll location to PATH, such as .../lib/x64, to help C# and C++ code find icu.
-				Environment.SetEnvironmentVariable("PATH",
-					icuPath + Path.PathSeparator + Environment.GetEnvironmentVariable("PATH"));
+				var assemblyDir = Path.GetDirectoryName(executingAssemblyFolder);
+                // ReSharper disable once AssignNullToNotNullAttribute -- The directory of the executing assembly will not be null
+				var icu32Path = Path.Combine(assemblyDir, "lib", "win-x86");
+				var icu64Path = Path.Combine(assemblyDir, "lib", "win-x64");
+				var flexIcu32Path = Path.Combine(assemblyDir, "lib", "x86");
+				var flexIcu64Path = Path.Combine(assemblyDir, "lib", "x64");
+                // Append icu dll location to PATH, such as .../lib/x64, to help C# and C++ code find icu.
+                Environment.SetEnvironmentVariable("PATH",
+	                $"{icu32Path}{Path.PathSeparator}{flexIcu32Path}{Path.PathSeparator}" +
+	                $"{icu64Path}{Path.PathSeparator}{flexIcu64Path}{Path.PathSeparator}" +
+	                $"{Environment.GetEnvironmentVariable("PATH")}");
 			}
 
 			var dataDirectory = Wrapper.DataDirectory;
