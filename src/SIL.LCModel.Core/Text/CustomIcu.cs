@@ -42,15 +42,16 @@ namespace SIL.LCModel.Core.Text
 		{
 			get
 			{
-				// We use the ICU_DATA environment variable instead of directly reading a registry
-				// value. This allows COMInterfaces.dll to be independent of WinForms.
-				// ENHANCE: store data directory somewhere else other than registry (user.config
-				// file?) and use that.
+				// NOTE: FieldWorks has additional code to read a registry value and set the
+				// ICU_DATA environment variable
+
+				// ICU_DATA should point to the directory that contains nfc_fw.nrm and nfkc_fw.nrm
+				// (i.e. icudt54l).
 				var dir = Environment.GetEnvironmentVariable("ICU_DATA");
 				if (string.IsNullOrEmpty(dir))
 				{
 					dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "SIL",
-						$"Icu{Version}");
+						$"Icu{Version}", $"icudt{Version}l");
 				}
 				return dir;
 			}
@@ -178,16 +179,16 @@ namespace SIL.LCModel.Core.Text
 			{
 				var executingAssemblyFolder = Uri.UnescapeDataString(new UriBuilder(Assembly.GetExecutingAssembly().CodeBase).Path);
 				var assemblyDir = Path.GetDirectoryName(executingAssemblyFolder);
-                // ReSharper disable once AssignNullToNotNullAttribute -- The directory of the executing assembly will not be null
+				// ReSharper disable once AssignNullToNotNullAttribute -- The directory of the executing assembly will not be null
 				var icu32Path = Path.Combine(assemblyDir, "lib", "win-x86");
 				var icu64Path = Path.Combine(assemblyDir, "lib", "win-x64");
 				var flexIcu32Path = Path.Combine(assemblyDir, "lib", "x86");
 				var flexIcu64Path = Path.Combine(assemblyDir, "lib", "x64");
-                // Append icu dll location to PATH, such as .../lib/x64, to help C# and C++ code find icu.
-                Environment.SetEnvironmentVariable("PATH",
-	                $"{icu32Path}{Path.PathSeparator}{flexIcu32Path}{Path.PathSeparator}" +
-	                $"{icu64Path}{Path.PathSeparator}{flexIcu64Path}{Path.PathSeparator}" +
-	                $"{Environment.GetEnvironmentVariable("PATH")}");
+				// Append icu dll location to PATH, such as .../lib/x64, to help C# and C++ code find icu.
+				Environment.SetEnvironmentVariable("PATH",
+					$"{icu32Path}{Path.PathSeparator}{flexIcu32Path}{Path.PathSeparator}" +
+					$"{icu64Path}{Path.PathSeparator}{flexIcu64Path}{Path.PathSeparator}" +
+					$"{Environment.GetEnvironmentVariable("PATH")}");
 			}
 
 			var dataDirectory = Wrapper.DataDirectory;
