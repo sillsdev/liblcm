@@ -4299,7 +4299,7 @@
 <AUni ws="en">(3) What types of trees are there?</AUni>
 </Question>
 <ExampleWords>
-<AUni ws="en">acacia, alder, almond, apple, apricot, ash, aspen, avocado, azalea, balsa, balsam, banyan, bayberry, beech, betel nut, birch, blackberry, blueberry, box, boxwood, Brazil, breadfruit, broom, camellia, cashew, cassia, catalpa, cedar, cherry, chestnut, chinaberry, cinnamon, cinchona, citron, citrus, clove, coca, coconut, coffee, cornel, cottonwood, cranberry, currant, cypress, date, dogwood, ebony, elder, elm, eucalyptus, fig, fir, forsythia, gardenia, ginkgo, grapefruit, guava, gum, hawthorn, hazel, hazelnut, hemlock, henna, hickory, ironwood, juniper, jute, kumquat, laburnum, larch, laurel, lemon, lignum, lilac, lime, linden, litchi, locust, magnolia, mahogany, mango, mangrove, manzanita, maple, marijuana, mesquite, mimosa, mistletoe, mulberry, myrtle, nutmeg, oak, oleander, olive, orange, papaw, papaya, persimmon, peach, pear, pecan, persimmon, pine, pistachio, plane, plum, poinciana, pomegranate, poplar, quince, redwood, rosewood, sandalwood, sapling, sassafras, satinwood, saxifrage, scrub, senna, sequoia, sisal, spruce, spurge, stinkwood, sumac, sycamore, tamarack, tamarind, tamarisk, tangerine, teak, walnut, upas, willow, yew, ylang-ylang</AUni>
+<AUni ws="en">acacia, alder, almond, apple, apricot, ash, aspen, avocado, azalea, balsa, balsam, banyan, bayberry, beech, betel nut, birch, blackberry, blueberry, box, boxwood, Brazil, breadfruit, broom, camellia, cashew, cassia, catalpa, cedar, cherry, chestnut, chinaberry, cinchona, cinnamon, citron, citrus, clove, coca, coconut, coffee, cornel, cottonwood, cranberry, currant, cypress, date, dogwood, ebony, elder, elm, eucalyptus, fig, fir, forsythia, gardenia, ginkgo, grapefruit, guava, gum, hawthorn, hazel, hazelnut, hemlock, henna, hickory, ironwood, juniper, jute, kumquat, laburnum, larch, laurel, lemon, lignum, lilac, lime, linden, litchi, locust, magnolia, mahogany, mango, mangrove, manzanita, maple, marijuana, mesquite, mimosa, mistletoe, mulberry, myrtle, nutmeg, oak, oleander, olive, orange, papaw, papaya, peach, pear, pecan, persimmon, pine, pistachio, plane, plum, poinciana, pomegranate, poplar, quince, redwood, rosewood, sandalwood, sapling, sassafras, satinwood, saxifrage, scrub, senna, sequoia, sisal, spruce, spurge, stinkwood, sumac, sycamore, tamarack, tamarind, tamarisk, tangerine, teak, upas, walnut, willow, yew, ylang-ylang</AUni>
 </ExampleWords>
 </CmDomainQ>
 <CmDomainQ>
@@ -5279,7 +5279,7 @@
 <AUni ws="en">(5) What species of hyrax are there?</AUni>
 </Question>
 <ExampleWords>
-<AUni ws="en">hyrax, cony, dassie</AUni>
+<AUni ws="en">hyrax, coney, dassie</AUni>
 </ExampleWords>
 </CmDomainQ>
 </Questions>
@@ -6234,7 +6234,7 @@
 <AUni ws="en">(1) What are the parts of insects?</AUni>
 </Question>
 <ExampleWords>
-<AUni ws="en">head, abdomen, thorax, carapace, exoskeleton, wing, horn, stinger, sting, segment, antenna, feeler, fore wing, hind wing, proboscis, compound eye, spinneret</AUni>
+<AUni ws="en">head, abdomen, thorax, carapace, exoskeleton, wing, horn, stinger, sting, segment, antenna, feeler, forewing, hind wing, proboscis, compound eye, spinneret</AUni>
 </ExampleWords>
 </CmDomainQ>
 </Questions>
