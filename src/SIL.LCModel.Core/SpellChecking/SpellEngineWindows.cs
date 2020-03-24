@@ -10,6 +10,15 @@ using NHunspell;
 
 namespace SIL.LCModel.Core.SpellChecking
 {
+	/// <summary>ILRepacking SpellEngineWindows into a dll, and then loading that dll in Linux (such as in mono5-sil)
+	/// crashes, saying Msg: Could not load type of field
+	/// 'SIL.LCModel.Core.SpellChecking.SpellEngineWindows:_hunspellHandle' (0) due to: Could not load file or assembly
+	/// NHunspell. Instructing ILRepack to omit SpellEngineWindows (by attribute) prevents that crash. </summary>
+	internal class NoLinuxRepack : System.Attribute
+	{
+	}
+
+	[NoLinuxRepack]
 	internal sealed class SpellEngineWindows: SpellEngine
 	{
 		private readonly Hunspell _hunspellHandle;
