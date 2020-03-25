@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016 SIL International
+// Copyright (c) 2016 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -67,6 +67,27 @@ namespace SIL.LCModel.Core.Text
 			// TODO: should we support magic writing system codes?
 			if (ws < 0)
 				throw new ArgumentOutOfRangeException(paramName);
+		}
+
+		public TsTextProps FromITsTextProps(ITsTextProps ttp)
+		{
+			var bldr = new TsPropsBldr();
+			int countIntProps = ttp.IntPropCount;
+			for (int i = 0; i < countIntProps; i++)
+			{
+				int tpt, ttv;
+				var val = ttp.GetIntProp(i, out tpt, out ttv);
+				bldr.SetIntPropValues(tpt, ttv, val);
+			}
+
+			int countStrProps = ttp.StrPropCount;
+			for (int i = 0; i < countStrProps; i++)
+			{
+				int tpt;
+				var val = ttp.GetStrProp(i, out tpt);
+				bldr.SetStrPropValue(tpt, val);
+			}
+			return (TsTextProps) bldr.GetTextProps();
 		}
 	}
 }

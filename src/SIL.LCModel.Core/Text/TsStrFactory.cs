@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016 SIL International
+// Copyright (c) 2016 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -45,7 +45,14 @@ namespace SIL.LCModel.Core.Text
 			if (ttp == null)
 				throw new ArgumentNullException("ttp");
 
-			return new TsString(rgch == null ? null : rgch.Substring(0, cch), (TsTextProps) ttp);
+			var textProps = ttp as TsTextProps;
+			if (textProps == null)
+			{
+				// if it came from C++, could be wrapped in a way that prevents a simple cast.
+				textProps = ((TsPropsFactory)TsStringUtils.TsPropsFactory).FromITsTextProps(ttp);
+			}
+
+			return new TsString(rgch == null ? null : rgch.Substring(0, cch), textProps);
 		}
 
 		/// <summary>

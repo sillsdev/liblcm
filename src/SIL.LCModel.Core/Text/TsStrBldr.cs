@@ -106,7 +106,12 @@ namespace SIL.LCModel.Core.Text
 			}
 			else
 			{
-				textProps = (TsTextProps) ttp;
+				textProps = ttp as TsTextProps;
+				if (textProps == null && ttp != null)
+				{
+					// if it came from C++, could be wrapped in a way that prevents a simple cast.
+					textProps = ((TsPropsFactory)TsStringUtils.TsPropsFactory).FromITsTextProps(ttp);
+				}
 			}
 
 			TsRun run = new TsRun(cchIns, textProps);
@@ -218,7 +223,12 @@ namespace SIL.LCModel.Core.Text
 			ThrowIfCharOffsetOutOfRange("ichLim", ichLim, Length);
 			ThrowIfParamNull("ttp", ttp);
 
-			var textProps = (TsTextProps) ttp;
+			var textProps = ttp as TsTextProps;
+			if (textProps == null)
+			{
+				// if it came from C++, could be wrapped in a way that prevents a simple cast.
+				textProps = ((TsPropsFactory) TsStringUtils.TsPropsFactory).FromITsTextProps(ttp);
+			}
 
 			if (ichMin == ichLim)
 			{
