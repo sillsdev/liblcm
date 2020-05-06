@@ -5,7 +5,6 @@
 		<IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">obj/x86/$(Configuration)/</IntermediateOutputPath>
 		<MsbuildCommand Condition="'$(OS)'=='Windows_NT' And '$(MsBuildCommand)'==''">"$(MSBuildBinPath)\msbuild.exe"</MsbuildCommand>
 		<MsbuildCommand Condition="'$(OS)'=='Unix' And '$(MsBuildCommand)'==''">xbuild</MsbuildCommand>
-		<VSWhereDir>..\..\packages\vswhere.2.4.1\tools\</VSWhereDir>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -18,14 +17,23 @@
 		<KernelOutputs Include="$(OutDir)KernelInterfaces/FwKernelTlb.iip" />
 		<KernelOutputs Include="$(OutDir)KernelInterfaces/FwKernelTlb.json" />
 	</ItemGroup>
-	<Target Name="SetVSInstallLocation">
-		<Error Condition="'$(OS)'=='Windows_NT' And !Exists('$(VSWhereDir)')" Text="VSWhereDir not found (looking in '$(VSWhereDir)')."/>
-		<Exec Command="$(VSWhereDir)vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath" ConsoleToMSBuild="true" Condition="'$(OS)'=='Windows_NT'">
+	<Target Name="SetVSInstallDir" Condition="'$(OS)'=='Windows_NT'">
+		<ItemGroup>
+			<PackageReference Include="vswhere" Version="2.4.1" GeneratePathProperty="true" Condition="'$(OS)'=='Windows_NT'">
+				<PrivateAssets>all</PrivateAssets>
+				<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+			</PackageReference>
+		</ItemGroup>
+		<PropertyGroup>
+			<VSWhereDir Condition="'$(Pkgvswhere)'!=''">>$(Pkgvswhere)\tools</VSWhereDir>
+			<!--<VSWhereDir Condition="'$(Pkgvswhere)'==''">>$(NuGetPackageRoot)TODO\tools</VSWhereDir>-->
+		</PropertyGroup>
+		<Exec Command="$(VSWhereDir)\vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath" ConsoleToMSBuild="true" Condition="'$(OS)'=='Windows_NT'">
 			<Output TaskParameter="ConsoleOutput" PropertyName="VSInstallDir" />
 		</Exec>
 	</Target>
 
-	<Target Name="GenerateKernelCs" Inputs="@(KernelInputs)" Outputs="@(KernelOutputs)" DependsOnTargets="SetVSInstallLocation">
+	<Target Name="GenerateKernelCs" Inputs="@(KernelInputs)" Outputs="@(KernelOutputs)" DependsOnTargets="SetVSInstallDir">
 		<!-- Call the IdlImp task from SIL.LCModel.Build.Tasks in a separate msbuild process,
 		     so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
 		<Exec Command="$(MsbuildCommand) GenerateKernelCs.proj /p:OutDir=$(OutDir) /p:IntermediateOutputPath=$(IntermediateOutputPath) /p:Platform=$(Platform) /p:VSInstallDir=&quot;$(VSInstallDir)&quot;" />
