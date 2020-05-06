@@ -119,7 +119,7 @@
   </resheader>
   <data name="kstidColor0" xml:space="preserve">
     <value>Black,0,0,0</value>
-    <comment>For Color picker: Color Name plus Color's Red, Green and Blue values</comment>
+    <comment>For Color picker: Color Name plus Color's Red, Green, and Blue values. Be careful not to change the numbers or add spaces between them and the commas.</comment>
   </data>
   <data name="kstidColor1" xml:space="preserve">
     <value>Brown,153,51,0</value>
