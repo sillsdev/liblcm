@@ -5,6 +5,7 @@
 		<IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">obj/x86/$(Configuration)/</IntermediateOutputPath>
 		<MsbuildCommand Condition="'$(OS)'=='Windows_NT' And '$(MsBuildCommand)'==''">"$(MSBuildBinPath)\msbuild.exe"</MsbuildCommand>
 		<MsbuildCommand Condition="'$(OS)'=='Unix' And '$(MsBuildCommand)'==''">xbuild</MsbuildCommand>
+		<VSWhereDir>..\..\packages\vswhere.2.4.1\tools\</VSWhereDir>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -18,7 +19,7 @@
 		<KernelOutputs Include="$(OutDir)KernelInterfaces/FwKernelTlb.json" />
 	</ItemGroup>
 	<Target Name="SetVSInstallLocation">
-		<Error Condition="!Exists('$(VSWhereDir)')" Text="VSWhereDir not found. If you are building from a clean repository, restart Visual Studio and try again (looking in '$(VSWhereDir)')."/>
+		<Error Condition="'$(OS)'=='Windows_NT' And !Exists('$(VSWhereDir)')" Text="VSWhereDir not found (looking in '$(VSWhereDir)')."/>
 		<Exec Command="$(VSWhereDir)vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath" ConsoleToMSBuild="true" Condition="'$(OS)'=='Windows_NT'">
 			<Output TaskParameter="ConsoleOutput" PropertyName="VSInstallDir" />
 		</Exec>
