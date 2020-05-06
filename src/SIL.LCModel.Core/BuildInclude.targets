@@ -17,13 +17,14 @@
 		<KernelOutputs Include="$(OutDir)KernelInterfaces/FwKernelTlb.iip" />
 		<KernelOutputs Include="$(OutDir)KernelInterfaces/FwKernelTlb.json" />
 	</ItemGroup>
-	<Target Name="SetInstallLocation">
-		<Exec Command="$(VSWhereDir)\vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath" ConsoleToMSBuild="true" Condition="'$(OS)'=='Windows_NT'">
+	<Target Name="SetVSInstallLocation">
+		<Error Condition="!Exists('$(VSWhereDir)')" Text="VSWhereDir not found. If you are building from a clean repository, restart Visual Studio and try again (looking in '$(VSWhereDir)')."/>
+		<Exec Command="$(VSWhereDir)vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath" ConsoleToMSBuild="true" Condition="'$(OS)'=='Windows_NT'">
 			<Output TaskParameter="ConsoleOutput" PropertyName="VSInstallDir" />
 		</Exec>
 	</Target>
 
-	<Target Name="GenerateKernelCs" Inputs="@(KernelInputs)" Outputs="@(KernelOutputs)" DependsOnTargets="SetInstallLocation">
+	<Target Name="GenerateKernelCs" Inputs="@(KernelInputs)" Outputs="@(KernelOutputs)" DependsOnTargets="SetVSInstallLocation">
 		<!-- Call the IdlImp task from SIL.LCModel.Build.Tasks in a separate msbuild process,
 		     so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
 		<Exec Command="$(MsbuildCommand) GenerateKernelCs.proj /p:OutDir=$(OutDir) /p:IntermediateOutputPath=$(IntermediateOutputPath) /p:Platform=$(Platform) /p:VSInstallDir=&quot;$(VSInstallDir)&quot;" />
