@@ -5,6 +5,7 @@
 		<IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">obj/x86/$(Configuration)/</IntermediateOutputPath>
 		<MsbuildCommand Condition="'$(OS)'=='Windows_NT' And '$(MsBuildCommand)'==''">"$(MSBuildBinPath)\msbuild.exe"</MsbuildCommand>
 		<MsbuildCommand Condition="'$(OS)'=='Unix' And '$(MsBuildCommand)'==''">xbuild</MsbuildCommand>
+		<VSWhereCommand>..\..\packages\vswhere.2.4.1\tools\vswhere</VSWhereCommand>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -18,16 +19,7 @@
 		<KernelOutputs Include="$(OutDir)KernelInterfaces/FwKernelTlb.json" />
 	</ItemGroup>
 	<Target Name="SetVSInstallDir" Condition="'$(OS)'=='Windows_NT'">
-		<ItemGroup>
-			<PackageReference Include="vswhere" Version="2.4.1">
-				<PrivateAssets>all</PrivateAssets>
-				<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-			</PackageReference>
-		</ItemGroup>
-		<PropertyGroup>
-			<VSWhereDir>$(NuGetPackageRoot)vswhere\2.4.1\tools</VSWhereDir>
-		</PropertyGroup>
-		<Exec Command="$(VSWhereDir)\vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath" ConsoleToMSBuild="true" Condition="'$(OS)'=='Windows_NT'">
+		<Exec Command="$(VSWhereCommand) -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath" ConsoleToMSBuild="true" Condition="'$(OS)'=='Windows_NT'">
 			<Output TaskParameter="ConsoleOutput" PropertyName="VSInstallDir" />
 		</Exec>
 	</Target>
