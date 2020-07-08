@@ -8802,7 +8802,9 @@ namespace SIL.LCModel.DomainImpl
 				{
 					foreach (var code in ph.CodesOS)
 					{
-						phReps.Add(code.Representation.VernacularDefaultWritingSystem.Text);
+						var phRepText = code.Representation.VernacularDefaultWritingSystem.Text;
+						if (!string.IsNullOrEmpty(phRepText)) // LT-19512 some were null!
+							phReps.Add(phRepText);
 					}
 				}
 			}

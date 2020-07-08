@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2015 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -9,7 +9,6 @@ using System.Xml.Linq;
 using Icu;
 using Microsoft.Practices.ServiceLocation;
 using SIL.LCModel.Core.KernelInterfaces;
-using SIL.LCModel.Core.Text;
 using SIL.LCModel.Core.WritingSystems;
 
 namespace SIL.LCModel.DomainServices
@@ -610,11 +609,12 @@ namespace SIL.LCModel.DomainServices
 
 		private static XElement ExportCodes(IEnumerable<IPhCode> codes, Normalizer.UNormalizationMode mode)
 		{
-			return new XElement("Codes", from phone in codes
-										  select new XElement("PhCode",
-															  new XAttribute("Id", phone.Hvo),
-															  ExportBestVernacularOrAnalysis(phone.Representation,
-																							 "Representation", mode)));
+			return new XElement("Codes", from phone in codes.Where(phone =>
+					!string.IsNullOrEmpty(phone.Representation.BestVernacularAnalysisAlternative.Text))
+				select new XElement("PhCode",
+					new XAttribute("Id", phone.Hvo),
+					ExportBestVernacularOrAnalysis(phone.Representation,
+					"Representation", mode)));
 		}
 
 		private static XElement ExportContext(IPhContextOrVar context)

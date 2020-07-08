@@ -708,8 +708,31 @@ namespace SIL.LCModel.Infrastructure.Impl
 		{
 			if (path.StartsWith("\\\\"))
 				return false;
-			var driveinfo = new DriveInfo(new FileInfo(path).Directory.Root.FullName);
-			return driveinfo.DriveType == DriveType.Fixed;
+			DriveInfo driveForPath = null;
+			// This conditional is a workaround for a Mono problem encountered on a ZFS file system
+			// Mono's filesystem detecting is handled in w32file-unix.c.
+			// See _wapi_drive_types[] , mono_w32file_get_logical_drive(), GetDriveTypeFromPath()
+			if (MiscUtils.IsUnix)
+			{
+				var drives = Environment.GetLogicalDrives().Select(ds => new DriveInfo(ds)).ToArray();
+				Array.Sort(drives, (a, b) => a.Name.Length.CompareTo(b.Name.Length));
+				foreach (var d in drives)
+				{
+					if (path.StartsWith(d.Name, StringComparison.OrdinalIgnoreCase))
+					{
+						driveForPath = d;
+						break;
+					}
+				}
+				// If no drive matched the path on linux it is probably a file system type mono doesn't detect.
+				// It will be treated as a network drive. This will slow down the start-up but otherwise work.
+			}
+			else
+			{
+				// ReSharper disable once PossibleNullReferenceException -- It is unlikely path will not contain a directory
+				driveForPath = new DriveInfo(new FileInfo(path).Directory.Root.FullName);
+			}
+			return driveForPath?.DriveType == DriveType.Fixed;
 		}
 
 		/// <summary>

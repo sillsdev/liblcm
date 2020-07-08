@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016 SIL International
+// Copyright (c) 2016 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -41,6 +41,17 @@ namespace SIL.LCModel.Core.Text
 		{
 			var tpf = new TsPropsFactory();
 			Assert.That(() => tpf.MakeProps("Style", -1, -1), Throws.InstanceOf<ArgumentOutOfRangeException>());
+		}
+
+		[Test]
+		public void FromITsTextProps_IntAndStringProps_Copies()
+		{
+			var tpf = new TsPropsFactory();
+			var original = tpf.MakeProps("someStyle", 43, 57) as ITsTextProps;
+
+			var copy = tpf.FromITsTextProps(original);
+			string diff;
+			Assert.That(TsTextPropsHelper.PropsAreEqual(original, copy, out diff));
 		}
 	}
 }
