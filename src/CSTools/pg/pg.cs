@@ -9,7 +9,7 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Text;
-using Tools;
+using SIL.LCModel.Tools;
 
 public class PrecReference : TOKEN
 {
@@ -120,7 +120,8 @@ public class ParserGenerate : SymbolsGen
 		m_symbols.erh = erh;
 		m_symbols.ClassInit(this);
 		m_outname = "syntax";
-		m_outFile.WriteLine("using System;using Tools;");
+		m_outFile.WriteLine("using System;");
+		m_outFile.WriteLine("using SIL.LCModel.Tools;");
 		Production special = new Production(this,m_symbols.Special);
 		m_lexer.yytext = "error";
 		CSymbol e = (new CSymbol(this)).Resolve();

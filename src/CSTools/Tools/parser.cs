@@ -7,7 +7,7 @@ using System.IO;
 using System.Text;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace Tools
+namespace SIL.LCModel.Tools
 {
 	public class Symbols
 	{

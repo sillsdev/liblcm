@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2017 SIL International
+// Copyright (c) 2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -25,6 +25,7 @@ namespace SIL.LCModel
 			{
 				// we'll assume the executing assembly is <root>/artifacts/Debug/SIL.LCModel.Tests.dll,
 				string dir = CodeDirectory;
+				dir = Path.GetDirectoryName(dir);		// strip the parent directory name (net461)
 				dir = Path.GetDirectoryName(dir);       // strip the parent directory name (Debug)
 				dir = Path.GetDirectoryName(dir);       // strip the parent directory again (artifacts)
 				return dir;

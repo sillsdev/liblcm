@@ -32,7 +32,7 @@ namespace SIL.LCModel.Core.Text
 		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetup()
 		{
 			m_wsf = new WritingSystemManager();

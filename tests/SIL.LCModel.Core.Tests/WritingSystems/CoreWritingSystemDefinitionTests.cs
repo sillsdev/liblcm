@@ -20,7 +20,7 @@ namespace SIL.LCModel.Core.WritingSystems
 		public void CoreWritingDefinition_DisplayLabel(string langTag, string expectedLabel)
 		{
 			var ws = new CoreWritingSystemDefinition(langTag);
-			Assert.That(ws.DisplayLabel, Is.StringMatching(expectedLabel));
+			Assert.That(ws.DisplayLabel, Does.Match(expectedLabel));
 		}
 	}
 }

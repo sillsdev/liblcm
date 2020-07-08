@@ -134,7 +134,7 @@ namespace SIL.LCModel.DomainImpl
 		/// Does one-time initialization needed for the fixture.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			BCVRefTests.InitializeVersificationTable();

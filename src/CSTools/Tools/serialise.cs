@@ -11,7 +11,7 @@ using System.Text;
 using System.Globalization;
 using System;
 
-namespace Tools
+namespace SIL.LCModel.Tools
 {
 	public class Serialiser
 	{
