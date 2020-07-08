@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015-2018 SIL International
+// Copyright (c) 2015-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -58,7 +58,7 @@ namespace SIL.LCModel.FixData.Tests
 
 		private string TestDataDirectory => Path.Combine(TestDirectoryFinder.RootDirectory, "tests", "SIL.LCModel.FixData.Tests", "TestData");
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			_basePath = TestDataDirectory;
@@ -73,7 +73,7 @@ namespace SIL.LCModel.FixData.Tests
 			File.SetAttributes(Path.Combine(testPath, "BasicFixup.fwdata"), FileAttributes.Normal);
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void AllTestTearDown()
 		{
 			foreach (var testDir in _testFileDirectories)
@@ -249,7 +249,7 @@ namespace SIL.LCModel.FixData.Tests
 				"//rt[@class='MoStemAllomorph' and @guid='6c8f0104-dffb-43f3-9d1d-4c2ec2a4afa5']/Custom[@name='MyNumber' and @val='0']", 0);
 			AssertThatXmlIn.File(fixedDataPath).HasSpecifiedNumberOfMatchesForXpath(
 				"//rt[@class='MoStemAllomorph' and @guid='6c8f0104-dffb-43f3-9d1d-4c2ec2a4afa5']/Custom[@name='MyDate' and @val='0']", 0);
-			Assert.That(_errors[0], Is.StringStarting("Missing default value type added to "));
+			Assert.That(_errors[0], Does.StartWith("Missing default value type added to "));
 		}
 
 		[Test]
@@ -346,7 +346,7 @@ namespace SIL.LCModel.FixData.Tests
 			Assert.AreEqual(4, _errors.Count, "Unexpected number of errors found.");
 			//The order of these doesn't really matter but this is the one we happen to get.
 			Assert.That(_errors[0], Is.EqualTo("Removing duplicate style Bob."), "Error message is incorrect.");
-			Assert.That(_errors[1], Is.StringStarting("Removing dangling link to"));
+			Assert.That(_errors[1], Does.StartWith("Removing dangling link to"));
 			Assert.That(_errors[2], Is.EqualTo("Removing duplicate style Bob."), "Error message is incorrect.");
 			Assert.That(_errors[3], Is.EqualTo("Removing duplicate style Joe."), "Error message is incorrect.");
 
@@ -586,7 +586,7 @@ namespace SIL.LCModel.FixData.Tests
 			Assert.AreEqual(2, _errors.Count, "Unexpected number of errors found.");
 			Assert.True(_errors[0].StartsWith("Removing dangling link to '" + custItem1Guid + "' (class='LexEntry'"),
 				"Error message is incorrect."); // OriginalFixer--ksRemovingLinkToNonexistingObject
-			Assert.That(_errors[1], Is.StringStarting("Removing undefined custom property '" + danglingPropertyName +
+			Assert.That(_errors[1], Does.StartWith("Removing undefined custom property '" + danglingPropertyName +
 				"' from class='LexEntry', guid='" + entryGuid + "'."),
 				"Error message is incorrect."); // CustomPropertyFixer--ksRemovingUndefinedCustomProperty
 			// Note that we don't currently get an error about deleting the FIRST dangling custom property,

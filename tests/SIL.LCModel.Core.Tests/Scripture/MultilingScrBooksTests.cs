@@ -21,7 +21,7 @@ namespace SIL.LCModel.Core.Scripture
 		/// Initialization called once.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			ScrReferenceTests.InitializeScrReferenceForTests();
@@ -185,13 +185,13 @@ namespace SIL.LCModel.Core.Scripture
 		/// Tests edge cases when parsing a reference string
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[Test]
-		public void ParseRefString_EdgeCases()
+		[TestCase("Luk 5,15", ExpectedResult = 42005015)]
+		[TestCase("luk 5.15", ExpectedResult = 42005015)]
+		[TestCase("LUK5:15", ExpectedResult = 42005015)]
+		[TestCase("4T1:5", ExpectedResult = 55001005)]
+		public int ParseRefString_EdgeCases(string refString)
 		{
-			Assert.AreEqual(42005015, m_mlscrBook.ParseRefString("Luk 5,15"));
-			Assert.AreEqual(42005015, m_mlscrBook.ParseRefString("luk 5.15"));
-			Assert.AreEqual(42005015, m_mlscrBook.ParseRefString("LUK5:15"));
-			Assert.AreEqual(55001005, m_mlscrBook.ParseRefString("4T1:5"));
+			return m_mlscrBook.ParseRefString(refString);
 		}
 
 		/// ------------------------------------------------------------------------------------

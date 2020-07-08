@@ -41,7 +41,7 @@ namespace SIL.LCModel
 		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public override void FixtureTeardown()
 		{
 			base.FixtureTeardown();

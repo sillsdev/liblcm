@@ -2213,8 +2213,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 				Assert.IsTrue(VirtualOrderingServices.HasVirtualOrdering(entry, "Subentries"));
 				var subentries = entry.Subentries.ToArray();
 				Assert.AreEqual(2, subentries.Length);
-				Assert.That(subentries[0].HeadWord.Text, Is.StringMatching("ac"));
-				Assert.That(subentries[1].HeadWord.Text, Is.StringMatching("ab"));
+				Assert.That(subentries[0].HeadWord.Text, Does.Match("ac"));
+				Assert.That(subentries[1].HeadWord.Text, Does.Match("ab"));
 			}
 		}
 
@@ -2321,7 +2321,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 				Assert.IsFalse(VirtualOrderingServices.HasVirtualOrdering(entry, "Subentries"), "No virtual ordering should have been created.");
 				var subentries = entry.Subentries.ToArray();
 				Assert.AreEqual(1, subentries.Length);
-				Assert.That(subentries[0].HeadWord.Text, Is.StringMatching("sub"));
+				Assert.That(subentries[0].HeadWord.Text, Does.Match("sub"));
 			}
 		}
 

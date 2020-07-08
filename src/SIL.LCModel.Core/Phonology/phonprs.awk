@@ -1,6 +1,6 @@
 BEGIN { XmlSummary = "	/// <summary/>";
 }
-/using System;using Tools;/ {print "using System.Text;";}
+/using SIL.LCModel.Tools;/ {print "using System.Text;";}
 /public enum SyntaxErrType/ { print XmlSummary; }
 /unknown,$/ { print XmlSummary; }
 /missingOpeningParen,$/ { print XmlSummary; }

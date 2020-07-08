@@ -33,7 +33,7 @@ namespace SIL.LCModel.Core.Scripture
 		/// Set up to initialize ScrReference
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			InitializeScrReferenceForTests();
@@ -282,7 +282,7 @@ namespace SIL.LCModel.Core.Scripture
 		/// Set up to initialize ScrReference
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			ScrReferenceTests.InitializeScrReferenceForTests();

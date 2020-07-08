@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Xml;
 using SIL.LCModel.Core.Properties;
-using Tools;
+using SIL.LCModel.Tools;
 
 namespace SIL.LCModel.Core.Phonology
 {

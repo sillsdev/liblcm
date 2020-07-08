@@ -10,10 +10,10 @@ using SIL.TestUtilities;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SIL.LCModel.Core.Tests")]
-[assembly: AssemblyDescription("")]
+//[assembly: AssemblyTitle("SIL.LCModel.Core.Tests")]
+//[assembly: AssemblyDescription("")]
 
-// Cleanup all singletons after running tests
+//Cleanup all singletons after running tests
 [assembly: CleanupSingletons]
 [assembly: InitializeIcu(IcuDataPath = "IcuData")]
 [assembly: OfflineSldr]

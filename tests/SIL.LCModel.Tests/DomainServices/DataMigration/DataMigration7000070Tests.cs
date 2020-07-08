@@ -125,11 +125,11 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			var notLanguages = XElement.Parse(resultingLists[2].Xml);
 			Assert.IsTrue(origLanguages.Attribute("ownerguid") != null, "Test data order has changed");
 			var firstName = origLanguages.Element("Name").Elements("AUni").First().Value;
-			Assert.That(firstName, Is.StringMatching("Languages"), "Built in list should not have changed the name");
+			Assert.That(firstName, Does.Match("Languages"), "Built in list should not have changed the name");
 			firstName = custLanguages.Element("Name").Elements("AUni").First().Value;
-			Assert.That(firstName, Is.StringMatching("Languages-Custom"), "The custom Languages list did not have its name changed");
+			Assert.That(firstName, Does.Match("Languages-Custom"), "The custom Languages list did not have its name changed");
 			firstName = notLanguages.Element("Name").Elements("AUni").First().Value;
-			Assert.That(firstName, Is.StringMatching("Not Languages"), "The unrelated list should not have had its name changed");
+			Assert.That(firstName, Does.Match("Not Languages"), "The unrelated list should not have had its name changed");
 		}
 
 		/// ------------------------------------------------------------------------------------

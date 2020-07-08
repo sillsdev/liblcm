@@ -73,7 +73,7 @@ namespace SIL.LCModel
 		/// If a test overrides this, it should call this base implementation.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public virtual void FixtureSetup()
 		{
 			SetupEverythingButBase();
@@ -95,7 +95,7 @@ namespace SIL.LCModel
 		/// If a test overrides this, it should call this base implementation.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public virtual void FixtureTeardown()
 		{
 			DisposeEverythingButBase();

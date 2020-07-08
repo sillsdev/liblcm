@@ -1,1 +1,1 @@
-..\..\..\artifacts\Debug\lg phonenv.lexer
+..\..\..\artifacts\Debug\net461\lg phonenv.lexer

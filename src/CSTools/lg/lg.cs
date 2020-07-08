@@ -9,7 +9,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections;
-using Tools;
+using SIL.LCModel.Tools;
 
 public class LexerGenerate : TokensGen // used during LexerGenerate
 {
@@ -225,7 +225,8 @@ public class LexerGenerate : TokensGen // used during LexerGenerate
 	}
 	void _Create()
 	{
-		m_outFile.WriteLine("using System;using Tools;");
+		m_outFile.WriteLine("using System;");
+		m_outFile.WriteLine("using SIL.LCModel.Tools;");
 		m_tokens = new Tokens(erh);
 		string buf="";
 		string str="";
