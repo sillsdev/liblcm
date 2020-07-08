@@ -19,10 +19,10 @@ namespace SIL.LCModel.DomainServices {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class ScrResources {
+    internal class ScrResources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace SIL.LCModel.DomainServices {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
+        internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SIL.LCModel.DomainServices.ScrResources", typeof(ScrResources).Assembly);
@@ -51,7 +51,7 @@ namespace SIL.LCModel.DomainServices {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
+        internal static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Basic.
         /// </summary>
-        public static string Basic {
+        internal static string Basic {
             get {
                 return ResourceManager.GetString("Basic", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Chapter number out of range.
         /// </summary>
-        public static string Chapter_number_out_of_range {
+        internal static string Chapter_number_out_of_range {
             get {
                 return ResourceManager.GetString("Chapter_number_out_of_range", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Chapter out of order; expected chapter {0}.
         /// </summary>
-        public static string Chapter_out_of_order__expected_chapter__0_ {
+        internal static string Chapter_out_of_order__expected_chapter__0_ {
             get {
                 return ResourceManager.GetString("Chapter_out_of_order__expected_chapter__0_", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Duplicate chapter number.
         /// </summary>
-        public static string Duplicate_chapter_number {
+        internal static string Duplicate_chapter_number {
             get {
                 return ResourceManager.GetString("Duplicate_chapter_number", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Duplicate verse number.
         /// </summary>
-        public static string Duplicate_verse_number {
+        internal static string Duplicate_verse_number {
             get {
                 return ResourceManager.GetString("Duplicate_verse_number", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Duplicate verse numbers.
         /// </summary>
-        public static string Duplicate_verse_numbers {
+        internal static string Duplicate_verse_numbers {
             get {
                 return ResourceManager.GetString("Duplicate_verse_numbers", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Expected.
         /// </summary>
-        public static string Expected {
+        internal static string Expected {
             get {
                 return ResourceManager.GetString("Expected", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Heading should begin with a capital letter.
         /// </summary>
-        public static string Heading_should_begin_with_a_capital_letter {
+        internal static string Heading_should_begin_with_a_capital_letter {
             get {
                 return ResourceManager.GetString("Heading_should_begin_with_a_capital_letter", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Invalid chapter number.
         /// </summary>
-        public static string Invalid_chapter_number {
+        internal static string Invalid_chapter_number {
             get {
                 return ResourceManager.GetString("Invalid_chapter_number", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Invalid or unknown character.
         /// </summary>
-        public static string Invalid_or_unknown_character {
+        internal static string Invalid_or_unknown_character {
             get {
                 return ResourceManager.GetString("Invalid_or_unknown_character", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Invalid or unknown character diacritic combination.
         /// </summary>
-        public static string Invalid_or_unknown_character_diacritic_combination {
+        internal static string Invalid_or_unknown_character_diacritic_combination {
             get {
                 return ResourceManager.GetString("Invalid_or_unknown_character_diacritic_combination", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Invalid punctuation pattern.
         /// </summary>
-        public static string Invalid_punctuation_pattern {
+        internal static string Invalid_punctuation_pattern {
             get {
                 return ResourceManager.GetString("Invalid_punctuation_pattern", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Invalid verse number.
         /// </summary>
-        public static string Invalid_verse_number {
+        internal static string Invalid_verse_number {
             get {
                 return ResourceManager.GetString("Invalid_verse_number", resourceCulture);
             }
@@ -180,7 +180,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to {0} Introduction.
         /// </summary>
-        public static string kstidBookIntroduction {
+        internal static string kstidBookIntroduction {
             get {
                 return ResourceManager.GetString("kstidBookIntroduction", resourceCulture);
             }
@@ -189,7 +189,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Genesis.
         /// </summary>
-        public static string kstidBookName1 {
+        internal static string kstidBookName1 {
             get {
                 return ResourceManager.GetString("kstidBookName1", resourceCulture);
             }
@@ -198,7 +198,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to 2 Samuel.
         /// </summary>
-        public static string kstidBookName10 {
+        internal static string kstidBookName10 {
             get {
                 return ResourceManager.GetString("kstidBookName10", resourceCulture);
             }
@@ -207,7 +207,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to 1 Kings.
         /// </summary>
-        public static string kstidBookName11 {
+        internal static string kstidBookName11 {
             get {
                 return ResourceManager.GetString("kstidBookName11", resourceCulture);
             }
@@ -216,7 +216,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to 2 Kings.
         /// </summary>
-        public static string kstidBookName12 {
+        internal static string kstidBookName12 {
             get {
                 return ResourceManager.GetString("kstidBookName12", resourceCulture);
             }
@@ -225,7 +225,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to 1 Chronicles.
         /// </summary>
-        public static string kstidBookName13 {
+        internal static string kstidBookName13 {
             get {
                 return ResourceManager.GetString("kstidBookName13", resourceCulture);
             }
@@ -234,7 +234,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to 2 Chronicles.
         /// </summary>
-        public static string kstidBookName14 {
+        internal static string kstidBookName14 {
             get {
                 return ResourceManager.GetString("kstidBookName14", resourceCulture);
             }
@@ -243,7 +243,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Ezra.
         /// </summary>
-        public static string kstidBookName15 {
+        internal static string kstidBookName15 {
             get {
                 return ResourceManager.GetString("kstidBookName15", resourceCulture);
             }
@@ -252,7 +252,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Nehemiah.
         /// </summary>
-        public static string kstidBookName16 {
+        internal static string kstidBookName16 {
             get {
                 return ResourceManager.GetString("kstidBookName16", resourceCulture);
             }
@@ -261,7 +261,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Esther.
         /// </summary>
-        public static string kstidBookName17 {
+        internal static string kstidBookName17 {
             get {
                 return ResourceManager.GetString("kstidBookName17", resourceCulture);
             }
@@ -270,7 +270,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Job.
         /// </summary>
-        public static string kstidBookName18 {
+        internal static string kstidBookName18 {
             get {
                 return ResourceManager.GetString("kstidBookName18", resourceCulture);
             }
@@ -279,7 +279,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Psalms.
         /// </summary>
-        public static string kstidBookName19 {
+        internal static string kstidBookName19 {
             get {
                 return ResourceManager.GetString("kstidBookName19", resourceCulture);
             }
@@ -288,7 +288,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Exodus.
         /// </summary>
-        public static string kstidBookName2 {
+        internal static string kstidBookName2 {
             get {
                 return ResourceManager.GetString("kstidBookName2", resourceCulture);
             }
@@ -297,7 +297,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Proverbs.
         /// </summary>
-        public static string kstidBookName20 {
+        internal static string kstidBookName20 {
             get {
                 return ResourceManager.GetString("kstidBookName20", resourceCulture);
             }
@@ -306,7 +306,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Ecclesiastes.
         /// </summary>
-        public static string kstidBookName21 {
+        internal static string kstidBookName21 {
             get {
                 return ResourceManager.GetString("kstidBookName21", resourceCulture);
             }
@@ -315,7 +315,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Song of Solomon.
         /// </summary>
-        public static string kstidBookName22 {
+        internal static string kstidBookName22 {
             get {
                 return ResourceManager.GetString("kstidBookName22", resourceCulture);
             }
@@ -324,7 +324,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Isaiah.
         /// </summary>
-        public static string kstidBookName23 {
+        internal static string kstidBookName23 {
             get {
                 return ResourceManager.GetString("kstidBookName23", resourceCulture);
             }
@@ -333,7 +333,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Jeremiah.
         /// </summary>
-        public static string kstidBookName24 {
+        internal static string kstidBookName24 {
             get {
                 return ResourceManager.GetString("kstidBookName24", resourceCulture);
             }
@@ -342,7 +342,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Lamentations.
         /// </summary>
-        public static string kstidBookName25 {
+        internal static string kstidBookName25 {
             get {
                 return ResourceManager.GetString("kstidBookName25", resourceCulture);
             }
@@ -351,7 +351,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Ezekiel.
         /// </summary>
-        public static string kstidBookName26 {
+        internal static string kstidBookName26 {
             get {
                 return ResourceManager.GetString("kstidBookName26", resourceCulture);
             }
@@ -360,7 +360,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Daniel.
         /// </summary>
-        public static string kstidBookName27 {
+        internal static string kstidBookName27 {
             get {
                 return ResourceManager.GetString("kstidBookName27", resourceCulture);
             }
@@ -369,7 +369,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Hosea.
         /// </summary>
-        public static string kstidBookName28 {
+        internal static string kstidBookName28 {
             get {
                 return ResourceManager.GetString("kstidBookName28", resourceCulture);
             }
@@ -378,7 +378,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Joel.
         /// </summary>
-        public static string kstidBookName29 {
+        internal static string kstidBookName29 {
             get {
                 return ResourceManager.GetString("kstidBookName29", resourceCulture);
             }
@@ -387,7 +387,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Leviticus.
         /// </summary>
-        public static string kstidBookName3 {
+        internal static string kstidBookName3 {
             get {
                 return ResourceManager.GetString("kstidBookName3", resourceCulture);
             }
@@ -396,7 +396,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Amos.
         /// </summary>
-        public static string kstidBookName30 {
+        internal static string kstidBookName30 {
             get {
                 return ResourceManager.GetString("kstidBookName30", resourceCulture);
             }
@@ -405,7 +405,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Obadiah.
         /// </summary>
-        public static string kstidBookName31 {
+        internal static string kstidBookName31 {
             get {
                 return ResourceManager.GetString("kstidBookName31", resourceCulture);
             }
@@ -414,7 +414,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Jonah.
         /// </summary>
-        public static string kstidBookName32 {
+        internal static string kstidBookName32 {
             get {
                 return ResourceManager.GetString("kstidBookName32", resourceCulture);
             }
@@ -423,7 +423,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Micah.
         /// </summary>
-        public static string kstidBookName33 {
+        internal static string kstidBookName33 {
             get {
                 return ResourceManager.GetString("kstidBookName33", resourceCulture);
             }
@@ -432,7 +432,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Nahum.
         /// </summary>
-        public static string kstidBookName34 {
+        internal static string kstidBookName34 {
             get {
                 return ResourceManager.GetString("kstidBookName34", resourceCulture);
             }
@@ -441,7 +441,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Habakkuk.
         /// </summary>
-        public static string kstidBookName35 {
+        internal static string kstidBookName35 {
             get {
                 return ResourceManager.GetString("kstidBookName35", resourceCulture);
             }
@@ -450,7 +450,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Zephaniah.
         /// </summary>
-        public static string kstidBookName36 {
+        internal static string kstidBookName36 {
             get {
                 return ResourceManager.GetString("kstidBookName36", resourceCulture);
             }
@@ -459,7 +459,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Haggai.
         /// </summary>
-        public static string kstidBookName37 {
+        internal static string kstidBookName37 {
             get {
                 return ResourceManager.GetString("kstidBookName37", resourceCulture);
             }
@@ -468,7 +468,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Zechariah.
         /// </summary>
-        public static string kstidBookName38 {
+        internal static string kstidBookName38 {
             get {
                 return ResourceManager.GetString("kstidBookName38", resourceCulture);
             }
@@ -477,7 +477,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Malachi.
         /// </summary>
-        public static string kstidBookName39 {
+        internal static string kstidBookName39 {
             get {
                 return ResourceManager.GetString("kstidBookName39", resourceCulture);
             }
@@ -486,7 +486,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Numbers.
         /// </summary>
-        public static string kstidBookName4 {
+        internal static string kstidBookName4 {
             get {
                 return ResourceManager.GetString("kstidBookName4", resourceCulture);
             }
@@ -495,7 +495,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Matthew.
         /// </summary>
-        public static string kstidBookName40 {
+        internal static string kstidBookName40 {
             get {
                 return ResourceManager.GetString("kstidBookName40", resourceCulture);
             }
@@ -504,7 +504,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Mark.
         /// </summary>
-        public static string kstidBookName41 {
+        internal static string kstidBookName41 {
             get {
                 return ResourceManager.GetString("kstidBookName41", resourceCulture);
             }
@@ -513,7 +513,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Luke.
         /// </summary>
-        public static string kstidBookName42 {
+        internal static string kstidBookName42 {
             get {
                 return ResourceManager.GetString("kstidBookName42", resourceCulture);
             }
@@ -522,7 +522,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to John.
         /// </summary>
-        public static string kstidBookName43 {
+        internal static string kstidBookName43 {
             get {
                 return ResourceManager.GetString("kstidBookName43", resourceCulture);
             }
@@ -531,7 +531,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Acts.
         /// </summary>
-        public static string kstidBookName44 {
+        internal static string kstidBookName44 {
             get {
                 return ResourceManager.GetString("kstidBookName44", resourceCulture);
             }
@@ -540,7 +540,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Romans.
         /// </summary>
-        public static string kstidBookName45 {
+        internal static string kstidBookName45 {
             get {
                 return ResourceManager.GetString("kstidBookName45", resourceCulture);
             }
@@ -549,7 +549,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to 1 Corinthians.
         /// </summary>
-        public static string kstidBookName46 {
+        internal static string kstidBookName46 {
             get {
                 return ResourceManager.GetString("kstidBookName46", resourceCulture);
             }
@@ -558,7 +558,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to 2 Corinthians.
         /// </summary>
-        public static string kstidBookName47 {
+        internal static string kstidBookName47 {
             get {
                 return ResourceManager.GetString("kstidBookName47", resourceCulture);
             }
@@ -567,7 +567,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Galatians.
         /// </summary>
-        public static string kstidBookName48 {
+        internal static string kstidBookName48 {
             get {
                 return ResourceManager.GetString("kstidBookName48", resourceCulture);
             }
@@ -576,7 +576,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Ephesians.
         /// </summary>
-        public static string kstidBookName49 {
+        internal static string kstidBookName49 {
             get {
                 return ResourceManager.GetString("kstidBookName49", resourceCulture);
             }
@@ -585,7 +585,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Deuteronomy.
         /// </summary>
-        public static string kstidBookName5 {
+        internal static string kstidBookName5 {
             get {
                 return ResourceManager.GetString("kstidBookName5", resourceCulture);
             }
@@ -594,7 +594,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Philippians.
         /// </summary>
-        public static string kstidBookName50 {
+        internal static string kstidBookName50 {
             get {
                 return ResourceManager.GetString("kstidBookName50", resourceCulture);
             }
@@ -603,7 +603,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Colossians.
         /// </summary>
-        public static string kstidBookName51 {
+        internal static string kstidBookName51 {
             get {
                 return ResourceManager.GetString("kstidBookName51", resourceCulture);
             }
@@ -612,7 +612,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to 1 Thessalonians.
         /// </summary>
-        public static string kstidBookName52 {
+        internal static string kstidBookName52 {
             get {
                 return ResourceManager.GetString("kstidBookName52", resourceCulture);
             }
@@ -621,7 +621,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to 2 Thessalonians.
         /// </summary>
-        public static string kstidBookName53 {
+        internal static string kstidBookName53 {
             get {
                 return ResourceManager.GetString("kstidBookName53", resourceCulture);
             }
@@ -630,7 +630,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to 1 Timothy.
         /// </summary>
-        public static string kstidBookName54 {
+        internal static string kstidBookName54 {
             get {
                 return ResourceManager.GetString("kstidBookName54", resourceCulture);
             }
@@ -639,7 +639,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to 2 Timothy.
         /// </summary>
-        public static string kstidBookName55 {
+        internal static string kstidBookName55 {
             get {
                 return ResourceManager.GetString("kstidBookName55", resourceCulture);
             }
@@ -648,7 +648,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Titus.
         /// </summary>
-        public static string kstidBookName56 {
+        internal static string kstidBookName56 {
             get {
                 return ResourceManager.GetString("kstidBookName56", resourceCulture);
             }
@@ -657,7 +657,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Philemon.
         /// </summary>
-        public static string kstidBookName57 {
+        internal static string kstidBookName57 {
             get {
                 return ResourceManager.GetString("kstidBookName57", resourceCulture);
             }
@@ -666,7 +666,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Hebrews.
         /// </summary>
-        public static string kstidBookName58 {
+        internal static string kstidBookName58 {
             get {
                 return ResourceManager.GetString("kstidBookName58", resourceCulture);
             }
@@ -675,7 +675,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to James.
         /// </summary>
-        public static string kstidBookName59 {
+        internal static string kstidBookName59 {
             get {
                 return ResourceManager.GetString("kstidBookName59", resourceCulture);
             }
@@ -684,7 +684,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Joshua.
         /// </summary>
-        public static string kstidBookName6 {
+        internal static string kstidBookName6 {
             get {
                 return ResourceManager.GetString("kstidBookName6", resourceCulture);
             }
@@ -693,7 +693,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to 1 Peter.
         /// </summary>
-        public static string kstidBookName60 {
+        internal static string kstidBookName60 {
             get {
                 return ResourceManager.GetString("kstidBookName60", resourceCulture);
             }
@@ -702,7 +702,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to 2 Peter.
         /// </summary>
-        public static string kstidBookName61 {
+        internal static string kstidBookName61 {
             get {
                 return ResourceManager.GetString("kstidBookName61", resourceCulture);
             }
@@ -711,7 +711,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to 1 John.
         /// </summary>
-        public static string kstidBookName62 {
+        internal static string kstidBookName62 {
             get {
                 return ResourceManager.GetString("kstidBookName62", resourceCulture);
             }
@@ -720,7 +720,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to 2 John.
         /// </summary>
-        public static string kstidBookName63 {
+        internal static string kstidBookName63 {
             get {
                 return ResourceManager.GetString("kstidBookName63", resourceCulture);
             }
@@ -729,7 +729,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to 3 John.
         /// </summary>
-        public static string kstidBookName64 {
+        internal static string kstidBookName64 {
             get {
                 return ResourceManager.GetString("kstidBookName64", resourceCulture);
             }
@@ -738,7 +738,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Jude.
         /// </summary>
-        public static string kstidBookName65 {
+        internal static string kstidBookName65 {
             get {
                 return ResourceManager.GetString("kstidBookName65", resourceCulture);
             }
@@ -747,7 +747,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Revelation.
         /// </summary>
-        public static string kstidBookName66 {
+        internal static string kstidBookName66 {
             get {
                 return ResourceManager.GetString("kstidBookName66", resourceCulture);
             }
@@ -756,7 +756,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Judges.
         /// </summary>
-        public static string kstidBookName7 {
+        internal static string kstidBookName7 {
             get {
                 return ResourceManager.GetString("kstidBookName7", resourceCulture);
             }
@@ -765,7 +765,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Ruth.
         /// </summary>
-        public static string kstidBookName8 {
+        internal static string kstidBookName8 {
             get {
                 return ResourceManager.GetString("kstidBookName8", resourceCulture);
             }
@@ -774,7 +774,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to 1 Samuel.
         /// </summary>
-        public static string kstidBookName9 {
+        internal static string kstidBookName9 {
             get {
                 return ResourceManager.GetString("kstidBookName9", resourceCulture);
             }
@@ -783,7 +783,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Checks for potentially invalid characters..
         /// </summary>
-        public static string kstidDescription_6558A579B9C44EFD8728F994D0561293 {
+        internal static string kstidDescription_6558A579B9C44EFD8728F994D0561293 {
             get {
                 return ResourceManager.GetString("kstidDescription_6558A579B9C44EFD8728F994D0561293", resourceCulture);
             }
@@ -792,7 +792,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Checks for repeated words..
         /// </summary>
-        public static string kstidDescription_72ABB400F274449892C577E99C90F75B {
+        internal static string kstidDescription_72ABB400F274449892C577E99C90F75B {
             get {
                 return ResourceManager.GetString("kstidDescription_72ABB400F274449892C577E99C90F75B", resourceCulture);
             }
@@ -801,7 +801,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Checks for potential inconsistencies in capitalization..
         /// </summary>
-        public static string kstidDescription_BABCB400F274449892C577E99C90F75B {
+        internal static string kstidDescription_BABCB400F274449892C577E99C90F75B {
             get {
                 return ResourceManager.GetString("kstidDescription_BABCB400F274449892C577E99C90F75B", resourceCulture);
             }
@@ -810,7 +810,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Checks for words with a potentially invalid mix of uppercase and lowercase letters..
         /// </summary>
-        public static string kstidDescription_BABCB400F274449892C577E99C90F75D {
+        internal static string kstidDescription_BABCB400F274449892C577E99C90F75D {
             get {
                 return ResourceManager.GetString("kstidDescription_BABCB400F274449892C577E99C90F75D", resourceCulture);
             }
@@ -819,7 +819,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Checks for potential inconsistencies in the use of punctuation..
         /// </summary>
-        public static string kstidDescription_DCC8D4D213B246E48FB329C166D189EA {
+        internal static string kstidDescription_DCC8D4D213B246E48FB329C166D189EA {
             get {
                 return ResourceManager.GetString("kstidDescription_DCC8D4D213B246E48FB329C166D189EA", resourceCulture);
             }
@@ -828,7 +828,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Checks for unmatched parentheses or other punctuation that normally occurs in pairs..
         /// </summary>
-        public static string kstidDescription_DDCCB400F274449892C577E99C90F75B {
+        internal static string kstidDescription_DDCCB400F274449892C577E99C90F75B {
             get {
                 return ResourceManager.GetString("kstidDescription_DDCCB400F274449892C577E99C90F75B", resourceCulture);
             }
@@ -837,7 +837,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Checks for potential inconsistencies in the markup of quotations..
         /// </summary>
-        public static string kstidDescription_DDCCB400F274449892C577E99C90F75C {
+        internal static string kstidDescription_DDCCB400F274449892C577E99C90F75C {
             get {
                 return ResourceManager.GetString("kstidDescription_DDCCB400F274449892C577E99C90F75C", resourceCulture);
             }
@@ -846,7 +846,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Checks for potential inconsistencies in chapter and verse numbers..
         /// </summary>
-        public static string kstidDescription_F17A054BD21E4298A1A50D79C4AF6F0F {
+        internal static string kstidDescription_F17A054BD21E4298A1A50D79C4AF6F0F {
             get {
                 return ResourceManager.GetString("kstidDescription_F17A054BD21E4298A1A50D79C4AF6F0F", resourceCulture);
             }
@@ -855,7 +855,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Maximum number of {0} errors exceeded..
         /// </summary>
-        public static string kstidExceededMaxNumberIdenticalChecks {
+        internal static string kstidExceededMaxNumberIdenticalChecks {
             get {
                 return ResourceManager.GetString("kstidExceededMaxNumberIdenticalChecks", resourceCulture);
             }
@@ -865,7 +865,7 @@ namespace SIL.LCModel.DomainServices {
         ///   Looks up a localized string similar to &quot;{0}
         ///This file will be removed from the import project&quot;.
         /// </summary>
-        public static string kstidImportBadFile {
+        internal static string kstidImportBadFile {
             get {
                 return ResourceManager.GetString("kstidImportBadFile", resourceCulture);
             }
@@ -874,7 +874,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Characters.
         /// </summary>
-        public static string kstidName_6558A579B9C44EFD8728F994D0561293 {
+        internal static string kstidName_6558A579B9C44EFD8728F994D0561293 {
             get {
                 return ResourceManager.GetString("kstidName_6558A579B9C44EFD8728F994D0561293", resourceCulture);
             }
@@ -883,7 +883,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Repeated Words.
         /// </summary>
-        public static string kstidName_72ABB400F274449892C577E99C90F75B {
+        internal static string kstidName_72ABB400F274449892C577E99C90F75B {
             get {
                 return ResourceManager.GetString("kstidName_72ABB400F274449892C577E99C90F75B", resourceCulture);
             }
@@ -892,7 +892,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Capitalization.
         /// </summary>
-        public static string kstidName_BABCB400F274449892C577E99C90F75B {
+        internal static string kstidName_BABCB400F274449892C577E99C90F75B {
             get {
                 return ResourceManager.GetString("kstidName_BABCB400F274449892C577E99C90F75B", resourceCulture);
             }
@@ -901,7 +901,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Mixed Capitalization.
         /// </summary>
-        public static string kstidName_BABCB400F274449892C577E99C90F75D {
+        internal static string kstidName_BABCB400F274449892C577E99C90F75D {
             get {
                 return ResourceManager.GetString("kstidName_BABCB400F274449892C577E99C90F75D", resourceCulture);
             }
@@ -910,7 +910,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Punctuation Patterns.
         /// </summary>
-        public static string kstidName_DCC8D4D213B246E48FB329C166D189EA {
+        internal static string kstidName_DCC8D4D213B246E48FB329C166D189EA {
             get {
                 return ResourceManager.GetString("kstidName_DCC8D4D213B246E48FB329C166D189EA", resourceCulture);
             }
@@ -919,7 +919,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Matching Punctuation Pairs.
         /// </summary>
-        public static string kstidName_DDCCB400F274449892C577E99C90F75B {
+        internal static string kstidName_DDCCB400F274449892C577E99C90F75B {
             get {
                 return ResourceManager.GetString("kstidName_DDCCB400F274449892C577E99C90F75B", resourceCulture);
             }
@@ -928,7 +928,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Quotation Marks.
         /// </summary>
-        public static string kstidName_DDCCB400F274449892C577E99C90F75C {
+        internal static string kstidName_DDCCB400F274449892C577E99C90F75C {
             get {
                 return ResourceManager.GetString("kstidName_DDCCB400F274449892C577E99C90F75C", resourceCulture);
             }
@@ -937,7 +937,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Chapter and Verse Numbers.
         /// </summary>
-        public static string kstidName_F17A054BD21E4298A1A50D79C4AF6F0F {
+        internal static string kstidName_F17A054BD21E4298A1A50D79C4AF6F0F {
             get {
                 return ResourceManager.GetString("kstidName_F17A054BD21E4298A1A50D79C4AF6F0F", resourceCulture);
             }
@@ -946,7 +946,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to The Paratext project selected for Back Translation is already in use. The projects must be unique..
         /// </summary>
-        public static string kstidPtBtAlreadyUsed {
+        internal static string kstidPtBtAlreadyUsed {
             get {
                 return ResourceManager.GetString("kstidPtBtAlreadyUsed", resourceCulture);
             }
@@ -955,7 +955,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to The Paratext project selected for notes is already in use. The projects must be unique..
         /// </summary>
-        public static string kstidPtNotesAlreadyUsed {
+        internal static string kstidPtNotesAlreadyUsed {
             get {
                 return ResourceManager.GetString("kstidPtNotesAlreadyUsed", resourceCulture);
             }
@@ -964,7 +964,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to The Paratext project selected for Scripture is already in use. The projects must be unique..
         /// </summary>
-        public static string kstidPtScrAlreadyUsed {
+        internal static string kstidPtScrAlreadyUsed {
             get {
                 return ResourceManager.GetString("kstidPtScrAlreadyUsed", resourceCulture);
             }
@@ -973,7 +973,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Level {0} quote closed.
         /// </summary>
-        public static string Level__0__quote_closed {
+        internal static string Level__0__quote_closed {
             get {
                 return ResourceManager.GetString("Level__0__quote_closed", resourceCulture);
             }
@@ -982,7 +982,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Level {0} quote continuer.
         /// </summary>
-        public static string Level__0__quote_continuer {
+        internal static string Level__0__quote_continuer {
             get {
                 return ResourceManager.GetString("Level__0__quote_continuer", resourceCulture);
             }
@@ -991,7 +991,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Level {0} quote opened.
         /// </summary>
-        public static string Level__0__quote_opened {
+        internal static string Level__0__quote_opened {
             get {
                 return ResourceManager.GetString("Level__0__quote_opened", resourceCulture);
             }
@@ -1000,7 +1000,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Missing chapter number {0}.
         /// </summary>
-        public static string Missing_chapter_number__0_ {
+        internal static string Missing_chapter_number__0_ {
             get {
                 return ResourceManager.GetString("Missing_chapter_number__0_", resourceCulture);
             }
@@ -1009,7 +1009,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Missing chapter numbers {0}-{1}.
         /// </summary>
-        public static string Missing_chapter_numbers__0___1_ {
+        internal static string Missing_chapter_numbers__0___1_ {
             get {
                 return ResourceManager.GetString("Missing_chapter_numbers__0___1_", resourceCulture);
             }
@@ -1018,7 +1018,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Missing continuation mark: level {0}.
         /// </summary>
-        public static string Missing_continuation_mark__level__0_ {
+        internal static string Missing_continuation_mark__level__0_ {
             get {
                 return ResourceManager.GetString("Missing_continuation_mark__level__0_", resourceCulture);
             }
@@ -1027,7 +1027,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Missing continuation marks: levels 1-{0}.
         /// </summary>
-        public static string Missing_continuation_marks__levels_1__0_ {
+        internal static string Missing_continuation_marks__levels_1__0_ {
             get {
                 return ResourceManager.GetString("Missing_continuation_marks__levels_1__0_", resourceCulture);
             }
@@ -1036,7 +1036,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Missing verse number {0}.
         /// </summary>
-        public static string Missing_verse_number__0_ {
+        internal static string Missing_verse_number__0_ {
             get {
                 return ResourceManager.GetString("Missing_verse_number__0_", resourceCulture);
             }
@@ -1045,7 +1045,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Missing verse numbers {0}-{1}.
         /// </summary>
-        public static string Missing_verse_numbers__0___1_ {
+        internal static string Missing_verse_numbers__0___1_ {
             get {
                 return ResourceManager.GetString("Missing_verse_numbers__0___1_", resourceCulture);
             }
@@ -1054,7 +1054,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Missing verse text in verse {0}.
         /// </summary>
-        public static string Missing_verse_text_in_verse__0_ {
+        internal static string Missing_verse_text_in_verse__0_ {
             get {
                 return ResourceManager.GetString("Missing_verse_text_in_verse__0_", resourceCulture);
             }
@@ -1063,7 +1063,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Other.
         /// </summary>
-        public static string Other {
+        internal static string Other {
             get {
                 return ResourceManager.GetString("Other", resourceCulture);
             }
@@ -1072,7 +1072,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Overlapping pair.
         /// </summary>
-        public static string Overlapping_pair {
+        internal static string Overlapping_pair {
             get {
                 return ResourceManager.GetString("Overlapping_pair", resourceCulture);
             }
@@ -1081,7 +1081,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Proper nouns should begin with a capital letter.
         /// </summary>
-        public static string Proper_nouns_should_begin_with_a_capital_letter {
+        internal static string Proper_nouns_should_begin_with_a_capital_letter {
             get {
                 return ResourceManager.GetString("Proper_nouns_should_begin_with_a_capital_letter", resourceCulture);
             }
@@ -1090,7 +1090,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Repeated word.
         /// </summary>
-        public static string Repeated_word {
+        internal static string Repeated_word {
             get {
                 return ResourceManager.GetString("Repeated_word", resourceCulture);
             }
@@ -1099,7 +1099,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Sentence should begin with a capital letter.
         /// </summary>
-        public static string Sentence_should_begin_with_a_capital_letter {
+        internal static string Sentence_should_begin_with_a_capital_letter {
             get {
                 return ResourceManager.GetString("Sentence_should_begin_with_a_capital_letter", resourceCulture);
             }
@@ -1108,7 +1108,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Space found in verse bridge.
         /// </summary>
-        public static string Space_found_in_verse_bridge {
+        internal static string Space_found_in_verse_bridge {
             get {
                 return ResourceManager.GetString("Space_found_in_verse_bridge", resourceCulture);
             }
@@ -1117,7 +1117,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Space found in verse number.
         /// </summary>
-        public static string Space_found_in_verse_number {
+        internal static string Space_found_in_verse_number {
             get {
                 return ResourceManager.GetString("Space_found_in_verse_number", resourceCulture);
             }
@@ -1126,7 +1126,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Text in the {0} style should begin with a capital letter.
         /// </summary>
-        public static string Text_in_the__0__style_should_begin_with_a_capital_letter {
+        internal static string Text_in_the__0__style_should_begin_with_a_capital_letter {
             get {
                 return ResourceManager.GetString("Text_in_the__0__style_should_begin_with_a_capital_letter", resourceCulture);
             }
@@ -1135,7 +1135,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Title should begin with a capital letter.
         /// </summary>
-        public static string Title_should_begin_with_a_capital_letter {
+        internal static string Title_should_begin_with_a_capital_letter {
             get {
                 return ResourceManager.GetString("Title_should_begin_with_a_capital_letter", resourceCulture);
             }
@@ -1144,7 +1144,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Unexpected opening mark: level {0}.
         /// </summary>
-        public static string Unexpected_opening_mark__level__0_ {
+        internal static string Unexpected_opening_mark__level__0_ {
             get {
                 return ResourceManager.GetString("Unexpected_opening_mark__level__0_", resourceCulture);
             }
@@ -1153,7 +1153,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Unexpected verse number.
         /// </summary>
-        public static string Unexpected_verse_number {
+        internal static string Unexpected_verse_number {
             get {
                 return ResourceManager.GetString("Unexpected_verse_number", resourceCulture);
             }
@@ -1162,7 +1162,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Unexpected verse numbers.
         /// </summary>
-        public static string Unexpected_verse_numbers {
+        internal static string Unexpected_verse_numbers {
             get {
                 return ResourceManager.GetString("Unexpected_verse_numbers", resourceCulture);
             }
@@ -1171,7 +1171,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Unmatched closing mark: level {0}.
         /// </summary>
-        public static string Unmatched_closing_mark__level__0_ {
+        internal static string Unmatched_closing_mark__level__0_ {
             get {
                 return ResourceManager.GetString("Unmatched_closing_mark__level__0_", resourceCulture);
             }
@@ -1180,7 +1180,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Unmatched opening mark: level {0}.
         /// </summary>
-        public static string Unmatched_opening_mark__level__0_ {
+        internal static string Unmatched_opening_mark__level__0_ {
             get {
                 return ResourceManager.GetString("Unmatched_opening_mark__level__0_", resourceCulture);
             }
@@ -1189,7 +1189,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Unmatched punctuation.
         /// </summary>
-        public static string Unmatched_punctuation {
+        internal static string Unmatched_punctuation {
             get {
                 return ResourceManager.GetString("Unmatched_punctuation", resourceCulture);
             }
@@ -1198,7 +1198,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Unspecified use of punctuation pattern.
         /// </summary>
-        public static string Unspecified_use_of_punctuation_pattern {
+        internal static string Unspecified_use_of_punctuation_pattern {
             get {
                 return ResourceManager.GetString("Unspecified_use_of_punctuation_pattern", resourceCulture);
             }
@@ -1207,7 +1207,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Verse number out of order.
         /// </summary>
-        public static string Verse_number_out_of_order {
+        internal static string Verse_number_out_of_order {
             get {
                 return ResourceManager.GetString("Verse_number_out_of_order", resourceCulture);
             }
@@ -1216,7 +1216,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Verse number out of order; expected verse {0}.
         /// </summary>
-        public static string Verse_number_out_of_order__expected_verse__0_ {
+        internal static string Verse_number_out_of_order__expected_verse__0_ {
             get {
                 return ResourceManager.GetString("Verse_number_out_of_order__expected_verse__0_", resourceCulture);
             }
@@ -1225,7 +1225,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Verse number out of range.
         /// </summary>
-        public static string Verse_number_out_of_range {
+        internal static string Verse_number_out_of_range {
             get {
                 return ResourceManager.GetString("Verse_number_out_of_range", resourceCulture);
             }
@@ -1234,7 +1234,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Verse numbers out of order.
         /// </summary>
-        public static string Verse_numbers_out_of_order {
+        internal static string Verse_numbers_out_of_order {
             get {
                 return ResourceManager.GetString("Verse_numbers_out_of_order", resourceCulture);
             }
@@ -1243,7 +1243,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Verse numbers out of range.
         /// </summary>
-        public static string Verse_numbers_out_of_range {
+        internal static string Verse_numbers_out_of_range {
             get {
                 return ResourceManager.GetString("Verse_numbers_out_of_range", resourceCulture);
             }
@@ -1252,7 +1252,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Verses numbers out of order; expected verse {0}.
         /// </summary>
-        public static string Verses_numbers_out_of_order__expected_verse__0_ {
+        internal static string Verses_numbers_out_of_order__expected_verse__0_ {
             get {
                 return ResourceManager.GetString("Verses_numbers_out_of_order__expected_verse__0_", resourceCulture);
             }
@@ -1261,7 +1261,7 @@ namespace SIL.LCModel.DomainServices {
         /// <summary>
         ///   Looks up a localized string similar to Word has mixed capitalization.
         /// </summary>
-        public static string Word_has_mixed_capitalization {
+        internal static string Word_has_mixed_capitalization {
             get {
                 return ResourceManager.GetString("Word_has_mixed_capitalization", resourceCulture);
             }
