@@ -25,7 +25,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// Add mock MDC..
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			var mockMDC = new MockMDCForDataMigration();

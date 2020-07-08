@@ -127,7 +127,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.That(sense.Element("Definition").Element("AStr").Elements("Run").Skip(1).First().Attribute("ws").Value, Is.EqualTo("qaa-x-kal"));
 			// Check LiftResidue lang attributes are fixed; note that a result containing lang=&quot;qaa-x-kal&quot
 			// would also be acceptable, perhaps even more to be expected, but converting the &quot; s here to " is acceptable.
-			Assert.That(sense.Element("LiftResidue").Element("Uni").Value, Is.StringContaining("lang=\"qaa-x-kal\""));
+			Assert.That(sense.Element("LiftResidue").Element("Uni").Value, Does.Contain("lang=\"qaa-x-kal\""));
 			// Verify that WsProp data in StStyle guid="4d312f11-439e-11d4-b5e7-00400543a266" is changed to qaa-x-kal
 			var style = XElement.Parse(dtoRepos.GetDTO("4d312f11-439e-11d4-b5e7-00400543a266").Xml);
 			Assert.That(style.Element("Rules").Element("Prop").Element("WsStyles9999").Elements("WsProp").Skip(1).First().Attribute("ws").Value, Is.EqualTo("qaa-x-kal"));
@@ -160,16 +160,16 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 			// Check the local settings.
 			var propTable = XElement.Parse(File.ReadAllText(sampleSettings, Encoding.UTF8));
-			Assert.That(propTable.Element("Property").Element("value").Value, Is.StringContaining("5062001%qaa-x-kal"));
-			Assert.That(propTable.Element("Property").Element("value").Value, Is.StringContaining("5112002%qaa-x-kal"));
-			Assert.That(propTable.Element("Property").Element("value").Value, Is.StringContaining("103%qaa-x-kal"));
-			Assert.That(propTable.Elements("Property").Skip(1).First().Element("value").Value, Is.StringContaining("ws=\"qaa-x-kal\""));
-			Assert.That(propTable.Elements("Property").Skip(2).First().Element("value").Value, Is.StringContaining("ws=\"$ws=qaa-x-kal\""));
-			Assert.That(propTable.Elements("Property").Skip(3).First().Element("value").Value, Is.StringContaining("ws=\"$wsName\""));
-			Assert.That(propTable.Elements("Property").Skip(4).First().Element("value").Value, Is.StringContaining("ws=\"$ws=reversal\""));
+			Assert.That(propTable.Element("Property").Element("value").Value, Does.Contain("5062001%qaa-x-kal"));
+			Assert.That(propTable.Element("Property").Element("value").Value, Does.Contain("5112002%qaa-x-kal"));
+			Assert.That(propTable.Element("Property").Element("value").Value, Does.Contain("103%qaa-x-kal"));
+			Assert.That(propTable.Elements("Property").Skip(1).First().Element("value").Value, Does.Contain("ws=\"qaa-x-kal\""));
+			Assert.That(propTable.Elements("Property").Skip(2).First().Element("value").Value, Does.Contain("ws=\"$ws=qaa-x-kal\""));
+			Assert.That(propTable.Elements("Property").Skip(3).First().Element("value").Value, Does.Contain("ws=\"$wsName\""));
+			Assert.That(propTable.Elements("Property").Skip(4).First().Element("value").Value, Does.Contain("ws=\"$ws=reversal\""));
 			Assert.That(propTable.Elements("Property").Skip(5).First().Element("value").Value, Is.EqualTo("qaa-x-kal"));
-			Assert.That(propTable.Elements("Property").Skip(6).First().Element("value").Value, Is.StringContaining("ws=\"qaa-x-kal\""));
-			Assert.That(propTable.Elements("Property").Skip(7).First().Element("value").Value, Is.StringContaining("ws=\"$ws=qaa-x-kal\""));
+			Assert.That(propTable.Elements("Property").Skip(6).First().Element("value").Value, Does.Contain("ws=\"qaa-x-kal\""));
+			Assert.That(propTable.Elements("Property").Skip(7).First().Element("value").Value, Does.Contain("ws=\"$ws=qaa-x-kal\""));
 		}
 
 		private static void PrepareStore(string path)

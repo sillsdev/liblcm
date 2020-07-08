@@ -24,7 +24,7 @@ namespace SIL.LCModel.Core.Text
 		/// Sets the up the test.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void SetUp()
 		{
 			m_comparer = new UCDComparer();

@@ -41,7 +41,7 @@ namespace SIL.LCModel.Application.Impl
 		/// If a test overrides this, it should call this base implementation.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public override void FixtureSetup()
 		{
 			base.FixtureSetup();
@@ -87,7 +87,7 @@ namespace SIL.LCModel.Application.Impl
 		/// If a test overrides this, it should call this base implementation.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public override void FixtureTeardown()
 		{
 			m_sda = null;

@@ -23,7 +23,7 @@ namespace SIL.LCModel.Core.Text
 		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetup()
 		{
 			CustomIcu.InitIcuDataDir();

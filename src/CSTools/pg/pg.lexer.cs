@@ -5,7 +5,8 @@
 // Vol 4 (1982) p. 615-649
 // See class SymbolsGen in parser.cs
 
-using System;using Tools;
+using System;
+using SIL.LCModel.Tools;
 //%|ptokens
 public class yyptokens : Tokens {
  public yyptokens(ErrorHandler eh):base(eh) { arr = new int[] {
