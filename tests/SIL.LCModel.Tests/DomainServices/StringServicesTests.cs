@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2010-2017 SIL International
+// Copyright (c) 2010-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -32,7 +32,7 @@ namespace SIL.LCModel.DomainServices
 			tisb.AppendTsString(end);
 			ITsString result = null;
 			Assert.DoesNotThrow(()=>result = StringServices.CrawlRuns(tisb.GetString(), run => run.get_WritingSystemAt(0) == wsEn ? null : run));
-			Assert.That(result.Text, Is.StringMatching("end"));
+			Assert.That(result.Text, Does.Match("end"));
 		}
 
 		/// <summary/>
@@ -61,7 +61,7 @@ namespace SIL.LCModel.DomainServices
 			tisb.AppendTsString(end);
 			ITsString result = null;
 			Assert.DoesNotThrow(() => result = StringServices.CrawlRuns(tisb.GetString(), run => run.get_WritingSystemAt(0) == wsFr ? null : run));
-			Assert.That(result.Text, Is.StringMatching("beginning"));
+			Assert.That(result.Text, Does.Match("beginning"));
 		}
 
 		/// <summary/>
@@ -79,7 +79,7 @@ namespace SIL.LCModel.DomainServices
 			tisb.AppendTsString(end);
 			ITsString result = null;
 			Assert.DoesNotThrow(() => result = StringServices.CrawlRuns(tisb.GetString(), run => run.get_WritingSystemAt(0) == wsFr ? null : run));
-			Assert.That(result.Text, Is.StringMatching("beginningend"));
+			Assert.That(result.Text, Does.Match("beginningend"));
 		}
 
 		/// <summary/>
@@ -93,7 +93,7 @@ namespace SIL.LCModel.DomainServices
 			tisb.AppendTsString(begin);
 			ITsString result = null;
 			Assert.DoesNotThrow(() => result = StringServices.CrawlRuns(tisb.GetString(), run => run.get_WritingSystemAt(0) == wsFr ? null : run));
-			Assert.That(result.Text, Is.StringMatching("beginning"));
+			Assert.That(result.Text, Does.Match("beginning"));
 		}
 
 		/// <summary/>
@@ -109,7 +109,7 @@ namespace SIL.LCModel.DomainServices
 			tisb.AppendTsString(end);
 			ITsString result = null;
 			Assert.DoesNotThrow(() => result = StringServices.CrawlRuns(tisb.GetString(), run => run.get_WritingSystemAt(0) == wsFr ? null : run));
-			Assert.That(result.Text, Is.StringMatching("beginningend"));
+			Assert.That(result.Text, Does.Match("beginningend"));
 		}
 
 		/// <summary>

@@ -25,7 +25,7 @@ namespace SIL.LCModel.Core.Phonology
 		/// <summary>
 		/// This method is called once, before any test is run.
 		/// </summary>
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public virtual void FixtureSetUp()
 		{
 			m_per = new PhonEnvRecognizer(m_saSegments, m_saNaturalClasses);
