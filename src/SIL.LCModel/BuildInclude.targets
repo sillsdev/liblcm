@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
 	<PropertyGroup>
-		<OutDir Condition="'$(OutDir)' == ''">../../artifacts/$(Configuration)/</OutDir>
+		<OutDir Condition="'$(OutDir)' == ''">../../artifacts/$(Configuration)/net461/</OutDir>
 		<MsbuildCommand Condition="'$(OS)'=='Windows_NT' And '$(MsBuildCommand)'==''">"$(MSBuildBinPath)\msbuild.exe"</MsbuildCommand>
 		<MsbuildCommand Condition="'$(OS)'=='Unix' And '$(MsBuildCommand)'==''">xbuild</MsbuildCommand>
 	</PropertyGroup>
@@ -18,21 +18,18 @@
 		<GeneratedFiles Include="IOC/GeneratedServiceLocatorBootstrapper.cs" />
 	</ItemGroup>
 
-	<Target Name="AfterClean">
+	<Target Name="CustomClean" AfterTargets="Clean">
 		<Delete Files="@(GeneratedFiles)" ContinueOnError="true" />
 	</Target>
 
-	<Target Name="GenerateModel" Inputs="MasterLCModel.xml" Outputs="@(GeneratedFiles)">
+	<Target Name="GenerateModel" Inputs="MasterLCModel.xml" Outputs="@(GeneratedFiles)" BeforeTargets="CoreCompile">
 		<!-- Call the LcmGenerate task from SIL.LCModel.Build.Tasks in a separate msbuild process,
 		     so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
 		<Exec Command="$(MsbuildCommand) GenerateModel.proj /p:Configuration=$(Configuration) /p:OutDir=$(OutDir)" />
 	</Target>
 
-	<Target Name="CheckWinForms">
+	<Target Name="CheckWinForms" BeforeTargets="CoreCompile">
 		<Error Text="Please do NOT make FDO reference Windows.Forms. It is not supposed to contain UI code!"
 			Condition="'%(Reference.Identity)' == 'System.Windows.Forms'" />
-	</Target>
-
-	<Target Name="BeforeCompile" DependsOnTargets="CheckWinForms;GenerateModel">
 	</Target>
 </Project>

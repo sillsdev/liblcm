@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
-		<OutDir Condition="'$(OutDir)' == ''">../../artifacts/$(Configuration)/</OutDir>
+		<OutDir Condition="'$(OutDir)' == ''">../../artifacts/$(Configuration)/net461/</OutDir>
 		<IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">obj/x86/$(Configuration)/</IntermediateOutputPath>
 		<MsbuildCommand Condition="'$(OS)'=='Windows_NT' And '$(MsBuildCommand)'==''">"$(MSBuildBinPath)\msbuild.exe"</MsbuildCommand>
 		<MsbuildCommand Condition="'$(OS)'=='Unix' And '$(MsBuildCommand)'==''">xbuild</MsbuildCommand>
@@ -18,12 +18,12 @@
 		<KernelOutputs Include="$(OutDir)KernelInterfaces/FwKernelTlb.json" />
 	</ItemGroup>
 	<Target Name="SetInstallLocation">
-		<Exec Command="$(VSWhereDir)\vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath" ConsoleToMSBuild="true" Condition="'$(OS)'=='Windows_NT'">
+		<Exec Command="$(VSWhereDir)vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath" ConsoleToMSBuild="true" Condition="'$(OS)'=='Windows_NT'">
 			<Output TaskParameter="ConsoleOutput" PropertyName="VSInstallDir" />
 		</Exec>
 	</Target>
 
-	<Target Name="GenerateKernelCs" Inputs="@(KernelInputs)" Outputs="@(KernelOutputs)" DependsOnTargets="SetInstallLocation">
+	<Target Name="GenerateKernelCs" BeforeTargets="CoreCompile" Inputs="@(KernelInputs)" Outputs="@(KernelOutputs)" DependsOnTargets="SetInstallLocation">
 		<!-- Call the IdlImp task from SIL.LCModel.Build.Tasks in a separate msbuild process,
 		     so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
 		<Exec Command="$(MsbuildCommand) GenerateKernelCs.proj /p:OutDir=$(OutDir) /p:IntermediateOutputPath=$(IntermediateOutputPath) /p:Platform=$(Platform) /p:VSInstallDir=&quot;$(VSInstallDir)&quot;" />
@@ -43,16 +43,12 @@
 
 	</ItemGroup>
 
-	<Target Name="GenerateIcuData" Inputs="@(IcuDataInputs)" Outputs="@(IcuDataOutputs)">
+	<Target Name="GenerateIcuData" AfterTargets="Build" Inputs="@(IcuDataInputs)" Outputs="@(IcuDataOutputs)">
 		<PropertyGroup>
 			<Folder Condition="'$(Platform)'=='x86'">win-x86</Folder>
 			<Folder Condition="'$(Platform)'!='x86'">win-x64</Folder>
 		</PropertyGroup>
-		<ItemGroup>
-			<Gennorm2Source Include="../../packages/Icu4c.Win.Fw.Bin.54.1.13-beta/build/$(Folder)/gennorm2.exe" Condition="'$(OS)'=='Windows_NT'" />
-		</ItemGroup>
 
-		<Copy SourceFiles="@(Gennorm2Source)" DestinationFolder="$(OutDir)lib/$(Folder)" Condition="'$(OS)'=='Windows_NT'" />
 		<MakeDir Directories="$(OutDir)IcuData/icudt$(IcuVersion)l" />
 		<PropertyGroup>
 			<gennorm2 Condition="'$(OS)'=='Windows_NT'">"$(OutDir)lib/$(Folder)/gennorm2.exe"</gennorm2>
@@ -63,17 +59,11 @@
 		<Copy SourceFiles="@(IcuDataInputs)" DestinationFolder="$(OutDir)IcuData/data" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
 	</Target>
 
-	<Target Name="AfterClean">
+	<Target Name="CustomClean" AfterTargets="Clean">
 		<Delete Files="@(KernelOutputs)" ContinueOnError="true"/>
 		<Delete Files="$(IntermediateOutputPath)FwKernelTlb.idl" ContinueOnError="true" />
 		<Delete Files="$(IntermediateOutputPath)FwKernelTlb.iip" ContinueOnError="true" />
 		<Delete Files="$(IntermediateOutputPath)FwKernelTlb.json" ContinueOnError="true" />
 		<Delete Files="@(IcuDataOutputs)" ContinueOnError="true" />
-	</Target>
-
-	<Target Name="AfterBuild" DependsOnTargets="GenerateIcuData">
-	</Target>
-
-	<Target Name="BeforeCompile" DependsOnTargets="GenerateKernelCs">
 	</Target>
 </Project>

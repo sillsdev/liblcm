@@ -4,6 +4,7 @@
 
 using System;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace SIL.LCModel.Utils.Attributes
 {
@@ -25,7 +26,7 @@ namespace SIL.LCModel.Utils.Attributes
 		/// <summary>
 		/// Release all singletons
 		/// </summary>
-		public override void AfterTest(TestDetails testDetails)
+		public override void AfterTest(ITest testDetails)
 		{
 			base.AfterTest(testDetails);
 			SingletonsContainer.Release();

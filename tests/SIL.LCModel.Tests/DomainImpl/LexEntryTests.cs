@@ -1846,7 +1846,7 @@ namespace SIL.LCModel.DomainImpl
 					naturalClass.Delete();
 
 					// Assert that it is no longer in the environment
-					Assert.That(environment.StringRepresentation.Text, Is.StringContaining(@"\_[C][V]"));
+					Assert.That(environment.StringRepresentation.Text, Does.Contain(@"\_[C][V]"));
 				});
 		}
 
@@ -1885,7 +1885,7 @@ namespace SIL.LCModel.DomainImpl
 					naturalClass.Delete();
 
 					// Assert that it is no longer in the environment
-					Assert.That(environment.StringRepresentation.Text, Is.StringContaining(@"\_[C^1]DELETED"));
+					Assert.That(environment.StringRepresentation.Text, Does.Contain(@"\_[C^1]DELETED"));
 				});
 		}
 
@@ -1924,7 +1924,7 @@ namespace SIL.LCModel.DomainImpl
 					naturalClass.Delete();
 
 					// Assert that it is no longer in the allomorph
-					Assert.That(stemAllomorph.Form.get_String(vernWs).Text, Is.StringContaining(@"[C^1]DELETED"));
+					Assert.That(stemAllomorph.Form.get_String(vernWs).Text, Does.Contain(@"[C^1]DELETED"));
 				});
 		}
 
@@ -1963,7 +1963,7 @@ namespace SIL.LCModel.DomainImpl
 					naturalClass.Delete();
 
 					// Assert that it is no longer in the allomorph
-					Assert.That(affixAllomorph.Form.get_String(vernWs).Text, Is.StringContaining(@"[C^1]DELETED"));
+					Assert.That(affixAllomorph.Form.get_String(vernWs).Text, Does.Contain(@"[C^1]DELETED"));
 				});
 		}
 

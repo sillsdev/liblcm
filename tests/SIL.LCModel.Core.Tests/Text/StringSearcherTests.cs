@@ -22,7 +22,7 @@ namespace SIL.LCModel.Core.Text
 		/// <summary>
 		/// Setup the test fixture.
 		/// </summary>
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			m_wsManager = new WritingSystemManager();

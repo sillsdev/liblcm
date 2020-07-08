@@ -248,12 +248,10 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// -------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(ArgumentException),
-			ExpectedMessage = "File path not specified.(\r)?\nParameter name: srcFile", MatchType = MessageMatch.Regex)]
 		public void CmPictureConstructor_FromTextRep_MissingFilename()
 		{
-			m_pictureFactory.Create("CmPicture||||||This is a caption||",
-				CmFolderTags.LocalPictures);
+			Assert.That(() => m_pictureFactory.Create("CmPicture||||||This is a caption||",
+				CmFolderTags.LocalPictures), Throws.ArgumentException.With.Property("Message").Matches("File path not specified.(\\r)?\\nParametername: srcFile"));
 		}
 
 		/// -------------------------------------------------------------------------------------
@@ -288,11 +286,9 @@ namespace SIL.LCModel.DomainImpl
 		/// -------------------------------------------------------------------------------------
 		[Test]
 		[Ignore("Todo RickM (JohnT): I think we no longer throw exceptions if the picture file is not rooted? Is there something we should test instead?")]
-		[ExpectedException(typeof(ArgumentException),
-			ExpectedMessage = "File does not have a rooted pathname: whatever.jpg(\r)?\nParameter name: srcFile", MatchType = MessageMatch.Regex)]
 		public void CmPictureConstructor_FromTextRep_FilenameNotFullPath()
 		{
-			m_pictureFactory.Create("CmPicture||whatever.jpg||||This is a caption||", CmFolderTags.LocalPictures);
+			Assert.That(m_pictureFactory.Create("CmPicture||whatever.jpg||||This is a caption||", CmFolderTags.LocalPictures), Throws.ArgumentException.With.Property("Message").Matches("File does not have a rooted pathname: whatever.jpg(\r)?\nParameter name: srcFile"));
 		}
 
 		/// <summary>

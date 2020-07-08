@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SIL.LCModel.Core.Tests": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\T_Nic\\Downloads\\TestCentric\\tools\\testcentric.exe"
+    }
+  }
+}

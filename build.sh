@@ -26,4 +26,4 @@ else
 fi
 
 . environ
-xbuild /t:$TARGET /p:Configuration=$CONFIG /p:Platform=$PLATFORM /p:UseLocalFiles=$FILESAVAILABLE LCM.sln
+msbuild /t:$TARGET /p:Configuration=$CONFIG /p:Platform=$PLATFORM /p:UseLocalFiles=$FILESAVAILABLE LCM.sln
