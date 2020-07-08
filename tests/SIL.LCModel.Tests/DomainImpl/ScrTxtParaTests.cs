@@ -752,8 +752,8 @@ namespace SIL.LCModel.DomainImpl
 			AddRunToMockedPara(m_para, "17", ScrStyleNames.VerseNumber);
 			AddRunToMockedPara(m_para, "This is a verse. ", null);
 
-			Assert.AreEqual(new BCVRef(40, 1, 15), m_section.VerseRefStart);
-			Assert.AreEqual(new BCVRef(40, 1, 17), m_section.VerseRefEnd);
+			Assume.That(m_section.VerseRefStart, Is.EqualTo(40001015));
+			Assume.That(m_section.VerseRefEnd, Is.EqualTo(40001017));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -781,8 +781,8 @@ namespace SIL.LCModel.DomainImpl
 			AddRunToMockedPara(para2, "5", ScrStyleNames.VerseNumber);
 			AddRunToMockedPara(para2, "This is a verse. ", null);
 
-			Assert.AreEqual(new BCVRef(40, 2, 1), section2.VerseRefStart);
-			Assert.AreEqual(new BCVRef(40, 2, 5), section2.VerseRefEnd);
+			Assume.That(section2.VerseRefStart, Is.EqualTo(40002001));
+			Assume.That(section2.VerseRefEnd, Is.EqualTo(40002005));
 
 			return para2;
 		}
@@ -799,8 +799,8 @@ namespace SIL.LCModel.DomainImpl
 		{
 			BCVRef refStart, refEnd;
 			m_para.GetRefsAtPosition(-1, m_para.Contents.Length - 1, false, out refStart,  out refEnd);
-			Assert.AreEqual(m_section.VerseRefEnd, refStart);
-			Assert.AreEqual(refStart, refEnd);
+			Assert.That((int)refStart, Is.EqualTo(m_section.VerseRefEnd));
+			Assert.That(refEnd, Is.EqualTo(refStart));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -816,8 +816,8 @@ namespace SIL.LCModel.DomainImpl
 			m_para.GetRefsAtPosition(-1, out refStart, out refEnd);
 			// For this test the needed result is not precisely defined yet
 			// when it is defined, modify this to that spec, but for now...
-			Assert.AreEqual(m_section.VerseRefStart, refStart);
-			Assert.AreEqual(refStart, refEnd);
+			Assert.That((int)refStart, Is.EqualTo(m_section.VerseRefStart));
+			Assert.That(refEnd, Is.EqualTo(refStart));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -831,8 +831,8 @@ namespace SIL.LCModel.DomainImpl
 		{
 			BCVRef refStart, refEnd;
 			m_para.GetRefsAtPosition(-1, m_para.Contents.Length + 1, false, out refStart, out refEnd);
-			Assert.AreEqual(m_section.VerseRefEnd, refStart);
-			Assert.AreEqual(refStart, refEnd);
+			Assert.That((int)refStart, Is.EqualTo(m_section.VerseRefEnd));
+			Assert.That(refEnd, Is.EqualTo(refStart));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -847,8 +847,8 @@ namespace SIL.LCModel.DomainImpl
 			m_para.GetRefsAtPosition(-1, 0, true, out refStart, out refEnd);
 
 			// verify the results
-			Assert.AreEqual(m_section.VerseRefStart, refStart);
-			Assert.AreEqual(refStart, refEnd);
+			Assert.That((int)refStart, Is.EqualTo(m_section.VerseRefStart));
+			Assert.That(refEnd, Is.EqualTo(refStart));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -861,8 +861,8 @@ namespace SIL.LCModel.DomainImpl
 		{
 			BCVRef refStart, refEnd;
 			m_para.GetRefsAtPosition(0, out refStart, out refEnd);
-			Assert.AreEqual(m_section.VerseRefStart, refStart);
-			Assert.AreEqual(refStart, refEnd);
+			Assert.That((int)refStart, Is.EqualTo(m_section.VerseRefStart));
+			Assert.That(refEnd, Is.EqualTo(refStart));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -875,8 +875,8 @@ namespace SIL.LCModel.DomainImpl
 		{
 			BCVRef refStart, refEnd;
 			m_para.GetRefsAtPosition(-1, 1, true, out refStart, out refEnd);
-			Assert.AreEqual(m_section.VerseRefStart, refStart);
-			Assert.AreEqual(refStart, refEnd);
+			Assert.That((int)refStart, Is.EqualTo(m_section.VerseRefStart));
+			Assert.That(refEnd, Is.EqualTo(refStart));
 		}
 
 		/// ------------------------------------------------------------------------------------

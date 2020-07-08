@@ -2,7 +2,7 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
-using Tools;
+using SIL.LCModel.Tools;
 
 namespace SIL.LCModel.Core.Phonology {
 //%Ident

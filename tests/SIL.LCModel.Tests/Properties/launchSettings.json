@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SIL.LCModel.Tests": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\T_Nic\\Downloads\\tools\\nunit.exe"
+    }
+  }
+}

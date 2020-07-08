@@ -10,7 +10,7 @@ using System.IO;
 using System.Text;
 using YYClass;
 
-namespace Tools
+namespace SIL.LCModel.Tools
 {
 	public class GenBase
 	{
