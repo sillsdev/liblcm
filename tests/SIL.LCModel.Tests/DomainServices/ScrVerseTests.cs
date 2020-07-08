@@ -69,37 +69,37 @@ namespace SIL.LCModel.DomainServices
 					// Iterate through the verses in the paragraph
 					ScrVerse verse;
 
-					Assert.IsTrue(verseSet.MoveNext());
+					Assert.That(verseSet.MoveNext(), Is.True);
 				verse = verseSet.Current;
-					Assert.AreEqual("1", verse.Text.Text);
-					Assert.AreEqual(01001001, verse.StartRef);
-					Assert.AreEqual(01001001, verse.EndRef);
+					Assert.That(verse.Text.Text, Is.EqualTo("1"));
+					Assert.That((int)verse.StartRef, Is.EqualTo(01001001));
+					Assert.That((int)verse.EndRef, Is.EqualTo(01001001));
 
-					Assert.IsTrue(verseSet.MoveNext());
+					Assert.That(verseSet.MoveNext(), Is.True);
 				verse = verseSet.Current;
-					Assert.AreEqual("Verse One. ", verse.Text.Text);
-					Assert.AreEqual(01001001, verse.StartRef);
-					Assert.AreEqual(01001001, verse.EndRef);
+					Assert.That(verse.Text.Text, Is.EqualTo("Verse One. "));
+					Assert.That((int)verse.StartRef, Is.EqualTo(01001001));
+					Assert.That((int)verse.EndRef, Is.EqualTo(01001001));
 
-					Assert.IsTrue(verseSet.MoveNext());
+					Assert.That(verseSet.MoveNext(), Is.True);
 				verse = verseSet.Current;
-					Assert.AreEqual("2 Verse Two. ", verse.Text.Text);
-					Assert.AreEqual(01001002, verse.StartRef);
-					Assert.AreEqual(01001002, verse.EndRef);
+					Assert.That(verse.Text.Text, Is.EqualTo("2 Verse Two. "));
+					Assert.That((int)verse.StartRef, Is.EqualTo(01001002));
+					Assert.That((int)verse.EndRef, Is.EqualTo(01001002));
 
-					Assert.IsTrue(verseSet.MoveNext());
+					Assert.That(verseSet.MoveNext(), Is.True);
 				verse = verseSet.Current;
-					Assert.AreEqual("3Verse Three.", verse.Text.Text);
-					Assert.AreEqual(01001003, verse.StartRef);
-					Assert.AreEqual(01001003, verse.EndRef);
+					Assert.That(verse.Text.Text, Is.EqualTo("3Verse Three."));
+					Assert.That((int)verse.StartRef, Is.EqualTo(01001003));
+					Assert.That((int)verse.EndRef, Is.EqualTo(01001003));
 
-					Assert.IsTrue(verseSet.MoveNext());
+					Assert.That(verseSet.MoveNext(), Is.True);
 				verse = verseSet.Current;
-					Assert.AreEqual("4     ", verse.Text.Text);
-					Assert.AreEqual(01001004, verse.StartRef);
-					Assert.AreEqual(01001004, verse.EndRef);
+					Assert.That(verse.Text.Text, Is.EqualTo("4     "));
+					Assert.That((int)verse.StartRef, Is.EqualTo(01001004));
+					Assert.That((int)verse.EndRef, Is.EqualTo(01001004));
 
-					Assert.IsFalse(verseSet.MoveNext());
+					Assert.That(verseSet.MoveNext(), Is.False);
 				}
 			}
 
@@ -149,37 +149,37 @@ namespace SIL.LCModel.DomainServices
 			// Iterate through the verses in the paragraph
 			ScrVerse verse;
 
-			Assert.IsTrue(verseSet.MoveNext());
+			Assert.That(verseSet.MoveNext(), Is.True);
 			verse = verseSet.Current;
-			Assert.AreEqual("1Verse One. ", verse.Text.Text);
-			Assert.AreEqual(01001001, verse.StartRef);
-			Assert.AreEqual(01001001, verse.EndRef);
+			Assert.That(verse.Text.Text, Is.EqualTo("1Verse One. "));
+			Assert.That((int)verse.StartRef, Is.EqualTo(01001001));
+			Assert.That((int)verse.EndRef, Is.EqualTo(01001001));
 
-			Assert.IsTrue(verseSet.MoveNext());
+			Assert.That(verseSet.MoveNext(), Is.True);
 			verse = verseSet.Current;
-			Assert.AreEqual("2 Verse Two. ", verse.Text.Text);
-			Assert.AreEqual(01001002, verse.StartRef);
-			Assert.AreEqual(01001002, verse.EndRef);
+			Assert.That(verse.Text.Text, Is.EqualTo("2 Verse Two. "));
+			Assert.That((int)verse.StartRef, Is.EqualTo(01001002));
+			Assert.That((int)verse.EndRef, Is.EqualTo(01001002));
 
-			Assert.IsTrue(verseSet.MoveNext());
+			Assert.That(verseSet.MoveNext(), Is.True);
 			verse = verseSet.Current;
-			Assert.AreEqual("21Verse with chapter and verse number.", verse.Text.Text);
-			Assert.AreEqual(01002001, verse.StartRef);
-			Assert.AreEqual(01002001, verse.EndRef);
+			Assert.That(verse.Text.Text, Is.EqualTo("21Verse with chapter and verse number."));
+			Assert.That((int)verse.StartRef, Is.EqualTo(01002001));
+			Assert.That((int)verse.EndRef, Is.EqualTo(01002001));
 
-			Assert.IsTrue(verseSet.MoveNext());
+			Assert.That(verseSet.MoveNext(), Is.True);
 			verse = verseSet.Current;
-			Assert.AreEqual("4     ", verse.Text.Text);
-			Assert.AreEqual(01002004, verse.StartRef);
-			Assert.AreEqual(01002004, verse.EndRef);
+			Assert.That(verse.Text.Text, Is.EqualTo("4     "));
+			Assert.That((int)verse.StartRef, Is.EqualTo(01002004));
+			Assert.That((int)verse.EndRef, Is.EqualTo(01002004));
 
-			Assert.IsTrue(verseSet.MoveNext());
+			Assert.That(verseSet.MoveNext(), Is.True);
 			verse = verseSet.Current;
-			Assert.AreEqual("41-3Verses one thru three.", verse.Text.Text);
-			Assert.AreEqual(01004001, verse.StartRef);
-			Assert.AreEqual(01004003, verse.EndRef);
+			Assert.That(verse.Text.Text, Is.EqualTo("41-3Verses one thru three."));
+			Assert.That((int)verse.StartRef, Is.EqualTo(01004001));
+			Assert.That((int)verse.EndRef, Is.EqualTo(01004003));
 
-			Assert.IsFalse(verseSet.MoveNext());
+			Assert.That(verseSet.MoveNext(), Is.False);
 		}
 		}
 
@@ -199,13 +199,13 @@ namespace SIL.LCModel.DomainServices
 			using (var verseSet = new ScrVerseSet(stPara))
 			{
 				// Iterate through the verses in the paragraph
-				Assert.IsTrue(verseSet.MoveNext());
+				Assert.That(verseSet.MoveNext(), Is.True);
 				var verse = verseSet.Current;
-				Assert.AreEqual("Verse One. ", verse.Text.Text);
-				Assert.AreEqual(01001001, verse.StartRef);
-				Assert.AreEqual(01001001, verse.EndRef);
+				Assert.That(verse.Text.Text, Is.EqualTo("Verse One. "));
+				Assert.That((int)verse.StartRef, Is.EqualTo(01001001));
+				Assert.That((int)verse.EndRef, Is.EqualTo(01001001));
 
-				Assert.IsFalse(verseSet.MoveNext());
+				Assert.That(verseSet.MoveNext(), Is.False);
 			}
 		}
 
@@ -240,19 +240,19 @@ namespace SIL.LCModel.DomainServices
 				// Iterate through the verses in the paragraph
 				ScrVerse verse;
 
-				Assert.IsTrue(verseSet.MoveNext());
+				Assert.That(verseSet.MoveNext(), Is.True);
 			verse = verseSet.Current;
-				Assert.AreEqual("AVerse One. ", verse.Text.Text);
-				Assert.AreEqual(01001001, verse.StartRef);
-				Assert.AreEqual(01001001, verse.EndRef);
+				Assert.That(verse.Text.Text, Is.EqualTo("AVerse One. "));
+				Assert.That((int)verse.StartRef, Is.EqualTo(01001001));
+				Assert.That((int)verse.EndRef, Is.EqualTo(01001001));
 
-				Assert.IsTrue(verseSet.MoveNext());
+				Assert.That(verseSet.MoveNext(), Is.True);
 			verse = verseSet.Current;
-				Assert.AreEqual("2 Verse Two. ", verse.Text.Text);
-				Assert.AreEqual(01001002, verse.StartRef);
-				Assert.AreEqual(01001002, verse.EndRef);
+				Assert.That(verse.Text.Text, Is.EqualTo("2 Verse Two. "));
+				Assert.That((int)verse.StartRef, Is.EqualTo(01001002));
+				Assert.That((int)verse.EndRef, Is.EqualTo(01001002));
 
-				Assert.IsFalse(verseSet.MoveNext());
+				Assert.That(verseSet.MoveNext(), Is.False);
 			}
 		}
 
@@ -270,13 +270,13 @@ namespace SIL.LCModel.DomainServices
 			// Create and iterate through the verses in the StText.
 			using (ScrVerseSet verseSet = new ScrVerseSet(emptyPara))
 			{
-				Assert.IsTrue(verseSet.MoveNext());
+				Assert.That(verseSet.MoveNext(), Is.True);
 			ScrVerse verse = verseSet.Current;
-				Assert.IsTrue(verse.Text == null || string.IsNullOrEmpty(verse.Text.Text));
-				Assert.AreEqual(ScrStyleNames.StanzaBreak, verse.Para.StyleName);
-				Assert.AreEqual(01001001, verse.StartRef);
-				Assert.AreEqual(01001001, verse.EndRef);
-				Assert.IsFalse(verseSet.MoveNext());
+				Assert.That(verse.Text == null || string.IsNullOrEmpty(verse.Text.Text), Is.True);
+				Assert.That(verse.Para.StyleName, Is.EqualTo(ScrStyleNames.StanzaBreak));
+				Assert.That((int)verse.StartRef, Is.EqualTo(01001001));
+				Assert.That((int)verse.EndRef, Is.EqualTo(01001001));
+				Assert.That(verseSet.MoveNext(), Is.False);
 			}
 		}
 

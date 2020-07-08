@@ -27,7 +27,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		///<summary>
 		/// Set up the data for the test.
 		///</summary>
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			m_mapGuidToName.Add(LexEntryTypeTags.kguidLexTypCompound.ToString(), "Compound");

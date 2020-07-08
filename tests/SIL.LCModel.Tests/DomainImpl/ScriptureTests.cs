@@ -293,12 +293,12 @@ namespace SIL.LCModel.DomainImpl
 			BCVRef ref1 = new BCVRef(1, 1, 1);
 			BCVRef ref2 = new BCVRef(1, 1, 2);
 			IScrScriptureNote note = annotations.InsertNote(ref1, ref2, null, null, CmAnnotationDefnTags.kguidAnnConsultantNote);
-			Assert.IsNotNull(note);
-			Assert.AreEqual(1, annotations.NotesOS.Count);
-			Assert.AreEqual(note, annotations.NotesOS[0]);
-			Assert.AreEqual(ref1, note.BeginRef);
-			Assert.AreEqual(ref2, note.EndRef);
-			Assert.IsNotNull(note.QuoteOA);
+			Assert.That(note, Is.Not.Null);
+			Assert.That(annotations.NotesOS.Count, Is.EqualTo(1));
+			Assert.That(annotations.NotesOS[0], Is.EqualTo(note));
+			Assert.That(note.BeginRef, Is.EqualTo((int)ref1));
+			Assert.That(note.EndRef, Is.EqualTo((int)ref2));
+			Assert.That(note.QuoteOA, Is.Not.Null);
 			VerifyEmptyStJournalText(note.DiscussionOA);
 			VerifyEmptyStJournalText(note.RecommendationOA);
 			VerifyEmptyStJournalText(note.ResolutionOA);
@@ -326,19 +326,19 @@ namespace SIL.LCModel.DomainImpl
 			IScrScriptureNote note3 = annotations.InsertNote(ref3, ref3, null, null, CmAnnotationDefnTags.kguidAnnConsultantNote);
 
 			// Verify notes are inserted at correct positions in list.
-			Assert.AreEqual(4, annotations.NotesOS.Count);
-			Assert.AreEqual(note, annotations.NotesOS[1]);
-			Assert.AreEqual(note1, annotations.NotesOS[0]);
-			Assert.AreEqual(note2, annotations.NotesOS[2]);
-			Assert.AreEqual(note3, annotations.NotesOS[3]);
-			Assert.AreEqual(ref2, note.BeginRef);
-			Assert.AreEqual(ref2, note.EndRef);
-			Assert.AreEqual(ref1, note1.BeginRef);
-			Assert.AreEqual(ref2, note1.EndRef);
-			Assert.AreEqual(ref3, note2.BeginRef);
-			Assert.AreEqual(ref3, note2.EndRef);
-			Assert.AreEqual(note2.BeginRef, note3.BeginRef);
-			Assert.AreEqual(note2.EndRef, note3.EndRef);
+			Assert.That(annotations.NotesOS.Count, Is.EqualTo(4));
+			Assert.That(annotations.NotesOS[1], Is.EqualTo(note));
+			Assert.That(annotations.NotesOS[0], Is.EqualTo(note1));
+			Assert.That(annotations.NotesOS[2], Is.EqualTo(note2));
+			Assert.That(annotations.NotesOS[3], Is.EqualTo(note3));
+			Assert.That(note.BeginRef, Is.EqualTo((int)ref2));
+			Assert.That(note.EndRef, Is.EqualTo((int)ref2));
+			Assert.That(note1.BeginRef, Is.EqualTo((int)ref1));
+			Assert.That(note1.EndRef, Is.EqualTo((int)ref2));
+			Assert.That(note2.BeginRef, Is.EqualTo((int)ref3));
+			Assert.That(note2.EndRef, Is.EqualTo((int)ref3));
+			Assert.That(note3.BeginRef, Is.EqualTo(note2.BeginRef));
+			Assert.That(note3.EndRef, Is.EqualTo(note2.EndRef));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -508,11 +508,11 @@ namespace SIL.LCModel.DomainImpl
 			PictureLocationRangeType locRangeType = PictureLocationRangeType.AfterAnchor;
 			((IPictureLocationBridge)m_scr).ParsePictureLoc("MRK 1--2", 41002003, ref locRangeType, out locationMin,
 				out locationMax);
-			Assert.AreEqual(new BCVRef(41, 1, 1), locationMin);
+			Assert.That(locationMin, Is.EqualTo(41001001));
 			ScrReference refMax = new ScrReference(41, 2, 1, m_scr.Versification);
 			refMax.Verse = refMax.LastVerse;
-			Assert.AreEqual(refMax, locationMax);
-			Assert.AreEqual(PictureLocationRangeType.ReferenceRange, locRangeType);
+			Assert.That(locationMax, Is.EqualTo(refMax));
+			Assert.That(locRangeType, Is.EqualTo(PictureLocationRangeType.ReferenceRange));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -528,9 +528,9 @@ namespace SIL.LCModel.DomainImpl
 			PictureLocationRangeType locRangeType = PictureLocationRangeType.AfterAnchor;
 			((IPictureLocationBridge)m_scr).ParsePictureLoc("MRK 1:8-2:15", 41002003,
 				ref locRangeType, out locationMin, out locationMax);
-			Assert.AreEqual(new BCVRef(41, 1, 8), locationMin);
-			Assert.AreEqual(new BCVRef(41, 2, 15), locationMax);
-			Assert.AreEqual(PictureLocationRangeType.ReferenceRange, locRangeType);
+			Assert.That(locationMin, Is.EqualTo(41001008));
+			Assert.That(locationMax, Is.EqualTo(41002015));
+			Assert.That(locRangeType, Is.EqualTo(PictureLocationRangeType.ReferenceRange));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -546,9 +546,9 @@ namespace SIL.LCModel.DomainImpl
 			PictureLocationRangeType locRangeType = PictureLocationRangeType.AfterAnchor;
 			((IPictureLocationBridge)m_scr).ParsePictureLoc("MRK 1:8-MRK 2:15", 41002003,
 				ref locRangeType, out locationMin, out locationMax);
-			Assert.AreEqual(new BCVRef(41, 1, 8), locationMin);
-			Assert.AreEqual(new BCVRef(41, 2, 15), locationMax);
-			Assert.AreEqual(PictureLocationRangeType.ReferenceRange, locRangeType);
+			Assert.That(locationMin, Is.EqualTo(41001008));
+			Assert.That(locationMax, Is.EqualTo(41002015));
+			Assert.That(locRangeType, Is.EqualTo(PictureLocationRangeType.ReferenceRange));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -564,9 +564,9 @@ namespace SIL.LCModel.DomainImpl
 			PictureLocationRangeType locRangeType = PictureLocationRangeType.AfterAnchor;
 			((IPictureLocationBridge)m_scr).ParsePictureLoc("1:8-2:15", 41002003,
 				ref locRangeType, out locationMin, out locationMax);
-			Assert.AreEqual(new BCVRef(41, 1, 8), locationMin);
-			Assert.AreEqual(new BCVRef(41, 2, 15), locationMax);
-			Assert.AreEqual(PictureLocationRangeType.ReferenceRange, locRangeType);
+			Assert.That(locationMin, Is.EqualTo(41001008));
+			Assert.That(locationMax, Is.EqualTo(41002015));
+			Assert.That(locRangeType, Is.EqualTo(PictureLocationRangeType.ReferenceRange));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -582,9 +582,9 @@ namespace SIL.LCModel.DomainImpl
 			PictureLocationRangeType locRangeType = PictureLocationRangeType.AfterAnchor;
 			((IPictureLocationBridge)m_scr).ParsePictureLoc("2-15", 41002003, ref locRangeType,
 				out locationMin, out locationMax);
-			Assert.AreEqual(new BCVRef(41, 2, 2), locationMin);
-			Assert.AreEqual(new BCVRef(41, 2, 15), locationMax);
-			Assert.AreEqual(PictureLocationRangeType.ReferenceRange, locRangeType);
+			Assert.That(locationMin, Is.EqualTo(41002002));
+			Assert.That(locationMax, Is.EqualTo(41002015));
+			Assert.That(locRangeType, Is.EqualTo(PictureLocationRangeType.ReferenceRange));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -599,9 +599,9 @@ namespace SIL.LCModel.DomainImpl
 			PictureLocationRangeType locRangeType = PictureLocationRangeType.AfterAnchor;
 			((IPictureLocationBridge)m_scr).ParsePictureLoc("MRK 2:3", 41002003,
 				ref locRangeType, out locationMin, out locationMax);
-			Assert.AreEqual(new BCVRef(41, 2, 3), locationMin);
-			Assert.AreEqual(new BCVRef(41, 2, 3), locationMax);
-			Assert.AreEqual(PictureLocationRangeType.ReferenceRange, locRangeType);
+			Assert.That(locationMin, Is.EqualTo(41002003));
+			Assert.That(locationMax, Is.EqualTo(41002003));
+			Assert.That(locRangeType, Is.EqualTo(PictureLocationRangeType.ReferenceRange));
 		}
 
 		/// ------------------------------------------------------------------------------------

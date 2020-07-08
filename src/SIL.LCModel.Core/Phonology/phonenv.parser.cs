@@ -3,7 +3,7 @@
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System.Text;
-using Tools;
+using SIL.LCModel.Tools;
 
 namespace SIL.LCModel.Core.Phonology {
 /// <summary/>

@@ -40,7 +40,7 @@ namespace SIL.LCModel.Core.Scripture
 		/// Set up to initialize VersificationTable
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			InitializeVersificationTable();
@@ -413,7 +413,7 @@ namespace SIL.LCModel.Core.Scripture
 		{
 			BCVRef scrRef = new BCVRef(6542, 1023, 5051);
 			Assert.IsFalse(scrRef.Valid);
-			Assert.AreEqual(42023051, scrRef);
+			Assert.That((int)scrRef,Is.EqualTo(42023051));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -675,7 +675,7 @@ namespace SIL.LCModel.Core.Scripture
 		/// Set up to initialize VersificationTable
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			BCVRefTests.InitializeVersificationTable();

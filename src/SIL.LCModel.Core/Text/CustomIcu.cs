@@ -212,6 +212,11 @@ namespace SIL.LCModel.Core.Text
 			{
 				// See if we can get the 'original' one in the data directory.
 				overrideDataPath = Path.Combine(dataDirectory, Path.Combine("data", "UnicodeDataOverrides.txt"));
+
+				if (!File.Exists(overrideDataPath))
+				{
+					overrideDataPath = Path.Combine(dataDirectory, Path.Combine("..", "data", "UnicodeDataOverrides.txt"));
+				}
 			}
 
 			try

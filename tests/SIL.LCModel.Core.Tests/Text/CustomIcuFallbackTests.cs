@@ -57,7 +57,7 @@ namespace SIL.LCModel.Core.Text
 			return Path.Combine(OutputDirectory, GetArchSubdir(arch));
 		}
 
-		private string RunTestHelper(string workDir, string exeDir = null)
+		private string RunTestHelper(string workDir, bool expectFailure = false, string exeDir = null)
 		{
 			if (string.IsNullOrEmpty(exeDir))
 				exeDir = _tmpDir;
@@ -84,6 +84,8 @@ namespace SIL.LCModel.Core.Text
 				process.WaitForExit();
 				if (process.ExitCode != 0)
 				{
+					var expected = expectFailure ? "expected" : "unexpected";
+					Console.WriteLine($"TestHelper.exe failed ({expected}):");
 					Console.WriteLine(process.StandardError.ReadToEnd());
 				}
 				return output.TrimEnd('\r', '\n');
@@ -152,7 +154,7 @@ namespace SIL.LCModel.Core.Text
 			Environment.SetEnvironmentVariable("PATH", _pathEnvironmentVariable);
 		}
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetUp()
 		{
 			// Undo the PATH that got set by the InitializeIcu attribute
@@ -162,7 +164,7 @@ namespace SIL.LCModel.Core.Text
 			_preTestDataDirEnv = Environment.GetEnvironmentVariable("ICU_DATA");
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void FixtureTearDown()
 		{
 			Thread.Sleep(500);
@@ -187,13 +189,13 @@ namespace SIL.LCModel.Core.Text
 			// NOTE: if this test fails, check that you don't have icuuc54.dll or icuuc62.dll somewhere,
 			// e.g. in C:\Program Files (x86)\Common Files\SIL
 			CopyIcuFiles(_tmpDir, DefaultIcuLibraryVersionMajor);
-			Assert.That(RunTestHelper(_tmpDir), Is.EqualTo($"{DefaultIcuLibraryVersionMajor}.1{Environment.NewLine}PRIVATE_USE_CHAR{Environment.NewLine}False"));
+			Assert.That(RunTestHelper(_tmpDir), Is.EqualTo($"{DefaultIcuLibraryVersionMajor}.2{Environment.NewLine}PRIVATE_USE_CHAR{Environment.NewLine}False"));
 		}
 
 		[Test]
 		public void InitIcuDataDir_NoIcuLibrary()
 		{
-			Assert.That(RunTestHelper(_tmpDir), Is.Empty);
+			Assert.That(RunTestHelper(_tmpDir, true), Is.Empty);
 		}
 	}
 }
