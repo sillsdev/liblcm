@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -149,9 +149,11 @@
   </data>
   <data name="ksCannotResolveCrossRef" xml:space="preserve">
     <value>Info: Cannot resolve a link for a cross reference from "{0}" to "{1}".</value>
+    <comment>This message is shown when importing data. One of the entries or senses in a cross reference is missing, so the link cannot be resolved.</comment>
   </data>
   <data name="ksCannotResolveLexRelation" xml:space="preserve">
     <value>Info: Cannot resolve a link for a lexical relation from "{0}" to "{1}".</value>
+    <comment>This message is shown when importing data. One of the entries or senses in a lexical relation is missing, so the link cannot be resolved.</comment>
   </data>
   <data name="ksCreatingWritingSystem" xml:space="preserve">
     <value>Info: Creating new writing system for "{0}".</value>
@@ -224,9 +226,11 @@
   </data>
   <data name="ksExpectedGenDate" xml:space="preserve">
     <value>Warning: Expected &lt;GenDate val="..."/&gt; here.</value>
+    <comment>GenDate (Generic Date) is a type of data. It can store vague dates whose day, month, or year may not be known.</comment>
   </data>
   <data name="ksMissingGenDateVal" xml:space="preserve">
     <value>Warning: Need explicit val attribute for GenDate elements!</value>
+    <comment>GenDate (Generic Date) is a type of data. It can store vague dates whose day, month, or year may not be known.</comment>
   </data>
   <data name="ksExpectedBinary" xml:space="preserve">
     <value>Warning: Expected &lt;Binary&gt;...&lt;/Binary&gt; here.</value>
@@ -311,5 +315,6 @@
   </data>
   <data name="ksNotCreatedForShowSubentryUnderLink" xml:space="preserve">
     <value>{0}: Could not create Show Subentry Under link to entry "{1}", because it does not exist.</value>
+    <comment>Shown during import. The current entry is supposed to be shown as a subentry under "{1}".</comment>
   </data>
 </root>

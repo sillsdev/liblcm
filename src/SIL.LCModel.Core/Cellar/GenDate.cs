@@ -48,7 +48,9 @@ namespace SIL.LCModel.Core.Cellar
 		/// The minimum day value.
 		/// </summary>
 		public const int MinDay = 1;
-
+		/// <summary>
+		/// An arbitrary leap year. Used to validate dates whose year is unknown, making Feb 29 valid.
+		/// </summary>
 		private const int LeapYear = 2008;
 
 		/// <summary>
