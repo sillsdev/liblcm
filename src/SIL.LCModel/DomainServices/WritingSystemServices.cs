@@ -1636,18 +1636,7 @@ namespace SIL.LCModel.DomainServices
 		/// </summary>
 		private static void ChangeStrings(ITsMultiString ms, int oldWSHandle, int newWSHandle)
 		{
-			var stringCount = ms.StringCount;
-			for (int i = 0; i < stringCount; i++ )
-			{
-				int wsT;
-				var tss = ms.GetStringFromIndex(i, out wsT);
-				var result = ChangeString(tss, oldWSHandle, newWSHandle);
-				if (result != tss)
-				{
-					ms.set_String(newWSHandle, result);
-					ms.set_String(oldWSHandle, null);
-				}
-			}
+			MergeMultiString(oldWSHandle, newWSHandle, ms);
 		}
 
 		private static ITsString MergeRuns(int fromWsHandle, int toWsHandle, ITsString tsString)
@@ -1671,7 +1660,7 @@ namespace SIL.LCModel.DomainServices
 			return MergeRuns(fromWs.Handle, toWs.Handle, run);
 		}
 
-		private static void MergeMultiString(CoreWritingSystemDefinition fromWs, CoreWritingSystemDefinition toWs, ITsMultiString multiStr)
+		private static void MergeMultiString(int fromWs, int toWs, ITsMultiString multiStr)
 		{
 			var changes = new Dictionary<int, ITsString>(multiStr.StringCount);
 			ITsString toWsStr = null;
@@ -1680,9 +1669,9 @@ namespace SIL.LCModel.DomainServices
 			{
 				int wsHandle;
 				ITsString str = multiStr.GetStringFromIndex(i, out wsHandle);
-				ITsString newStr = StringServices.CrawlRuns(str, run => MergeRun(fromWs, toWs, run));
+				ITsString newStr = StringServices.CrawlRuns(str, run => MergeRuns(fromWs, toWs, run));
 				// just to be safe, we don't want to modify the multi-string while we are iterating thru it
-				if (fromWs.Handle == wsHandle)
+				if (fromWs == wsHandle)
 				{
 					fromWsStr = newStr;
 					// delete this writing system string
@@ -1690,7 +1679,7 @@ namespace SIL.LCModel.DomainServices
 				}
 				else
 				{
-					if (toWs.Handle == wsHandle)
+					if (toWs == wsHandle)
 						toWsStr = newStr;
 					if (newStr != str)
 						changes[wsHandle] = newStr;
@@ -1706,17 +1695,22 @@ namespace SIL.LCModel.DomainServices
 						ITsIncStrBldr tisb = toWsStr.GetIncBldr();
 						tisb.Append(";");
 						tisb.AppendTsString(fromWsStr);
-						changes[toWs.Handle] = tisb.GetString();
+						changes[toWs] = tisb.GetString();
 					}
 				}
 				else
 				{
-					changes[toWs.Handle] = fromWsStr;
+					changes[toWs] = fromWsStr;
 				}
 			}
 
 			foreach (KeyValuePair<int, ITsString> change in changes)
 				multiStr.set_String(change.Key, change.Value);
+		}
+
+		private static void MergeMultiString(CoreWritingSystemDefinition fromWs, CoreWritingSystemDefinition toWs, ITsMultiString multiStr)
+		{
+			MergeMultiString(fromWs.Handle, toWs.Handle, multiStr);
 		}
 
 		/// <summary>

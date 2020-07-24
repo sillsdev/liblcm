@@ -19,10 +19,9 @@ namespace SIL.LCModel.DomainServices
 	[TestFixture]
 	public class WritingSystemServicesTests : MemoryOnlyBackendProviderRestoredForEachTestTestBase
 	{
-		/// <summary>
-		/// What it says
-		/// </summary>
-		[Test]
+
+		/// <summary/>
+		/// [Test]
 		public void UpdateWritingSystemListField_DoesNothingIfNotFound()
 		{
 			Cache.LangProject.AnalysisWss = "fr en qaa-x-kal";
@@ -31,9 +30,7 @@ namespace SIL.LCModel.DomainServices
 			Assert.That(Cache.LangProject.AnalysisWss, Is.EqualTo("fr en qaa-x-kal"));
 		}
 
-		/// <summary>
-		/// What it says
-		/// </summary>
+		/// <summary/>
 		[Test]
 		public void UpdateWritingSystemListField_ReplacesNonDuplicateCode()
 		{
@@ -387,10 +384,18 @@ namespace SIL.LCModel.DomainServices
 			var entry3 = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
 			var sense3 = Cache.ServiceLocator.GetInstance<ILexSenseFactory>().Create();
 			entry3.SensesOS.Add(sense3);
-			sense3.Definition.set_String(Cache.DefaultAnalWs, stringWithNewWs);
+			var styledAndNormalRunInChangingWs = TsStringUtils.MakeString("changing", newWs.Handle);
+			styledAndNormalRunInChangingWs.Insert(0, TsStringUtils.MakeString("8", newWs.Handle, "Verse Number"));
+			sense3.Definition.set_String(newWs.Handle, styledAndNormalRunInChangingWs);
 
 			Cache.LangProject.AnalysisWss = "en en-SU";
-
+			// Add Free Translation in the changing ws
+			var paraBldr = Cache.ServiceLocator.GetInstance<StTxtParaBldr>();
+			var stText = Cache.ServiceLocator.GetInstance<IStTextFactory>().Create();
+			Cache.ServiceLocator.GetInstance<ITextFactory>().Create().ContentsOA = stText; // needed to put a Cache in stText
+			var para = paraBldr.CreateParagraph(stText);
+			para.Contents = TsStringUtils.MakeString("vernacular", Cache.DefaultVernWs);
+			para.SegmentsOS[0].FreeTranslation.set_String(newWs.Handle, "Free Willy!");
 			m_actionHandler.EndUndoTask();
 			var undoManager = Cache.ServiceLocator.GetInstance<IUndoStackManager>();
 			undoManager.Save(); // makes everything non-dirty.
@@ -421,12 +426,11 @@ namespace SIL.LCModel.DomainServices
 			Assert.That(!dirtballs.Contains((ICmObjectOrSurrogate)entry0)); // make sure the implementation doesn't just dirty everything.
 			Assert.That(dirtballs.Contains((ICmObjectOrSurrogate)entry2));
 			Assert.That(dirtballs.Contains((ICmObjectOrSurrogate)sense3));
+			Assert.That(dirtballs.Contains((ICmObjectOrSurrogate)para.SegmentsOS[0]));
 			Assert.That(Cache.LangProject.AnalysisWss, Is.EqualTo("en en-GB"), "should have updated WS lists");
 		}
 
-		/// <summary>
-		/// What it says.
-		/// </summary>
+		/// <summary />
 		[Test]
 		public void MergeWritingSystem_ConvertsMultiStrings()
 		{
@@ -440,6 +444,7 @@ namespace SIL.LCModel.DomainServices
 			entry1.SensesOS.Add(sense1);
 			// Sense1 should be dirty: it has a gloss in the changing WS.
 			sense1.Gloss.set_String(fromWs.Handle, TsStringUtils.MakeString("whatever", fromWs.Handle));
+			sense1.Gloss.get_String(fromWs.Handle).Insert(0, TsStringUtils.MakeString("8", fromWs.Handle, "Verse Number"));
 			m_actionHandler.EndUndoTask();
 			UndoableUnitOfWorkHelper.Do("doit", "undoit", m_actionHandler,
 				() => WritingSystemServices.MergeWritingSystems(Cache, fromWs, toWs));
