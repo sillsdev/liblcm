@@ -27,6 +27,9 @@
 		<!-- Call the IdlImp task from SIL.LCModel.Build.Tasks in a separate msbuild process,
 		     so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
 		<Exec Command="$(MsbuildCommand) GenerateKernelCs.proj /p:OutDir=$(OutDir) /p:IntermediateOutputPath=$(IntermediateOutputPath) /p:Platform=$(Platform) /p:VSInstallDir=&quot;$(VSInstallDir)&quot;" />
+		<ItemGroup>
+			<Compile Include="KernelInterfaces/Kernel.cs" />
+		</ItemGroup>
 	</Target>
 
 	<PropertyGroup>
