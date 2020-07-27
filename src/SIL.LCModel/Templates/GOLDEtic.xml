@@ -199,7 +199,7 @@
 		 <def ws="fa"/>
 		 <def ws="ru">Классификатор - это часть речи, члены которой выражают классификацию существительного.</def>
 		 <def ws="id"/>
-		 <citation ws="en">Cryustal 1997:61</citation>
+		 <citation ws="en">Crystal 1997:61</citation>
 		 <citation ws="en">Mish et al. 1990:246</citation>
 		 <citation ws="en">Payne 1997:107</citation>
 	  </item>
@@ -392,7 +392,7 @@
 			<def ws="fa"/>
 			<def ws="ru">Относительный союз - это союз, который связывает относительное придаточное с главным словом. Его следует отличать от относительного местоимения, тем что он не имеет номинативную функцию внутри относительного придаточного.</def>
 			<def ws="id"/>
-			<citation ws="en">Payne1997:332</citation>
+			<citation ws="en">Payne 1997:332</citation>
 		 </item>
 	  </item>
    </item>
@@ -1107,7 +1107,7 @@
 	  <def ws="fa"/>
 	  <def ws="ru"/>
 	  <def ws="id"/>
-	  <citation ws="en">Valentine 2001: 152-154</citation>
+	  <citation ws="en">Valentine 2001:152-154</citation>
    </item>
    <item type="category" id="Preverb" guid="4e676ad2-542d-461d-9d78-1dbcb55ec456">
 	  <abbrev ws="en">preverb</abbrev>
@@ -1134,7 +1134,7 @@
 	  <def ws="fa"/>
 	  <def ws="ru"/>
 	  <def ws="id"/>
-	  <citation ws="en">Valentine 2001: 154-158</citation>
+	  <citation ws="en">Valentine 2001:154-158</citation>
    </item>
    <item type="category" id="Pro-form" guid="a4fc78d6-7591-4fb3-8edd-82f10ae3739d">
 	  <abbrev ws="en">pro-form</abbrev>
