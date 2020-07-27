@@ -26,6 +26,9 @@
 		<!-- Call the LcmGenerate task from SIL.LCModel.Build.Tasks in a separate msbuild process,
 		     so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
 		<Exec Command="$(MsbuildCommand) GenerateModel.proj /p:Configuration=$(Configuration) /p:OutDir=$(OutDir)" />
+		<ItemGroup>
+			<Compile Include="@(GeneratedFiles)" />
+		</ItemGroup>
 	</Target>
 
 	<Target Name="CheckWinForms" BeforeTargets="CoreCompile">
