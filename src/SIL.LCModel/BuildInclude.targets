@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<OutDir Condition="'$(OutDir)' == ''">../../artifacts/$(Configuration)/net461/</OutDir>
 		<MsbuildCommand Condition="'$(OS)'=='Windows_NT' And '$(MsBuildCommand)'==''">"$(MSBuildBinPath)\msbuild.exe"</MsbuildCommand>
-		<MsbuildCommand Condition="'$(OS)'=='Unix' And '$(MsBuildCommand)'==''">xbuild</MsbuildCommand>
+		<MsbuildCommand Condition="'$(OS)'=='Unix' And '$(MsBuildCommand)'==''">msbuild</MsbuildCommand>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -22,7 +22,7 @@
 		<Delete Files="@(GeneratedFiles)" ContinueOnError="true" />
 	</Target>
 
-	<Target Name="GenerateModel" Inputs="MasterLCModel.xml" Outputs="@(GeneratedFiles)" BeforeTargets="CoreCompile">
+	<Target Name="GenerateModel" Inputs="MasterLCModel.xml" Outputs="@(GeneratedFiles)" BeforeTargets="BeforeCompile">
 		<!-- Call the LcmGenerate task from SIL.LCModel.Build.Tasks in a separate msbuild process,
 		     so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
 		<Exec Command="$(MsbuildCommand) GenerateModel.proj /p:Configuration=$(Configuration) /p:OutDir=$(OutDir)" />
