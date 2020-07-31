@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
 
 	<PropertyGroup>
-		<NuGetExeUrl>https://dist.nuget.org/win-x86-commandline/v3.4.4/nuget.exe</NuGetExeUrl>
+		<NuGetExeUrl>https://dist.nuget.org/win-x86-commandline/latest/nuget.exe</NuGetExeUrl>
 		<NuGetPath>$(MSBuildThisFileDirectory).nuget</NuGetPath>
 		<NuGetExe>$(NuGetPath)/nuget.exe</NuGetExe>
 		<NuGetCommand Condition=" '$(OS)' == 'Windows_NT'">"$(NuGetExe)"</NuGetCommand>
@@ -15,11 +15,12 @@
 	</Target>
 
 	<PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
-		<CodeTaskAssembly Condition="'$(MSBuildAssemblyVersion)' == ''">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll</CodeTaskAssembly>
 		<!-- In VS2013, the assembly contains the VS version. -->
-		<CodeTaskAssembly Condition="'$(MSBuildAssemblyVersion)' == '12.0'">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v12.0.dll</CodeTaskAssembly>
+		<CodeTaskAssembly Condition="'$(MSBuildAssemblyVersion)' != '' and '$(MSBuildAssemblyVersion)' == '12.0'">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v12.0.dll</CodeTaskAssembly>
 		<!-- In VS2015+, the assembly was renamed, hopefully this will be the last condition! -->
 		<CodeTaskAssembly Condition="'$(MSBuildAssemblyVersion)' != '' and '$(MSBuildAssemblyVersion)' &gt;= '14.0'">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</CodeTaskAssembly>
+		<!-- fall back -->
+		<CodeTaskAssembly Condition="'$(MSBuildAssemblyVersion)' == ''">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll</CodeTaskAssembly>
 	</PropertyGroup>
 
 	<Target Name="GetNuGet" Condition="!Exists('$(NuGetExe)')">
@@ -43,22 +44,26 @@
 			<Using Namespace="Microsoft.Build.Utilities" />
 			<Code Type="Fragment" Language="cs">
 				<![CDATA[
-                try {
-                    TargetPath = Path.GetFullPath(TargetPath);
-                    if (!Directory.Exists(Path.GetDirectoryName(TargetPath)))
-                        Directory.CreateDirectory(Path.GetDirectoryName(TargetPath));
+				try {
+					TargetPath = Path.GetFullPath(TargetPath);
+					if (!Directory.Exists(Path.GetDirectoryName(TargetPath)))
+						Directory.CreateDirectory(Path.GetDirectoryName(TargetPath));
 
-                    Log.LogMessage("Downloading latest version of NuGet.exe...");
-                    WebClient webClient = new WebClient();
-                    webClient.DownloadFile("$(NuGetExeUrl)", TargetPath);
+					Log.LogMessage("Downloading latest version of NuGet.exe...");
 
-                    return true;
-                }
-                catch (Exception ex) {
-                    Log.LogErrorFromException(ex);
-                    return false;
-                }
-            ]]>
+					ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
+					Log.LogMessage("Enabled Protocols: " + ServicePointManager.SecurityProtocol);
+
+					WebClient webClient = new WebClient();
+					webClient.DownloadFile("$(NuGetExeUrl)", TargetPath);
+
+					return true;
+				}
+				catch (Exception ex) {
+					Log.LogErrorFromException(ex);
+					return false;
+				}
+			]]>
 			</Code>
 		</Task>
 	</UsingTask>
