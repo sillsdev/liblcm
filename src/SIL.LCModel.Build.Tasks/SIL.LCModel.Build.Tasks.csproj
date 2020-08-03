@@ -34,7 +34,7 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <PackageReference Include="GitVersionTask" Version="5.3.4" PrivateAssets="All" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="NVelocity" Version="1.1.1" />
-    <PackageReference Include="SIL.IdlImporter" Version="2.0.0-beta0002" />
+    <PackageReference Include="SIL.IdlImporter" Version="2.0.0-beta0002" PrivateAssets="All" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.3.3" PrivateAssets="All" />
   </ItemGroup>
 
@@ -53,8 +53,11 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
 
   <Target Name="CollectRuntimeOutputs" BeforeTargets="_GetPackageFiles">
     <ItemGroup>
-      <None Include="$(OutputPath)/$(TargetFramework)/build/*.*" Pack="true" PackagePath="build/" />
-      <None Include="$(OutputPath)/$(TargetFramework)/buildMultiTargeting/*.*" Pack="true" PackagePath="buildMultiTargeting/" />
+      <None Include="$(OutputPath)/net461/antlr.runtime.dll" Pack="true" PackagePath="tools/net461/" />
+      <None Include="$(OutputPath)/net461/IDLImporter.dll" Pack="true" PackagePath="tools/net461/" />
+      <None Include="$(OutputPath)/net461/IDLImporter.xml" Pack="true" PackagePath="tools/net461/" />
+      <None Include="$(OutputPath)/net461/build/*.*" Pack="true" PackagePath="build/" />
+      <None Include="$(OutputPath)/net461/buildMultiTargeting/*.*" Pack="true" PackagePath="buildMultiTargeting/" />
       <None Include="$(OutputPath)/lib/**/_._" Pack="true" PackagePath="lib/" />
     </ItemGroup>
   </Target>
