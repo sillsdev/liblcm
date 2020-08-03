@@ -14,10 +14,8 @@ namespace SIL.LCModel.Build.Tasks
 {
 	/// <summary>
 	/// Custom build task to import an IDL file.
-	/// Adapted from the custom Nant task bin\nant\src\FwTasks\IdlImpTask.
 	/// </summary>
 	// A typical invocation is
-	//<UsingTask TaskName="IdlImp" AssemblyFile="..\..\..\Build\FwBuildTasks.dll"/>
 	//<ItemGroup>
 	//    <Namespaces Include="SIL.Utils"/>
 	//    <Namespaces Include="SIL.Utils.ComTypes"/>
