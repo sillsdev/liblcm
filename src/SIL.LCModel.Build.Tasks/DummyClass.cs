@@ -9,7 +9,7 @@ namespace SIL.LCModel.Build.Tasks
 	/// Used for non-Cellar classes
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
-	public class DummyClass : IClass
+	internal class DummyClass : IClass
 	{
 		#region IClass Members
 

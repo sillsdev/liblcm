@@ -11,7 +11,7 @@ namespace SIL.LCModel.Build.Tasks
 	///
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
-	public class TypeInfo
+	internal class TypeInfo
 	{
 		/// <summary></summary>
 		public string CSharpType;
