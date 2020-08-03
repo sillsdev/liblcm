@@ -5,7 +5,7 @@
     <RootNamespace>SIL.LCModel.Utils</RootNamespace>
     <Configurations>Debug;Release</Configurations>
     <Description>The liblcm library is the core FieldWorks model for linguistic analyses of languages. Tools in this library provide the ability to store and interact with language and culture data, including anthropological, text corpus, and linguistics data.
-    SIL.LCModel.Utils provides utility classes.</Description>
+SIL.LCModel.Utils provides utility classes.</Description>
     <Company>SIL International</Company>
     <Authors>SIL International</Authors>
     <Product>liblcm</Product>
