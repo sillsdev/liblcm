@@ -14,6 +14,7 @@ SIL.LCModel.Build.Tasks provides msbuild tasks for generating C# classes for the
     <PackageProjectUrl>https://github.com/sillsdev/liblcm</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <OutputPath>../../artifacts/$(Configuration)</OutputPath>
+    <BuildOutputTargetFolder>tools/$(TargetFramework)</BuildOutputTargetFolder>
     <PackageOutputPath>../../artifacts</PackageOutputPath>
     <SignAssembly>true</SignAssembly>
     <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
@@ -41,4 +42,20 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
   </ItemGroup>
+
+  <Target Name="CopyTargetsAndProps" AfterTargets="Build">
+    <Copy SourceFiles="$(PackageId).props" DestinationFiles="$(OutputPath)/build/$(PackageId).props" />
+    <Copy SourceFiles="$(PackageId).props" DestinationFiles="$(OutputPath)/buildMultiTargeting/$(PackageId).props" />
+    <MakeDir Directories="$(OutputPath)/lib/net461" />
+    <!-- Create empty files -->
+    <WriteLinesToFile File="$(OutputPath)/lib/net461/_._" />
+  </Target>
+
+  <Target Name="CollectRuntimeOutputs" BeforeTargets="_GetPackageFiles">
+    <ItemGroup>
+      <None Include="$(OutputPath)/$(TargetFramework)/build/*.*" Pack="true" PackagePath="build/" />
+      <None Include="$(OutputPath)/$(TargetFramework)/buildMultiTargeting/*.*" Pack="true" PackagePath="buildMultiTargeting/" />
+      <None Include="$(OutputPath)/lib/**/_._" Pack="true" PackagePath="lib/" />
+    </ItemGroup>
+  </Target>
 </Project>
