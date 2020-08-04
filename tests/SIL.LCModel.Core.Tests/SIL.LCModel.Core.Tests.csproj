@@ -4,7 +4,8 @@
     <TargetFrameworks>net461</TargetFrameworks>
     <RootNamespace>SIL.LCModel.Core</RootNamespace>
     <Configurations>Debug;Release</Configurations>
-    <Description>SIL.LCModel.Core.Tests</Description>
+    <Description>The liblcm library is the core FieldWorks model for linguistic analyses of languages. Tools in this library provide the ability to store and interact with language and culture data, including anthropological, text corpus, and linguistics data.
+This package provides unit tests for SIL.LCModel.Core.</Description>
     <Company>SIL International</Company>
     <Authors>SIL International</Authors>
     <Product>liblcm</Product>
@@ -26,7 +27,7 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     </AppendToReleaseNotesProperty>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
     <ChangelogFile>../../CHANGELOG.md</ChangelogFile>
-    <IsPackable>false</IsPackable>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
