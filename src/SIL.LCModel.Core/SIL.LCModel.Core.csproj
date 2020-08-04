@@ -166,6 +166,17 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <Copy SourceFiles="@(IcuDataInputs)" DestinationFolder="$(OutDir)IcuData/data" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
   </Target>
 
+  <Target Name="BeforeCoreClean" BeforeTargets="CoreClean">
+    <!-- Prevent the deletion of IDLImporter.xml. This seems like a bug in msbuild - it shouldn't
+    delete files it didn't copy, at least not in the middle of a rebuild -->
+    <Copy SourceFiles="$(OutputPath)/IDLImporter.xml" DestinationFiles="$(OutputPath)/../IDLImporter.xml" />
+  </Target>
+
+  <Target Name="AfterCoreClean" AfterTargets="CoreClean">
+    <!-- Restore IDLImporter.xml. -->
+    <Copy SourceFiles="$(OutputPath)/../IDLImporter.xml" DestinationFiles="$(OutputPath)/IDLImporter.xml" />
+  </Target>
+
   <Target Name="CustomClean" AfterTargets="Clean">
     <Delete Files="@(KernelOutputs)" ContinueOnError="true"/>
     <Delete Files="$(IntermediateOutputPath)FwKernelTlb.idl" ContinueOnError="true" />
