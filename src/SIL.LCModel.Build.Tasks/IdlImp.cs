@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015-2017 SIL International
+﻿// Copyright (c) 2015-2020 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -8,8 +8,9 @@ using System.Collections.Specialized;
 using System.IO;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using SIL.FieldWorks.Tools;
+using SIL.IdlImporterTool;
 
+// ReSharper disable MemberCanBePrivate.Global
 namespace SIL.LCModel.Build.Tasks
 {
 	/// <summary>
@@ -115,7 +116,7 @@ namespace SIL.LCModel.Build.Tasks
 		{
 			try
 			{
-				IDLImporter importer = new IDLImporter();
+				var importer = new IDLImporter();
 				var namespaces = new List<string>();
 				foreach (var s in GetFilesFrom(UsingNamespaces))
 				{

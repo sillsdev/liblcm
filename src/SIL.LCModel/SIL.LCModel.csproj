@@ -100,18 +100,10 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="LcmGenerate\*.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="MasterLCModel.*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Styles.dtd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Templates\*.*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Update="LcmGenerate\*.xml" CopyToOutputDirectory="PreserveNewest"/>
+    <None Update="MasterLCModel.*" CopyToOutputDirectory="PreserveNewest"/>
+    <None Update="Styles.dtd" CopyToOutputDirectory="PreserveNewest"/>
+    <None Update="Templates\*.*" CopyToOutputDirectory="PreserveNewest"/>
   </ItemGroup>
 
   <PropertyGroup>
@@ -142,6 +134,14 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <Exec Command="$(MsbuildCommand) GenerateModel.proj /p:Configuration=$(Configuration) /p:OutDir=$(OutDir)" />
     <ItemGroup>
       <Compile Include="@(GeneratedFiles)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="CollectRuntimeOutputs" BeforeTargets="_GetPackageFiles">
+    <ItemGroup>
+      <None Include="MasterLCModel.*" Pack="true" PackagePath="contentFiles/" />
+      <None Include="Styles.dtd" Pack="true" PackagePath="contentFiles/" />
+      <None Include="Templates\*.*" Pack="true" PackagePath="contentFiles/Templates/" />
     </ItemGroup>
   </Target>
 
