@@ -40,7 +40,6 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SIL.LCModel.Core\SIL.LCModel.Core.csproj" />
-    <ProjectReference Include="..\..\src\SIL.LCModel.Utils\SIL.LCModel.Utils.csproj" />
     <ProjectReference Include="..\SIL.LCModel.Utils.Tests\SIL.LCModel.Utils.Tests.csproj" />
   </ItemGroup>
 
