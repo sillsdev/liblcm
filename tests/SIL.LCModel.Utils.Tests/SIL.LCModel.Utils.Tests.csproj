@@ -26,7 +26,7 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     </AppendToReleaseNotesProperty>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
     <ChangelogFile>../../CHANGELOG.md</ChangelogFile>
-    <IsPackable>false</IsPackable>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
