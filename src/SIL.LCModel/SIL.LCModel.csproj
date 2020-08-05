@@ -48,7 +48,6 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SIL.LCModel.Build.Tasks\SIL.LCModel.Build.Tasks.csproj" />
     <ProjectReference Include="..\SIL.LCModel.Core\SIL.LCModel.Core.csproj" />
   </ItemGroup>
 
@@ -100,10 +99,10 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="LcmGenerate\*.xml" CopyToOutputDirectory="PreserveNewest"/>
-    <None Update="MasterLCModel.*" CopyToOutputDirectory="PreserveNewest"/>
-    <None Update="Styles.dtd" CopyToOutputDirectory="PreserveNewest"/>
-    <None Update="Templates\*.*" CopyToOutputDirectory="PreserveNewest"/>
+    <None Update="LcmGenerate\*.xml" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="MasterLCModel.*" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Styles.dtd" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Templates\*.*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -146,7 +145,6 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
   </Target>
 
   <Target Name="CheckWinForms" BeforeTargets="CoreCompile">
-    <Error Text="Please do NOT make liblcm reference System.Windows.Forms. It is not supposed to contain UI code!"
-      Condition="'%(Reference.Identity)' == 'System.Windows.Forms' Or '$(UseWindowsForms)' == 'true'" />
+    <Error Text="Please do NOT make liblcm reference System.Windows.Forms. It is not supposed to contain UI code!" Condition="'%(Reference.Identity)' == 'System.Windows.Forms' Or '$(UseWindowsForms)' == 'true'" />
   </Target>
 </Project>
