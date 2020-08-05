@@ -93,7 +93,7 @@ namespace SIL.LCModel.DomainImpl
 				list.Add(new ImportMappingInfo(@"\q", null, false, MappingTargetType.TEStyle, MarkerDomain.BackTrans, ScrStyleNames.NormalParagraph, null));
 				Assert.Fail("Illegal mapping (to BackTrans domain) was not caught");
 			}
-			catch (ArgumentException) {}
+			catch (ArgumentException) { }
 
 			Assert.AreEqual(2, list.Count);
 

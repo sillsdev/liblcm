@@ -37,7 +37,6 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="2.0.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.0.4" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NHunspell.Patched" Version="1.2.5554" />
     <PackageReference Include="SIL.Core.Desktop" Version="8.0.0-beta0153" />
     <PackageReference Include="SIL.Lexicon" Version="8.0.0-beta0153" />
@@ -113,10 +112,10 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
   </PropertyGroup>
 
   <ItemGroup>
-    <KernelInputs Include="KernelInterfaces/FwKernelTlb.idl"/>
-    <KernelInputs Include="KernelInterfaces/FwKernel.idh"/>
-    <KernelInputs Include="KernelInterfaces/TextServ.idh"/>
-    <KernelInputs Include="KernelInterfaces/Language.idh"/>
+    <KernelInputs Include="KernelInterfaces/FwKernelTlb.idl" />
+    <KernelInputs Include="KernelInterfaces/FwKernel.idh" />
+    <KernelInputs Include="KernelInterfaces/TextServ.idh" />
+    <KernelInputs Include="KernelInterfaces/Language.idh" />
 
     <KernelOutputs Include="KernelInterfaces/Kernel.cs" />
     <KernelOutputs Include="$(OutDir)KernelInterfaces/FwKernelTlb.iip" />
@@ -161,8 +160,8 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
       <gennorm2 Condition="'$(OS)'=='Windows_NT'">"$(OutDir)lib/$(Folder)/gennorm2.exe"</gennorm2>
       <gennorm2 Condition="'$(OS)'=='Unix'">LD_LIBRARY_PATH=/usr/lib/fieldworks/lib /usr/lib/fieldworks/icu-bin/gennorm2</gennorm2>
     </PropertyGroup>
-    <Exec Command='$(gennorm2) -o "$(OutDir)IcuData/icudt$(IcuVersion)l/nfc_fw.nrm" "IcuData/nfc.txt" "IcuData/nfcHebrew.txt" "IcuData/nfcOverrides.txt"' />
-    <Exec Command='$(gennorm2) -o "$(OutDir)IcuData/icudt$(IcuVersion)l/nfkc_fw.nrm" "IcuData/nfc.txt" "IcuData/nfcHebrew.txt" "IcuData/nfkc.txt" "IcuData/nfcOverrides.txt" "IcuData/nfkcOverrides.txt"' />
+    <Exec Command="$(gennorm2) -o &quot;$(OutDir)IcuData/icudt$(IcuVersion)l/nfc_fw.nrm&quot; &quot;IcuData/nfc.txt&quot; &quot;IcuData/nfcHebrew.txt&quot; &quot;IcuData/nfcOverrides.txt&quot;" />
+    <Exec Command="$(gennorm2) -o &quot;$(OutDir)IcuData/icudt$(IcuVersion)l/nfkc_fw.nrm&quot; &quot;IcuData/nfc.txt&quot; &quot;IcuData/nfcHebrew.txt&quot; &quot;IcuData/nfkc.txt&quot; &quot;IcuData/nfcOverrides.txt&quot; &quot;IcuData/nfkcOverrides.txt&quot;" />
     <Copy SourceFiles="@(IcuDataInputs)" DestinationFolder="$(OutDir)IcuData/data" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
   </Target>
 
@@ -178,7 +177,7 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
   </Target>
 
   <Target Name="CustomClean" AfterTargets="Clean">
-    <Delete Files="@(KernelOutputs)" ContinueOnError="true"/>
+    <Delete Files="@(KernelOutputs)" ContinueOnError="true" />
     <Delete Files="$(IntermediateOutputPath)FwKernelTlb.idl" ContinueOnError="true" />
     <Delete Files="$(IntermediateOutputPath)FwKernelTlb.iip" ContinueOnError="true" />
     <Delete Files="$(IntermediateOutputPath)FwKernelTlb.json" ContinueOnError="true" />
@@ -186,7 +185,6 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
   </Target>
 
   <Target Name="CheckWinForms" BeforeTargets="CoreCompile">
-    <Error Text="Please do NOT make liblcm reference System.Windows.Forms. It is not supposed to contain UI code!"
-      Condition="'%(Reference.Identity)' == 'System.Windows.Forms' Or '$(UseWindowsForms)' == 'true'" />
+    <Error Text="Please do NOT make liblcm reference System.Windows.Forms. It is not supposed to contain UI code!" Condition="'%(Reference.Identity)' == 'System.Windows.Forms' Or '$(UseWindowsForms)' == 'true'" />
   </Target>
 </Project>

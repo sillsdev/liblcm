@@ -56,7 +56,7 @@ namespace SIL.LCModel.DomainServices
 			DummyScrImportFileInfoFactory factory = new DummyScrImportFileInfoFactory();
 
 			IScrImportFileInfo f1 = CreateStubFileInfo(factory, "file1",
-				new ScrReference(40, 1, 1, ScrVers.English), new ReferenceRange(40, 1,3));
+				new ScrReference(40, 1, 1, ScrVers.English), new ReferenceRange(40, 1, 3));
 
 			IScrImportFileInfo f2 = factory.Create("IdontExist.blurb", m_mappingList,
 				ImportDomain.Main, null, null, false);
@@ -84,7 +84,7 @@ namespace SIL.LCModel.DomainServices
 			DummyScrImportFileInfoFactory factory = new DummyScrImportFileInfoFactory();
 
 			IScrImportFileInfo f1 = CreateStubFileInfo(factory, "file1",
-				new ScrReference(40, 1, 1, ScrVers.English), new ReferenceRange(40, 1,3));
+				new ScrReference(40, 1, 1, ScrVers.English), new ReferenceRange(40, 1, 3));
 
 			m_expectedRemovedFiles.Add(f1);
 

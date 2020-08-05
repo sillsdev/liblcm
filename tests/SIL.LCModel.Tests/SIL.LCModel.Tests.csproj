@@ -4,7 +4,8 @@
     <TargetFrameworks>net461</TargetFrameworks>
     <RootNamespace>SIL.LCModel</RootNamespace>
     <Configurations>Debug;Release</Configurations>
-    <Description>SIL.LCModel.Tests</Description>
+    <Description>The liblcm library is the core FieldWorks model for linguistic analyses of languages. Tools in this library provide the ability to store and interact with language and culture data, including anthropological, text corpus, and linguistics data.
+This package provides unit tests for SIL.LCModel.</Description>
     <Company>SIL International</Company>
     <Authors>SIL International</Authors>
     <Product>liblcm</Product>
@@ -25,7 +26,8 @@
 See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHANGELOG.md]]>
     </AppendToReleaseNotesProperty>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
-    <IsPackable>false</IsPackable>
+    <ChangelogFile>../../CHANGELOG.md</ChangelogFile>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,17 +35,10 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="RhinoMocks" Version="3.6.1" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.3.3" PrivateAssets="All" />
-    <PackageReference Include="SIL.TestUtilities" Version="8.0.0-beta0153" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SIL.LCModel.Utils\SIL.LCModel.Utils.csproj" />
     <ProjectReference Include="..\..\src\SIL.LCModel\SIL.LCModel.csproj" />
     <ProjectReference Include="..\SIL.LCModel.Core.Tests\SIL.LCModel.Core.Tests.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System.Web" />
-  </ItemGroup>
-
 </Project>
