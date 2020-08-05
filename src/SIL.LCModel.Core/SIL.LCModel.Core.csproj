@@ -112,14 +112,15 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
   </PropertyGroup>
 
   <ItemGroup>
-    <KernelInputs Include="KernelInterfaces/FwKernelTlb.idl" />
-    <KernelInputs Include="KernelInterfaces/FwKernel.idh" />
-    <KernelInputs Include="KernelInterfaces/TextServ.idh" />
-    <KernelInputs Include="KernelInterfaces/Language.idh" />
+    <KernelInputs Include="KernelInterfaces\FwKernelTlb.idl" />
+    <KernelInputs Include="KernelInterfaces\FwKernel.idh" />
+    <KernelInputs Include="KernelInterfaces\TextServ.idh" />
+    <KernelInputs Include="KernelInterfaces\Language.idh" />
 
-    <KernelOutputs Include="KernelInterfaces/Kernel.cs" />
-    <KernelOutputs Include="$(OutDir)KernelInterfaces/FwKernelTlb.iip" />
-    <KernelOutputs Include="$(OutDir)KernelInterfaces/FwKernelTlb.json" />
+    <KernelOutputs Include="KernelInterfaces\Kernel.cs" />
+    <KernelOutputs Include="$(OutDir)KernelInterfaces\FwKernelTlb.iip" />
+    <KernelOutputs Include="$(OutDir)KernelInterfaces\FwKernelTlb.json" />
+    <Clean Include="@(KernelOutputs)" />
   </ItemGroup>
   <Target Name="SetInstallLocation">
     <Exec Command="$(VSWhereDir)vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath" ConsoleToMSBuild="true" Condition="'$(OS)'=='Windows_NT'">
@@ -132,7 +133,8 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
          so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
     <Exec Command="$(MsbuildCommand) GenerateKernelCs.proj /p:OutDir=$(OutDir) /p:IntermediateOutputPath=$(IntermediateOutputPath) /p:Platform=$(Platform) /p:VSInstallDir=&quot;$(VSInstallDir)&quot;" />
     <ItemGroup>
-      <Compile Include="KernelInterfaces/Kernel.cs" />
+      <Compile Remove="KernelInterfaces\Kernel.cs" />
+      <Compile Include="KernelInterfaces\Kernel.cs" />
     </ItemGroup>
   </Target>
 
@@ -140,13 +142,15 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <IcuVersion>54</IcuVersion>
   </PropertyGroup>
 
-  <ItemGroup>
-    <IcuDataInputs Include="IcuData/nfc*.txt" />
-    <IcuDataInputs Include="IcuData/nfkc*.txt" />
-    <IcuDataInputs Include="IcuData/UnicodeDataOverrides.txt" />
+  <!-- Limit to ItemGroup to outer build to work around warning: File specified multiple times -->
+  <ItemGroup Condition="'$(TargetFramework)' == ''">
+    <IcuDataInputs Include="IcuData\nfc*.txt" />
+    <IcuDataInputs Include="IcuData\nfkc*.txt" />
+    <IcuDataInputs Include="IcuData\UnicodeDataOverrides.txt" />
 
-    <IcuDataOutputs Include="$(OutDir)IcuData/icudt$(IcuVersion)l/nfc_fw.nrm" />
-    <IcuDataOutputs Include="$(OutDir)IcuData/icudt$(IcuVersion)l/nfkc_fw.nrm" />
+    <IcuDataOutputs Include="$(OutDir)IcuData\icudt$(IcuVersion)l\nfc_fw.nrm" />
+    <IcuDataOutputs Include="$(OutDir)IcuData\icudt$(IcuVersion)l\nfkc_fw.nrm" />
+    <Clean Include="@(IcuDataOutputs)" />
   </ItemGroup>
 
   <Target Name="GenerateIcuData" AfterTargets="Build" Inputs="@(IcuDataInputs)" Outputs="@(IcuDataOutputs)">
@@ -168,20 +172,12 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
   <Target Name="BeforeCoreClean" BeforeTargets="CoreClean">
     <!-- Prevent the deletion of IDLImporter.xml. This seems like a bug in msbuild - it shouldn't
     delete files it didn't copy, at least not in the middle of a rebuild -->
-    <Copy SourceFiles="$(OutputPath)/IDLImporter.xml" DestinationFiles="$(OutputPath)/../IDLImporter.xml" />
+    <Copy SourceFiles="$(OutputPath)/IDLImporter.xml" DestinationFiles="$(OutputPath)/../IDLImporter.xml" Condition="Exists('$(OutputPath)/IDLImporter.xml')" />
   </Target>
 
   <Target Name="AfterCoreClean" AfterTargets="CoreClean">
     <!-- Restore IDLImporter.xml. -->
     <Copy SourceFiles="$(OutputPath)/../IDLImporter.xml" DestinationFiles="$(OutputPath)/IDLImporter.xml" />
-  </Target>
-
-  <Target Name="CustomClean" AfterTargets="Clean">
-    <Delete Files="@(KernelOutputs)" ContinueOnError="true" />
-    <Delete Files="$(IntermediateOutputPath)FwKernelTlb.idl" ContinueOnError="true" />
-    <Delete Files="$(IntermediateOutputPath)FwKernelTlb.iip" ContinueOnError="true" />
-    <Delete Files="$(IntermediateOutputPath)FwKernelTlb.json" ContinueOnError="true" />
-    <Delete Files="@(IcuDataOutputs)" ContinueOnError="true" />
   </Target>
 
   <Target Name="CheckWinForms" BeforeTargets="CoreCompile">

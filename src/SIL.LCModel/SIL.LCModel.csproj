@@ -121,11 +121,8 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <GeneratedFiles Include="Infrastructure\Impl\GeneratedRepositoryImplementations.cs" />
     <GeneratedFiles Include="Infrastructure\Impl\GeneratedBackendProvider.cs" />
     <GeneratedFiles Include="IOC\GeneratedServiceLocatorBootstrapper.cs" />
+    <Clean Include="@(GeneratedFiles)" />
   </ItemGroup>
-
-  <Target Name="CustomClean" AfterTargets="Clean">
-    <Delete Files="@(GeneratedFiles)" ContinueOnError="true" />
-  </Target>
 
   <Target Name="GenerateModel" Inputs="MasterLCModel.xml" Outputs="@(GeneratedFiles)" BeforeTargets="BeforeCompile">
     <!-- Call the LcmGenerate task from SIL.LCModel.Build.Tasks in a separate msbuild process,
@@ -142,6 +139,8 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
       <None Include="MasterLCModel.*" Pack="true" PackagePath="contentFiles/" />
       <None Include="Styles.dtd" Pack="true" PackagePath="contentFiles/" />
       <None Include="Templates\*.*" Pack="true" PackagePath="contentFiles/Templates/" />
+      <None Include="$(PackageId).props" Pack="true" PackagePath="build/" />
+      <None Include="$(PackageId).props" Pack="true" PackagePath="buildMultiTargeting/" />
     </ItemGroup>
   </Target>
 
