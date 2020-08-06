@@ -19,11 +19,5 @@ else
 	FILESAVAILABLE=$3
 fi
 
-if [ -z "$4" ] ; then
-	PLATFORM=x86
-else
-	PLATFORM=$4
-fi
-
 . environ
-msbuild /t:$TARGET /p:Configuration=$CONFIG /p:Platform=$PLATFORM /p:UseLocalFiles=$FILESAVAILABLE LCM.sln
+msbuild /t:$TARGET /p:Configuration=$CONFIG /p:UseLocalFiles=$FILESAVAILABLE LCM.sln
