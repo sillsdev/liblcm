@@ -180,6 +180,14 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <Copy SourceFiles="$(OutputPath)/../IDLImporter.xml" DestinationFiles="$(OutputPath)/IDLImporter.xml" />
   </Target>
 
+  <Target Name="CollectRuntimeOutputs" BeforeTargets="_GetPackageFiles">
+    <ItemGroup>
+      <None Include="$(PackageId).props" Pack="true" PackagePath="build/" />
+      <None Include="$(PackageId).props" Pack="true" PackagePath="buildMultiTargeting/" />
+      <None Include="$(OutputPath)\**\$(PackageId).dll.config" Pack="true" PackagePath="lib/" />
+    </ItemGroup>
+  </Target>
+
   <Target Name="CheckWinForms" BeforeTargets="CoreCompile">
     <Error Text="Please do NOT make liblcm reference System.Windows.Forms. It is not supposed to contain UI code!" Condition="'%(Reference.Identity)' == 'System.Windows.Forms' Or '$(UseWindowsForms)' == 'true'" />
   </Target>
