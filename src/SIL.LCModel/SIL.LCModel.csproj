@@ -116,11 +116,11 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <GeneratedFiles Include="GeneratedInterfaces.cs" />
     <GeneratedFiles Include="GeneratedFactoryInterfaces.cs" />
     <GeneratedFiles Include="GeneratedRepositoryInterfaces.cs" />
-    <GeneratedFiles Include="DomainImpl/GeneratedClasses.cs" />
-    <GeneratedFiles Include="DomainImpl/GeneratedFactoryImplementations.cs" />
-    <GeneratedFiles Include="Infrastructure/Impl/GeneratedRepositoryImplementations.cs" />
-    <GeneratedFiles Include="Infrastructure/Impl/GeneratedBackendProvider.cs" />
-    <GeneratedFiles Include="IOC/GeneratedServiceLocatorBootstrapper.cs" />
+    <GeneratedFiles Include="DomainImpl\GeneratedClasses.cs" />
+    <GeneratedFiles Include="DomainImpl\GeneratedFactoryImplementations.cs" />
+    <GeneratedFiles Include="Infrastructure\Impl\GeneratedRepositoryImplementations.cs" />
+    <GeneratedFiles Include="Infrastructure\Impl\GeneratedBackendProvider.cs" />
+    <GeneratedFiles Include="IOC\GeneratedServiceLocatorBootstrapper.cs" />
   </ItemGroup>
 
   <Target Name="CustomClean" AfterTargets="Clean">
@@ -132,6 +132,7 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
          so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
     <Exec Command="$(MsbuildCommand) GenerateModel.proj /p:Configuration=$(Configuration) /p:OutDir=$(OutDir)" />
     <ItemGroup>
+      <Compile Remove="@(GeneratedFiles)" />
       <Compile Include="@(GeneratedFiles)" />
     </ItemGroup>
   </Target>
