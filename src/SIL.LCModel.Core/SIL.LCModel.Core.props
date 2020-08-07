@@ -1,5 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<None Include="$(MSBuildThisFileDirectory)..\lib\**\$(PackageId).dll.config" CopyToOutputDirectory="Always" />
+		<None Include="$(MSBuildThisFileDirectory)..\contentFiles\KernelInterfaces\*.*" />
 	</ItemGroup>
 </Project>
