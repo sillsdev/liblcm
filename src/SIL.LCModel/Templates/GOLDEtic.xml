@@ -1508,7 +1508,7 @@
 		 <term ws="fa">فعل ربطی</term>
 		 <term ws="ru">глагол-связка</term>
 		 <term ws="id"/>
-		 <def ws="en">A type of verb, eg, 'seem' and 'appear'</def>
+		 <def ws="en">A verb which has little independent meaning, and whose main function is to relate other elements of clause structure, especially subject and complement (e.g. "seem", "appear").</def>
 		 <def ws="es"/>
 		 <def ws="fr">Un verbe copulatif est un verbe qui gouverne un adjectif ou un syntagme nominal attributif (p.ex. devenir [il est devenu un grand chef d’état], sembler [il semble fatigué], paraître [il paraît bête], rester [il reste seul], etc.).</def>
 		 <def ws="zh-CN"/>
@@ -1516,6 +1516,7 @@
 		 <def ws="fa"/>
 		 <def ws="ru">Тип глагола, например, 'казаться' и 'появляться'</def>
 		 <def ws="id"/>
+		 <citation ws="en">Crystal 1991:116</citation>
 	  </item>
 	  <item type="category" id="DitransitiveVerb" guid="efadf1d3-580a-4e4b-a94c-3f1d6e59c5fc">
 		 <abbrev ws="en">vd</abbrev>
