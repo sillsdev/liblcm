@@ -166,6 +166,7 @@
   </data>
   <data name="ksCreatingItemInList" xml:space="preserve">
     <value>Info: Creating new item with ws="{0}", abbr="{1}", and name="{2}" in the {3} list.</value>
+    <comment>This message is written to an import log. "ws" is an abbreviation for Writing System.</comment>
   </data>
   <data name="ksAnthropologyCategories" xml:space="preserve">
     <value>Anthropology Categories</value>

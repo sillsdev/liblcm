@@ -8392,7 +8392,7 @@
 </rt>
 <rt class="CmPossibilityList" guid="d7f713d8-e8cf-11d3-9764-00c04f186933" ownerguid="af26d792-ea5e-11de-8f7e-0013722f8dec">
 <Abbreviation>
-<AUni ws="en">MjeTyp</AUni>
+<AUni ws="en">Not User-Facing (do not localize)</AUni>
 </Abbreviation>
 <DateCreated val="2018-8-2 16:32:6.267" />
 <DateModified val="2018-8-2 16:32:6.267" />
