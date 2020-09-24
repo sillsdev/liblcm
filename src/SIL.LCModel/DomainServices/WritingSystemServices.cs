@@ -1326,7 +1326,10 @@ namespace SIL.LCModel.DomainServices
 			// We can't easily put up a progress dialog here, because the code is in a project we can't reference.
 			// However this routine is used in relatively long operations anyway so there should already be some kind of progress bar.
 			if (templateDir != null)
+			{
 				XmlTranslatedLists.ImportTranslatedListsForWs(identifier, cache, templateDir, null);
+				// TODO (Hasso): import translated GOLDEtic
+			}
 			return false;
 		}
 
