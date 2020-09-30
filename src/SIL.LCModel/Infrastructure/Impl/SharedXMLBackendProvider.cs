@@ -54,6 +54,10 @@ namespace SIL.LCModel.Infrastructure.Impl
 		{
 			get
 			{
+				// can happen when shutting down, e.g. after getting an exception
+				if (m_commitLogMutex == null)
+					return -1;
+
 				using (m_commitLogMutex.Lock())
 				{
 					using (MemoryMappedViewStream stream = m_commitLogMetadata.CreateViewStream())
@@ -338,6 +342,10 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 		internal override void LockProject()
 		{
+			// can happen when shutting down, e.g. after getting an exception
+			if (m_commitLogMutex == null)
+				return;
+
 			using (m_commitLogMutex.Lock())
 			{
 				base.LockProject();
@@ -355,6 +363,10 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 		internal override void UnlockProject()
 		{
+			// can happen when shutting down, e.g. after getting an exception
+			if (m_commitLogMutex == null)
+				return;
+
 			using (m_commitLogMutex.Lock())
 			{
 				base.UnlockProject();
@@ -375,6 +387,10 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 		public override bool Commit(HashSet<ICmObjectOrSurrogate> newbies, HashSet<ICmObjectOrSurrogate> dirtballs, HashSet<ICmObjectId> goners)
 		{
+			// can happen when shutting down, e.g. after getting an exception
+			if (m_commitLogMutex == null)
+				return true;
+
 			using (m_commitLogMutex.Lock())
 			{
 				CommitLogMetadata metadata;
@@ -488,6 +504,10 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 		protected override void WriteCommitWork(CommitWork workItem)
 		{
+			// can happen when shutting down, e.g. after getting an exception
+			if (m_commitLogMutex == null)
+				return;
+
 			using (m_commitLogMutex.Lock())
 			{
 				base.WriteCommitWork(workItem);
