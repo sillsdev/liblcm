@@ -227,11 +227,13 @@ namespace SIL.LCModel.Core.Text
 			{
 				// we don't have a custom ICU installed
 				HaveCustomIcuLibrary = false;
+				Debug.WriteLine("Can't find SilIcuInit() - no custom ICU installed?");
 			}
 			catch (BadImageFormatException)
 			{
 				// we found a custom ICU but with an incorrect format (e.g. x64 instead of x86)
 				HaveCustomIcuLibrary = false;
+				Debug.WriteLine("Can't execute SilIcuInit() - incorrect format (e.g. x64 instead of x86)");
 			}
 
 			if (!HaveCustomIcuLibrary)

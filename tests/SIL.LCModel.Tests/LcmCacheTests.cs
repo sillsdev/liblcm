@@ -26,6 +26,7 @@ namespace SIL.LCModel
 	public class LcmCacheTests : MemoryOnlyBackendProviderTestBase
 	{
 		private ILcmUI m_ui;
+		private string m_baseTestDirectory;
 		private string m_projectsDirectory;
 		private ILcmDirectories m_lcmDirectories;
 
@@ -34,7 +35,9 @@ namespace SIL.LCModel
 		{
 			base.FixtureSetup();
 
-			m_projectsDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+			m_baseTestDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+			m_projectsDirectory = Path.Combine(m_baseTestDirectory, Path.GetRandomFileName());
+			Directory.CreateDirectory(m_baseTestDirectory);
 			Directory.CreateDirectory(m_projectsDirectory);
 
 			m_ui = new DummyLcmUI();
@@ -44,7 +47,7 @@ namespace SIL.LCModel
 		/// <summary></summary>
 		public override void FixtureTeardown()
 		{
-			Directory.Delete(m_projectsDirectory, true);
+			Directory.Delete(m_baseTestDirectory, true);
 			base.FixtureTeardown();
 		}
 

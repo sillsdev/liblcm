@@ -142,8 +142,7 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <IcuVersion>54</IcuVersion>
   </PropertyGroup>
 
-  <!-- Limit to ItemGroup to outer build to work around warning: File specified multiple times -->
-  <ItemGroup Condition="'$(TargetFramework)' == ''">
+  <ItemGroup>
     <IcuDataInputs Include="IcuData\nfc*.txt" />
     <IcuDataInputs Include="IcuData\nfkc*.txt" />
     <IcuDataInputs Include="IcuData\UnicodeDataOverrides.txt" />

@@ -27,6 +27,8 @@ namespace SIL.LCModel.Core.Text
 		public void TestFixtureSetup()
 		{
 			CustomIcu.InitIcuDataDir();
+			Assert.That(CustomIcu.HaveCustomIcuLibrary, Is.True,
+				"These tests require the custom ICU 54 to be installed");
 		}
 
 		/// <summary>

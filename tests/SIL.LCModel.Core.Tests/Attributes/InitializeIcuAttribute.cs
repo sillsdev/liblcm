@@ -54,7 +54,7 @@ namespace SIL.LCModel.Core.Attributes
 			{
 				Console.WriteLine($"InitializeIcuAttribute: ERROR: failed with {e.GetType()}: {e.Message}");
 			}
-			}
+		}
 
 		private void EnsureIcuDataEnvironmentVariableIsSet()
 		{

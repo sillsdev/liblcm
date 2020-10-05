@@ -2,6 +2,7 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,6 +19,30 @@ namespace SIL.LCModel.DomainServices.DataMigration
 	[TestFixture]
 	public sealed class DataMigrationTests7000019 : DataMigrationTestsBase
 	{
+		private string _globalWritingSystemStoreForTests;
+
+		[OneTimeSetUp]
+		public void OneTimeSetUp()
+		{
+			if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("FW_CommonAppData")))
+				return;
+
+			_globalWritingSystemStoreForTests = Path.Combine(Path.GetTempPath(),
+				"GlobalWritingSystemStoreForTests");
+			Directory.CreateDirectory(_globalWritingSystemStoreForTests);
+			Environment.SetEnvironmentVariable("FW_CommonAppData", _globalWritingSystemStoreForTests);
+		}
+
+		[OneTimeTearDown]
+		public void OneTimeTearDown()
+		{
+			if (string.IsNullOrEmpty(_globalWritingSystemStoreForTests))
+				return;
+
+			Directory.Delete(_globalWritingSystemStoreForTests, true);
+			Environment.SetEnvironmentVariable("FW_CommonAppData", null);
+		}
+
 		private static void PrepareStore(string path)
 		{
 			if (Directory.Exists(path))
