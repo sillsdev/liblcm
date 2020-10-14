@@ -49,6 +49,31 @@ namespace SIL.LCModel.Build.Tasks
 	//</Target>
 	public class IdlImp : Task
 	{
+		private class IdlImpLogger : ILog
+		{
+			private readonly TaskLoggingHelper _logger;
+
+			public IdlImpLogger(TaskLoggingHelper msbuildLogger)
+			{
+				_logger = msbuildLogger;
+			}
+
+			public void Error(string   text)
+			{
+				_logger.LogError(text);
+			}
+
+			public void Warning(string text)
+			{
+				_logger.LogWarning(text);
+			}
+
+			public void Message(string text)
+			{
+				_logger.LogMessage(text);
+			}
+		}
+
 		public IdlImp()
 		{
 			CreateXmlComments = true;
@@ -116,7 +141,7 @@ namespace SIL.LCModel.Build.Tasks
 		{
 			try
 			{
-				var importer = new IDLImporter();
+				var importer = new IDLImporter(new IdlImpLogger(Log));
 				var namespaces = new List<string>();
 				foreach (var s in GetFilesFrom(UsingNamespaces))
 				{

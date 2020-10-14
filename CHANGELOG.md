@@ -19,3 +19,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Create nuget packages
+- [SIL.LCModel.Build.Tasks] `IdlImp` task now reports errors and warnings through msbuild logger
+  instead of console

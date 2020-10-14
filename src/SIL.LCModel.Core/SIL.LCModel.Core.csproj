@@ -131,7 +131,8 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
   <Target Name="GenerateKernelCs" BeforeTargets="BeforeCompile" Inputs="@(KernelInputs)" Outputs="@(KernelOutputs)" DependsOnTargets="SetInstallLocation">
     <!-- Call the IdlImp task from SIL.LCModel.Build.Tasks in a separate msbuild process,
          so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
-    <Exec Command="$(MsbuildCommand) GenerateKernelCs.proj /p:OutDir=$(OutDir) /p:IntermediateOutputPath=$(IntermediateOutputPath) /p:Platform=$(Platform) /p:VSInstallDir=&quot;$(VSInstallDir)&quot;" />
+    <MSBuild Projects="GenerateKernelCs.proj"
+      Properties="OutDir=$(OutDir);IntermediateOutputPath=$(IntermediateOutputPath);Platform=$(Platform);VSInstallDir=$(VSInstallDir)" />
     <ItemGroup>
       <Compile Remove="KernelInterfaces\Kernel.cs" />
       <Compile Include="KernelInterfaces\Kernel.cs" />
