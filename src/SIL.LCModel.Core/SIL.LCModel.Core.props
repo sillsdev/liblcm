@@ -2,5 +2,6 @@
 	<ItemGroup>
 		<None Include="$(MSBuildThisFileDirectory)..\lib\**\$(PackageId).dll.config" CopyToOutputDirectory="Always" />
 		<SilLcModelCoreKernelInterfaces Include="$(MSBuildThisFileDirectory)..\contentFiles\KernelInterfaces\*.*" />
+		<SilLcModelCoreKernelReferences Include="$(MSBuildThisFileDirectory)..\contentFiles\KernelInterfaces\*.json" />
 	</ItemGroup>
 </Project>
