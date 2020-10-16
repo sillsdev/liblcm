@@ -138,6 +138,8 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <ItemGroup>
       <None Include="MasterLCModel.*" Pack="true" PackagePath="contentFiles/" />
       <None Include="Styles.dtd" Pack="true" PackagePath="contentFiles/" />
+      <None Include="LcmGenerate\HandGenerated.xml" Pack="true" PackagePath="contentFiles/LcmGenerate/" />
+      <None Include="LcmGenerate\IntPropTypeOverrides.xml" Pack="true" PackagePath="contentFiles/LcmGenerate/" />
       <None Include="Templates\*.*" Pack="true" PackagePath="contentFiles/Templates/" />
       <None Include="$(PackageId).props" Pack="true" PackagePath="build/" />
       <None Include="$(PackageId).props" Pack="true" PackagePath="buildMultiTargeting/" />

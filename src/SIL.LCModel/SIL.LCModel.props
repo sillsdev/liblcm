@@ -8,6 +8,7 @@
 		<SilLCModelXsdFile Include="$(SilLCModelContentPath)MasterLCModel.xsd" />
 		<SilLCModelStylesDtd Include="$(SilLCModelContentPath)Styles.dtd" />
 		<SilLCModelTemplates Include="$(SilLCModelContentPath)Templates\*.*" />
+		<SilLCModelHandgeneratedFilesDir Include="$(SilLCModelContentPath)LcmGenerate\" />
 	</ItemGroup>
 
 </Project>
