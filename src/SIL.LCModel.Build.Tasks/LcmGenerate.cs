@@ -68,6 +68,11 @@ namespace SIL.LCModel.Build.Tasks
 		/// <value>The working directory.</value>
 		public string WorkingDirectory { get; set; }
 
+		/// <summary>
+		/// Gets or sets the directory that contains HandGenerated.xml and IntPropTypeOverrides.xml
+		/// </summary>
+		public string HandGeneratedDir { get; set; }
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Executes the task.
@@ -94,16 +99,21 @@ namespace SIL.LCModel.Build.Tasks
 				}
 				catch (XmlException e)
 				{
-					Log.LogMessage(MessageImportance.High, "Error loading XML file " + xmlPath + " " + e.Message);
+					Log.LogMessage(MessageImportance.High, $"Error loading XML file {xmlPath} {e.Message}");
 					return false;
 				}
+
+				var handGeneratedFilesDir = string.IsNullOrEmpty(HandGeneratedDir)
+					? Path.Combine(oldDir, "LcmGenerate")
+					: HandGeneratedDir;
 
 				var config = new XmlDocument();
 				var handGeneratedClasses = new Dictionary<string, List<string>>();
 				try
 				{
-					Log.LogMessage(MessageImportance.Low, "Loading hand generated classes from \"HandGenerated.xml\".");
-					config.Load(Path.Combine(oldDir, Path.Combine("LcmGenerate", "HandGenerated.xml")));
+					var handGeneratedFile = Path.Combine(handGeneratedFilesDir, "HandGenerated.xml");
+					Log.LogMessage(MessageImportance.Low, $"Loading hand generated classes from \"{handGeneratedFile}\".");
+					config.Load(handGeneratedFile);
 					foreach (XmlElement node in config.GetElementsByTagName("Class"))
 					{
 						var props = new List<string>();
@@ -121,7 +131,7 @@ namespace SIL.LCModel.Build.Tasks
 				}
 				catch (XmlException e)
 				{
-					Log.LogMessage(MessageImportance.High, "Error loading hand generated classes" + " " + e.Message);
+					Log.LogMessage(MessageImportance.High, $"Error loading hand generated classes {e.Message}");
 					return false;
 				}
 
@@ -129,9 +139,10 @@ namespace SIL.LCModel.Build.Tasks
 				var intPropTypeOverridesClasses = new Dictionary<string, Dictionary<string, string>>();
 				try
 				{
+					var handGeneratedFile = Path.Combine(handGeneratedFilesDir, "IntPropTypeOverrides.xml");
 					Log.LogMessage(MessageImportance.Low,
-						"Loading hand generated classes from \"IntPropTypeOverrides.xml\".");
-					config.Load(Path.Combine(oldDir, Path.Combine("LcmGenerate", "IntPropTypeOverrides.xml")));
+						$"Loading hand generated classes from \"{handGeneratedFilesDir}\".");
+					config.Load(handGeneratedFilesDir);
 					foreach (XmlElement node in config.GetElementsByTagName("Class"))
 					{
 						// Dictionary<PropertyName, PropertyType>
@@ -151,7 +162,7 @@ namespace SIL.LCModel.Build.Tasks
 				}
 				catch (XmlException e)
 				{
-					Log.LogMessage(MessageImportance.High, "Error loading IntPropTypeOverrides classes" + " " + e.Message);
+					Log.LogMessage(MessageImportance.High, $"Error loading IntPropTypeOverrides classes {e.Message}");
 					return false;
 				}
 

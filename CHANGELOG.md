@@ -21,3 +21,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Create nuget packages
 - [SIL.LCModel.Build.Tasks] `IdlImp` task now reports errors and warnings through msbuild logger
   instead of console
+- [SIL.LCModel.Build.Tasks] `LcmGenerate` task now allows to specify location that contains
+  `HandGenerated.xml` and `IntPropTypeOverrides.xml` files (`HandGeneratedDir` attribute)
