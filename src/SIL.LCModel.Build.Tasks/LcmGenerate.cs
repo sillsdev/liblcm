@@ -141,8 +141,8 @@ namespace SIL.LCModel.Build.Tasks
 				{
 					var handGeneratedFile = Path.Combine(handGeneratedFilesDir, "IntPropTypeOverrides.xml");
 					Log.LogMessage(MessageImportance.Low,
-						$"Loading hand generated classes from \"{handGeneratedFilesDir}\".");
-					config.Load(handGeneratedFilesDir);
+						$"Loading hand generated classes from \"{handGeneratedFile}\".");
+					config.Load(handGeneratedFile);
 					foreach (XmlElement node in config.GetElementsByTagName("Class"))
 					{
 						// Dictionary<PropertyName, PropertyType>
