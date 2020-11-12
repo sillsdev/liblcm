@@ -21,8 +21,8 @@ Instructions
 3. Build liblcm
 - cd into the directory of the cloned liblcm repository.
 
-**On Windows**
-- Run the appropriate `vsvars*.bat`. Alternatively, `LCM.sln` can be built from within Visual Studio.
+**On Windows**, `LCM.sln` can be built from within Visual Studio, or
+- Open Visual Studio Developer Command Prompt.
 - Run `build.cmd` to build the liblcm library.
 
 **On Linux**
