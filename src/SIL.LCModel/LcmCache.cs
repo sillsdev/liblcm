@@ -64,16 +64,6 @@ namespace SIL.LCModel
 		public delegate void ProjectNameChangedHandler(LcmCache sender);
 		/// <summary>Event raised when the project DB name is changed</summary>
 		public event ProjectNameChangedHandler ProjectNameChanged;
-		/// <summary>Delegate declaration for when a newer writing system is found in the
-		/// global writing system repository</summary>
-		/// <param name="wsLabel">The display name of the writing system</param>
-		/// <param name="projectName">the name of the project that has the out-of-date writing system.</param>
-		/// <returns>True if the writing system should be refreshed, false to ignore the
-		/// updated writing system</returns>
-		public delegate bool NewerWritingSystemFoundHandler(string wsLabel, string projectName);
-		/// <summary>Event raised when a newer writing system is found in the global writing
-		/// system repository</summary>
-		public static event NewerWritingSystemFoundHandler NewerWritingSystemFound;
 		#endregion
 
 		#region Creation/initialization methods
@@ -312,22 +302,6 @@ namespace SIL.LCModel
 		/// ------------------------------------------------------------------------------------
 		private void Initialize()
 		{
-			// check for global writing system updates
-			var writingSystemManager = ServiceLocator.WritingSystemManager;
-			var newerGlobalWritingSystems = writingSystemManager.CheckForNewerGlobalWritingSystems().ToList();
-
-			// If there are updates, and at least one of the following is true:
-			// - The user has cleared the "Do Not Copy Writing Systems to Other Projects" box (cleared by default)
-			// - The NewerWritingSystemFound method is null
-			// - The NewerWritingSystemFound method returns true (the user wants to copy these WS's from global this time)
-			if (newerGlobalWritingSystems.Any()
-				&& (m_serviceLocator.GetInstance<LcmSettings>().UpdateGlobalWSStore
-				|| NewerWritingSystemFound == null
-				|| NewerWritingSystemFound(WsNamesToString(newerGlobalWritingSystems), ProjectId.UiName)))
-			{
-				SaveOnlyLocalWritingSystems(writingSystemManager, newerGlobalWritingSystems);
-			}
-
 			if (ServiceLocator.WritingSystems.DefaultAnalysisWritingSystem == null)
 				throw new LcmInitializationException(string.Format(Strings.ksNoWritingSystems, Strings.ksAnalysis));
 			if (ServiceLocator.WritingSystems.DefaultVernacularWritingSystem == null)
@@ -337,25 +311,23 @@ namespace SIL.LCModel
 				DataStoreInitializationServices.PrepareCache(this));
 		}
 
-		private static string WsNamesToString(IEnumerable<CoreWritingSystemDefinition> writingSystems)
+		/// <summary>
+		/// Call to update the writing systems in the project with the contents in the global store
+		/// </summary>
+		public void UpdateWritingSystemsFromGlobalStore()
 		{
-			var result = new StringBuilder();
-			foreach (var ws in writingSystems)
-			{
-				if (result.Length > 0)
-					result.Append(", ");
-				result.Append(ws.DisplayLabel);
-			}
-			return result.ToString();
+			// check for global writing system updates
+			var writingSystemManager = ServiceLocator.WritingSystemManager;
+			var newerGlobalWritingSystems =
+				writingSystemManager.CheckForNewerGlobalWritingSystems().ToList();
+
+			SaveOnlyLocalWritingSystems(writingSystemManager, newerGlobalWritingSystems);
 		}
 
 		private static void SaveOnlyLocalWritingSystems(WritingSystemManager writingSystemManager, IEnumerable<CoreWritingSystemDefinition> writingSystems)
 		{
 			foreach (var ws in writingSystems)
 			{
-				// We only copied changes from Global, so the WS has not been "modified."
-				// Setting Modified to false prevents bumping the date on the global WS.
-				// Running Replace ensures the local ldml will be saved regardless of the Modified flag.
 				writingSystemManager.Replace(ws);
 				ws.AcceptChanges();
 			}

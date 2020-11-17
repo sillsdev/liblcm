@@ -331,7 +331,75 @@ namespace SIL.LCModel
 				RemoveTestDirs(preExistingDirs, Directory.GetDirectories(m_projectsDirectory));
 			}
 		}
-	}
+
+		[Test]
+		public void UpdateWritingSystemsFromGlobalStore_CopiesNewerWsOnly()
+		{
+			const string dbName = "ProjectSharingTest";
+			SureRemoveDb(dbName);
+			var preExistingDirs = new List<string>(Directory.GetDirectories(m_projectsDirectory));
+			try
+			{
+				// create project
+				var dbFileName = LcmCache.CreateNewLangProj(new DummyProgressDlg(), dbName, m_lcmDirectories,
+					new SingleThreadedSynchronizeInvoke());
+				// Set up test file for project sharing setting
+				var testFileStore = new FileSettingsStore(LexiconSettingsFileHelper.GetProjectLexiconSettingsPath(Path.GetDirectoryName(dbFileName)));
+				var dataMapper = new ProjectLexiconSettingsDataMapper(testFileStore);
+				dataMapper.Write(new ProjectLexiconSettings { ProjectSharing = true });
+				// SUT
+				// Request XML backend with project settings that have ProjectSharing set to true
+				var projectId = new TestProjectId(BackendProviderType.kXML, dbFileName);
+				using (var cache = LcmCache.CreateCacheFromExistingData(projectId, "en", m_ui, m_lcmDirectories, new LcmSettings(),
+					new DummyProgressDlg()))
+				{
+					var globalPath = Path.Combine(m_projectsDirectory,
+						$"{Path.GetFileNameWithoutExtension(dbFileName)}_GlobalWss");
+					var globalPathWithVersion = CoreGlobalWritingSystemRepository.CurrentVersionPath(globalPath);
+					Directory.CreateDirectory(globalPathWithVersion);
+					var storePath = Path.Combine(cache.ProjectId.ProjectFolder, LcmFileHelper.ksWritingSystemsDir);
+					File.Copy(Path.Combine(storePath, "en.ldml"), Path.Combine(globalPathWithVersion, "en.ldml"));
+					File.Copy(Path.Combine(storePath, "fr.ldml"), Path.Combine(globalPathWithVersion, "fr.ldml"));
+					var wsManager = cache.ServiceLocator.WritingSystemManager;
+
+				   // Add new Ws for French and English in global repo
+				   var globalRepoForTest = new CoreGlobalWritingSystemRepository(globalPath);
+
+					// Set up WritingSystemStore for test
+				   wsManager.WritingSystemStore = new CoreLdmlInFolderWritingSystemRepository(storePath,
+						cache.ServiceLocator.DataSetup.ProjectSettingsStore,
+						cache.ServiceLocator.DataSetup.UserSettingsStore,
+						globalRepoForTest);
+
+					var enWs = globalRepoForTest.Get("en");
+					var frWs = globalRepoForTest.Get("fr");
+					Assert.That(string.IsNullOrEmpty(enWs.SpellCheckingId), Is.True);
+					Assert.That(string.IsNullOrEmpty(cache.WritingSystemFactory.get_Engine("en").SpellCheckingId), Is.True);
+					Assert.That(string.IsNullOrEmpty(frWs.SpellCheckingId), Is.True);
+					Assert.That(string.IsNullOrEmpty(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId), Is.True);
+
+					const string spellCheckId = "test_spellcheck_id";
+					enWs.SpellCheckingId = spellCheckId;
+					globalRepoForTest.Set(enWs);
+					globalRepoForTest.Save();
+					var frWsFromCache = cache.ServiceLocator.WritingSystemManager.Get("fr");
+					frWsFromCache.SpellCheckingId = spellCheckId;
+					cache.ServiceLocator.WritingSystemManager.Set(frWsFromCache);
+					cache.ServiceLocator.WritingSystemManager.Save();
+					enWs = globalRepoForTest.Get("en");
+					cache.UpdateWritingSystemsFromGlobalStore();
+					Assert.That(enWs.SpellCheckingId, Is.StringMatching(spellCheckId));
+					Assert.That(cache.WritingSystemFactory.get_Engine("en").SpellCheckingId, Is.StringMatching(spellCheckId));
+					Assert.That(frWs.SpellCheckingId, Is.Not.StringMatching(spellCheckId));
+					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Is.StringMatching(spellCheckId));
+				}
+		 }
+			finally
+			{
+				RemoveTestDirs(preExistingDirs, Directory.GetDirectories(m_projectsDirectory));
+			}
+		}
+   }
 
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>
