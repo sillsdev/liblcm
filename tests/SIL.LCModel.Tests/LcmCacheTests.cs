@@ -333,9 +333,15 @@ namespace SIL.LCModel
 		}
 
 		[Test]
-		public void UpdateWritingSystemsFromGlobalStore_CopiesNewerWsOnly()
+		[TestCase("", "", "", "", "", "")]
+		[TestCase("NewEnId", "", "", "", "NewEnId", "")]
+		[TestCase("", "NewFrId", "NewEnId", "", "NewEnId", "NewFrId")]
+		public void UpdateWritingSystemsFromGlobalStore_CopiesNewerWsOnly(
+			string globalEn, string globalFr,
+			string localEn, string localFr,
+			string localEnResult, string localFrResult)
 		{
-			const string dbName = "ProjectSharingTest";
+			const string dbName = "UpdateWsFromGsTest";
 			SureRemoveDb(dbName);
 			var preExistingDirs = new List<string>(Directory.GetDirectories(m_projectsDirectory));
 			try
@@ -343,10 +349,6 @@ namespace SIL.LCModel
 				// create project
 				var dbFileName = LcmCache.CreateNewLangProj(new DummyProgressDlg(), dbName, m_lcmDirectories,
 					new SingleThreadedSynchronizeInvoke());
-				// Set up test file for project sharing setting
-				var testFileStore = new FileSettingsStore(LexiconSettingsFileHelper.GetProjectLexiconSettingsPath(Path.GetDirectoryName(dbFileName)));
-				var dataMapper = new ProjectLexiconSettingsDataMapper(testFileStore);
-				dataMapper.Write(new ProjectLexiconSettings { ProjectSharing = true });
 				// SUT
 				// Request XML backend with project settings that have ProjectSharing set to true
 				var projectId = new TestProjectId(BackendProviderType.kXML, dbFileName);
@@ -378,22 +380,45 @@ namespace SIL.LCModel
 					Assert.That(string.IsNullOrEmpty(frWs.SpellCheckingId), Is.True);
 					Assert.That(string.IsNullOrEmpty(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId), Is.True);
 
-					const string spellCheckId = "test_spellcheck_id";
-					enWs.SpellCheckingId = spellCheckId;
+					// Update the spellCheckIds in the global repository
+					if (globalEn != null)
+					{
+						enWs.SpellCheckingId = globalEn;
+					}
+
+					if (globalFr != null)
+					{
+						frWs.SpellCheckingId = globalFr;
+					}
 					globalRepoForTest.Set(enWs);
+					globalRepoForTest.Set(frWs);
 					globalRepoForTest.Save();
+					// Update the cache version of the repository
+					var enWsFromCache = cache.ServiceLocator.WritingSystemManager.Get("en");
 					var frWsFromCache = cache.ServiceLocator.WritingSystemManager.Get("fr");
-					frWsFromCache.SpellCheckingId = spellCheckId;
+					enWsFromCache.SpellCheckingId = localEn;
+					frWsFromCache.SpellCheckingId = localFr;
+					cache.ServiceLocator.WritingSystemManager.Set(enWsFromCache);
 					cache.ServiceLocator.WritingSystemManager.Set(frWsFromCache);
 					cache.ServiceLocator.WritingSystemManager.Save();
 					enWs = globalRepoForTest.Get("en");
-					cache.UpdateWritingSystemsFromGlobalStore();
-					Assert.That(enWs.SpellCheckingId, Is.StringMatching(spellCheckId));
-					Assert.That(cache.WritingSystemFactory.get_Engine("en").SpellCheckingId, Is.StringMatching(spellCheckId));
-					Assert.That(frWs.SpellCheckingId, Is.Not.StringMatching(spellCheckId));
-					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Is.StringMatching(spellCheckId));
+					frWs = globalRepoForTest.Get("fr");
+
+					// Verify preconditions
+					Assert.That(enWs.SpellCheckingId, Is.StringMatching(globalEn));
+					Assert.That(frWs.SpellCheckingId, Is.StringMatching(globalFr));
+					Assert.That(cache.WritingSystemFactory.get_Engine("en").SpellCheckingId, Is.StringMatching(localEn));
+					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Is.StringMatching(localFr));
+
+					// SUT
+					cache.UpdateWritingSystemsFromGlobalStore("en");
+					Assert.That(cache.WritingSystemFactory.get_Engine("en").SpellCheckingId, Is.StringMatching(localEnResult));
+					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Is.StringMatching(localFr));
+					
+					cache.UpdateWritingSystemsFromGlobalStore("fr");
+					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Is.StringMatching(localFrResult));
 				}
-		 }
+			}
 			finally
 			{
 				RemoveTestDirs(preExistingDirs, Directory.GetDirectories(m_projectsDirectory));

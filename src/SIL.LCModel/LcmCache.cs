@@ -312,14 +312,14 @@ namespace SIL.LCModel
 		}
 
 		/// <summary>
-		/// Call to update the writing systems in the project with the contents in the global store
+		/// Call to update the given writing system in the project with the contents in the global store
 		/// </summary>
-		public void UpdateWritingSystemsFromGlobalStore()
+		public void UpdateWritingSystemsFromGlobalStore(string languageTag)
 		{
 			// check for global writing system updates
 			var writingSystemManager = ServiceLocator.WritingSystemManager;
 			var newerGlobalWritingSystems =
-				writingSystemManager.CheckForNewerGlobalWritingSystems().ToList();
+				writingSystemManager.CheckForNewerGlobalWritingSystems(new []{languageTag});
 
 			SaveOnlyLocalWritingSystems(writingSystemManager, newerGlobalWritingSystems);
 		}
