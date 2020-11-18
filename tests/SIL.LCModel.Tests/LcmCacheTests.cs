@@ -378,22 +378,37 @@ namespace SIL.LCModel
 					Assert.That(string.IsNullOrEmpty(frWs.SpellCheckingId), Is.True);
 					Assert.That(string.IsNullOrEmpty(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId), Is.True);
 
+					// Update the spellCheckId in the global repository version of English 
 					const string spellCheckId = "test_spellcheck_id";
 					enWs.SpellCheckingId = spellCheckId;
 					globalRepoForTest.Set(enWs);
 					globalRepoForTest.Save();
+					// Update the cache version of the repository for french
 					var frWsFromCache = cache.ServiceLocator.WritingSystemManager.Get("fr");
 					frWsFromCache.SpellCheckingId = spellCheckId;
 					cache.ServiceLocator.WritingSystemManager.Set(frWsFromCache);
 					cache.ServiceLocator.WritingSystemManager.Save();
 					enWs = globalRepoForTest.Get("en");
-					cache.UpdateWritingSystemsFromGlobalStore();
+					// SUT
+					cache.UpdateWritingSystemsFromGlobalStore("en");
 					Assert.That(enWs.SpellCheckingId, Is.StringMatching(spellCheckId));
 					Assert.That(cache.WritingSystemFactory.get_Engine("en").SpellCheckingId, Is.StringMatching(spellCheckId));
 					Assert.That(frWs.SpellCheckingId, Is.Not.StringMatching(spellCheckId));
 					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Is.StringMatching(spellCheckId));
+					// Update the global version for french, and then ask for the latest english
+					const string spellCheckIdFr = "le_test_spellcheck_id";
+					frWs.SpellCheckingId = spellCheckIdFr;
+					globalRepoForTest.Replace("fr", frWs);
+					globalRepoForTest.Save();
+					// make sure we verify our change is actually in the global repo
+					frWs = globalRepoForTest.Get("fr");
+					// SUT
+					cache.UpdateWritingSystemsFromGlobalStore("en");
+					Assert.That(frWs.SpellCheckingId, Is.StringMatching(spellCheckIdFr));
+					// We didn't ask for french, it should not have changed
+					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Is.StringMatching(spellCheckId));
 				}
-		 }
+			}
 			finally
 			{
 				RemoveTestDirs(preExistingDirs, Directory.GetDirectories(m_projectsDirectory));
