@@ -12,7 +12,7 @@ Instructions
 
 1. Install Required Software
 - git
-- Visual Studio 2015 or MonoDevelop
+- Visual Studio 2017 or MonoDevelop
 
 2. Clone the liblcm repository
 - Open a terminal (or git bash on Windows) and cd into a desired directory.

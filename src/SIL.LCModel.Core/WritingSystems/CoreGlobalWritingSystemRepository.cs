@@ -1,5 +1,7 @@
+using System.Runtime.CompilerServices;
 using SIL.WritingSystems;
 
+[assembly: InternalsVisibleTo("SIL.LCModel.Tests")]
 namespace SIL.LCModel.Core.WritingSystems
 {
 	/// <summary>
