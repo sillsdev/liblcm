@@ -5,8 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
-using System.Xml.Linq;
 using NUnit.Framework;
 using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.DomainServices;
@@ -334,7 +332,100 @@ namespace SIL.LCModel
 				RemoveTestDirs(preExistingDirs, Directory.GetDirectories(m_projectsDirectory));
 			}
 		}
-	}
+
+		[Test]
+		[TestCase("", "", "", "", "", "")]
+		[TestCase("NewEnId", "", "", "", "NewEnId", "")]
+		[TestCase("", "NewFrId", "NewEnId", "", "NewEnId", "NewFrId")]
+		public void UpdateWritingSystemsFromGlobalStore_CopiesNewerWsOnly(
+			string globalEn, string globalFr,
+			string localEn, string localFr,
+			string localEnResult, string localFrResult)
+		{
+			const string dbName = "UpdateWsFromGsTest";
+			SureRemoveDb(dbName);
+			var preExistingDirs = new List<string>(Directory.GetDirectories(m_projectsDirectory));
+			try
+			{
+				// create project
+				var dbFileName = LcmCache.CreateNewLangProj(new DummyProgressDlg(), dbName, m_lcmDirectories,
+					new SingleThreadedSynchronizeInvoke());
+				// SUT
+				// Request XML backend with project settings that have ProjectSharing set to true
+				var projectId = new TestProjectId(BackendProviderType.kXML, dbFileName);
+				using (var cache = LcmCache.CreateCacheFromExistingData(projectId, "en", m_ui, m_lcmDirectories, new LcmSettings(),
+					new DummyProgressDlg()))
+				{
+					var globalPath = Path.Combine(m_projectsDirectory,
+						$"{Path.GetFileNameWithoutExtension(dbFileName)}_GlobalWss");
+					var globalPathWithVersion = CoreGlobalWritingSystemRepository.CurrentVersionPath(globalPath);
+					Directory.CreateDirectory(globalPathWithVersion);
+					var storePath = Path.Combine(cache.ProjectId.ProjectFolder, LcmFileHelper.ksWritingSystemsDir);
+					File.Copy(Path.Combine(storePath, "en.ldml"), Path.Combine(globalPathWithVersion, "en.ldml"));
+					File.Copy(Path.Combine(storePath, "fr.ldml"), Path.Combine(globalPathWithVersion, "fr.ldml"));
+					var wsManager = cache.ServiceLocator.WritingSystemManager;
+
+				   // Add new Ws for French and English in global repo
+				   var globalRepoForTest = new TestCoreGlobalWritingSystemRepository(globalPath);
+
+					// Set up WritingSystemStore for test
+				   wsManager.WritingSystemStore = new CoreLdmlInFolderWritingSystemRepository(storePath,
+						cache.ServiceLocator.DataSetup.ProjectSettingsStore,
+						cache.ServiceLocator.DataSetup.UserSettingsStore,
+						globalRepoForTest);
+
+					var enWs = globalRepoForTest.Get("en");
+					var frWs = globalRepoForTest.Get("fr");
+					Assert.That(string.IsNullOrEmpty(enWs.SpellCheckingId), Is.True);
+					Assert.That(string.IsNullOrEmpty(cache.WritingSystemFactory.get_Engine("en").SpellCheckingId), Is.True);
+					Assert.That(string.IsNullOrEmpty(frWs.SpellCheckingId), Is.True);
+					Assert.That(string.IsNullOrEmpty(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId), Is.True);
+
+					// Update the spellCheckIds in the global repository
+					if (globalEn != null)
+					{
+						enWs.SpellCheckingId = globalEn;
+					}
+
+					if (globalFr != null)
+					{
+						frWs.SpellCheckingId = globalFr;
+					}
+					globalRepoForTest.Set(enWs);
+					globalRepoForTest.Set(frWs);
+					globalRepoForTest.Save();
+					// Update the cache version of the repository
+					var enWsFromCache = cache.ServiceLocator.WritingSystemManager.Get("en");
+					var frWsFromCache = cache.ServiceLocator.WritingSystemManager.Get("fr");
+					enWsFromCache.SpellCheckingId = localEn;
+					frWsFromCache.SpellCheckingId = localFr;
+					cache.ServiceLocator.WritingSystemManager.Set(enWsFromCache);
+					cache.ServiceLocator.WritingSystemManager.Set(frWsFromCache);
+					cache.ServiceLocator.WritingSystemManager.Save();
+					enWs = globalRepoForTest.Get("en");
+					frWs = globalRepoForTest.Get("fr");
+
+					// Verify preconditions
+					Assert.AreEqual(enWs.SpellCheckingId, globalEn);
+					Assert.AreEqual(frWs.SpellCheckingId, globalFr);
+					Assert.AreEqual(cache.WritingSystemFactory.get_Engine("en").SpellCheckingId, localEn);
+					Assert.AreEqual(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, localFr);
+
+					// SUT
+					cache.UpdateWritingSystemsFromGlobalStore("en");
+					Assert.AreEqual(cache.WritingSystemFactory.get_Engine("en").SpellCheckingId, localEnResult);
+					Assert.AreEqual(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, localFr);
+					
+					cache.UpdateWritingSystemsFromGlobalStore("fr");
+					Assert.AreEqual(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, localFrResult);
+				}
+			}
+			finally
+			{
+				RemoveTestDirs(preExistingDirs, Directory.GetDirectories(m_projectsDirectory));
+			}
+		}
+   }
 
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>

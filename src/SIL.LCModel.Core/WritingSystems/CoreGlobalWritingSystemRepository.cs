@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using SIL.WritingSystems;
 
 namespace SIL.LCModel.Core.WritingSystems
@@ -18,7 +19,7 @@ namespace SIL.LCModel.Core.WritingSystems
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CoreGlobalWritingSystemRepository"/> class.
 		/// </summary>
-		internal CoreGlobalWritingSystemRepository(string basePath)
+		protected CoreGlobalWritingSystemRepository(string basePath)
 			: base(basePath)
 		{
 		}

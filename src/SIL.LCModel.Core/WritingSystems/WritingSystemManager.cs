@@ -106,12 +106,12 @@ namespace SIL.LCModel.Core.WritingSystems
 		/// Gets all newer shared writing systems.
 		/// </summary>
 		/// <value>The newer shared writing systems.</value>
-		public IEnumerable<CoreWritingSystemDefinition> CheckForNewerGlobalWritingSystems()
+		public IEnumerable<CoreWritingSystemDefinition> CheckForNewerGlobalWritingSystems(IEnumerable<string> langtags = null)
 		{
 			lock (m_syncRoot)
 			{
 				var localRepo = m_repo as ILocalWritingSystemRepository<CoreWritingSystemDefinition>;
-				return localRepo != null ? localRepo.CheckForNewerGlobalWritingSystems() : Enumerable.Empty<CoreWritingSystemDefinition>();
+				return localRepo != null ? localRepo.CheckForNewerGlobalWritingSystems(langtags) : Enumerable.Empty<CoreWritingSystemDefinition>();
 			}
 		}
 

@@ -1,9 +1,6 @@
-// Copyright (c) 2003-2013 SIL International
+// Copyright (c) 2003-2020 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
-//
-// File: StTxtPara.cs
-// Responsibility: TE Team
 
 using System;
 using System.Collections.Generic;
@@ -127,7 +124,7 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		/// <param name="hvoPic">The HVO of the picture to delete</param>
 		/// <returns>The character offset of the location where the ORC was found in this
-		/// paragraph for the gievn picture. If not found, returns -1.</returns>
+		/// paragraph for the given picture. If not found, returns -1.</returns>
 		/// ------------------------------------------------------------------------------------
 		public int DeletePicture(int hvoPic)
 		{
@@ -537,14 +534,13 @@ namespace SIL.LCModel.DomainImpl
 		{
 			if (m_paraCloneInProgress)
 				return;
-			if (originalValue == null && String.IsNullOrEmpty(newValue.Text))
+			if (originalValue == null && string.IsNullOrEmpty(newValue.Text))
 				return; // no point in doing AnalysisAdjuster stuff if we're just creating an empty paragraph.
-			TsStringDiffInfo diffInfo = TsStringUtils.GetDiffsInTsStrings(originalValue, newValue);
+			var diffInfo = TsStringUtils.GetDiffsInTsStrings(originalValue, newValue);
 			Debug.Assert(diffInfo != null, "We shouldn't get called if there is no difference");
 			if (diffInfo != null)
-				OnContentsChanged(originalValue, newValue, diffInfo, true);
-			// NOTE: Try not add anything else in this method. It probably should go in
-			// OnContentsChanged.
+				OnContentsChanged(originalValue, newValue, diffInfo, diffInfo.FAdjustAnalyses);
+			// NOTE: Try not to add anything else in this method. It should probably go in OnContentsChanged.
 		}
 
 		/// ------------------------------------------------------------------------------------
