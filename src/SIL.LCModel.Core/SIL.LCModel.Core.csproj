@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net461</TargetFrameworks>
@@ -123,7 +123,7 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <Clean Include="@(KernelOutputs)" />
   </ItemGroup>
   <Target Name="SetInstallLocation">
-    <Exec Command="$(VSWhereDir)vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath" ConsoleToMSBuild="true" Condition="'$(OS)'=='Windows_NT'">
+    <Exec Command='"$(VSWhereDir)vswhere" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath' ConsoleToMSBuild="true" Condition="'$(OS)'=='Windows_NT'">
       <Output TaskParameter="ConsoleOutput" PropertyName="VSInstallDir" />
     </Exec>
   </Target>
@@ -187,6 +187,8 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
       <None Include="KernelInterfaces\*.id*" Pack="true" PackagePath="contentFiles\KernelInterfaces" />
       <None Include="$(OutDir)KernelInterfaces\*.json" Pack="true" PackagePath="contentFiles\KernelInterfaces" />
       <None Include="$(OutputPath)\**\$(PackageId).dll.config" Pack="true" PackagePath="lib" />
+      <None Include="$(OutDir)IcuData\*.txt" Pack="true" PackagePath="contentFiles\IcuData" />
+      <None Include="$(OutDir)IcuData\icudt$(IcuVersion)l\*.nrm" Pack="true" PackagePath="contentFiles\IcuData\icudt$(IcuVersion)l" />
     </ItemGroup>
   </Target>
 
