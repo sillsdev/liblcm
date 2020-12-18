@@ -25,7 +25,8 @@ text corpus, and linguistics data.
 
 	### On Windows
 
-	- Run the appropriate `vsvars*.bat`. Alternatively, `LCM.sln` can be built from within Visual Studio.
+	- `LCM.sln` can be built from within Visual Studio, or
+	- Open Visual Studio Developer Command Prompt.
 	- Run `build.cmd` to build the liblcm library.
 
 	### On Linux

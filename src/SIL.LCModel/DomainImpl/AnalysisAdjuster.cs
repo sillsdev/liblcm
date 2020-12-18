@@ -249,6 +249,7 @@ namespace SIL.LCModel.DomainImpl
 		#region Public methods
 		/// <summary>
 		/// This is the main entry point called by the setter on the StTxtPara.Contents
+		/// REVIEW (Hasso) 2020.09: this method is never used
 		/// </summary>
 		public static void AdjustAnalysis(IStTxtPara para, ITsString oldContents)
 		{

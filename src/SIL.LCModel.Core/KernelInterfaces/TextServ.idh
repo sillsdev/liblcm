@@ -152,7 +152,7 @@ typedef [v1_enum] enum FwTextPropType
 	ktptUnderColor = 10, // Color used for underlining.
 
 	/*------------------------------------------------------------------------------------------
-		Paragraph level properties. Some of these may occassionally be used at the character
+		Paragraph level properties. Some of these may occasionally be used at the character
 		level as well.
 	------------------------------------------------------------------------------------------*/
 

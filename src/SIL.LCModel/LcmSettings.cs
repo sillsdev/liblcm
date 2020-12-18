@@ -16,10 +16,9 @@ namespace SIL.LCModel
 		private bool m_frozen;
 		private bool m_disableDataMigration;
 		private int m_sharedXMLBackendCommitLogSize;
-		private bool m_updateGlobalWSStore;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="LcmSettings"/> class.
+		/// LcmSettings include project sharing and data migration related settings.
 		/// </summary>
 		public LcmSettings()
 		{
@@ -60,19 +59,6 @@ namespace SIL.LCModel
 			{
 				CheckFrozen();
 				m_sharedXMLBackendCommitLogSize = value;
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether to update the global WS store.
-		/// </summary>
-		public bool UpdateGlobalWSStore
-		{
-			get { return m_updateGlobalWSStore; }
-			set
-			{
-				CheckFrozen();
-				m_updateGlobalWSStore = value;
 			}
 		}
 
