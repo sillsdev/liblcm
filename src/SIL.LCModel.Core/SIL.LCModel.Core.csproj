@@ -32,8 +32,8 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
   <ItemGroup>
     <PackageReference Include="GitVersionTask" Version="5.3.4" PrivateAssets="All" />
     <PackageReference Include="icu.net" Version="2.6.0" />
-    <PackageReference Include="Icu4c.Win.Fw.Bin" Version="54.1.14-beta" />
-    <PackageReference Include="Icu4c.Win.Fw.Lib" Version="54.1.14-beta" PrivateAssets="All" />
+    <PackageReference Include="Icu4c.Win.Fw.Bin" Version="54.1.14-beta" IncludeAssets="build" />
+    <PackageReference Include="Icu4c.Win.Fw.Lib" Version="54.1.14-beta" IncludeAssets="build" />
     <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="2.0.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.0.4" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
@@ -43,10 +43,7 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4" PrivateAssets="All" />
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-    <PackageReference Include="vswhere" Version="2.8.4">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="vswhere" Version="2.8.4" PrivateAssets="all" />
     <ProjectReference Include="..\CSTools\Tools\Tools.csproj" />
     <ProjectReference Include="..\SIL.LCModel.Build.Tasks\SIL.LCModel.Build.Tasks.csproj" />
     <ProjectReference Include="..\SIL.LCModel.Utils\SIL.LCModel.Utils.csproj" />
