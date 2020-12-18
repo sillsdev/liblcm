@@ -36,4 +36,9 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4" PrivateAssets="All" />
   </ItemGroup>
+
+  <Target Name="CopyPackage" AfterTargets="Pack" Condition="'$(LOCAL_NUGET_REPO)'!=''">
+    <Copy SourceFiles="$(PackageOutputPath)/$(PackageId).$(PackageVersion).nupkg"
+      DestinationFolder="$(LOCAL_NUGET_REPO)"/>
+  </Target>
 </Project>

@@ -53,4 +53,9 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+
+  <Target Name="CopyPackage" AfterTargets="Pack" Condition="'$(LOCAL_NUGET_REPO)'!=''">
+    <Copy SourceFiles="$(PackageOutputPath)/$(PackageId).$(PackageVersion).nupkg"
+      DestinationFolder="$(LOCAL_NUGET_REPO)"/>
+  </Target>
 </Project>

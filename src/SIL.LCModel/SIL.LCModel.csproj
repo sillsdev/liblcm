@@ -149,4 +149,9 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
   <Target Name="CheckWinForms" BeforeTargets="CoreCompile">
     <Error Text="Please do NOT make liblcm reference System.Windows.Forms. It is not supposed to contain UI code!" Condition="'%(Reference.Identity)' == 'System.Windows.Forms' Or '$(UseWindowsForms)' == 'true'" />
   </Target>
+
+  <Target Name="CopyPackage" AfterTargets="Pack" Condition="'$(LOCAL_NUGET_REPO)'!=''">
+    <Copy SourceFiles="$(PackageOutputPath)/$(PackageId).$(PackageVersion).nupkg"
+      DestinationFolder="$(LOCAL_NUGET_REPO)"/>
+  </Target>
 </Project>

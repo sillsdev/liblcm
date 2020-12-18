@@ -61,4 +61,9 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
       <None Include="$(OutputPath)/lib/**/_._" Pack="true" PackagePath="lib/" />
     </ItemGroup>
   </Target>
+
+  <Target Name="CopyPackage" AfterTargets="Pack" Condition="'$(LOCAL_NUGET_REPO)'!=''">
+    <Copy SourceFiles="$(PackageOutputPath)/$(PackageId).$(PackageVersion).nupkg"
+      DestinationFolder="$(LOCAL_NUGET_REPO)"/>
+  </Target>
 </Project>
