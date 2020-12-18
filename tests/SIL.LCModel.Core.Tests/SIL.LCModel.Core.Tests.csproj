@@ -32,7 +32,7 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
 
   <ItemGroup>
     <PackageReference Include="GitVersionTask" Version="5.3.4" PrivateAssets="All" />
-    <PackageReference Include="Icu4c.Win.Min" Version="62.2.1-beta" />
+    <PackageReference Include="Icu4c.Win.Min" Version="62.2.1-beta" IncludeAssets="build" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4" PrivateAssets="All" />
     <PackageReference Include="SIL.TestUtilities" Version="8.0.0-beta0166" />
