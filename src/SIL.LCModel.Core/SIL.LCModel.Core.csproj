@@ -38,8 +38,8 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.0.4" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="NHunspell.Patched" Version="1.2.5554" />
-    <PackageReference Include="SIL.Core.Desktop" Version="8.0.0-beta0225" />
-    <PackageReference Include="SIL.Lexicon" Version="8.0.0-beta0225" />
+    <PackageReference Include="SIL.Core.Desktop" Version="8.0.0-beta0239" />
+    <PackageReference Include="SIL.Lexicon" Version="8.0.0-beta0239" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4" PrivateAssets="All" />
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
@@ -123,7 +123,7 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <Clean Include="@(KernelOutputs)" />
   </ItemGroup>
   <Target Name="SetInstallLocation">
-    <Exec Command='"$(VSWhereDir)vswhere" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath' ConsoleToMSBuild="true" Condition="'$(OS)'=='Windows_NT'">
+    <Exec Command="&quot;$(VSWhereDir)vswhere&quot; -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath" ConsoleToMSBuild="true" Condition="'$(OS)'=='Windows_NT'">
       <Output TaskParameter="ConsoleOutput" PropertyName="VSInstallDir" />
     </Exec>
   </Target>
