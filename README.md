@@ -41,17 +41,11 @@ build.(cmd|sh) (Debug|Release)
 
 ## Debugging
 
-The LCModel library depends on multiple libpalaso files that are downloaded automatically by triggering the build script. The option to build liblcm using locally built dependencies is also available to assist with debugging. Copy all of the relevent files from the libpalaso output folder into the lib/downloads folder in liblcm, then build with the command:
+The LCModel library consumes multiple libpalaso files as NuGet packages. FieldWorks and other projects consume LCModel as a NuGet package. Several options to debug across NuGet dependencies are discussed on [this wiki](https://github.com/sillsdev/libpalaso/wiki/Developing-with-locally-modified-nuget-packages). To publish and consume LCModel through local sources:
 
-```bash
-build.(cmd|sh) Debug Build True
-```
-
-Build a 64-bit build with the command:
-
-```bash
-build.(cmd|sh) Debug Build False x64
-```
+  * Set an enviroment variable `LOCAL_NUGET_REPO` with the path to a folder on your computer (or local network) to publish locally-built packages
+  * See [these instructions](https://docs.microsoft.com/en-us/nuget/hosting-packages/local-feeds) to enable local package sources
+  * `build /t:pack` will pack nuget packages and publish them to `LOCAL_NUGET_REPO`
 
 ## Tests
 
