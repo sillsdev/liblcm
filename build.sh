@@ -13,11 +13,10 @@ else
     TARGET=$2
 fi
 
-if [ -z "$3" ] ; then
-	FILESAVAILABLE=False
-else
-	FILESAVAILABLE=$3
+if [ -n "$3" ] ; then
+	echo Usage: "build [(Debug|Release) [<target>]]"
+	exit 1
 fi
 
 . environ
-msbuild /t:$TARGET /p:Configuration=$CONFIG /p:UseLocalFiles=$FILESAVAILABLE LCM.sln
+msbuild /t:$TARGET /p:Configuration=$CONFIG LCM.sln

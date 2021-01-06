@@ -40,7 +40,7 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <PackageReference Include="NHunspell.Patched" Version="1.2.5554" />
     <PackageReference Include="SIL.Core.Desktop" Version="8.0.0-*" />
     <PackageReference Include="SIL.Lexicon" Version="8.0.0-*" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4-*" PrivateAssets="All" />
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
     <PackageReference Include="vswhere" Version="2.8.4" PrivateAssets="all" />
