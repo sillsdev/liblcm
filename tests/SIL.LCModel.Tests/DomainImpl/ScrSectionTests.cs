@@ -922,6 +922,24 @@ namespace SIL.LCModel.DomainImpl
 		}
 		#endregion
 
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests MoveHeadingParasToContent when changing a heading paragraph to a content
+		/// paragraph at the beginning of a section.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void InvalidStructureExceptionMessage()
+		{
+			IScrSection introSection1 = m_philemon[0];
+			Assert.AreEqual(1, introSection1.ContentOA.ParagraphsOS.Count);
+
+			// Move first content paragraph to a heading paragraph.
+			var invalidHeadingStyle = Cache.LangProject.FindStyle(ScrStyleNames.FootnoteMarker);
+			var result = Assert.Throws<InvalidStructureException>(()=> introSection1.MoveHeadingParasToContent(0, invalidHeadingStyle));
+			Assert.That(result.Message, Is.StringContaining(ScrStyleNames.FootnoteMarker));
+		}
+
 		#region MoveContentParasToHeading
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
