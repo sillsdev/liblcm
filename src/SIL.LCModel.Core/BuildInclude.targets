@@ -41,7 +41,6 @@
 
 		<IcuDataOutputs Include="$(OutDir)IcuData/icudt$(IcuVersion)l/nfc_fw.nrm" />
 		<IcuDataOutputs Include="$(OutDir)IcuData/icudt$(IcuVersion)l/nfkc_fw.nrm" />
-
 	</ItemGroup>
 
 	<Target Name="GenerateIcuData" Inputs="@(IcuDataInputs)" Outputs="@(IcuDataOutputs)">
@@ -51,6 +50,9 @@
 		</PropertyGroup>
 		<ItemGroup>
 			<Gennorm2Source Include="../../packages/Icu4c.Win.Fw.Bin.54.1.13-beta/build/$(Folder)/gennorm2.exe" Condition="'$(OS)'=='Windows_NT'" />
+			<!-- Also include the library files that gennorm2 needs in the copy (if these were on the path we wouldn't need this) -->
+			<Gennorm2Source Include="../../packages/Icu4c.Win.Fw.Lib.54.1.13-beta/runtimes/win7-x86/**/*.dll" Condition="'$(OS)'=='Windows_NT' AND '$(Platform)'=='x86'"/>
+			<Gennorm2Source Include="../../packages/Icu4c.Win.Fw.Lib.54.1.13-beta/runtimes/win7-x64/**/*.dll" Condition="'$(OS)'=='Windows_NT' AND '$(Platform)'!='x86'"/>
 		</ItemGroup>
 
 		<Copy SourceFiles="@(Gennorm2Source)" DestinationFolder="$(OutDir)lib/$(Folder)" Condition="'$(OS)'=='Windows_NT'" />
@@ -59,6 +61,7 @@
 			<gennorm2 Condition="'$(OS)'=='Windows_NT'">"$(OutDir)lib/$(Folder)/gennorm2.exe"</gennorm2>
 			<gennorm2 Condition="'$(OS)'=='Unix'">LD_LIBRARY_PATH=/usr/lib/fieldworks/lib /usr/lib/fieldworks/icu-bin/gennorm2</gennorm2>
 		</PropertyGroup>
+		<Message Text="Missing Files $(MsBuildProjectDirectory)" Importance="high" Condition="!Exists('IcuData/nfcHebrew.txt')" />
 		<Exec Command='$(gennorm2) -o "$(OutDir)IcuData/icudt$(IcuVersion)l/nfc_fw.nrm" "IcuData/nfc.txt" "IcuData/nfcHebrew.txt" "IcuData/nfcOverrides.txt"' />
 		<Exec Command='$(gennorm2) -o "$(OutDir)IcuData/icudt$(IcuVersion)l/nfkc_fw.nrm" "IcuData/nfc.txt" "IcuData/nfcHebrew.txt" "IcuData/nfkc.txt" "IcuData/nfcOverrides.txt" "IcuData/nfkcOverrides.txt"' />
 		<Copy SourceFiles="@(IcuDataInputs)" DestinationFolder="$(OutDir)IcuData/data" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
