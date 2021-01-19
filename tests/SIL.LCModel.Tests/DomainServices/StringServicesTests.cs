@@ -10,6 +10,7 @@ using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.DomainImpl;
 using SIL.LCModel.Utils;
+using SIL.PlatformUtilities;
 
 namespace SIL.LCModel.DomainServices
 {
@@ -371,12 +372,12 @@ namespace SIL.LCModel.DomainServices
 		[Test]
 		public void GetHyperlinksInFolder_changeOfPlatform()
 		{
-			string origPathSetInDatabase = MiscUtils.IsUnix ?
+			string origPathSetInDatabase = Platform.IsUnix ?
 				@"c:\testlangproj\linkedFiles\other\Myfile.wav" :
 				"/testlangproj/linkedFiles/other/Myfile.wav";
-			string newPlatformStyleLookupPath = MiscUtils.IsUnix ?
+			string newPlatformStyleLookupPath = Platform.IsUnix ?
 				"/testlangproj/linkedFiles" : @"C:\testlangproj\linkedFiles";
-			string newPlatformStyleResultToVerify = MiscUtils.IsUnix ?
+			string newPlatformStyleResultToVerify = Platform.IsUnix ?
 				"other/Myfile.wav" : @"other\Myfile.wav";
 
 			GetHyperlinksInFolder_changeOfPlatform_helper(origPathSetInDatabase,
@@ -404,12 +405,12 @@ namespace SIL.LCModel.DomainServices
 			// When running on Windows, call "foreign"="Linux" and "current"="Windows".
 			// When running on Linux, call "foreign"="Windows" and "current"="Linux".
 
-			string origPathSetInDatabase = MiscUtils.IsUnix ? @"c:\origdir\file.txt" : "/origdir/file.txt";
-			string newPlatformStyleLookupPath = MiscUtils.IsUnix ? "/origdir" : @"C:\origdir";
-			string newPlatformStyleResultToVerify = MiscUtils.IsUnix ? "file.txt" : "file.txt";
-			string pathToRebaseFrom = MiscUtils.IsUnix ? "/origdir" : @"C:\origdir";
-			string pathToRebaseTo = MiscUtils.IsUnix ? "/newdir" : @"C:\newdir";
-			string rebasedPathToVerify = MiscUtils.IsUnix ? "/newdir/file.txt": @"C:\newdir\file.txt";
+			string origPathSetInDatabase = Platform.IsUnix ? @"c:\origdir\file.txt" : "/origdir/file.txt";
+			string newPlatformStyleLookupPath = Platform.IsUnix ? "/origdir" : @"C:\origdir";
+			string newPlatformStyleResultToVerify = Platform.IsUnix ? "file.txt" : "file.txt";
+			string pathToRebaseFrom = Platform.IsUnix ? "/origdir" : @"C:\origdir";
+			string pathToRebaseTo = Platform.IsUnix ? "/newdir" : @"C:\newdir";
+			string rebasedPathToVerify = Platform.IsUnix ? "/newdir/file.txt": @"C:\newdir\file.txt";
 
 			// Add an external link into database and look it up
 			var output = GetHyperlinksInFolder_changeOfPlatform_helper(origPathSetInDatabase,
@@ -469,18 +470,18 @@ namespace SIL.LCModel.DomainServices
 
 			// Foreign-style path is set by a foreign-platform FieldWorks
 			string origPathSetInDatabase =
-				MiscUtils.IsUnix ? @"C:\origdir\file.txt" : "/origdir/file.txt";
+				Platform.IsUnix ? @"C:\origdir\file.txt" : "/origdir/file.txt";
 			// Now current-platform FieldWorks opens and reads the database created by a
 			// foreign-platform FieldWorks, and needs to respond to currentOS-style path lookups
 			// that match foreign-style stored paths.
-			string newPlatformStyleLookupPath = MiscUtils.IsUnix ? "/origdir" : @"C:\origdir";
-			string newPlatformStyleResultToVerify = MiscUtils.IsUnix ? "file.txt" : "file.txt";
+			string newPlatformStyleLookupPath = Platform.IsUnix ? "/origdir" : @"C:\origdir";
+			string newPlatformStyleResultToVerify = Platform.IsUnix ? "file.txt" : "file.txt";
 			// Update link paths using currentOS-style paths, even though they are presently stored
 			// as foreign-style paths.
-			string pathToRebaseFrom = MiscUtils.IsUnix ? "/origdir" : @"C:\origdir";
-			string pathToRebaseTo = MiscUtils.IsUnix ? "/newdir" : @"C:\newdir";
+			string pathToRebaseFrom = Platform.IsUnix ? "/origdir" : @"C:\origdir";
+			string pathToRebaseTo = Platform.IsUnix ? "/newdir" : @"C:\newdir";
 			string rebasedPathToVerify =
-				MiscUtils.IsUnix ? "/newdir/file.txt": @"C:\newdir\file.txt";
+				Platform.IsUnix ? "/newdir/file.txt": @"C:\newdir\file.txt";
 
 			FixHyperlinkFolder_linkTextSameAsLink_helper(origPathSetInDatabase,
 				newPlatformStyleLookupPath, newPlatformStyleResultToVerify, pathToRebaseFrom,

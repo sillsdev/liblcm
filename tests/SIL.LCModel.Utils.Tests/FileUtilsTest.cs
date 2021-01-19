@@ -10,6 +10,7 @@ using System.Threading;
 using NUnit.Framework;
 using SIL.IO;
 using Mono.Unix.Native;
+using SIL.PlatformUtilities;
 
 namespace SIL.LCModel.Utils
 {
@@ -1108,8 +1109,8 @@ namespace SIL.LCModel.Utils
 
 		private void AssertChangePathToPlatformAsExpected(string linuxPath, string windowsPath)
 		{
-			string inPath = MiscUtils.IsUnix ? windowsPath : linuxPath;
-			string outPath = MiscUtils.IsUnix ? linuxPath : windowsPath;
+			string inPath = Platform.IsUnix ? windowsPath : linuxPath;
+			string outPath = Platform.IsUnix ? linuxPath : windowsPath;
 			Assert.AreEqual(outPath, FileUtils.ChangePathToPlatform(inPath));
 		}
 
@@ -1409,8 +1410,8 @@ namespace SIL.LCModel.Utils
 		private void AssertChangePathToPlatformPreservingPrefixAsExpected(string linuxPath,
 			string windowsPath, string prefix)
 		{
-			string inPath = MiscUtils.IsUnix ? windowsPath : linuxPath;
-			string outPath = MiscUtils.IsUnix ? linuxPath : windowsPath;
+			string inPath = Platform.IsUnix ? windowsPath : linuxPath;
+			string outPath = Platform.IsUnix ? linuxPath : windowsPath;
 			Assert.AreEqual(outPath, FileUtils.ChangePathToPlatformPreservingPrefix(inPath, prefix));
 		}
 
@@ -1521,7 +1522,7 @@ namespace SIL.LCModel.Utils
 		{
 			string input = @"file:///abspath/file";
 			string expected = @"abspath/file";
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				expected = @"/abspath/file";
 			Assert.That(FileUtils.StripFilePrefix(input), Is.EqualTo(expected));
 		}
@@ -1534,7 +1535,7 @@ namespace SIL.LCModel.Utils
 		{
 			string input = @"file://path/path";
 			string expected = @"path/path";
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				expected = @"/path/path";
 			Assert.That(FileUtils.StripFilePrefix(input), Is.EqualTo(expected));
 		}
@@ -1547,7 +1548,7 @@ namespace SIL.LCModel.Utils
 		{
 			string input = @"file:/path/path";
 			string expected = @"path/path";
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				expected = @"/path/path";
 			Assert.That(FileUtils.StripFilePrefix(input), Is.EqualTo(expected));
 		}
@@ -1560,7 +1561,7 @@ namespace SIL.LCModel.Utils
 		{
 			string input = @"file:path/path";
 			string expected = @"path/path";
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				expected = @"/path/path";
 			Assert.That(FileUtils.StripFilePrefix(input), Is.EqualTo(expected));
 		}
@@ -1589,7 +1590,7 @@ namespace SIL.LCModel.Utils
 		{
 			string input = @"file:///c:/path/path";
 			string expected = @"c:/path/path";
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				expected = @"/c:/path/path";
 			Assert.That(FileUtils.StripFilePrefix(input), Is.EqualTo(expected));
 		}
@@ -1609,7 +1610,7 @@ namespace SIL.LCModel.Utils
 		{
 			string input = @"file:///c:\path\path";
 			string expected = @"c:\path\path";
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				expected = @"/c:\path\path";
 			Assert.That(FileUtils.StripFilePrefix(input), Is.EqualTo(expected));
 		}
@@ -1694,7 +1695,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		private void RemoveExecuteBit(string path)
 		{
-			if (MiscUtils.IsWindows)
+			if (Platform.IsWindows)
 				return;
 
 			Stat fileStat;

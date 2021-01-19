@@ -13,6 +13,7 @@ using Icu;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Utils;
+using SIL.PlatformUtilities;
 
 namespace SIL.LCModel.Core.SpellChecking
 {
@@ -321,7 +322,7 @@ namespace SIL.LCModel.Core.SpellChecking
 
 		private static string GetShortName(string input)
 		{
-			if (MiscUtils.IsWindows)
+			if (Platform.IsWindows)
 			{
 				if (!File.Exists(input))
 					return input; // can only convert real files, hope for the best on others.

@@ -7,6 +7,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using NUnit.Framework;
+using SIL.PlatformUtilities;
 
 namespace SIL.LCModel.Utils
 {
@@ -136,7 +137,7 @@ namespace SIL.LCModel.Utils
 			get
 			{
 				return Path.GetDirectoryName(Assembly.GetCallingAssembly().CodeBase
-					.Substring(MiscUtils.IsUnix ? 7 : 8));
+					.Substring(Platform.IsUnix ? 7 : 8));
 			}
 		}
 
@@ -243,44 +244,6 @@ namespace SIL.LCModel.Utils
 		{
 			return MiscUtils.CleanupXmlString(input);
 		}
-
-		#region RunProcess tests
-
-		/// <summary></summary>
-		[Test]
-		public void RunProcess_existingCommand_noError()
-		{
-			bool errorTriggered = false;
-			using (MiscUtils.RunProcess("find", "blah",
-				(exception) => { errorTriggered = true; }))
-			{
-				Assert.That(errorTriggered, Is.False);
-			}
-		}
-
-		/// <summary></summary>
-		[Test]
-		public void RunProcess_nonexistentCommand_givesError()
-		{
-			bool errorTriggered = false;
-			using (MiscUtils.RunProcess("nonexistentCommand", "",
-				(exception) => { errorTriggered = true; }))
-			{
-				Assert.That(errorTriggered, Is.True);
-			}
-		}
-
-		/// <summary></summary>
-		[Test]
-		public void RunProcess_allowsNullErrorHandler()
-		{
-			Assert.That(() => {
-				using (MiscUtils.RunProcess("nonexistentCommand", "", null))
-				{
-				}
-			}, Throws.Nothing);
-		}
-		#endregion // RunProcess tests
 
 		/// <summary/>
 		[Test]
