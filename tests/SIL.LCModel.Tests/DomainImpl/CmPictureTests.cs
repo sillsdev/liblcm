@@ -12,6 +12,7 @@ using SIL.LCModel.Core.Text;
 using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.DomainServices;
 using SIL.LCModel.Utils;
+using SIL.PlatformUtilities;
 
 namespace SIL.LCModel.DomainImpl
 {
@@ -266,7 +267,7 @@ namespace SIL.LCModel.DomainImpl
 			// Note that on Linux only NULL and slash are invalid characters in a file
 			// name, and Path.GetInvalidPathChars() only even reports the NULL character.
 			string sTextRepOfPicture;
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				sTextRepOfPicture = "CmPicture||/wha<>\u0000tever.jpg||||This is a caption||";
 			else
 				sTextRepOfPicture = "CmPicture||c:\\wha<>tever.jpg||||This is a caption||";

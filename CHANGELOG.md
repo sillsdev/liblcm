@@ -23,3 +23,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   instead of console
 - [SIL.LCModel.Build.Tasks] `LcmGenerate` task now allows to specify location that contains
   `HandGenerated.xml` and `IntPropTypeOverrides.xml` files (`HandGeneratedDir` attribute)
+
+### Deprecated
+
+- [SIL.LCModel.Utils] `MiscUtils.RunProcess` is deprecated in favor of
+  `ProcessExtensions.RunProcess`
+- [SIL.LCModel.Utils] `MiscUtils.IsWindows`, `MiscUtils.IsUnix`, `MiscUtils.IsMac`,
+  `MiscUtils.IsMono`, and `MiscUtils.IsDotNet` are deprecated in favor of the corresponding
+  `Process.Is*` properties

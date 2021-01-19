@@ -82,7 +82,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		//    get
 		//    {
 		//        string baseDir;
-		//        if (MiscUtils.IsUnix)
+		//        if (Platform.IsUnix)
 		//            baseDir = "/DummyProjectDirectory";
 		//        else
 		//            baseDir = @"c:\FwProjects";
