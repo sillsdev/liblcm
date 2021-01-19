@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using SIL.LCModel.Utils;
+using SIL.PlatformUtilities;
 using SIL.WritingSystems;
 
 namespace SIL.LCModel
@@ -234,7 +235,7 @@ namespace SIL.LCModel
 			string pathRoot = Path.GetPathRoot(path);
 			strBldr.Remove(0, pathRoot.Length);
 			// replace back slashes with forward slashes (for Windows)
-			if (!MiscUtils.IsUnix && !MiscUtils.IsMac)
+			if (!Platform.IsUnix && !Platform.IsMac)
 				strBldr.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 			return strBldr.ToString();
 		}
@@ -252,7 +253,7 @@ namespace SIL.LCModel
 		{
 			get
 			{
-				if (MiscUtils.IsUnix)
+				if (Platform.IsUnix)
 				{
 					// allow to override the /var/lib/fieldworks path by setting the
 					// environment variable FW_CommonAppData. Is this is needed on our CI

@@ -1,4 +1,4 @@
-// Copyright (c) 2003-2017 SIL International
+// Copyright (c) 2003-2021 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -16,6 +16,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Microsoft.Win32;
+using SIL.Extensions;
+using SIL.PlatformUtilities;
 
 namespace SIL.LCModel.Utils
 {
@@ -210,27 +212,24 @@ namespace SIL.LCModel.Utils
 		/// <summary>
 		/// Returns <c>true</c> if we're running on Windows, otherwise <c>false</c>.
 		/// </summary>
-		public static bool IsWindows => Environment.OSVersion.Platform == PlatformID.Win32NT;
+		[Obsolete("Use Platform.IsWindows in SIL.Core instead")]
+		public static bool IsWindows => Platform.IsWindows;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Returns <c>true</c> if we're running on Unix, otherwise <c>false</c>.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static bool IsUnix
-		{
-			get { return Environment.OSVersion.Platform == PlatformID.Unix; }
-		}
+		[Obsolete("Use Platform.IsUnix in SIL.Core instead")]
+		public static bool IsUnix => Platform.IsUnix;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Returns <c>true</c> if we're running on MacOSX, otherwise <c>false</c>.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static bool IsMac
-		{
-			get { return Environment.OSVersion.Platform == PlatformID.MacOSX; }
-		}
+		[Obsolete("Use Platform.IsMac in SIL.Core instead")]
+		public static bool IsMac => Platform.IsMac;
 
 		/// <summary>
 		/// Returns <c>true</c> if we're running on XP, otherwise <c>false</c>.
@@ -274,22 +273,16 @@ namespace SIL.LCModel.Utils
 		/// Returns <c>true</c> if we're running on Mono , otherwise <c>false</c>.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static bool IsMono
-		{
-			// TODO-Linux: System.Boolean System.Type::op_Inequality(System.Type,System.Type) is
-			// marked with a [MonoTODO] attribute and might not work as expected in 4.0
-			get { return (Type.GetType("Mono.Runtime") != null); }
-		}
+		[Obsolete("Use Platform.IsMono in SIL.Core instead")]
+		public static bool IsMono => Platform.IsMono;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Returns <c>true</c> if we're running on .Net , otherwise <c>false</c>.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static bool IsDotNet
-		{
-			get { return  !IsMono; } // Assumes only .Net and mono exist.
-		}
+		[Obsolete("Use Platform.IsDotNet in SIL.Core instead")]
+		public static bool IsDotNet => Platform.IsDotNet;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>When passed as a parameter to <see cref="FilterForFileName"/>, this
@@ -426,7 +419,7 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		public static ulong GetPhysicalMemoryBytes()
 		{
-			if (IsMono)
+			if (Platform.IsMono)
 			{
 				using (var pc = new PerformanceCounter("Mono Memory", "Total Physical Memory"))
 				{
@@ -860,23 +853,12 @@ namespace SIL.LCModel.Utils
 		/// the program not being found to run.
 		/// </summary>
 		/// <returns>launched Process or null</returns>
+		[Obsolete("Use ProcessExtensions.RunProcess in SIL.Core instead")]
 		public static Process RunProcess(string program, string arguments,
 			Action<Exception> errorHandler)
 		{
-			Process process = null;
-			try
-			{
-				var processInfo = new ProcessStartInfo(program, arguments);
-				processInfo.UseShellExecute = false;
-				processInfo.RedirectStandardOutput = true;
-				process = Process.Start(processInfo);
-			}
-			catch (Exception e)
-			{
-				if (errorHandler != null)
-					errorHandler(e);
-			}
-			return process;
+			var process = new Process();
+			return process.RunProcess(program, arguments, errorHandler);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -911,10 +893,7 @@ namespace SIL.LCModel.Utils
 		/// FWNX-947 for more messy details.
 		/// </remarks>
 		/// ------------------------------------------------------------------------------------
-		public static string StandardSansSerif
-		{
-			get { return IsUnix ? "sans-serif" : "Arial"; }
-		}
+		public static string StandardSansSerif => Platform.IsUnix ? "sans-serif" : "Arial";
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -922,9 +901,6 @@ namespace SIL.LCModel.Utils
 		/// it may depend on the system.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static string StandardSerif
-		{
-			get { return IsUnix ? "serif" : "Times New Roman"; }
-		}
+		public static string StandardSerif => Platform.IsUnix ? "serif" : "Times New Roman";
 	}
 }

@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
+using SIL.PlatformUtilities;
 
 namespace SIL.LCModel.Utils
 {
@@ -119,7 +120,7 @@ namespace SIL.LCModel.Utils
 								// A C# string is encoded in Unicode, so we need to convert the binary
 								// data to Unicode before storing it.
 								if (s is MemoryStream &&
-									(MiscUtils.IsUnix || (bool)ReflectionHelper.GetField(s, "_exposable")))
+									(Platform.IsUnix || (bool)ReflectionHelper.GetField(s, "_exposable")))
 									ContentsAsBytes = ((MemoryStream)s).ToArray();
 							}
 						}

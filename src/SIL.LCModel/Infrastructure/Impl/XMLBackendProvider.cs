@@ -14,6 +14,7 @@ using SIL.IO.FileLock;
 using SIL.LCModel.DomainServices.DataMigration;
 using SIL.LCModel.Utils;
 using SIL.Lexicon;
+using SIL.PlatformUtilities;
 using SIL.Reporting;
 
 namespace SIL.LCModel.Infrastructure.Impl
@@ -712,7 +713,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			// This conditional is a workaround for a Mono problem encountered on a ZFS file system
 			// Mono's filesystem detecting is handled in w32file-unix.c.
 			// See _wapi_drive_types[] , mono_w32file_get_logical_drive(), GetDriveTypeFromPath()
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 			{
 				var drives = Environment.GetLogicalDrives().Select(ds => new DriveInfo(ds)).ToArray();
 				Array.Sort(drives, (a, b) => a.Name.Length.CompareTo(b.Name.Length));
