@@ -30,7 +30,7 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.3.4" PrivateAssets="All" />
+    <PackageReference Include="GitVersionTask" Version="5.3.7" PrivateAssets="All" />
     <PackageReference Include="icu.net" Version="2.6.0" />
     <PackageReference Include="Icu4c.Win.Fw.Bin" Version="54.1.14-beta" IncludeAssets="build" />
     <PackageReference Include="Icu4c.Win.Fw.Lib" Version="54.1.14-beta" IncludeAssets="build" />

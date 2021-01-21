@@ -39,7 +39,7 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
 
   <ItemGroup>
     <PackageReference Include="CommonServiceLocator" Version="1.0.0" />
-    <PackageReference Include="GitVersionTask" Version="5.3.4" PrivateAssets="All" />
+    <PackageReference Include="GitVersionTask" Version="5.3.7" PrivateAssets="All" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="protobuf-net" Version="2.0.0.668" />
     <PackageReference Include="SharpZipLib" Version="0.86.0" />
