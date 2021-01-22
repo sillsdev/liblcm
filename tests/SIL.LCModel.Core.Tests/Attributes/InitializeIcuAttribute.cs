@@ -32,6 +32,8 @@ namespace SIL.LCModel.Core.Attributes
 
 			PreTestPathEnvironment = Environment.GetEnvironmentVariable("PATH");
 
+			Wrapper.Verbose = true;
+
 			if (IcuVersion > 0)
 				Wrapper.ConfineIcuVersions(IcuVersion);
 
