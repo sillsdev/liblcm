@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2010-2017 SIL International
+// Copyright (c) 2010-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -8,6 +8,7 @@ using System.Linq;
 using NUnit.Framework;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
+using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.DomainImpl;
 using SIL.LCModel.Utils;
 
@@ -185,6 +186,21 @@ namespace SIL.LCModel.DomainServices
 			hc.HomographNumberBefore = true;
 			var headwordForWs = StringServices.HeadWordForWsAndHn(entry1, Cache.DefaultVernWs, 1, "???");
 			VerifyString(headwordForWs, new[] { "1", "a" }, new[] { Cache.DefaultAnalWs, Cache.DefaultVernWs });
+		}
+
+		/// <summary/>
+		[Test]
+		public void StringServices_HeadwordForWsAndWritingSystem_NoHomographNumbersOnAudioWs()
+		{
+			var wsEnAudio = Cache.WritingSystemFactory.get_Engine("en-Zxxx-x-audio");
+			Cache.LangProject.AddToCurrentVernacularWritingSystems((CoreWritingSystemDefinition)wsEnAudio);
+			var entry1 = MakeEntry("a", "first homograph");
+			entry1.SetLexemeFormAlt(wsEnAudio.Handle, TsStringUtils.MakeString("en.wav", wsEnAudio.Handle));
+			var hc = Cache.ServiceLocator.GetInstance<HomographConfiguration>();
+			hc.WritingSystem = "en";
+			hc.HomographNumberBefore = true;
+			var headwordForWs = StringServices.HeadWordForWsAndHn(entry1, wsEnAudio.Handle, 1, "???");
+			VerifyString(headwordForWs, new[] { "en.wav" }, new[] { wsEnAudio.Handle });
 		}
 
 
