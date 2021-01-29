@@ -8,8 +8,8 @@ Url=http://build.palaso.org
 
 [TC::Libpalaso_PalasoWinmasterContinuous]
 Name=palaso-win-master Continuous
-RevisionName=lastSuccessful
-RevisionValue=latest.lastSuccessful
+RevisionName=safe_tag
+RevisionValue=fw-9.1.1.tcbuildtag
 Condition=Win64
 Path=SIL.Core.dll => downloads/
 SIL.Core.pdb => downloads/
@@ -25,8 +25,8 @@ Spart.dll => downloads/
 
 [TC::Libpalaso_PalasoLinux64masterContinuous]
 Name=palaso-linux64-master Continuous
-RevisionName=lastSuccessful
-RevisionValue=latest.lastSuccessful
+RevisionName=safe_tag
+RevisionValue=fw-9.1.1.tcbuildtag
 Condition=Linux
 Path=SIL.Core.dll => downloads/
 SIL.Core.dll.mdb => downloads/
@@ -42,8 +42,8 @@ Spart.dll => downloads/
 
 [TC::Libpalaso_PalasoWin32masterContinuous]
 Name=palaso-win32-master Continuous
-RevisionName=lastSuccessful
-RevisionValue=latest.lastSuccessful
+RevisionName=safe_tag
+RevisionValue=fw-9.1.1.tcbuildtag
 Condition=Win32
 Path=SIL.Core.dll => downloads/
 SIL.Core.pdb => downloads/
