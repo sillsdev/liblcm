@@ -16,6 +16,7 @@ using SIL.LCModel.Core.Text;
 using SIL.LCModel.DomainImpl;
 using SIL.LCModel.Infrastructure;
 using SIL.LCModel.Utils;
+using SIL.WritingSystems;
 using SIL.Xml;
 
 namespace SIL.LCModel.DomainServices
@@ -273,6 +274,14 @@ namespace SIL.LCModel.DomainServices
 		private static void AddHeadwordForWsAndHn(ILexEntry entry, int wsVern, int nHomograph, HomographConfiguration.HeadwordVariant hv,
 			ITsIncStrBldr tisb, string citationForm, LcmCache cache)
 		{
+			var ws = cache.WritingSystemFactory.get_EngineOrNull(wsVern);
+			// Audio writing systems actually store a filename and should not have homograph numbers attached
+			if (IetfLanguageTag.GetScriptPart(ws.Id) == "Zxxx" && IetfLanguageTag.GetVariantPart(ws.Id).Contains("audio"))
+			{
+				tisb.SetIntPropValues((int)FwTextPropType.ktptWs, 0, wsVern);
+				tisb.Append(citationForm);
+				return;
+			}
 			var hc = entry.Services.GetInstance<HomographConfiguration>();
 			if (hc.HomographNumberBefore)
 				InsertHomographNumber(tisb, nHomograph, hc, hv, cache);
