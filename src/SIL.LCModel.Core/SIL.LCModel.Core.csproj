@@ -32,8 +32,8 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
   <ItemGroup>
     <PackageReference Include="GitVersionTask" Version="5.3.7" PrivateAssets="All" />
     <PackageReference Include="icu.net" Version="2.7.0-beta.8" />
-    <PackageReference Include="Icu4c.Win.Fw.Bin" Version="54.1.14-beta" IncludeAssets="build" />
-    <PackageReference Include="Icu4c.Win.Fw.Lib" Version="54.1.14-beta" IncludeAssets="build" />
+    <PackageReference Include="Icu4c.Win.Fw.Bin" Version="54.1.22-beta" IncludeAssets="build" />
+    <PackageReference Include="Icu4c.Win.Fw.Lib" Version="54.1.22-beta" IncludeAssets="build" />
     <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="2.0.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.0.4" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
@@ -154,6 +154,13 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
       <Folder Condition="'$(Platform)'=='x86'">win-x86</Folder>
       <Folder Condition="'$(Platform)'!='x86'">win-x64</Folder>
     </PropertyGroup>
+
+    <ItemGroup Condition="'$(OS)'=='Windows_NT'">
+      <IcuLibsX86 Include="$(IcuFwRuntimeWinX86)icu*.dll"/>
+      <IcuLibsX64 Include="$(IcuFwRuntimeWinX64)icu*.dll"/>
+    </ItemGroup>
+    <Copy SourceFiles="@(IcuLibsX86)" DestinationFolder="$(OutDir)lib/win-x86" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(IcuLibsX64)" DestinationFolder="$(OutDir)lib/win-x64" SkipUnchangedFiles="true" />
 
     <MakeDir Directories="$(OutDir)IcuData/icudt$(IcuVersion)l" />
     <PropertyGroup>
