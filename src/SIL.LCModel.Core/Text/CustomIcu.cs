@@ -357,7 +357,7 @@ namespace SIL.LCModel.Core.Text
 		public static UcdProperty GetCombiningClassInfo(int characterCode)
 		{
 			var normalizer = GetIcuNormalizer(FwNormalizationMode.knmNFC);
-			return UcdProperty.GetInstance(normalizer.GetCombiningClass(characterCode));
+			return UcdProperty.GetInstance((byte)normalizer.GetCombiningClass(characterCode));
 		}
 
 		/// ------------------------------------------------------------------------------------
