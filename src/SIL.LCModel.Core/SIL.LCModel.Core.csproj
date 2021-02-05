@@ -33,7 +33,7 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <PackageReference Include="GitVersionTask" Version="5.3.7" PrivateAssets="All" />
     <PackageReference Include="icu.net" Version="2.7.0-beta.8" />
     <PackageReference Include="Icu4c.Win.Fw.Bin" Version="54.1.22-beta" IncludeAssets="build" />
-    <PackageReference Include="Icu4c.Win.Fw.Lib" Version="54.1.22-beta" IncludeAssets="build" />
+    <PackageReference Include="Icu4c.Win.Fw.Lib" Version="54.1.22-beta" IncludeAssets="build" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="2.0.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.0.4" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
@@ -128,7 +128,7 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
   <Target Name="GenerateKernelCs" BeforeTargets="BeforeCompile" Inputs="@(KernelInputs)" Outputs="@(KernelOutputs)" DependsOnTargets="SetInstallLocation">
     <!-- Call the IdlImp task from SIL.LCModel.Build.Tasks in a separate msbuild process,
          so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
-    <MSBuild Projects="GenerateKernelCs.proj" Properties="OutDir=$(OutDir);IntermediateOutputPath=$(IntermediateOutputPath);Platform=$(Platform);VSInstallDir=$(VSInstallDir)" />
+    <Exec Command="$(MsbuildCommand) $(MSBuildThisFileDirectory)GenerateKernelCs.proj /p:OutDir=$(OutDir) /p:IntermediateOutputPath=$(IntermediateOutputPath) /p:Platform=$(Platform) /p:VSInstallDir=&quot;$(VSInstallDir)&quot;" />
     <ItemGroup>
       <Compile Remove="KernelInterfaces\Kernel.cs" />
       <Compile Include="KernelInterfaces\Kernel.cs" />
