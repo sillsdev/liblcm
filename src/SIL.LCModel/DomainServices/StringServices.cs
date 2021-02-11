@@ -274,9 +274,9 @@ namespace SIL.LCModel.DomainServices
 		private static void AddHeadwordForWsAndHn(ILexEntry entry, int wsVern, int nHomograph, HomographConfiguration.HeadwordVariant hv,
 			ITsIncStrBldr tisb, string citationForm, LcmCache cache)
 		{
-			var ws = cache.WritingSystemFactory.get_EngineOrNull(wsVern);
+			var ws = cache?.WritingSystemFactory?.get_EngineOrNull(wsVern);
 			// Audio writing systems actually store a filename and should not have homograph numbers attached
-			if (IetfLanguageTag.GetScriptPart(ws.Id) == "Zxxx" && IetfLanguageTag.GetVariantPart(ws.Id).Contains("audio"))
+			if (IsAudioWritingSystem(ws))
 			{
 				tisb.SetIntPropValues((int)FwTextPropType.ktptWs, 0, wsVern);
 				tisb.Append(citationForm);
@@ -290,6 +290,13 @@ namespace SIL.LCModel.DomainServices
 
 			if (!hc.HomographNumberBefore)
 				InsertHomographNumber(tisb, nHomograph, hc, hv, cache);
+		}
+
+		private static bool IsAudioWritingSystem(ILgWritingSystem ws)
+		{
+			return ws != null &&
+			       IetfLanguageTag.GetScriptPart(ws.Id) == "Zxxx" &&
+			       IetfLanguageTag.GetVariantPart(ws.Id).Contains("audio");
 		}
 
 		/// <summary>
@@ -492,7 +499,9 @@ namespace SIL.LCModel.DomainServices
 			string form = ShortName1StaticForWs(entry, wsVern, defaultCf);
 			if (String.IsNullOrEmpty(form))
 				return "";
-			return DecorateFormWithAffixMarkers(entry, form);
+			// Audio writing systems actually store a filename as the contents. Do not corrupt it with affix markers.
+			var ws = entry.Cache?.WritingSystemFactory?.get_EngineOrNull(wsVern);
+			return IsAudioWritingSystem(ws) ? form : DecorateFormWithAffixMarkers(entry, form);
 		}
 
 		internal static string DecorateFormWithAffixMarkers(ILexEntry entry, string form)
