@@ -198,9 +198,26 @@ namespace SIL.LCModel.DomainServices
 			entry1.SetLexemeFormAlt(wsEnAudio.Handle, TsStringUtils.MakeString("en.wav", wsEnAudio.Handle));
 			var hc = Cache.ServiceLocator.GetInstance<HomographConfiguration>();
 			hc.WritingSystem = "en";
+			var headwordForWs = StringServices.HeadWordForWsAndHn(entry1, wsEnAudio.Handle, 1, "???");
+			VerifyString(headwordForWs, new[] { "en.wav" }, new[] { wsEnAudio.Handle });
+		}
+
+		/// <summary/>
+		[Test]
+		public void StringServices_HeadwordForWsAndWritingSystem_NoAffixMarkerOnAudioWs()
+		{
+			var wsEnAudio = Cache.WritingSystemFactory.get_Engine("en-Zxxx-x-audio");
+			Cache.LangProject.AddToCurrentVernacularWritingSystems((CoreWritingSystemDefinition)wsEnAudio);
+			var entry1 = MakeAffixEntry("a", "suffix");
+			entry1.SetLexemeFormAlt(wsEnAudio.Handle, TsStringUtils.MakeString("en.wav", wsEnAudio.Handle));
+			var hc = Cache.ServiceLocator.GetInstance<HomographConfiguration>();
+			hc.WritingSystem = "en";
 			hc.HomographNumberBefore = true;
 			var headwordForWs = StringServices.HeadWordForWsAndHn(entry1, wsEnAudio.Handle, 1, "???");
 			VerifyString(headwordForWs, new[] { "en.wav" }, new[] { wsEnAudio.Handle });
+			// verify the homograph number and affix marker are still on the non-audio headword
+			headwordForWs = StringServices.HeadWordForWsAndHn(entry1, Cache.DefaultVernWs, 1, "???");
+			VerifyString(headwordForWs, new[] { "1", "-a" }, new[] { Cache.DefaultAnalWs, Cache.DefaultVernWs });
 		}
 
 
@@ -256,6 +273,24 @@ namespace SIL.LCModel.DomainServices
 			return bldr.GetString();
 		}
 
+		private ILexEntry MakeAffixEntry(string lf, string gloss)
+		{
+			Cache.ServiceLocator.GetInstance<IMoMorphTypeRepository>().GetMajorMorphTypes(
+				out _, out _, out var suffix, out _, out _,
+				out _, out _, out _, out _);
+			ILexEntry entry = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
+			var form = Cache.ServiceLocator.GetInstance<IMoAffixAllomorphFactory>().Create();
+			entry.LexemeFormOA = form;
+			form.MorphTypeRA = suffix;
+			form.Form.VernacularDefaultWritingSystem =
+				TsStringUtils.MakeString(lf, Cache.DefaultVernWs);
+			var sense = Cache.ServiceLocator.GetInstance<ILexSenseFactory>().Create();
+			entry.SensesOS.Add(sense);
+			sense.Gloss.AnalysisDefaultWritingSystem = TsStringUtils.MakeString(gloss,
+				Cache.DefaultAnalWs);
+			return entry;
+		}
+
 		private ILexEntry MakeEntry(string lf, string gloss)
 		{
 			ILexEntry entry = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
@@ -269,6 +304,7 @@ namespace SIL.LCModel.DomainServices
 				Cache.DefaultAnalWs);
 			return entry;
 		}
+
 		private IStText MakeText(ITsString[] paragraphs, string[] styles)
 		{
 			var text = Cache.ServiceLocator.GetInstance<ITextFactory>().Create();
