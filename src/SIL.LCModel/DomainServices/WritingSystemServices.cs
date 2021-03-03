@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using SIL.Extensions;
 using SIL.LCModel.Application.ApplicationServices;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
@@ -1524,6 +1525,46 @@ namespace SIL.LCModel.DomainServices
 			cache.DomainDataByFlid.set_UnicodeProp(obj.Hvo, flid, newVal.Length == 0 ? null : newVal);
 		}
 
+		/// <param name="cache"/>
+		/// <param name="wholeStringWSs">the handles of writing systems that have whole strings (that could have slices)</param>
+		/// <param name="embeddedWSs">the handles of writing systems that have data embedded in other writing systems' strings</param>
+		/// <returns>the handles of all Writing Systems that have data in the project</returns>
+		public static ISet<int> FindAllWritingSystemsWithData(LcmCache cache, out ISet<int> wholeStringWSs, out ISet<int> embeddedWSs)
+		{
+			var strHandles = new HashSet<int>();
+			var multiStrHandles = new HashSet<int>();
+			var inMultiStrHandles = new HashSet<int>();
+			StringServices.CrawlStrings(cache, str => FindAllWritingSystemsInTsString(str, strHandles), multiStr =>
+			{
+				for (var i = 0; i < multiStr.StringCount; i++)
+				{
+					var strAtI = multiStr.GetStringFromIndex(i, out var ws);
+					if (strAtI.Length > 0)
+					{
+						FindAllWritingSystemsInTsString(strAtI, inMultiStrHandles);
+						multiStrHandles.Add(ws);
+					}
+				}
+			});
+			wholeStringWSs = multiStrHandles;
+			embeddedWSs = inMultiStrHandles;
+			var allWsHandles = new HashSet<int>(strHandles.Concat(multiStrHandles).Concat(inMultiStrHandles));
+			return allWsHandles;
+		}
+
+		private static ITsString FindAllWritingSystemsInTsString(ITsString str, ISet<int> outWsHandles)
+		{
+			if (str.Length == 0)
+			{
+				return str;
+			}
+			return StringServices.CrawlRuns(str, run =>
+			{
+				outWsHandles.Add(run.get_WritingSystemAt(0));
+				return run;
+			});
+		}
+
 		/// <summary>
 		/// Deletes the writing system from the specified LCM cache.
 		/// </summary>
@@ -1531,7 +1572,7 @@ namespace SIL.LCModel.DomainServices
 		/// <param name="ws">The writing system.</param>
 		public static void DeleteWritingSystem(LcmCache cache, CoreWritingSystemDefinition ws)
 		{
-			StringServices.CrawlStrings(cache, str => DeleteRuns(ws, str), multiStr => DeleteMultiString(ws, multiStr));
+			StringServices.CrawlStrings(cache, str => DeleteRuns(ws, str), multiStr => { });//DeleteMultiString(ws, multiStr));
 
 			UpdateWritingSystemFields(cache, ws.Id, null);
 			ws.MarkedForDeletion = true;

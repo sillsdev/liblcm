@@ -221,7 +221,7 @@ namespace SIL.LCModel.Core.WritingSystems
 			{
 				CoreWritingSystemDefinition ws;
 				if (!m_handleWSs.TryGetValue(handle, out ws))
-					throw new ArgumentOutOfRangeException("handle");
+					throw new ArgumentOutOfRangeException(nameof(handle));
 				return ws;
 			}
 		}
@@ -615,7 +615,7 @@ namespace SIL.LCModel.Core.WritingSystems
 		}
 
 		/// <summary>
-		/// Get the list of writing systems currrently installed in the system.
+		/// Get the list of writing systems currently installed in the system.
 		/// </summary>
 		/// <param name="rgws"></param>
 		/// <param name="cws"></param>
