@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2020 SIL International
+// Copyright (c) 2004-2021 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -1745,6 +1745,11 @@ namespace SIL.LCModel.Core.Text
 		string TrimNonWordFormingChars(string test, ILgWritingSystemFactory wsf, bool atStart, bool atEnd)
 		{
 			return TsStringUtils.TrimNonWordFormingChars(TsStringUtils.MakeString(test, wsf.get_Engine("en").Handle), wsf, atStart, atEnd).Text;
+		}
+
+		public static void AssertIsNullOrEmpty(ITsString tss, string message = null)
+		{
+			Assert.True(TsStringUtils.IsNullOrEmpty(tss), $"Expected Null or Empty,\nbut was: {tss}\n{message}");
 		}
 		#endregion
 

@@ -324,21 +324,35 @@ namespace SIL.LCModel.DomainServices
 		[Test]
 		public void DeleteWritingSystem()
 		{
+			Cache.ServiceLocator.WritingSystemManager.GetOrSet("fr", out var wsFr);
 			Cache.ServiceLocator.WritingSystemManager.GetOrSet("blz", out var wsBlz);
 
 			var revIndex = Cache.ServiceLocator.GetInstance<IReversalIndexRepository>().FindOrCreateIndexForWs(wsBlz.Handle);
 			Cache.LangProject.LexDbOA.ReversalIndexesOC.Add(revIndex);
-			var entry1 = SenseOrEntryTests.CreateInterestingLexEntry(Cache);
+			var lexEntry = SenseOrEntryTests.CreateInterestingLexEntry(Cache);
 
-			var testEntry = revIndex.FindOrCreateReversalEntry("first");
-			testEntry.SensesRS.Add(entry1.SensesOS.First());
+			lexEntry.CitationForm.set_String(wsBlz.Handle, "Citation");
+			var example = Cache.ServiceLocator.GetInstance<ILexExampleSentenceFactory>().Create();
+			lexEntry.SensesOS.First().ExamplesOS.Add(example);
+			var exampleBldr = new TsStrBldr().Append("Example embedding", wsFr.Handle).Append("Balantak!", wsBlz.Handle);
+			example.Example.set_String(wsFr.Handle, exampleBldr.GetString());
 
-			testEntry.ReversalIndex.WritingSystem = "blz";
-			testEntry.ReversalForm.set_String(wsBlz.Handle, "blz");
-			Assert.That(testEntry.ReversalIndex.WritingSystem, Is.EqualTo("blz"));
+			var revEntry = revIndex.FindOrCreateReversalEntry("first");
+			revEntry.SensesRS.Add(lexEntry.SensesOS.First());
+
+			revEntry.ReversalIndex.WritingSystem = "blz";
+			revEntry.ReversalForm.set_String(wsBlz.Handle, "blz");
+			Assert.That(revEntry.ReversalIndex.WritingSystem, Is.EqualTo("blz"));
 			// SUT
 			WritingSystemServices.DeleteWritingSystem(Cache, wsBlz);
-			Assert.IsFalse(testEntry.IsValidObject);
+			TsStringUtilsTests.AssertIsNullOrEmpty(lexEntry.CitationForm.get_String(wsBlz.Handle));
+			var exampleAfter = example.Example;
+			TsStringUtilsTests.AssertIsNullOrEmpty(exampleAfter.get_String(wsBlz.Handle));
+			var exampleAfterFr = exampleAfter.get_String(wsFr.Handle);
+			Assert.AreEqual("Example embedding", exampleAfterFr.Text);
+			Assert.AreEqual(1, exampleAfterFr.RunCount);
+			Assert.AreEqual(wsFr.Handle, exampleAfterFr.get_WritingSystemAt(0));
+			Assert.IsFalse(revEntry.IsValidObject);
 			Assert.IsFalse(Cache.LangProject.LexDbOA.ReversalIndexesOC.Contains(revIndex));
 		}
 
