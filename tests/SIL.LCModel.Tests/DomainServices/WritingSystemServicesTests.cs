@@ -299,6 +299,7 @@ namespace SIL.LCModel.DomainServices
 			wsMgr.GetOrSet("hid", out var hid);
 			wsMgr.GetOrSet("hid-x-embedded", out var hidEmbedded);
 			wsMgr.GetOrSet("hid-x-edgeCase", out var hidEdgeCase);
+			wsMgr.GetOrSet("hid-x-baseText", out var hidBaseText);
 			var entry = SenseOrEntryTests.CreateInterestingLexEntry(Cache);
 			entry.CitationForm.set_String(hid.Handle, "Headword");
 			entry.CitationForm.set_String(zeroLength.Handle, string.Empty);
@@ -306,15 +307,19 @@ namespace SIL.LCModel.DomainServices
 			var example = Cache.ServiceLocator.GetInstance<ILexExampleSentenceFactory>().Create();
 			entry.SensesOS.First().ExamplesOS.Add(example);
 			example.Example.set_String(hidEdgeCase.Handle, exampleBldr.GetString());
+			AddInterlinearTextToLangProj("Title").ContentsOA.AddNewTextPara(null).Contents = TsStringUtils.MakeString("Content", hidBaseText.Handle);
+
 
 			// SUT
-			var result = WritingSystemServices.FindAllWritingSystemsWithData(Cache, out var wholeStringWSs, out var embeddedWSs);
+			var result = WritingSystemServices.FindAllWritingSystemsWithText(Cache,
+				out var monoStringWSs, out var multiStringWSs, out var embeddedWSs);
 
 			Assert.That(new SortedSet<int>(result), Is.EquivalentTo(new[]
 			{
-				en.Handle, fr.Handle, blz.Handle, hid.Handle, hidEmbedded.Handle, hidEdgeCase.Handle
+				en.Handle, fr.Handle, blz.Handle, hid.Handle, hidEmbedded.Handle, hidEdgeCase.Handle, hidBaseText.Handle
 			}));
-			Assert.That(new SortedSet<int>(wholeStringWSs), Is.EquivalentTo(new[]
+			Assert.That(new SortedSet<int>(monoStringWSs), Is.EquivalentTo(new[] {hidBaseText.Handle}));
+			Assert.That(new SortedSet<int>(multiStringWSs), Is.EquivalentTo(new[]
 			{
 				en.Handle, fr.Handle, hid.Handle, hidEdgeCase.Handle
 			}));

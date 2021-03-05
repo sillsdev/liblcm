@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 SIL International
+// Copyright (c) 2014-2021 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -13,7 +13,6 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using SIL.Extensions;
 using SIL.LCModel.Application.ApplicationServices;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
@@ -1525,11 +1524,23 @@ namespace SIL.LCModel.DomainServices
 			cache.DomainDataByFlid.set_UnicodeProp(obj.Hvo, flid, newVal.Length == 0 ? null : newVal);
 		}
 
+		/// <returns>
+		/// the handles of all Writing Systems that have text in the project, including text embedded in other writing systems' strings
+		/// </returns>
+		public static ISet<int> FindAllWritingSystemsWithText(LcmCache cache)
+		{
+			return FindAllWritingSystemsWithText(cache, out _, out _, out _);
+		}
+
 		/// <param name="cache"/>
-		/// <param name="wholeStringWSs">the handles of writing systems that have whole strings (that could have slices)</param>
-		/// <param name="embeddedWSs">the handles of writing systems that have data embedded in other writing systems' strings</param>
-		/// <returns>the handles of all Writing Systems that have data in the project</returns>
-		public static ISet<int> FindAllWritingSystemsWithData(LcmCache cache, out ISet<int> wholeStringWSs, out ISet<int> embeddedWSs)
+		/// <param name="monoStringWSs">the handles of writing systems that have text in monolingual strings (such as Baseline Texts)</param>
+		/// <param name="multiStringWSs">the handles of writing systems that have MultiString alternatives (such as headwords and glosses</param>
+		/// <param name="embeddedWSs">the handles of writing systems that have text embedded in MultiStrings (of their own or another WS)</param>
+		/// <returns>
+		/// the handles of all Writing Systems that have text in the project, including text embedded in other writing systems' strings
+		/// </returns>
+		public static ISet<int> FindAllWritingSystemsWithText(LcmCache cache,
+			out ISet<int> monoStringWSs, out ISet<int> multiStringWSs, out ISet<int> embeddedWSs)
 		{
 			var strHandles = new HashSet<int>();
 			var multiStrHandles = new HashSet<int>();
@@ -1546,10 +1557,10 @@ namespace SIL.LCModel.DomainServices
 					}
 				}
 			});
-			wholeStringWSs = multiStrHandles;
+			monoStringWSs = strHandles;
+			multiStringWSs = multiStrHandles;
 			embeddedWSs = inMultiStrHandles;
-			var allWsHandles = new HashSet<int>(strHandles.Concat(multiStrHandles).Concat(inMultiStrHandles));
-			return allWsHandles;
+			return new HashSet<int>(strHandles.Concat(multiStrHandles).Concat(inMultiStrHandles));
 		}
 
 		private static ITsString FindAllWritingSystemsInTsString(ITsString str, ISet<int> outWsHandles)
@@ -1572,7 +1583,7 @@ namespace SIL.LCModel.DomainServices
 		/// <param name="ws">The writing system.</param>
 		public static void DeleteWritingSystem(LcmCache cache, CoreWritingSystemDefinition ws)
 		{
-			StringServices.CrawlStrings(cache, str => DeleteRuns(ws, str), multiStr => { });//DeleteMultiString(ws, multiStr));
+			StringServices.CrawlStrings(cache, str => DeleteRuns(ws, str), multiStr => DeleteMultiString(ws, multiStr));
 
 			UpdateWritingSystemFields(cache, ws.Id, null);
 			ws.MarkedForDeletion = true;

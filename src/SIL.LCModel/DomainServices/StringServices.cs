@@ -747,20 +747,22 @@ namespace SIL.LCModel.DomainServices
 			}
 		}
 
+
 		/// <summary>
-		/// This overload applies the function to all strings, including all alternatives of all MultiStrings.
+		/// This overload applies the function to all strings, including all alternatives of all multistrings.
 		/// </summary>
 		public static void CrawlStrings(LcmCache cache, Func<ITsString, ITsString> modifier)
 		{
 			CrawlStrings(cache, modifier,
-				multiString =>
+				multistring =>
 					{
-						for (var i = 0; i < multiString.StringCount; i++)
+						for (int i = 0; i < multistring.StringCount; i++)
 						{
-							var tss = multiString.GetStringFromIndex(i, out var ws);
+							int ws;
+							var tss = multistring.GetStringFromIndex(i, out ws);
 							var newTss = modifier(tss);
 							if (!tss.Equals(newTss))
-								multiString.set_String(ws, newTss);
+								multistring.set_String(ws, newTss);
 						}
 					});
 		}
