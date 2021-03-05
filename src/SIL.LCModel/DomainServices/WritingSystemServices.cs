@@ -1529,38 +1529,20 @@ namespace SIL.LCModel.DomainServices
 		/// </returns>
 		public static ISet<int> FindAllWritingSystemsWithText(LcmCache cache)
 		{
-			return FindAllWritingSystemsWithText(cache, out _, out _, out _);
-		}
-
-		/// <param name="cache"/>
-		/// <param name="monoStringWSs">the handles of writing systems that have text in monolingual strings (such as Baseline Texts)</param>
-		/// <param name="multiStringWSs">the handles of writing systems that have MultiString alternatives (such as headwords and glosses</param>
-		/// <param name="embeddedWSs">the handles of writing systems that have text embedded in MultiStrings (of their own or another WS)</param>
-		/// <returns>
-		/// the handles of all Writing Systems that have text in the project, including text embedded in other writing systems' strings
-		/// </returns>
-		public static ISet<int> FindAllWritingSystemsWithText(LcmCache cache,
-			out ISet<int> monoStringWSs, out ISet<int> multiStringWSs, out ISet<int> embeddedWSs)
-		{
-			var strHandles = new HashSet<int>();
-			var multiStrHandles = new HashSet<int>();
-			var inMultiStrHandles = new HashSet<int>();
-			StringServices.CrawlStrings(cache, str => FindAllWritingSystemsInTsString(str, strHandles), multiStr =>
+			var allHandles = new HashSet<int>();
+			StringServices.CrawlStrings(cache, str => FindAllWritingSystemsInTsString(str, allHandles), multiStr =>
 			{
 				for (var i = 0; i < multiStr.StringCount; i++)
 				{
 					var strAtI = multiStr.GetStringFromIndex(i, out var ws);
 					if (strAtI.Length > 0)
 					{
-						FindAllWritingSystemsInTsString(strAtI, inMultiStrHandles);
-						multiStrHandles.Add(ws);
+						FindAllWritingSystemsInTsString(strAtI, allHandles);
+						allHandles.Add(ws);
 					}
 				}
 			});
-			monoStringWSs = strHandles;
-			multiStringWSs = multiStrHandles;
-			embeddedWSs = inMultiStrHandles;
-			return new HashSet<int>(strHandles.Concat(multiStrHandles).Concat(inMultiStrHandles));
+			return allHandles;
 		}
 
 		private static ITsString FindAllWritingSystemsInTsString(ITsString str, ISet<int> outWsHandles)

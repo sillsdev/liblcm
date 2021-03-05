@@ -299,33 +299,24 @@ namespace SIL.LCModel.DomainServices
 			wsMgr.GetOrSet("hid", out var hid);
 			wsMgr.GetOrSet("hid-x-embedded", out var hidEmbedded);
 			wsMgr.GetOrSet("hid-x-edgeCase", out var hidEdgeCase);
-			wsMgr.GetOrSet("hid-x-baseText", out var hidBaseText);
+			wsMgr.GetOrSet("hid-x-baselineText", out var hidBaseline);
 			var entry = SenseOrEntryTests.CreateInterestingLexEntry(Cache);
 			entry.CitationForm.set_String(hid.Handle, "Headword");
 			entry.CitationForm.set_String(zeroLength.Handle, string.Empty);
 			var exampleBldr = new TsStrBldr().Append("Example ", blz.Handle).Append("with embedded WS", hidEmbedded.Handle).Append("!", blz.Handle);
 			var example = Cache.ServiceLocator.GetInstance<ILexExampleSentenceFactory>().Create();
 			entry.SensesOS.First().ExamplesOS.Add(example);
+			// The Example MultiString has an Edge Case alternative, but no Edge Case text.
 			example.Example.set_String(hidEdgeCase.Handle, exampleBldr.GetString());
-			AddInterlinearTextToLangProj("Title").ContentsOA.AddNewTextPara(null).Contents = TsStringUtils.MakeString("Content", hidBaseText.Handle);
-
+			// Interlinear texts are monolingual strings.
+			AddInterlinearTextToLangProj("Title").ContentsOA.AddNewTextPara(null).Contents = TsStringUtils.MakeString("Content", hidBaseline.Handle);
 
 			// SUT
-			var result = WritingSystemServices.FindAllWritingSystemsWithText(Cache,
-				out var monoStringWSs, out var multiStringWSs, out var embeddedWSs);
+			var result = WritingSystemServices.FindAllWritingSystemsWithText(Cache);
 
 			Assert.That(new SortedSet<int>(result), Is.EquivalentTo(new[]
 			{
-				en.Handle, fr.Handle, blz.Handle, hid.Handle, hidEmbedded.Handle, hidEdgeCase.Handle, hidBaseText.Handle
-			}));
-			Assert.That(new SortedSet<int>(monoStringWSs), Is.EquivalentTo(new[] {hidBaseText.Handle}));
-			Assert.That(new SortedSet<int>(multiStringWSs), Is.EquivalentTo(new[]
-			{
-				en.Handle, fr.Handle, hid.Handle, hidEdgeCase.Handle
-			}));
-			Assert.That(new SortedSet<int>(embeddedWSs), Is.EquivalentTo(new[]
-			{
-				en.Handle, fr.Handle, blz.Handle, hid.Handle, hidEmbedded.Handle
+				en.Handle, fr.Handle, blz.Handle, hid.Handle, hidEmbedded.Handle, hidEdgeCase.Handle, hidBaseline.Handle
 			}));
 		}
 
