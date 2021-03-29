@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 SIL International
+// Copyright (c) 2014-2021 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -1522,6 +1522,40 @@ namespace SIL.LCModel.DomainServices
 				wsIds = (from item in wsIds select item.Equals(origWsId, StringComparison.OrdinalIgnoreCase) ? newWsId : item).ToArray();
 			var newVal = string.Join(" ", wsIds.Where(x => x != null));
 			cache.DomainDataByFlid.set_UnicodeProp(obj.Hvo, flid, newVal.Length == 0 ? null : newVal);
+		}
+
+		/// <returns>
+		/// the handles of all Writing Systems that have text in the project, including text embedded in other writing systems' strings
+		/// </returns>
+		public static ISet<int> FindAllWritingSystemsWithText(LcmCache cache)
+		{
+			var allHandles = new HashSet<int>();
+			StringServices.CrawlStrings(cache, str => FindAllWritingSystemsInTsString(str, allHandles), multiStr =>
+			{
+				for (var i = 0; i < multiStr.StringCount; i++)
+				{
+					var strAtI = multiStr.GetStringFromIndex(i, out var ws);
+					if (strAtI.Length > 0)
+					{
+						FindAllWritingSystemsInTsString(strAtI, allHandles);
+						allHandles.Add(ws);
+					}
+				}
+			});
+			return allHandles;
+		}
+
+		private static ITsString FindAllWritingSystemsInTsString(ITsString str, ISet<int> outWsHandles)
+		{
+			if (str.Length == 0)
+			{
+				return str;
+			}
+			return StringServices.CrawlRuns(str, run =>
+			{
+				outWsHandles.Add(run.get_WritingSystemAt(0));
+				return run;
+			});
 		}
 
 		/// <summary>
