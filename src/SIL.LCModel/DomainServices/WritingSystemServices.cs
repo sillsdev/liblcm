@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 SIL International
+// Copyright (c) 2014-2021 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -1524,6 +1524,40 @@ namespace SIL.LCModel.DomainServices
 			cache.DomainDataByFlid.set_UnicodeProp(obj.Hvo, flid, newVal.Length == 0 ? null : newVal);
 		}
 
+		/// <returns>
+		/// the handles of all Writing Systems that have text in the project, including text embedded in other writing systems' strings
+		/// </returns>
+		public static ISet<int> FindAllWritingSystemsWithText(LcmCache cache)
+		{
+			var allHandles = new HashSet<int>();
+			StringServices.CrawlStrings(cache, str => FindAllWritingSystemsInTsString(str, allHandles), multiStr =>
+			{
+				for (var i = 0; i < multiStr.StringCount; i++)
+				{
+					var strAtI = multiStr.GetStringFromIndex(i, out var ws);
+					if (strAtI.Length > 0)
+					{
+						FindAllWritingSystemsInTsString(strAtI, allHandles);
+						allHandles.Add(ws);
+					}
+				}
+			});
+			return allHandles;
+		}
+
+		private static ITsString FindAllWritingSystemsInTsString(ITsString str, ISet<int> outWsHandles)
+		{
+			if (str.Length == 0)
+			{
+				return str;
+			}
+			return StringServices.CrawlRuns(str, run =>
+			{
+				outWsHandles.Add(run.get_WritingSystemAt(0));
+				return run;
+			});
+		}
+
 		/// <summary>
 		/// Deletes the writing system from the specified LCM cache.
 		/// </summary>
@@ -1570,8 +1604,8 @@ namespace SIL.LCModel.DomainServices
 		public static void MergeWritingSystems(LcmCache cache, CoreWritingSystemDefinition fromWs, CoreWritingSystemDefinition toWs)
 		{
 			StringServices.CrawlStrings(cache, str => StringServices.CrawlRuns(str,
-				run => MergeRun(fromWs, toWs, run)),
-				multiStr => MergeMultiString(fromWs, toWs, multiStr));
+				run => MergeRuns(fromWs.Handle, toWs.Handle, run)),
+				multiStr => MergeMultiString(fromWs.Handle, toWs.Handle, multiStr));
 
 			foreach (var para in cache.ServiceLocator.GetInstance<IStTxtParaRepository>().AllInstances())
 			{
@@ -1620,44 +1654,19 @@ namespace SIL.LCModel.DomainServices
 		public static void UpdateWritingSystemId(LcmCache cache, CoreWritingSystemDefinition changedWs, int oldWsHandle, string oldWsId)
 		{
 			UpdateWritingSystemFields(cache, oldWsId, changedWs.Id);
-			StringServices.CrawlStrings(cache, (obj, str) => ChangeString(str, oldWsHandle, changedWs.Handle), (obj, ms) => ChangeStrings(ms, oldWsHandle, changedWs.Handle));
+			StringServices.CrawlStrings(cache, (obj, str) => MergeRuns(oldWsHandle, changedWs.Handle, str), (obj, ms) => MergeMultiString(oldWsHandle, changedWs.Handle, ms));
 		}
 
 		/// <summary>
 		/// If the string contains text in the specified ws, mark the object as dirty.
 		/// </summary>
-		private static ITsString ChangeString(ITsString tss, int oldWSHandle, int newWSHandle)
-		{
-			return MergeRuns(oldWSHandle, newWSHandle, tss);
-		}
-
-		/// <summary>
-		/// If the multistring contains text in the specified ws, mark the object as dirty.
-		/// </summary>
-		private static void ChangeStrings(ITsMultiString ms, int oldWSHandle, int newWSHandle)
-		{
-			var stringCount = ms.StringCount;
-			for (int i = 0; i < stringCount; i++ )
-			{
-				int wsT;
-				var tss = ms.GetStringFromIndex(i, out wsT);
-				var result = ChangeString(tss, oldWSHandle, newWSHandle);
-				if (result != tss)
-				{
-					ms.set_String(newWSHandle, result);
-					ms.set_String(oldWSHandle, null);
-				}
-			}
-		}
-
 		private static ITsString MergeRuns(int fromWsHandle, int toWsHandle, ITsString tsString)
 		{
-			int notNeeded;
 			var tsb = tsString.GetBldr();
 			var noRunsChanged = true;
 			foreach (var run in tsString.Runs())
 			{
-				int runWs = run.Props.GetIntPropValues((int)FwTextPropType.ktptWs, out notNeeded);
+				int runWs = run.Props.GetIntPropValues((int)FwTextPropType.ktptWs, out _);
 				if (runWs != fromWsHandle)
 					continue;
 				tsb.SetIntPropValues(run.IchMin, run.IchLim, (int)FwTextPropType.ktptWs, (int)FwTextPropVar.ktpvDefault, toWsHandle);
@@ -1666,23 +1675,20 @@ namespace SIL.LCModel.DomainServices
 			return noRunsChanged ? tsString : tsb.GetString();
 		}
 
-		private static ITsString MergeRun(CoreWritingSystemDefinition fromWs, CoreWritingSystemDefinition toWs, ITsString run)
-		{
-			return MergeRuns(fromWs.Handle, toWs.Handle, run);
-		}
-
-		private static void MergeMultiString(CoreWritingSystemDefinition fromWs, CoreWritingSystemDefinition toWs, ITsMultiString multiStr)
+		/// <summary>
+		/// If the string contains text in the specified ws, mark the object as dirty.
+		/// </summary>
+		private static void MergeMultiString(int fromWs, int toWs, ITsMultiString multiStr)
 		{
 			var changes = new Dictionary<int, ITsString>(multiStr.StringCount);
 			ITsString toWsStr = null;
 			ITsString fromWsStr = null;
 			for (int i = 0; i < multiStr.StringCount; i++)
 			{
-				int wsHandle;
-				ITsString str = multiStr.GetStringFromIndex(i, out wsHandle);
-				ITsString newStr = StringServices.CrawlRuns(str, run => MergeRun(fromWs, toWs, run));
+				ITsString str = multiStr.GetStringFromIndex(i, out var wsHandle);
+				ITsString newStr = StringServices.CrawlRuns(str, run => MergeRuns(fromWs, toWs, run));
 				// just to be safe, we don't want to modify the multi-string while we are iterating thru it
-				if (fromWs.Handle == wsHandle)
+				if (fromWs == wsHandle)
 				{
 					fromWsStr = newStr;
 					// delete this writing system string
@@ -1690,7 +1696,7 @@ namespace SIL.LCModel.DomainServices
 				}
 				else
 				{
-					if (toWs.Handle == wsHandle)
+					if (toWs == wsHandle)
 						toWsStr = newStr;
 					if (newStr != str)
 						changes[wsHandle] = newStr;
@@ -1706,12 +1712,12 @@ namespace SIL.LCModel.DomainServices
 						ITsIncStrBldr tisb = toWsStr.GetIncBldr();
 						tisb.Append(";");
 						tisb.AppendTsString(fromWsStr);
-						changes[toWs.Handle] = tisb.GetString();
+						changes[toWs] = tisb.GetString();
 					}
 				}
 				else
 				{
-					changes[toWs.Handle] = fromWsStr;
+					changes[toWs] = fromWsStr;
 				}
 			}
 

@@ -128,14 +128,14 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <!-- Call the LcmGenerate task from SIL.LCModel.Build.Tasks in a separate msbuild process,
          so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
     <Exec Command="$(MsbuildCommand) GenerateModel.proj /p:Configuration=$(Configuration) /p:OutDir=$(OutDir)" />
-    <ItemGroup>
+  <ItemGroup>
       <Compile Remove="@(GeneratedFiles)" />
       <Compile Include="@(GeneratedFiles)" />
-    </ItemGroup>
+  </ItemGroup>
   </Target>
 
   <Target Name="CollectRuntimeOutputs" BeforeTargets="_GetPackageFiles">
-    <ItemGroup>
+  <ItemGroup>
       <None Include="MasterLCModel.*" Pack="true" PackagePath="contentFiles/" />
       <None Include="Styles.dtd" Pack="true" PackagePath="contentFiles/" />
       <None Include="LcmGenerate\HandGenerated.xml" Pack="true" PackagePath="contentFiles/LcmGenerate/" />
@@ -143,7 +143,7 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
       <None Include="Templates\*.*" Pack="true" PackagePath="contentFiles/Templates/" />
       <None Include="$(PackageId).props" Pack="true" PackagePath="build/" />
       <None Include="$(PackageId).props" Pack="true" PackagePath="buildMultiTargeting/" />
-    </ItemGroup>
+  </ItemGroup>
   </Target>
 
   <Target Name="CheckWinForms" BeforeTargets="CoreCompile">

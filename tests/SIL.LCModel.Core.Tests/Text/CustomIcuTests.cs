@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2018 SIL International
+// Copyright (c) 2009-2021 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -40,8 +40,7 @@ namespace SIL.LCModel.Core.Text
 			var result = Wrapper.UnicodeVersion;
 			Assert.That(result.Length >= 3);
 			Assert.That(result.IndexOf(".", StringComparison.InvariantCulture), Is.GreaterThan(0));
-			int major;
-			Assert.True(int.TryParse(result.Substring(0, result.IndexOf(".")), out major));
+			Assert.True(int.TryParse(result.Substring(0, result.IndexOf(".", StringComparison.Ordinal)), out var major));
 			Assert.That(major >= 6);
 		}
 
@@ -69,7 +68,7 @@ namespace SIL.LCModel.Core.Text
 			var normalizedString = Normalizer.Normalize("t\u00E9st", Normalizer.UNormalizationMode.UNORM_NFD);
 			var i=0;
 			foreach (var c in normalizedString.ToCharArray())
-				Console.WriteLine("pos {0}: {1} ({1:x})", i++, c);
+				Console.WriteLine(@"pos {0}: {1} ({1})", i++, c);
 			Assert.AreEqual(0x0301, normalizedString[2]);
 			Assert.AreEqual("te\u0301st", normalizedString);
 			Assert.IsTrue(normalizedString.IsNormalized(NormalizationForm.FormD));
@@ -122,6 +121,15 @@ namespace SIL.LCModel.Core.Text
 				breakIterator.SetText(text);
 				return breakIterator;
 			}
+		}
+
+		[TestCase('a', 0)]
+		[TestCase(769, 0xE6)]
+		public void GetCombiningClassInfo(int characterCode, int combiningClass)
+		{
+			var expected = UcdProperty.GetInstance(combiningClass);
+			var result = CustomIcu.GetCombiningClassInfo(characterCode);
+			Assert.AreEqual(expected, result);
 		}
 
 		/// ------------------------------------------------------------------------------------

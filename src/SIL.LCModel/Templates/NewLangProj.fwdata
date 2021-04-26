@@ -7175,8 +7175,23 @@
 <AUni ws="en">def</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-11 15:08:55.380" />
 <Name>
-<AUni ws="en">Default</AUni>
+<AUni ws="en">Default Template</AUni>
+</Name>
+<SubPossibilities>
+<objsur guid="397636f5-2994-4aee-b6f3-376ca71bddea" t="o" />
+</SubPossibilities>
+</rt>
+<rt class="CmPossibility" guid="397636f5-2994-4aee-b6f3-376ca71bddea" ownerguid="c414012a-ea5e-11de-99fc-0013722f8dec">
+<Abbreviation>
+<AUni ws="en">story</AUni>
+</Abbreviation>
+<DateCreated val="2018-05-09 13:24:02.152" />
+<DateModified val="2018-05-09 13:24:02.152" />
+<Name>
+<AUni ws="en">Story</AUni>
 </Name>
 <SubPossibilities>
 <objsur guid="c41fece2-ea5e-11de-8db3-0013722f8dec" t="o" />
@@ -7189,6 +7204,8 @@
 <AUni ws="en">prenuc</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-11 15:08:55.380" />
 <Name>
 <AUni ws="en">Pre-nuclear</AUni>
 </Name>
@@ -7202,6 +7219,8 @@
 <AUni ws="en">out</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-11 15:08:55.380" />
 <Name>
 <AUni ws="en">Outer</AUni>
 </Name>
@@ -7211,6 +7230,8 @@
 <AUni ws="en">in</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-11 15:08:55.380" />
 <Name>
 <AUni ws="en">Inner</AUni>
 </Name>
@@ -7220,6 +7241,8 @@
 <AUni ws="en">nuc</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-11 15:08:55.380" />
 <Name>
 <AUni ws="en">Nucleus</AUni>
 </Name>
@@ -7234,6 +7257,8 @@
 <AUni ws="en">subj</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-11 15:08:55.380" />
 <Name>
 <AUni ws="en">Subject</AUni>
 </Name>
@@ -7243,6 +7268,8 @@
 <AUni ws="en">v</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-11 15:08:55.380" />
 <Name>
 <AUni ws="en">Verb</AUni>
 </Name>
@@ -7252,6 +7279,8 @@
 <AUni ws="en">o/c</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-11 15:08:55.380" />
 <Name>
 <AUni ws="en">Object/Complement</AUni>
 </Name>
@@ -7261,6 +7290,8 @@
 <AUni ws="en">postnuc</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-11 15:08:55.380" />
 <Name>
 <AUni ws="en">Post-nuclear</AUni>
 </Name>
@@ -7274,6 +7305,8 @@
 <AUni ws="en">in</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-28 13:45:01.860" />
 <Name>
 <AUni ws="en">Inner</AUni>
 </Name>
@@ -7283,6 +7316,8 @@
 <AUni ws="en">out</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-28 13:45:38.110" />
+<DateModified val="2008-01-28 13:45:38.110" />
 <Name>
 <AUni ws="en">Outer</AUni>
 </Name>
@@ -8392,7 +8427,7 @@
 </rt>
 <rt class="CmPossibilityList" guid="d7f713d8-e8cf-11d3-9764-00c04f186933" ownerguid="af26d792-ea5e-11de-8f7e-0013722f8dec">
 <Abbreviation>
-<AUni ws="en">MjeTyp</AUni>
+<AUni ws="en">Not User-Facing (do not localize)</AUni>
 </Abbreviation>
 <DateCreated val="2018-8-2 16:32:6.267" />
 <DateModified val="2018-8-2 16:32:6.267" />

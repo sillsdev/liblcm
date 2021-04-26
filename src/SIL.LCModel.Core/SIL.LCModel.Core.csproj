@@ -129,15 +129,15 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     <!-- Call the IdlImp task from SIL.LCModel.Build.Tasks in a separate msbuild process,
          so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
     <Exec Command="$(MsbuildCommand) $(MSBuildThisFileDirectory)GenerateKernelCs.proj /p:OutDir=$(OutDir) /p:IntermediateOutputPath=$(IntermediateOutputPath) /p:Platform=$(Platform) /p:VSInstallDir=&quot;$(VSInstallDir)&quot;" />
-    <ItemGroup>
+  <ItemGroup>
       <Compile Remove="KernelInterfaces\Kernel.cs" />
       <Compile Include="KernelInterfaces\Kernel.cs" />
-    </ItemGroup>
+  </ItemGroup>
   </Target>
 
-  <PropertyGroup>
+    <PropertyGroup>
     <IcuVersion>54</IcuVersion>
-  </PropertyGroup>
+    </PropertyGroup>
 
   <ItemGroup>
     <IcuDataInputs Include="IcuData\nfc*.txt" />

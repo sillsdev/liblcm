@@ -11,26 +11,26 @@ text corpus, and linguistics data.
 
 1. Install Required Software
 
-	- git
-	- Visual Studio 2019 (with C++), MonoDevelop, or JetBrains Rider
+- git
+- Visual Studio 2019 (with C++), MonoDevelop, or JetBrains Rider
 
 2. Clone the liblcm repository
 
-	- Open a terminal (or git bash on Windows) and cd into a desired directory.
-	- Run `git clone https://github.com/sillsdev/liblcm.git`
+- Open a terminal (or git bash on Windows) and cd into a desired directory.
+- Run `git clone https://github.com/sillsdev/liblcm.git`
 
 3. Build liblcm
 
-	- cd into the directory of the cloned liblcm repository.
+- cd into the directory of the cloned liblcm repository.
 
-	### On Windows
+### On Windows
 
-	- Run the appropriate `vsvars*.bat`. Alternatively, `LCM.sln` can be built from within Visual Studio.
-	- Run `build.cmd` to build the liblcm library.
+- Run the appropriate `vsvars*.bat`. Alternatively, `LCM.sln` can be built from within Visual Studio.
+- Run `build.cmd` to build the liblcm library.
 
-	### On Linux
+### On Linux
 
-	- Run `build.sh` to build the liblcm library.
+- Run `build.sh` to build the liblcm library.
 
 By default, this will build liblcm in the Debug configuration.
 To build with a different configuration, use:
@@ -43,9 +43,9 @@ build.(cmd|sh) (Debug|Release)
 
 The LCModel library consumes multiple libpalaso files as NuGet packages. FieldWorks and other projects consume LCModel as a NuGet package. Several options to debug across NuGet dependencies are discussed on [this wiki](https://github.com/sillsdev/libpalaso/wiki/Developing-with-locally-modified-nuget-packages). To publish and consume LCModel through local sources:
 
-  * Set an enviroment variable `LOCAL_NUGET_REPO` with the path to a folder on your computer (or local network) to publish locally-built packages
-  * See [these instructions](https://docs.microsoft.com/en-us/nuget/hosting-packages/local-feeds) to enable local package sources
-  * `build /t:pack` will pack nuget packages and publish them to `LOCAL_NUGET_REPO`
+* Set an enviroment variable `LOCAL_NUGET_REPO` with the path to a folder on your computer (or local network) to publish locally-built packages
+* See [these instructions](https://docs.microsoft.com/en-us/nuget/hosting-packages/local-feeds) to enable local package sources
+* `build /t:pack` will pack nuget packages and publish them to `LOCAL_NUGET_REPO`
 
 ## Tests
 

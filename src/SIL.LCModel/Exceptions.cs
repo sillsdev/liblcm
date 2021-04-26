@@ -255,20 +255,15 @@ namespace SIL.LCModel
 	/// ----------------------------------------------------------------------------------------
 	public class InvalidStructureException : Exception
 	{
-		private string m_styleName;
-		private StructureValues m_expectedStructure;
-
 		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// C'tor
-		/// </summary>
+		/// <summary/>
 		/// <param name="styleName">Name of style</param>
-		/// <param name="expectedStructure">Info about the run</param>
+		/// <param name="expectedStructure">The structure which the paragraph style should have matched</param>
 		/// ------------------------------------------------------------------------------------
 		public InvalidStructureException(string styleName, StructureValues expectedStructure)
 		{
-			m_styleName = styleName;
-			m_expectedStructure = expectedStructure;
+			StyleName = styleName;
+			ExpectedStructure = expectedStructure;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -276,20 +271,17 @@ namespace SIL.LCModel
 		/// Gets the name of the style which is invalid for the expected structure.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public string StyleName
-		{
-			get { return m_styleName; }
-		}
+		public string StyleName { get; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Gets the expected structure (either heading or body).
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public StructureValues ExpectedStructure
-		{
-			get { return m_expectedStructure; }
-		}
+		public StructureValues ExpectedStructure { get; }
+
+		public override string Message => $"Structure in style '{StyleName}' did not match the expected structure of " +
+		                                  $"'{Enum.GetName(typeof(StructureValues), ExpectedStructure)}'";
 	}
 	#endregion
 
