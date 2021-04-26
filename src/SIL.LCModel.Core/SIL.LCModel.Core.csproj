@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net461</TargetFrameworks>
@@ -30,17 +30,17 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.3.7" PrivateAssets="All" />
-    <PackageReference Include="icu.net" Version="2.7.0-beta.8" />
-    <PackageReference Include="Icu4c.Win.Fw.Bin" Version="54.1.22-beta" IncludeAssets="build" />
-    <PackageReference Include="Icu4c.Win.Fw.Lib" Version="54.1.22-beta" IncludeAssets="build" PrivateAssets="runtime" />
+    <PackageReference Include="GitVersion.MsBuild" Version="5.6.8" PrivateAssets="All" />
+    <PackageReference Include="icu.net" Version="2.7.1" />
+    <PackageReference Include="Icu4c.Win.Fw.Bin" Version="54.1.31" IncludeAssets="build" />
+    <PackageReference Include="Icu4c.Win.Fw.Lib" Version="54.1.31" IncludeAssets="build" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="2.0.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.0.4" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="NHunspell.Patched" Version="1.2.5554" />
     <PackageReference Include="SIL.Core.Desktop" Version="8.0.0-*" />
     <PackageReference Include="SIL.Lexicon" Version="8.0.0-*" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4-*" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
     <PackageReference Include="vswhere" Version="2.8.4" PrivateAssets="all" />
@@ -156,8 +156,8 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHAN
     </PropertyGroup>
 
     <ItemGroup Condition="'$(OS)'=='Windows_NT'">
-      <IcuLibsX86 Include="$(IcuFwRuntimeWinX86)icu*.dll"/>
-      <IcuLibsX64 Include="$(IcuFwRuntimeWinX64)icu*.dll"/>
+      <IcuLibsX86 Include="$(IcuFwRuntimeWinX86)icu*.dll" />
+      <IcuLibsX64 Include="$(IcuFwRuntimeWinX64)icu*.dll" />
     </ItemGroup>
     <Copy SourceFiles="@(IcuLibsX86)" DestinationFolder="$(OutDir)lib/win-x86" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(IcuLibsX64)" DestinationFolder="$(OutDir)lib/win-x64" SkipUnchangedFiles="true" />
