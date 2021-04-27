@@ -10,12 +10,6 @@ branches:
     tag: unstable
     regex: (origin/)?develop
     is-mainline: true
-  lfmerge:
-    tag: lfmerge
-    regex: (origin/)?lfmerge
-    is-mainline: true
-    is-source-branch-for: ['master', 'develop', 'hotfix', 'feature']
-    source-branches: ['master', 'develop', 'hotfix', 'feature']
   hotfix:
     tag: beta
     regex: (origin/)?hotfix[/-]
@@ -31,7 +25,3 @@ branches:
     regex: feature[/-]
     mode: ContinuousDeployment
     tag: alpha
-ignore:
-  sha: []
-# Tell gitversion to use a version number >= next-version
-next-version: 10.0.0
