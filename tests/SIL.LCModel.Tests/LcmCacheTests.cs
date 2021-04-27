@@ -408,18 +408,18 @@ namespace SIL.LCModel
 					frWs = globalRepoForTest.Get("fr");
 
 					// Verify preconditions
-					Assert.That(enWs.SpellCheckingId, Is.StringMatching(globalEn));
-					Assert.That(frWs.SpellCheckingId, Is.StringMatching(globalFr));
-					Assert.That(cache.WritingSystemFactory.get_Engine("en").SpellCheckingId, Is.StringMatching(localEn));
-					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Is.StringMatching(localFr));
+					Assert.That(enWs.SpellCheckingId, Does.Match(globalEn));
+					Assert.That(frWs.SpellCheckingId, Does.Match(globalFr));
+					Assert.That(cache.WritingSystemFactory.get_Engine("en").SpellCheckingId, Does.Match(localEn));
+					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Does.Match(localFr));
 
 					// SUT
 					cache.UpdateWritingSystemsFromGlobalStore("en");
-					Assert.That(cache.WritingSystemFactory.get_Engine("en").SpellCheckingId, Is.StringMatching(localEnResult));
-					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Is.StringMatching(localFr));
-					
+					Assert.That(cache.WritingSystemFactory.get_Engine("en").SpellCheckingId, Does.Match(localEnResult));
+					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Does.Match(localFr));
+
 					cache.UpdateWritingSystemsFromGlobalStore("fr");
-					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Is.StringMatching(localFrResult));
+					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Does.Match(localFrResult));
 				}
 			}
 			finally
