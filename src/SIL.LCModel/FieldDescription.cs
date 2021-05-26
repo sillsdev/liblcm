@@ -231,7 +231,7 @@ tinyint - Integer data from 0 through 255. Storage size is 1 byte.
 		/// </summary>
 		public bool Big
 		{
-			get { return m_big; }
+			get { return !m_big; }
 			set
 			{
 				if (m_big != value)
@@ -255,7 +255,7 @@ tinyint - Integer data from 0 through 255. Storage size is 1 byte.
 		}
 
 		/// <summary>
-		///
+		/// Description of the field (100 characters max)
 		/// </summary>
 		public string HelpString
 		{
