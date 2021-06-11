@@ -7154,7 +7154,7 @@
 <Depth val="127" />
 <DisplayOption val="0" />
 <IsClosed val="False" />
-<IsSorted val="True" />
+<IsSorted val="False" />
 <IsVernacular val="False" />
 <ItemClsid val="7" />
 <ListVersion val="00000000-0000-0000-0000-000000000000" />
