@@ -424,7 +424,7 @@
 </Abbreviation>
 <Description>
 <AStr ws="en">
-<Run ws="en">A suffixing interfix is an suffix that can occur between two roots or stems.</Run>
+<Run ws="en">A suffixing interfix is a suffix that can occur between two roots or stems.</Run>
 </AStr>
 </Description>
 <Hidden val="False" />
@@ -7154,7 +7154,7 @@
 <Depth val="127" />
 <DisplayOption val="0" />
 <IsClosed val="False" />
-<IsSorted val="True" />
+<IsSorted val="False" />
 <IsVernacular val="False" />
 <ItemClsid val="7" />
 <ListVersion val="00000000-0000-0000-0000-000000000000" />
@@ -8651,7 +8651,7 @@
 </Abbreviation>
 <Description>
 <AStr ws="en">
-<Run ws="en">A root is the portion of a word that (i) is common to a set of derived or inflected forms, if any, when all affixes are removed, (ii) is not further analyzable into meaningful elements, being morphologically simple, and, (iii) carries the principle portion of meaning of the words in which it functions.</Run>
+<Run ws="en">A root is the portion of a word that (i) is common to a set of derived or inflected forms, if any, when all affixes are removed, (ii) is not further analyzable into meaningful elements, being morphologically simple, and, (iii) carries the principal portion of meaning of the words in which it functions.</Run>
 </AStr>
 </Description>
 <Hidden val="False" />
