@@ -272,7 +272,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			var uni = parent.Element("Uni");
 			if (uni == null)
 				return false;
-			var newTag = uni.Value.Split(' ').Select(MapTag).Aggregate((x, y) => x + " " + y);
+			var newTag = uni.Value.Split(new [] {' '}, StringSplitOptions.RemoveEmptyEntries).Select(MapTag).Aggregate((x, y) => x + " " + y);
 			if (newTag != uni.Value)
 			{
 				uni.Value = newTag;

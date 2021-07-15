@@ -1,4 +1,4 @@
-// Copyright (c) 2015 SIL International
+// Copyright (c) 2015-2021 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -19,10 +19,9 @@ namespace SIL.LCModel.DomainServices
 	[TestFixture]
 	public class WritingSystemServicesTests : MemoryOnlyBackendProviderRestoredForEachTestTestBase
 	{
-		/// <summary>
-		/// What it says
-		/// </summary>
-		[Test]
+
+		/// <summary/>
+		/// [Test]
 		public void UpdateWritingSystemListField_DoesNothingIfNotFound()
 		{
 			Cache.LangProject.AnalysisWss = "fr en qaa-x-kal";
@@ -31,9 +30,7 @@ namespace SIL.LCModel.DomainServices
 			Assert.That(Cache.LangProject.AnalysisWss, Is.EqualTo("fr en qaa-x-kal"));
 		}
 
-		/// <summary>
-		/// What it says
-		/// </summary>
+		/// <summary/>
 		[Test]
 		public void UpdateWritingSystemListField_ReplacesNonDuplicateCode()
 		{
@@ -291,23 +288,71 @@ namespace SIL.LCModel.DomainServices
 
 		/// <summary/>
 		[Test]
+		public void FindAllWritingSystemsWithData_FindsHiddenWritingSystems()
+		{
+			var wsMgr = Cache.ServiceLocator.WritingSystemManager;
+			wsMgr.GetOrSet("en", out var en);
+			wsMgr.GetOrSet("fr", out var fr);
+			wsMgr.GetOrSet("fr-x-has-no-strings", out _);
+			wsMgr.GetOrSet("fr-x-zero-length", out var zeroLength);
+			wsMgr.GetOrSet("blz", out var blz);
+			wsMgr.GetOrSet("hid", out var hid);
+			wsMgr.GetOrSet("hid-x-embedded", out var hidEmbedded);
+			wsMgr.GetOrSet("hid-x-edgeCase", out var hidEdgeCase);
+			wsMgr.GetOrSet("hid-x-baselineText", out var hidBaseline);
+			var entry = SenseOrEntryTests.CreateInterestingLexEntry(Cache);
+			entry.CitationForm.set_String(hid.Handle, "Headword");
+			entry.CitationForm.set_String(zeroLength.Handle, string.Empty);
+			var exampleBldr = new TsStrBldr().Append("Example ", blz.Handle).Append("with embedded WS", hidEmbedded.Handle).Append("!", blz.Handle);
+			var example = Cache.ServiceLocator.GetInstance<ILexExampleSentenceFactory>().Create();
+			entry.SensesOS.First().ExamplesOS.Add(example);
+			// The Example MultiString has an Edge Case alternative, but no Edge Case text.
+			example.Example.set_String(hidEdgeCase.Handle, exampleBldr.GetString());
+			// Interlinear texts are monolingual strings.
+			AddInterlinearTextToLangProj("Title").ContentsOA.AddNewTextPara(null).Contents = TsStringUtils.MakeString("Content", hidBaseline.Handle);
+
+			// SUT
+			var result = WritingSystemServices.FindAllWritingSystemsWithText(Cache);
+
+			Assert.That(new SortedSet<int>(result), Is.EquivalentTo(new[]
+			{
+				en.Handle, fr.Handle, blz.Handle, hid.Handle, hidEmbedded.Handle, hidEdgeCase.Handle, hidBaseline.Handle
+			}));
+		}
+
+		/// <summary/>
+		[Test]
 		public void DeleteWritingSystem()
 		{
-			CoreWritingSystemDefinition wsBlz;
-			WritingSystemServices.FindOrCreateWritingSystem(Cache, null, "blz", false, false, out wsBlz);
+			Cache.ServiceLocator.WritingSystemManager.GetOrSet("fr", out var wsFr);
+			Cache.ServiceLocator.WritingSystemManager.GetOrSet("blz", out var wsBlz);
 
 			var revIndex = Cache.ServiceLocator.GetInstance<IReversalIndexRepository>().FindOrCreateIndexForWs(wsBlz.Handle);
 			Cache.LangProject.LexDbOA.ReversalIndexesOC.Add(revIndex);
-			var entry1 = SenseOrEntryTests.CreateInterestingLexEntry(Cache);
+			var lexEntry = SenseOrEntryTests.CreateInterestingLexEntry(Cache);
 
-			var testEntry = revIndex.FindOrCreateReversalEntry("first");
-			testEntry.SensesRS.Add(entry1.SensesOS.First());
+			lexEntry.CitationForm.set_String(wsBlz.Handle, "Citation");
+			var example = Cache.ServiceLocator.GetInstance<ILexExampleSentenceFactory>().Create();
+			lexEntry.SensesOS.First().ExamplesOS.Add(example);
+			var exampleBldr = new TsStrBldr().Append("Example embedding", wsFr.Handle).Append("Balantak!", wsBlz.Handle);
+			example.Example.set_String(wsFr.Handle, exampleBldr.GetString());
 
-			testEntry.ReversalIndex.WritingSystem = "blz";
-			testEntry.ReversalForm.set_String(wsBlz.Handle, "blz");
-			Assert.That(testEntry.ReversalIndex.WritingSystem, Is.EqualTo("blz"));
+			var revEntry = revIndex.FindOrCreateReversalEntry("first");
+			revEntry.SensesRS.Add(lexEntry.SensesOS.First());
+
+			revEntry.ReversalIndex.WritingSystem = "blz";
+			revEntry.ReversalForm.set_String(wsBlz.Handle, "blz");
+			Assert.That(revEntry.ReversalIndex.WritingSystem, Is.EqualTo("blz"));
+			// SUT
 			WritingSystemServices.DeleteWritingSystem(Cache, wsBlz);
-			Assert.IsFalse(testEntry.IsValidObject);
+			TsStringUtilsTests.AssertIsNullOrEmpty(lexEntry.CitationForm.get_String(wsBlz.Handle));
+			var exampleAfter = example.Example;
+			TsStringUtilsTests.AssertIsNullOrEmpty(exampleAfter.get_String(wsBlz.Handle));
+			var exampleAfterFr = exampleAfter.get_String(wsFr.Handle);
+			Assert.AreEqual("Example embedding", exampleAfterFr.Text);
+			Assert.AreEqual(1, exampleAfterFr.RunCount);
+			Assert.AreEqual(wsFr.Handle, exampleAfterFr.get_WritingSystemAt(0));
+			Assert.IsFalse(revEntry.IsValidObject);
 			Assert.IsFalse(Cache.LangProject.LexDbOA.ReversalIndexesOC.Contains(revIndex));
 		}
 
@@ -324,14 +369,13 @@ namespace SIL.LCModel.DomainServices
 		/// <summary/>
 		public void UpdateWritingSystemListField_RemovesWsCode()
 		{
-			int m_wsEn = Cache.WritingSystemFactory.GetWsFromStr("en");
-			int m_wsFr = Cache.WritingSystemFactory.GetWsFromStr("fr");
+			var wsEn = Cache.WritingSystemFactory.GetWsFromStr("en");
+			var wsFr = Cache.WritingSystemFactory.GetWsFromStr("fr");
 
 			Cache.LangProject.HomographWs = "fr";
-			CoreWritingSystemDefinition enBlz;
-			WritingSystemServices.FindOrCreateWritingSystem(Cache, null, "blz", false, false, out enBlz);
+			WritingSystemServices.FindOrCreateWritingSystem(Cache, null, "blz", false, false, out _);
 
-			var revIndex = Cache.ServiceLocator.GetInstance<IReversalIndexRepository>().FindOrCreateIndexForWs(m_wsEn);
+			var revIndex = Cache.ServiceLocator.GetInstance<IReversalIndexRepository>().FindOrCreateIndexForWs(wsEn);
 
 			var entry1 = SenseOrEntryTests.CreateInterestingLexEntry(Cache);
 			var msa1 = Cache.ServiceLocator.GetInstance<IMoStemMsaFactory>().Create();
@@ -348,7 +392,7 @@ namespace SIL.LCModel.DomainServices
 			testEntry.SensesRS.Add(entry2.SensesOS.First());
 
 			testEntry.ReversalIndex.WritingSystem = "fr";
-			testEntry.ReversalForm.set_String(m_wsFr, "fr");
+			testEntry.ReversalForm.set_String(wsFr, "fr");
 			WritingSystemServices.UpdateWritingSystemFields(Cache, "fr", "blz");
 			Assert.DoesNotThrow(() => WritingSystemServices.UpdateWritingSystemFields(Cache, "fr", null));
 			Assert.That(testEntry.ReversalIndex.WritingSystem, Is.EqualTo("blz"));
@@ -387,10 +431,18 @@ namespace SIL.LCModel.DomainServices
 			var entry3 = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
 			var sense3 = Cache.ServiceLocator.GetInstance<ILexSenseFactory>().Create();
 			entry3.SensesOS.Add(sense3);
-			sense3.Definition.set_String(Cache.DefaultAnalWs, stringWithNewWs);
+			var styledAndNormalRunInChangingWs = TsStringUtils.MakeString("changing", newWs.Handle);
+			styledAndNormalRunInChangingWs.Insert(0, TsStringUtils.MakeString("8", newWs.Handle, "Verse Number"));
+			sense3.Definition.set_String(newWs.Handle, styledAndNormalRunInChangingWs);
 
 			Cache.LangProject.AnalysisWss = "en en-SU";
-
+			// Add Free Translation in the changing ws
+			var paraBldr = Cache.ServiceLocator.GetInstance<StTxtParaBldr>();
+			var stText = Cache.ServiceLocator.GetInstance<IStTextFactory>().Create();
+			Cache.ServiceLocator.GetInstance<ITextFactory>().Create().ContentsOA = stText; // needed to put a Cache in stText
+			var para = paraBldr.CreateParagraph(stText);
+			para.Contents = TsStringUtils.MakeString("vernacular", Cache.DefaultVernWs);
+			para.SegmentsOS[0].FreeTranslation.set_String(newWs.Handle, "Free Willy!");
 			m_actionHandler.EndUndoTask();
 			var undoManager = Cache.ServiceLocator.GetInstance<IUndoStackManager>();
 			undoManager.Save(); // makes everything non-dirty.
@@ -421,12 +473,11 @@ namespace SIL.LCModel.DomainServices
 			Assert.That(!dirtballs.Contains((ICmObjectOrSurrogate)entry0)); // make sure the implementation doesn't just dirty everything.
 			Assert.That(dirtballs.Contains((ICmObjectOrSurrogate)entry2));
 			Assert.That(dirtballs.Contains((ICmObjectOrSurrogate)sense3));
+			Assert.That(dirtballs.Contains((ICmObjectOrSurrogate)para.SegmentsOS[0]));
 			Assert.That(Cache.LangProject.AnalysisWss, Is.EqualTo("en en-GB"), "should have updated WS lists");
 		}
 
-		/// <summary>
-		/// What it says.
-		/// </summary>
+		/// <summary />
 		[Test]
 		public void MergeWritingSystem_ConvertsMultiStrings()
 		{
@@ -440,6 +491,7 @@ namespace SIL.LCModel.DomainServices
 			entry1.SensesOS.Add(sense1);
 			// Sense1 should be dirty: it has a gloss in the changing WS.
 			sense1.Gloss.set_String(fromWs.Handle, TsStringUtils.MakeString("whatever", fromWs.Handle));
+			sense1.Gloss.get_String(fromWs.Handle).Insert(0, TsStringUtils.MakeString("8", fromWs.Handle, "Verse Number"));
 			m_actionHandler.EndUndoTask();
 			UndoableUnitOfWorkHelper.Do("doit", "undoit", m_actionHandler,
 				() => WritingSystemServices.MergeWritingSystems(Cache, fromWs, toWs));

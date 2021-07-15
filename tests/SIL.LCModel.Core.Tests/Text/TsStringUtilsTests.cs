@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2017 SIL International
+// Copyright (c) 2004-2021 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -1702,9 +1702,10 @@ namespace SIL.LCModel.Core.Text
 		#endregion
 
 		#region Helper methods
-		private static void VerifyStringDiffs(ITsString tss1, ITsString tss2, int ichMinExpected, int cchInsExpected, int cchDelExpected, string id)
+		private static void VerifyStringDiffs(ITsString tss1, ITsString tss2,
+			int ichMinExpected, int cchInsExpected, int cchDelExpected, bool fAdjustAnalyses, string id)
 		{
-			VerifyStringDiffs(tss1, tss2, new TsStringDiffInfo(ichMinExpected, cchInsExpected, cchDelExpected), id);
+			VerifyStringDiffs(tss1, tss2, new TsStringDiffInfo(ichMinExpected, cchInsExpected, cchDelExpected, fAdjustAnalyses), id);
 		}
 
 		private static void VerifyNoStringDiffs(ITsString tss1, ITsString tss2, string id)
@@ -1723,10 +1724,11 @@ namespace SIL.LCModel.Core.Text
 				Assert.AreEqual(diffInfoExpected.IchFirstDiff, diffInfo.IchFirstDiff, id + " ichMin");
 				Assert.AreEqual(diffInfoExpected.CchInsert, diffInfo.CchInsert, id + " cchIns");
 				Assert.AreEqual(diffInfoExpected.CchDeleteFromOld, diffInfo.CchDeleteFromOld, id + " cchDel");
+				Assert.AreEqual(diffInfoExpected.FAdjustAnalyses, diffInfo.FAdjustAnalyses, id + " forceAdjustAna");
 			}
 		}
 
-		private void VerifyConcatenate(String first, String second, String output)
+		private static void VerifyConcatenate(string first, string second, string output)
 		{
 			var firstInput = TsStringUtils.MakeString(first, 1);
 			var secondInput = TsStringUtils.MakeString(second, 1);
@@ -1743,6 +1745,11 @@ namespace SIL.LCModel.Core.Text
 		string TrimNonWordFormingChars(string test, ILgWritingSystemFactory wsf, bool atStart, bool atEnd)
 		{
 			return TsStringUtils.TrimNonWordFormingChars(TsStringUtils.MakeString(test, wsf.get_Engine("en").Handle), wsf, atStart, atEnd).Text;
+		}
+
+		public static void AssertIsNullOrEmpty(ITsString tss, string message = null)
+		{
+			Assert.True(TsStringUtils.IsNullOrEmpty(tss), $"Expected Null or Empty,\nbut was: {tss}\n{message}");
 		}
 		#endregion
 
@@ -1807,15 +1814,20 @@ namespace SIL.LCModel.Core.Text
 		[Test]
 		public void FindStringDiffs()
 		{
+			VerifyNoStringDiffs(null, null, "null string equals itself");
 			var tssEmpty1 = TsStringUtils.EmptyString(1);
 			VerifyNoStringDiffs(tssEmpty1, tssEmpty1, "empty string equals itself");
 			var tssAbc1 = TsStringUtils.MakeString("abc", 1);
 			VerifyNoStringDiffs(tssAbc1, tssAbc1, "one-run string equals itself");
-			VerifyStringDiffs(tssEmpty1, tssAbc1, 0, 3, 0, "added 3 chars to empty string");
+			VerifyStringDiffs(null, tssEmpty1, 0, 0, 0, true, "null and empty");
+			VerifyStringDiffs(tssEmpty1, null, 0, 0, 0, true, "empty and null");
+			VerifyStringDiffs(null, tssAbc1, 0, 3, 0, true, "added 3 chars to null string");
+			VerifyStringDiffs(tssAbc1, null, 0, 0, 3, true, "nullified 3-char string");
+			VerifyStringDiffs(tssEmpty1, tssAbc1, 0, 3, 0, true, "added 3 chars to empty string");
 			var tssEmpty2 = TsStringUtils.MakeString("", 2);
-			VerifyStringDiffs(tssEmpty1, tssEmpty2, 0, 0, 0, "two empty strings in different wss are not equal");
+			VerifyStringDiffs(tssEmpty1, tssEmpty2, 0, 0, 0, false, "two empty strings in different wss are not equal");
 			var tssAbc2 = TsStringUtils.MakeString("abc", 2);
-			VerifyStringDiffs(tssAbc1, tssAbc2, 0, 3, 3, "two non-empty strings in different wss are not equal");
+			VerifyStringDiffs(tssAbc1, tssAbc2, 0, 3, 3, false, "two non-empty strings in different wss are not equal");
 			var tssAbc1b = TsStringUtils.MakeString("abc", 1);
 			VerifyNoStringDiffs(tssAbc1, tssAbc1b, "one-run string equals an identical string");
 
@@ -1828,14 +1840,14 @@ namespace SIL.LCModel.Core.Text
 			var tssAbc1Def2 = bldr.GetString();
 			VerifyNoStringDiffs(tssAbc1Def2, tssAbc1Def2, "two-run string equals itself");
 			VerifyNoStringDiffs(tssAbc1Def2, tssAbc1Def2.GetBldr().GetString(), "two-run string equals identical string");
-			VerifyStringDiffs(tssAbc1Def2, tssAbc1, 3, 0, 3, "two-run string shortened to one-run");
-			VerifyStringDiffs(tssAbc1, tssAbc1Def2, 3, 3, 0, "one-run string added second run");
+			VerifyStringDiffs(tssAbc1Def2, tssAbc1, 3, 0, 3, true, "two-run string shortened to one-run");
+			VerifyStringDiffs(tssAbc1, tssAbc1Def2, 3, 3, 0, true, "one-run string added second run");
 
 			var tssAbd1 = TsStringUtils.MakeString("abd", 1);
-			VerifyStringDiffs(tssAbc1, tssAbd1, 2, 1, 1, "one-run string different last character");
+			VerifyStringDiffs(tssAbc1, tssAbd1, 2, 1, 1, true, "one-run string different last character");
 			var tssAb1 = TsStringUtils.MakeString("ab", 1);
-			VerifyStringDiffs(tssAbc1, tssAb1, 2, 0, 1, "one-run string remove last character");
-			VerifyStringDiffs(tssAb1, tssAbc1, 2, 1, 0, "one-run string add last character");
+			VerifyStringDiffs(tssAbc1, tssAb1, 2, 0, 1, true, "one-run string remove last character");
+			VerifyStringDiffs(tssAb1, tssAbc1, 2, 1, 0, true, "one-run string add last character");
 
 			bldr = tssAbc1Def2.GetBldr();
 			bldr.Replace(6, 6, "ghi", props1);
@@ -1844,90 +1856,97 @@ namespace SIL.LCModel.Core.Text
 			bldr = tssAbc1Def2Ghi1.GetBldr();
 			bldr.SetProperties(3, 6, props3);
 			var tssAbc1Def3Ghi1 = bldr.GetString();
-			VerifyStringDiffs(tssAbc1Def2Ghi1, tssAbc1Def3Ghi1, 3, 3, 3, "three-run string differs by middle props");
+			VerifyStringDiffs(tssAbc1Def2Ghi1, tssAbc1Def3Ghi1, 3, 3, 3, false, "three-run string differs by middle WS");
 
-			VerifyStringDiffs(tssAbc1Def2, tssAbc1Def2Ghi1, 6, 3, 0, "two-run string added run at end");
-			VerifyStringDiffs(tssAbc1Def2Ghi1, tssAbc1Def2, 6, 0, 3, "three-run string deleted run at end");
+			VerifyStringDiffs(tssAbc1Def2, tssAbc1Def2Ghi1, 6, 3, 0, true, "two-run string added run at end");
+			VerifyStringDiffs(tssAbc1Def2Ghi1, tssAbc1Def2, 6, 0, 3, true, "three-run string deleted run at end");
 
 			bldr = tssAbc1Def2Ghi1.GetBldr();
 			bldr.SetProperties(6, 9, props3);
 			var tssAbc1Def2Ghi3 = bldr.GetString();
+			VerifyStringDiffs(tssAbc1Def2Ghi1, tssAbc1Def2Ghi3, 6, 3, 3, false, "three-run string differs by final WS");
+
+			bldr = tssAbc1Def2Ghi3.GetBldr();
+			bldr.SetProperties(0, 3, props3);
+			var tssAbc3Def2Ghi3 = bldr.GetString();
+			VerifyStringDiffs(tssAbc1Def2Ghi1, tssAbc3Def2Ghi3, 0, 9, 9, false, "three-run string differs by sandwich WS");
+
 			bldr = tssAbc1Def2Ghi3.GetBldr();
 			bldr.Replace(3, 6, null, null);
 			var tssAbc1Ghi3 = bldr.GetString();
-			VerifyStringDiffs(tssAbc1Ghi3, tssAbc1Def2Ghi3, 3, 3, 0, "two-run string added run middle");
-			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Ghi3, 3, 0, 3, "three-run string deleted run middle");
+			VerifyStringDiffs(tssAbc1Ghi3, tssAbc1Def2Ghi3, 3, 3, 0, true, "two-run string added run middle");
+			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Ghi3, 3, 0, 3, true, "three-run string deleted run middle");
 
-			VerifyStringDiffs(tssAbc1, tssAbc1Def2Ghi3, 3, 6, 0, "one-run string added two runs end");
-			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1, 3, 0, 6, "three-run string deleted last two runs");
+			VerifyStringDiffs(tssAbc1, tssAbc1Def2Ghi3, 3, 6, 0, true, "one-run string added two runs end");
+			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1, 3, 0, 6, true, "three-run string deleted last two runs");
 
 			bldr = tssAbc1Def2Ghi3.GetBldr();
 			bldr.Replace(0, 3, null, null);
 			var tssDef2Ghi3 = bldr.GetString();
-			VerifyStringDiffs(tssDef2Ghi3, tssAbc1Def2Ghi3, 0, 3, 0, "two-run string added run start");
-			VerifyStringDiffs(tssAbc1Def2Ghi3, tssDef2Ghi3, 0, 0, 3, "three-run string deleted run start");
+			VerifyStringDiffs(tssDef2Ghi3, tssAbc1Def2Ghi3, 0, 3, 0, true, "two-run string added run start");
+			VerifyStringDiffs(tssAbc1Def2Ghi3, tssDef2Ghi3, 0, 0, 3, true, "three-run string deleted run start");
 
 			var tssAxc1 = TsStringUtils.MakeString("axc", 1);
-			VerifyStringDiffs(tssAbc1, tssAxc1, 1, 1, 1, "one-run string different mid character");
+			VerifyStringDiffs(tssAbc1, tssAxc1, 1, 1, 1, true, "one-run string different mid character");
 			var tssAc1 = TsStringUtils.MakeString("ac", 1);
-			VerifyStringDiffs(tssAbc1, tssAc1, 1, 0, 1, "one-run string remove mid character");
-			VerifyStringDiffs(tssAc1, tssAbc1, 1, 1, 0, "one-run string add mid character");
+			VerifyStringDiffs(tssAbc1, tssAc1, 1, 0, 1, true, "one-run string remove mid character");
+			VerifyStringDiffs(tssAc1, tssAbc1, 1, 1, 0, true, "one-run string add mid character");
 
 			var tssXbc1 = TsStringUtils.MakeString("xbc", 1);
-			VerifyStringDiffs(tssAbc1, tssXbc1, 0, 1, 1, "one-run string different first character");
+			VerifyStringDiffs(tssAbc1, tssXbc1, 0, 1, 1, true, "one-run string different first character");
 			var tssBc1 = TsStringUtils.MakeString("bc", 1);
-			VerifyStringDiffs(tssAbc1, tssBc1, 0, 0, 1, "one-run string remove first character");
-			VerifyStringDiffs(tssBc1, tssAbc1, 0, 1, 0, "one-run string add first character");
+			VerifyStringDiffs(tssAbc1, tssBc1, 0, 0, 1, true, "one-run string remove first character");
+			VerifyStringDiffs(tssBc1, tssAbc1, 0, 1, 0, true, "one-run string add first character");
 
 			bldr = tssAbc1Def2Ghi3.GetBldr();
 			bldr.Replace(0, 1, "x", null);
 			var tssXbc1Def2Ghi3 = bldr.GetString();
-			VerifyStringDiffs(tssAbc1Def2Ghi3, tssXbc1Def2Ghi3, 0, 1, 1, "three-run string different first character");
+			VerifyStringDiffs(tssAbc1Def2Ghi3, tssXbc1Def2Ghi3, 0, 1, 1, true, "three-run string different first character");
 			bldr = tssAbc1Def2Ghi3.GetBldr();
 			bldr.Replace(0, 1, "", null);
 			var tssBc1Def2Ghi3 = bldr.GetString();
-			VerifyStringDiffs(tssAbc1Def2Ghi3, tssBc1Def2Ghi3, 0, 0, 1, "three-run string delete first character");
-			VerifyStringDiffs(tssBc1Def2Ghi3, tssAbc1Def2Ghi3, 0, 1, 0, "three-run string insert first character");
+			VerifyStringDiffs(tssAbc1Def2Ghi3, tssBc1Def2Ghi3, 0, 0, 1, true, "three-run string delete first character");
+			VerifyStringDiffs(tssBc1Def2Ghi3, tssAbc1Def2Ghi3, 0, 1, 0, true, "three-run string insert first character");
 
 			bldr = tssAbc1Def2Ghi3.GetBldr();
 			bldr.Replace(8, 9, "x", null);
 			var tssAbc1Def2Ghx3 = bldr.GetString();
-			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Def2Ghx3, 8, 1, 1, "three-run string different last character");
+			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Def2Ghx3, 8, 1, 1, true, "three-run string different last character");
 			bldr = tssAbc1Def2Ghi3.GetBldr();
 			bldr.Replace(8, 9, "", null);
 			var tssAbc1Def2Gh3 = bldr.GetString();
-			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Def2Gh3, 8, 0, 1, "three-run string delete last character");
-			VerifyStringDiffs(tssAbc1Def2Gh3, tssAbc1Def2Ghi3, 8, 1, 0, "three-run string insert last character");
+			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Def2Gh3, 8, 0, 1, true, "three-run string delete last character");
+			VerifyStringDiffs(tssAbc1Def2Gh3, tssAbc1Def2Ghi3, 8, 1, 0, true, "three-run string insert last character");
 
 			bldr = tssAbc1Def2Ghi3.GetBldr();
 			bldr.Replace(4, 5, "x", null);
 			var tssAbc1Dxf2Ghi3 = bldr.GetString();
-			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Dxf2Ghi3, 4, 1, 1, "three-run string different mid character");
+			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Dxf2Ghi3, 4, 1, 1, true, "three-run string different mid character");
 			bldr = tssAbc1Def2Ghi3.GetBldr();
 			bldr.Replace(4, 5, "", null);
 			var tssAbc1Df2Ghi3 = bldr.GetString();
-			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Df2Ghi3, 4, 0, 1, "three-run string delete mid character");
-			VerifyStringDiffs(tssAbc1Df2Ghi3, tssAbc1Def2Ghi3, 4, 1, 0, "three-run string insert mid character");
+			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Df2Ghi3, 4, 0, 1, true, "three-run string delete mid character");
+			VerifyStringDiffs(tssAbc1Df2Ghi3, tssAbc1Def2Ghi3, 4, 1, 0, true, "three-run string insert mid character");
 
 			bldr = tssAbc1Def2Ghi3.GetBldr();
 			bldr.Replace(3, 4, "x", null);
 			var tssAbc1Xef2Ghi3 = bldr.GetString();
-			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Xef2Ghi3, 3, 1, 1, "three-run string replace first char of mid run");
+			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Xef2Ghi3, 3, 1, 1, true, "three-run string replace first char of mid run");
 			bldr = tssAbc1Def2Ghi3.GetBldr();
 			bldr.Replace(3, 4, "", null);
 			var tssAbc1Ef2Ghi3 = bldr.GetString();
-			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Ef2Ghi3, 3, 0, 1, "three-run string delete first char of mid run");
-			VerifyStringDiffs(tssAbc1Ef2Ghi3, tssAbc1Def2Ghi3, 3, 1, 0, "three-run string insert first char of mid run");
+			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Ef2Ghi3, 3, 0, 1, true, "three-run string delete first char of mid run");
+			VerifyStringDiffs(tssAbc1Ef2Ghi3, tssAbc1Def2Ghi3, 3, 1, 0, true, "three-run string insert first char of mid run");
 
 			bldr = tssAbc1Def2Ghi3.GetBldr();
 			bldr.Replace(5, 6, "x", null);
 			var tssAbc1Dex2Ghi3 = bldr.GetString();
-			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Dex2Ghi3, 5, 1, 1, "three-run string replace last char of mid run");
+			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Dex2Ghi3, 5, 1, 1, true, "three-run string replace last char of mid run");
 			bldr = tssAbc1Def2Ghi3.GetBldr();
 			bldr.Replace(5, 6, "", null);
 			var tssAbc1De2Ghi3 = bldr.GetString();
-			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1De2Ghi3, 5, 0, 1, "three-run string delete last char of mid run");
-			VerifyStringDiffs(tssAbc1De2Ghi3, tssAbc1Def2Ghi3, 5, 1, 0, "three-run string insert last char of mid run");
+			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1De2Ghi3, 5, 0, 1, true, "three-run string delete last char of mid run");
+			VerifyStringDiffs(tssAbc1De2Ghi3, tssAbc1Def2Ghi3, 5, 1, 0, true, "three-run string insert last char of mid run");
 
 			// Different numbers of runs, part of each border run the same.
 			bldr = tssAbc1Def2Ghi3.GetBldr();
@@ -1935,39 +1954,96 @@ namespace SIL.LCModel.Core.Text
 			bldr.Replace(6, 6, "xyz", props1);
 			bldr.Replace(9, 9, "xyf", props2);
 			var tssAbc1Dxf2Xyz1Xyf2Ghi3 = bldr.GetString();
-			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Dxf2Xyz1Xyf2Ghi3, 4, 7, 1, "three-run string replace runs and text mid");
-			VerifyStringDiffs(tssAbc1Dxf2Xyz1Xyf2Ghi3, tssAbc1Def2Ghi3, 4, 1, 7, "five-run string replace runs and text mid");
+			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Dxf2Xyz1Xyf2Ghi3, 4, 7, 1, true, "three-run string replace runs and text mid");
+			VerifyStringDiffs(tssAbc1Dxf2Xyz1Xyf2Ghi3, tssAbc1Def2Ghi3, 4, 1, 7, true, "five-run string replace runs and text mid");
 
-			VerifyStringDiffs(tssAbc1Def2Ghi3, tssXbc1, 0, 3, 9, "three-run string replace all one run");
-			VerifyStringDiffs(tssXbc1, tssAbc1Def2Ghi3, 0, 9, 3, "one-run string replace all three runs");
+			VerifyStringDiffs(tssAbc1Def2Ghi3, tssXbc1, 0, 3, 9, true, "three-run string replace all one run");
+			VerifyStringDiffs(tssXbc1, tssAbc1Def2Ghi3, 0, 9, 3, true, "one-run string replace all three runs");
 
 			bldr = tssAbc1Def2Ghi3.GetBldr();
 			bldr.Replace(5, 9, "x", null);
 			var tssAbc1Dex2 = bldr.GetString();
-			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Dex2, 5, 1, 4, "three-run string replace last and part of mid");
-			VerifyStringDiffs(tssAbc1Dex2, tssAbc1Def2Ghi3, 5, 4, 1, "two-run string replace text and add run at end");
+			VerifyStringDiffs(tssAbc1Def2Ghi3, tssAbc1Dex2, 5, 1, 4, true, "three-run string replace last and part of mid");
+			VerifyStringDiffs(tssAbc1Dex2, tssAbc1Def2Ghi3, 5, 4, 1, true, "two-run string replace text and add run at end");
 
 			bldr = tssAbc1Def2Ghi3.GetBldr();
 			bldr.Replace(0, 4, "", null);
 			var tssEf2Ghi3 = bldr.GetString();
-			VerifyStringDiffs(tssAbc1Def2Ghi3, tssEf2Ghi3, 0, 0, 4, "three-run string delete first and part of mid");
-			VerifyStringDiffs(tssEf2Ghi3, tssAbc1Def2Ghi3, 0, 4, 0, "two-run string insert run and text at start");
+			VerifyStringDiffs(tssAbc1Def2Ghi3, tssEf2Ghi3, 0, 0, 4, true, "three-run string delete first and part of mid");
+			VerifyStringDiffs(tssEf2Ghi3, tssAbc1Def2Ghi3, 0, 4, 0, true, "two-run string insert run and text at start");
 
 			var s1 = TsStringUtils.MakeString("abc. def.", 1);
 			var s2 = TsStringUtils.MakeString("abc. insert. def.", 1);
-			VerifyStringDiffs(s1, s2, 5, 8, 0, "insert with dup material before and in insert");
-			VerifyStringDiffs(s2, s1, 5, 0, 8, "delete with dup material before and at and of stuff deleted.");
+			VerifyStringDiffs(s1, s2, 5, 8, 0, true, "insert with dup material before and in insert");
+			VerifyStringDiffs(s2, s1, 5, 0, 8, true, "delete with dup material before and at and of stuff deleted.");
 
 			s1 = TsStringUtils.MakeString("xxxabc xxxdef.", 1);
 			s2 = TsStringUtils.MakeString("xxxdef.", 1);
-			VerifyStringDiffs(s1, s2, 0, 0, 7, "delete whole word ambiguous with delete part of two words");
-			VerifyStringDiffs(s2, s1, 0, 7, 0, "insert whole word ambiguous with insert part of two words");
+			VerifyStringDiffs(s1, s2, 0, 0, 7, true, "delete whole word ambiguous with delete part of two words");
+			VerifyStringDiffs(s2, s1, 0, 7, 0, true, "insert whole word ambiguous with insert part of two words");
 
 			s1 = TsStringUtils.MakeString("pus pus yalola.", 1);
 			s2 = TsStringUtils.MakeString("pus yalola.", 1);
-			VerifyStringDiffs(s1, s2, 4, 0, 4, "delete first word ambiguous with delete second word");
-			VerifyStringDiffs(s2, s1, 4, 4, 0, "insert first word ambiguous with insert second words");
+			VerifyStringDiffs(s1, s2, 4, 0, 4, true, "delete first word ambiguous with delete second word");
+			VerifyStringDiffs(s2, s1, 4, 4, 0, true, "insert first word ambiguous with insert second words");
 
+		}
+
+		[Test]
+		public void ChangesRequireAnalysisAdjustment()
+		{
+			var abc1 = TsStringUtils.MakeString("abc", 1);
+			var abc2 = TsStringUtils.MakeString("abc", 2);
+			Assert.False(TsStringUtils.ChangesRequireAnalysisAdjustment(abc1, abc2, 0),
+				"only the WS changed; the responsible parties don't need our help to notice (LT-20344)");
+			var abg1 = TsStringUtils.MakeString("abg", 1);
+			Assert.True(TsStringUtils.ChangesRequireAnalysisAdjustment(abc1, abg1, 0), "text changed");
+			Assert.True(TsStringUtils.ChangesRequireAnalysisAdjustment(abc2, abg1, 0), "text changed (WS, too)");
+
+			var bldr = abc1.GetBldr();
+			bldr.SetIntPropValues(2, 3, (int)FwTextPropType.ktptWs, (int)FwTextPropVar.ktpvDefault, 3);
+			var ab1c3 = bldr.GetString();
+			bldr.SetIntPropValues(2, 3, (int)FwTextPropType.ktptWs, (int)FwTextPropVar.ktpvDefault, 4);
+			var ab1c4 = bldr.GetString();
+			Assert.False(TsStringUtils.ChangesRequireAnalysisAdjustment(ab1c3, ab1c4, 1), "only the WS changed");
+
+			bldr = abc1.GetBldr();
+			bldr.SetStrPropValue(0, 3, (int)FwTextPropType.ktptFontFamily, "Charis SIL");
+			var abc1Charis = bldr.GetString();
+			bldr.SetStrPropValue(0, 3, (int)FwTextPropType.ktptFontFamily, "Duolos SIL");
+			var abc1Duolos = bldr.GetString();
+			Assert.False(TsStringUtils.ChangesRequireAnalysisAdjustment(abc1Charis, abc1Duolos, 0), "only the font changed");
+			Assert.False(TsStringUtils.ChangesRequireAnalysisAdjustment(abc1Charis, abc1, 0), "font removed");
+			Assert.False(TsStringUtils.ChangesRequireAnalysisAdjustment(abc1, abc1Duolos, 0), "font added");
+
+			bldr = abc1.GetBldr();
+			bldr.SetStrPropValue(0, 3, (int)FwTextPropType.ktptObjData, "gobble");
+			var abc1gobble = bldr.GetString();
+			bldr.SetStrPropValue(0, 3, (int)FwTextPropType.ktptObjData, "d gook");
+			var abc1d_gook = bldr.GetString();
+			bldr.SetStrPropValue(0, 3, (int)FwTextPropType.ktptObjData, "gobble");
+			var abc1gobble_same = bldr.GetString();
+			Assert.True(TsStringUtils.ChangesRequireAnalysisAdjustment(abc1gobble, abc1d_gook, 0), "special object changed");
+			Assert.True(TsStringUtils.ChangesRequireAnalysisAdjustment(abc1gobble, abc1, 0), "special object removed");
+			Assert.True(TsStringUtils.ChangesRequireAnalysisAdjustment(abc1, abc1d_gook, 0), "special object added");
+			Assert.False(TsStringUtils.ChangesRequireAnalysisAdjustment(abc1gobble, abc1gobble_same, 0), "same gobbledygook");
+
+			bldr = abc1gobble.GetBldr();
+			bldr.SetStrPropValue(0, 3, (int)FwTextPropType.ktptFontFamily, "Duolos SIL");
+			var abc1gobble_duolos = bldr.GetString();
+			Assert.False(TsStringUtils.ChangesRequireAnalysisAdjustment(abc1gobble, abc1gobble_duolos, 0),
+				"same gobbledygook; only the font changed");
+
+			bldr = abc1d_gook.GetBldr();
+			bldr.SetStrPropValue(0, 3, (int)FwTextPropType.ktptFontFamily, "Duolos SIL");
+			var abc1d_gook_duolos = bldr.GetString();
+			bldr.SetStrPropValue(0, 3, (int)FwTextPropType.ktptFontFamily, "Charis SIL");
+			bldr.SetIntPropValues(0, 3, (int)FwTextPropType.ktptWs, (int)FwTextPropVar.ktpvDefault, 2);
+			bldr.Replace(2, 3, "u", null);
+			var abu2d_gook_charis = bldr.GetString();
+			Assert.True(TsStringUtils.ChangesRequireAnalysisAdjustment(abc1gobble_duolos, abc1d_gook_duolos, 0),
+				"different gobbledygook");
+			Assert.True(TsStringUtils.ChangesRequireAnalysisAdjustment(abc1gobble_duolos, abu2d_gook_charis, 0), "many things changed");
 		}
 
 		[Test]

@@ -406,10 +406,26 @@ namespace SIL.LCModel.Core.Text
 		/// <param name="textToAppend">The text to append.</param>
 		/// <param name="ttp">The properties to apply.</param>
 		/// ------------------------------------------------------------------------------------
-		public static void Append(this ITsStrBldr bldr, string textToAppend, ITsTextProps ttp)
+		public static ITsStrBldr Append(this ITsStrBldr bldr, string textToAppend, ITsTextProps ttp)
 		{
-			int length = bldr.Length;
+			var length = bldr.Length;
 			bldr.Replace(length, length, textToAppend, ttp);
+			return bldr;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Appends the specified text to the TS string builder.
+		/// </summary>
+		/// <param name="bldr">TS string builder.</param>
+		/// <param name="textToAppend">The text to append.</param>
+		/// <param name="ws">The writing system to apply.</param>
+		/// ------------------------------------------------------------------------------------
+		public static ITsStrBldr Append(this ITsStrBldr bldr, string textToAppend, int ws)
+		{
+			var length = bldr.Length;
+			bldr.ReplaceTsString(length, length, TsStringUtils.MakeString(textToAppend, ws));
+			return bldr;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -419,10 +435,11 @@ namespace SIL.LCModel.Core.Text
 		/// <param name="bldr">TS string builder.</param>
 		/// <param name="tssToAppend">The ITsString to append.</param>
 		/// ------------------------------------------------------------------------------------
-		public static void Append(this ITsStrBldr bldr, ITsString tssToAppend)
+		public static ITsStrBldr Append(this ITsStrBldr bldr, ITsString tssToAppend)
 		{
-			int length = bldr.Length;
+			var length = bldr.Length;
 			bldr.ReplaceTsString(length, length, tssToAppend);
+			return bldr;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -435,9 +452,10 @@ namespace SIL.LCModel.Core.Text
 		/// <param name="ws">The ID of the writing system to use for the inserted run, or 0
 		/// to leave unspecified</param>
 		/// ------------------------------------------------------------------------------------
-		public static void AppendOrc(this ITsStrBldr bldr, Guid guid, FwObjDataTypes objDataType, int ws)
+		public static ITsStrBldr AppendOrc(this ITsStrBldr bldr, Guid guid, FwObjDataTypes objDataType, int ws)
 		{
 			TsStringUtils.InsertOrcIntoPara(guid, objDataType, bldr, bldr.Length, bldr.Length, ws);
+			return bldr;
 		}
 		#endregion
 

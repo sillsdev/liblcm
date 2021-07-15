@@ -77,15 +77,15 @@ namespace SIL.LCModel.Core.Attributes
 						dir = null;
 						using (var userKey = Registry.CurrentUser.OpenSubKey(@"Software\SIL"))
 						using (var machineKey = Registry.LocalMachine.OpenSubKey(@"Software\SIL"))
-					{
+						{
 							var icuDirValueName = $"Icu{CustomIcuVersion}DataDir";
-						if (userKey?.GetValue(icuDirValueName) != null)
-							dir = userKey.GetValue(icuDirValueName, null) as string;
-						else if (machineKey?.GetValue(icuDirValueName) != null)
-							dir = machineKey.GetValue(icuDirValueName, null) as string;
+							if (userKey?.GetValue(icuDirValueName) != null)
+								dir = userKey.GetValue(icuDirValueName, null) as string;
+							else if (machineKey?.GetValue(icuDirValueName) != null)
+								dir = machineKey.GetValue(icuDirValueName, null) as string;
+						}
 					}
 				}
-			}
 			}
 			else if (Path.IsPathRooted(IcuDataPath))
 			{

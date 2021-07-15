@@ -1,13 +1,11 @@
-// Copyright (c) 2004-2018 SIL International
+// Copyright (c) 2004-2020 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
-//
-// File: TsStringUtils.cs
-// Responsibility: TE Team
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -1623,18 +1621,21 @@ namespace SIL.LCModel.Core.Text
 
 		/// <summary>
 		/// Get an indication of the range of characters that differ between two TsStrings.
-		/// Return null if they are equal
-		/// If they are not, ichMin indicates the first different character (or the length of the shorter string).
-		/// cvIns indicates how many characters must be inserted at ichMin, after deleting cvDel, to get tssNew.
+		/// Return null if they are equal.
+		/// If they are not, return a TsStringDiffInfo with the index and count of changed characters
+		/// as well as a flag indicating whether we need to adjust analyses.
 		/// Character properties as well as values are considered.
 		/// If it is ambiguous where the difference occurs, we first try to interpret the difference in a way
 		/// that equates to inserting or deleting a complete word, otherwise, prefer to find the longest common
 		/// string at the start.
 		/// </summary>
+		[SuppressMessage("ReSharper", "PossibleNullReferenceException",
+			Justification = "If a tss is null, crunBoth will be 0, so we'll never try to access it.")]
 		public static TsStringDiffInfo GetDiffsInTsStrings(ITsString tssOld, ITsString tssNew)
 		{
-			int ichMin = -1;
 			// no diff found
+			var ichMin = -1;
+
 			int cchOld = 0;
 			int crunOld = 0;
 			int crunNew = 0;
@@ -1649,19 +1650,18 @@ namespace SIL.LCModel.Core.Text
 				cchOld = tssOld.Length;
 				crunOld = tssOld.RunCount;
 			}
-			int crunBoth = Math.Min(crunOld, crunNew);
-			// Set ivMin to the index of the first character that is different or has different
-			// properties.
-			for (int irun = 0; irun < crunBoth; irun++)
+			var crunBoth = Math.Min(crunOld, crunNew);
+
+			// Set ichMin to the index of the first character that is different or has different properties.
+			for (var irun = 0; irun < crunBoth; irun++)
 			{
 				if (tssOld.get_Properties(irun) != tssNew.get_Properties(irun))
 				{
+					// the first difference is at the start of this run.
 					ichMin = tssNew.get_MinOfRun(irun);
-					// previous runs are all OK.
 					break;
-					// difference at start of this run.
 				}
-				int ichMinRun = StringUtils.FirstDiff(tssOld.get_RunText(irun), tssNew.get_RunText(irun));
+				var ichMinRun = StringUtils.FirstDiff(tssOld.get_RunText(irun), tssNew.get_RunText(irun));
 				if (ichMinRun >= 0)
 				{
 					ichMin = tssNew.get_MinOfRun(irun) + ichMinRun;
@@ -1686,10 +1686,9 @@ namespace SIL.LCModel.Core.Text
 			}
 			// There is a difference at ichMin.
 			// A default assumption is that the remainder of both strings differs.
-			//int cchEndBoth = Math.Min(cvIns, cvDel); // max characters that could be equal at end.
-			int irunOld = crunOld - 1;
-			int irunNew = crunNew - 1;
-			int cchSameEnd = 0;
+			var irunOld = crunOld - 1;
+			var irunNew = crunNew - 1;
+			var cchSameEnd = 0;
 			for (; irunOld >= 0 && irunNew >= 0; irunOld--, irunNew--)
 			{
 				if (tssOld.get_Properties(irunOld) != tssNew.get_Properties(irunNew))
@@ -1697,18 +1696,19 @@ namespace SIL.LCModel.Core.Text
 					// difference at end of this run. All the text beyond this run (if any) must have matched.
 					break;
 				}
-				int cchSameRun = StringUtils.LastDiff(tssOld.get_RunText(irunOld), tssNew.get_RunText(irunNew));
-				if (cchSameRun >= 0)
+				var ichLastDiffInRun = StringUtils.LastDiff(tssOld.get_RunText(irunOld), tssNew.get_RunText(irunNew));
+				if (ichLastDiffInRun >= 0)
 				{
 					// End of equal bit is cchSame from the ends of the two runs
-					cchSameEnd = cchOld - tssOld.get_LimOfRun(irunOld) + cchSameRun;
+					cchSameEnd = cchOld - tssOld.get_LimOfRun(irunOld) + ichLastDiffInRun;
 					break;
 				}
 				// Same to start of this run.
 				cchSameEnd = cchOld - tssOld.get_MinOfRun(irunOld);
 			}
-			int cvIns = cchNew - ichMin - cchSameEnd;
-			int cvDel = cchOld - ichMin - cchSameEnd;
+			var cvIns = cchNew - ichMin - cchSameEnd;
+			var cvDel = cchOld - ichMin - cchSameEnd;
+			var fAdjustAnalyses = true;
 			// It's possible, e.g., with "abc. def." and "abc. insert. def.", that the matching range we find
 			// starting from the end overlaps the matching range we find starting at the start (we find a match
 			// at the start up to the end of "abc. ", and from the end to the start of ". def").
@@ -1719,7 +1719,7 @@ namespace SIL.LCModel.Core.Text
 			// "xxxabc " or "abc xxx", and we'd prefer the first interpretation, so we choose the longer match at the end.
 			ITsString longerString = null;
 			// only used and valid if cvIns or cvDel < 0
-			int offsetIchMin = 0;
+			var offsetIchMin = 0;
 			if (cvIns < 0)
 			{
 				offsetIchMin = cvIns;
@@ -1738,7 +1738,7 @@ namespace SIL.LCModel.Core.Text
 			{
 				// See if there is white space at the end of the bit that would be treated as
 				// deleted if we adjusted ichMin. If so, do it....
-				int ichLookForSpace = ichMin + offsetIchMin + Math.Max(cvIns, cvDel) - 1;
+				var ichLookForSpace = ichMin + offsetIchMin + Math.Max(cvIns, cvDel) - 1;
 				if (Character.IsSeparator(longerString.GetChars(ichLookForSpace, ichLookForSpace + 1)[0]))
 				{
 					// ...unless it would ALSO be a whole word delete if we did not change ichMin
@@ -1747,7 +1747,42 @@ namespace SIL.LCModel.Core.Text
 						ichMin += offsetIchMin;
 				}
 			}
-			return new TsStringDiffInfo(ichMin, cvIns, cvDel);
+			else if (cvIns == cvDel && crunNew == crunOld)
+			{
+				// Determine whether the change requires an analysis adjustment
+				for (var iRun = 0; iRun < crunNew; iRun++)
+				{
+					if (ChangesRequireAnalysisAdjustment(tssOld, tssNew, iRun))
+					{
+						return new TsStringDiffInfo(ichMin, cvIns, cvDel, true);
+					}
+				}
+				fAdjustAnalyses = false;
+			}
+			return new TsStringDiffInfo(ichMin, cvIns, cvDel, fAdjustAnalyses);
+		}
+
+		/// <summary>
+		/// Determines whether the change requires us to adjust analyses.
+		/// We force analysis adjustment for changes in run text and ktptObjData.
+		///
+		/// The ktptObjData string property could be a footnote owner, a picture, or one of many other things;
+		/// if it has changed, we must adjust analyses.
+		/// If a user updates a Writing System code, adjusting analyses at the wrong time will invalidate the user's work and duplicate all analyses.
+		/// if the Writing System code is the only change, we must *not* adjust analyses during the change, because this will invalidate
+		/// the user's analyses and create duplicates; someone else will notice any needed adjustments later. (https://jira.sil.org/browse/LT-20344)
+		/// For all other property changes (most are style changes), it doesn't matter, and it's easier not to adjust analyses.
+		/// </summary>
+		internal static bool ChangesRequireAnalysisAdjustment(ITsString tss1, ITsString tss2, int iRun)
+		{
+			if (!Equals(tss1.get_RunText(iRun), tss2.get_RunText(iRun)))
+			{
+				return true;
+			}
+
+			var objData1 = tss1.get_StringProperty(iRun, (int) FwTextPropType.ktptObjData);
+			var objData2 = tss2.get_StringProperty(iRun, (int) FwTextPropType.ktptObjData);
+			return !Equals(objData1, objData2);
 		}
 
 		/// <summary>
@@ -1827,7 +1862,7 @@ namespace SIL.LCModel.Core.Text
 	#region TsStringDifference class
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>
-	/// Represents a difference detected in two TsStrings
+	/// Represents a difference detected between two TsStrings
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
 	public sealed class TsStringDiffInfo
@@ -1852,6 +1887,26 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public readonly int CchDeleteFromOld;
+		/// <summary>
+		/// Whether we need to adjust analyses for this change (true unless we're sure we don't).
+		/// See comments on <see cref="TsStringUtils.ChangesRequireAnalysisAdjustment"/>
+		/// </summary>
+		public readonly bool FAdjustAnalyses;
+
+		/// <param name="ichFirstDiff">The character position of the first difference between
+		/// the two TsStrings</param>
+		/// <param name="cchInsert">The number of characters that were inserted starting at the
+		/// location of the first difference</param>
+		/// <param name="cchDeleteFromOld">The number of characters that were deleted starting
+		/// at the location of the first difference</param>
+		/// <param name="fAdjustAnalyses">True we should adjust analyses (default: true)</param>
+		public TsStringDiffInfo(int ichFirstDiff, int cchInsert, int cchDeleteFromOld, bool fAdjustAnalyses)
+		{
+			IchFirstDiff = ichFirstDiff;
+			CchInsert = cchInsert;
+			CchDeleteFromOld = cchDeleteFromOld;
+			FAdjustAnalyses = fAdjustAnalyses;
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -1869,6 +1924,7 @@ namespace SIL.LCModel.Core.Text
 			IchFirstDiff = ichFirstDiff;
 			CchInsert = cchInsert;
 			CchDeleteFromOld = cchDeleteFromOld;
+			FAdjustAnalyses = true;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1883,6 +1939,7 @@ namespace SIL.LCModel.Core.Text
 		{
 			IchFirstDiff = ichFirstDiff;
 			CchInsert = CchDeleteFromOld = 0;
+			FAdjustAnalyses = true;
 		}
 	}
 	#endregion
