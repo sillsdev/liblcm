@@ -1329,12 +1329,15 @@ namespace SIL.LCModel.DomainImpl
 		/// </remarks>
 		public int IndexOf(T obj)
 		{
-			lock (SyncRoot)
+			if (obj != null)
 			{
-				// No need to fluff items up!
-				for (int i = 0; i < m_items.Count; i++)
-					if (m_items[i].Id == obj.Id)
-						return i;
+				lock (SyncRoot)
+				{
+					// No need to fluff items up!
+					for (int i = 0; i < m_items.Count; i++)
+						if (m_items[i].Id == obj.Id)
+							return i;
+				}
 			}
 			return -1;
 		}
