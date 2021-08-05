@@ -366,10 +366,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// </summary>
 		public IEnumerable<IConstituentChartCellPart> InstancesWithChartCellColumn(ICmPossibility target)
 		{
-			((ICmObjectRepositoryInternal)m_cache.ServiceLocator.ObjectRepository).EnsureCompleteIncomingRefsFrom(
-				ConstituentChartCellPartTags.kflidColumn);
-			return ((ICmObjectInternal)target).IncomingRefsFrom(ConstituentChartCellPartTags.kflidColumn).Cast
-					<IConstituentChartCellPart>();
+			return AllInstances().Where(cccp => cccp.ColumnRA == target);
 		}
 	}
 	#endregion
