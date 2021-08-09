@@ -4,7 +4,7 @@ assembly-versioning-scheme: MajorMinor
 branches:
   master:
     tag: beta
-    regex: (origin/)?(master|feature/nuget)
+    regex: (origin/)?(master)
     is-mainline: true
   develop:
     tag: unstable

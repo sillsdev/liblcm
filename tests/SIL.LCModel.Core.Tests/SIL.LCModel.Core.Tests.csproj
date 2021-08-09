@@ -23,7 +23,7 @@ This package provides unit tests for SIL.LCModel.Core.</Description>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <AppendToReleaseNotesProperty><![CDATA[
-See full changelog at https://github.com/sillsdev/liblcm/blob/feature/nuget/CHANGELOG.md]]>
+See full changelog at https://github.com/sillsdev/liblcm/blob/develop/CHANGELOG.md]]>
     </AppendToReleaseNotesProperty>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
     <ChangelogFile>../../CHANGELOG.md</ChangelogFile>
