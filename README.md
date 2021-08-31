@@ -47,14 +47,16 @@ Build a 64-bit build with the command:
 Tests
 -----
 
-Linux
+**On Linux**
 
     (. environ && cd artifacts/Debug/ && ICU_DATA="IcuData/" nunit-console SIL.LCModel*Tests.dll )
 
-Windows with ReSharper
+**On Windows with ReSharper**
+
 	Open the solution in Visual Studio and run them all there. Right-click the solution and choose Run Unit Tests.
 
-Windows without ReSharper
+**On Windows without ReSharper**
+
 	To run the tests for a single test dll:
 	1. Go to the liblcm directory.
 	2. Execute: "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\msbuild.exe"
