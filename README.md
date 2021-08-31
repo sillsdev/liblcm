@@ -47,6 +47,23 @@ Build a 64-bit build with the command:
 Tests
 -----
 
-Linux
+**On Linux**
 
     (. environ && cd artifacts/Debug/ && ICU_DATA="IcuData/" nunit-console SIL.LCModel*Tests.dll )
+
+**On Windows with ReSharper**
+
+	Open the solution in Visual Studio and run them all there. Right-click the solution and choose Run Unit Tests.
+
+**On Windows without ReSharper**
+
+	To run the tests for a single test dll:
+	1. Go to the liblcm directory.
+	2. Execute: "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\msbuild.exe"
+	   Note: Running the tests after building the solution from inside VS resulted in a BadImageFormatException.
+	         Running the tests after building from the cmd prompt worked.
+	3. Go to the liblcm\artifacts\Debug directory.
+	4. Execute: "..\..\packages\NUnit.ConsoleRunner.3.9.0\tools\nunit3-console.exe" SIL.LCModel.Tests.dll
+	   (Or specify one of the other SIL.LCModel*Tests.dll)
+	5. To debug the tests from Visual Studio; Immediately after the tests have started
+	   running "Attach to Process..." and select 'nunit-agent.exe'.
