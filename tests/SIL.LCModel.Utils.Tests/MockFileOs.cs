@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2017 SIL International
+// Copyright (c) 2009-2021 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -262,6 +262,16 @@ namespace SIL.LCModel.Utils
 		{
 			return MakeFile(CreateFileContents(fIncludeBOM, sBookId, lines), encoding);
 		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Adds the given filename to the collection of files that should be considered to
+		/// exist and set its contents so it can be read.
+		/// </summary>
+		/// <param name="filename">The filename (may or may not include path).</param>
+		/// <param name="contents">The contents of the file</param>
+		/// ------------------------------------------------------------------------------------
+		public void AddFile(string filename, string contents) => AddFile(filename, contents, Encoding.UTF8);
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
