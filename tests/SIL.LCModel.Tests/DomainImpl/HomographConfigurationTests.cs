@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2017 SIL International
+// Copyright (c) 2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -59,8 +59,8 @@ namespace SIL.LCModel.DomainImpl
 			settings.CustomHomographNumbers = new List<string> { "a", "b", "c"};
 			settings.WritingSystem = "fr";
 			var persistanceString = settings.PersistData;
-			Assert.That(persistanceString, Is.StringContaining("ws:fr"));
-			Assert.That(persistanceString, Is.StringContaining("customHn:a;b;c"));
+			Assert.That(persistanceString, Does.Contain("ws:fr"));
+			Assert.That(persistanceString, Does.Contain("customHn:a;b;c"));
 		}
 	}
 }

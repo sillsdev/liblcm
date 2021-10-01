@@ -11,6 +11,7 @@ using System.Linq;
 using ProtoBuf;
 using SIL.LCModel.DomainServices.DataMigration;
 using SIL.LCModel.Utils;
+using SIL.PlatformUtilities;
 using SIL.Threading;
 
 namespace SIL.LCModel.Infrastructure.Impl
@@ -43,7 +44,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		{
 			m_peerProcesses = new Dictionary<int, Process>();
 			m_peerID = Guid.NewGuid();
-			if (MiscUtils.IsMono)
+			if (Platform.IsMono)
 			{
 				// /dev/shm is not guaranteed to be available on all systems, so fall back to temp
 				m_commitLogDir = Directory.Exists("/dev/shm") ? "/dev/shm" : Path.GetTempPath();
@@ -156,7 +157,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 								metadata.FileGeneration = metadata.CurrentGeneration;
 							}
 							RemovePeer(metadata, m_peerID);
-							delete = MiscUtils.IsMono && metadata.Peers.Count == 0;
+							delete = Platform.IsMono && metadata.Peers.Count == 0;
 							SaveMetadata(stream, metadata);
 						}
 					}
@@ -262,7 +263,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 		private MemoryMappedFile CreateOrOpen(string name, long capacity, bool createdNew)
 		{
-			if (MiscUtils.IsMono)
+			if (Platform.IsMono)
 			{
 				name = Path.Combine(m_commitLogDir, name);
 				// delete old file that could be left after a crash

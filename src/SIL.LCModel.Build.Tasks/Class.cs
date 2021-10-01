@@ -14,7 +14,7 @@ namespace SIL.LCModel.Build.Tasks
 	/// Represents a Class description in the XMI file
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
-	public class Class: Base<CellarModule>, IClass
+	internal class Class: Base<CellarModule>, IClass
 	{
 		/// <summary>
 		/// Counter for incrementing virtual generated flids for back references.

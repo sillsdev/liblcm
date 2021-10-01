@@ -348,7 +348,7 @@ namespace SIL.LCModel.DomainServices
 		[Test]
 		public void EnsureBtForScrParas_AlreadyRun()
 		{
-			((Scripture) m_scr).FixedParasWithoutBt = true;
+			((Scripture)m_scr).FixedParasWithoutBt = true;
 
 			int undoActions = m_actionHandler.UndoableActionCount;
 			DataStoreInitializationServices.EnsureBtForScrParas(Cache);
@@ -523,7 +523,7 @@ namespace SIL.LCModel.DomainServices
 			IMultiString translation = MockRepository.GenerateStub<IMultiString>();
 			translation.Stub(t => t.get_String(m_wsDe)).Return(
 				TsStringUtils.MakeString("I want another monkey.", m_wsDe));
-			translation.Stub(t => t.AvailableWritingSystemIds).Return(new int[]{m_wsDe});
+			translation.Stub(t => t.AvailableWritingSystemIds).Return(new int[] { m_wsDe });
 			existingTrans2.Stub(t => t.Translation).Return(translation);
 			DataStoreInitializationServices.EnsureBtForPara(m_para);
 
@@ -650,7 +650,7 @@ namespace SIL.LCModel.DomainServices
 		[Test]
 		public void EnsureSegmentsForScrParas_AlreadyRun()
 		{
-			((Scripture) m_scr).FixedParasWithoutSegments = true;
+			((Scripture)m_scr).FixedParasWithoutSegments = true;
 
 			int undoActions = m_actionHandler.UndoableActionCount;
 			DataStoreInitializationServices.EnsureSegmentsForScrParas(Cache);
@@ -777,7 +777,7 @@ namespace SIL.LCModel.DomainServices
 		[Test]
 		public void EnsureStylesInUseSetForScrParas_AlreadyRun()
 		{
-			((Scripture) m_scr).FixedStylesInUse = true;
+			((Scripture)m_scr).FixedStylesInUse = true;
 
 			int undoActions = m_actionHandler.UndoableActionCount;
 			DataStoreInitializationServices.EnsureStylesInUseSetForScrParas(Cache);
@@ -1280,11 +1280,11 @@ namespace SIL.LCModel.DomainServices
 			DataStoreInitializationServices.BlowAwaySegments(m_para);
 			VerifyParaSegmentBreaks();
 			VerifySegment(0, TsStringUtils.MakeString("Monkey. ", Cache.DefaultAnalWs),
-				"Monkey.x ", new int[0], new int[0], new [] { 1 });
+				"Monkey.x ", new int[0], new int[0], new[] { 1 });
 			VerifySegment(1, TsStringUtils.MakeString("I want a monkey. ", Cache.DefaultAnalWs),
-				"Ix wantx ax monkey.x ", new int[0], new int[0], new [] { 1 });
+				"Ix wantx ax monkey.x ", new int[0], new int[0], new[] { 1 });
 			VerifySegment(2, TsStringUtils.MakeString("Waaaaaaa", Cache.DefaultAnalWs),
-				"Waaaaaaa", new int[0], new int[0], new [] { 0 });
+				"Waaaaaaa", new int[0], new int[0], new[] { 0 });
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1313,11 +1313,11 @@ namespace SIL.LCModel.DomainServices
 			DataStoreInitializationServices.BlowAwaySegments(m_para);
 			VerifyParaSegmentBreaks();
 			VerifySegment(0, TsStringUtils.MakeString("Monkey. ", Cache.DefaultAnalWs),
-				"Monkey.x ", new int[0], new int[0], new [] { 1 });
+				"Monkey.x ", new int[0], new int[0], new[] { 1 });
 			VerifySegment(1, TsStringUtils.MakeString("I want a monkey. ", Cache.DefaultAnalWs),
 				"Ix wantx ax monkey.x ", new int[0], new int[0], new[] { 1 });
 			VerifySegment(2, TsStringUtils.MakeString("Waaaaaaa", Cache.DefaultAnalWs),
-				"Waaaaaaa", new int[0], new int[0], new [] { 0 });
+				"Waaaaaaa", new int[0], new int[0], new[] { 0 });
 		}
 		#endregion
 
@@ -1345,7 +1345,7 @@ namespace SIL.LCModel.DomainServices
 		[Test]
 		public void FixSegmentsForScriptureParas_AlreadyRun()
 		{
-			((Scripture) m_scr).ResegmentedParasWithOrcs = true;
+			((Scripture)m_scr).ResegmentedParasWithOrcs = true;
 
 			int undoActions = m_actionHandler.UndoableActionCount;
 			DataStoreInitializationServices.FixSegmentsForScriptureParas(Cache);
@@ -2550,7 +2550,7 @@ namespace SIL.LCModel.DomainServices
 			VerifySegment(1, expectedSegment2FT, "FTx ofx versex 1.", new int[] { 2 });
 			VerifySegment(2, emptyAnalFreeTrans, null, new int[0]);
 			VerifySegment(3, TsStringUtils.MakeString("FT of verse 2.", Cache.DefaultAnalWs),
-				"FTx ofx versex 2.", new int[]{ 1 });
+				"FTx ofx versex 2.", new int[] { 1 });
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -2719,10 +2719,10 @@ namespace SIL.LCModel.DomainServices
 			VerifyParaSegmentBreaks();
 			ITsString emptyAnalFreeTrans = TsStringUtils.EmptyString(Cache.DefaultAnalWs);
 			VerifySegment(0, emptyAnalFreeTrans, null, new int[0]);
-			VerifySegment(1, expectedSegment1FT, "FTx ofx versex 3.", new [] { 1 });
+			VerifySegment(1, expectedSegment1FT, "FTx ofx versex 3.", new[] { 1 });
 			VerifySegment(2, emptyAnalFreeTrans, null, new int[0]);
 			VerifySegment(3, TsStringUtils.MakeString("FT of verse 4.", Cache.DefaultAnalWs),
-				"FTx ofx versex 4.", new [] { 2 });
+				"FTx ofx versex 4.", new[] { 2 });
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -2928,7 +2928,7 @@ namespace SIL.LCModel.DomainServices
 
 			CallFixSegmentsForPara();
 			VerifyParaSegmentBreaks();
-			VerifySegment(0, expectedSegment0FT, "FTx ofx sentencex 1.", new [] { 1 });
+			VerifySegment(0, expectedSegment0FT, "FTx ofx sentencex 1.", new[] { 1 });
 			VerifySegment(1, expectedSegment1FT, "FTx ofx sentencex 2.", new int[0]);
 		}
 

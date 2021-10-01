@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using Mono.Unix.Native;
+using SIL.PlatformUtilities;
 
 namespace SIL.LCModel.Utils
 {
@@ -270,7 +271,7 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		public static bool PathsAreEqual(string file1, string file2)
 		{
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				return string.Equals(file1, file2, StringComparison.InvariantCulture);
 			return string.Equals(file1.Replace('/', '\\'), file2.Replace('/', '\\'),
 				StringComparison.InvariantCultureIgnoreCase);
@@ -407,7 +408,7 @@ namespace SIL.LCModel.Utils
 
 			string sDir = Path.GetDirectoryName(sPathname);
 			string sFile = Path.GetFileName(sPathname).Normalize();
-			if (!MiscUtils.IsUnix) // Using IsUnix to decide if a file system is case sensitive
+			if (!Platform.IsUnix) // Using IsUnix to decide if a file system is case sensitive
 			{					// isn't the best way since some Unix file systems are case
 								// insensitive, but it works for most cases
 				sFile = sFile.ToLowerInvariant();
@@ -421,7 +422,7 @@ namespace SIL.LCModel.Utils
 			{
 				foreach (string sPath in s_fileos.GetFilesInDirectory(sDir))
 				{
-					string sName = MiscUtils.IsUnix ? Path.GetFileName(sPath).Normalize() :
+					string sName = Platform.IsUnix ? Path.GetFileName(sPath).Normalize() :
 						Path.GetFileName(sPath).Normalize().ToLowerInvariant();
 					if (sName == sFile)
 						return sPath;
@@ -762,7 +763,7 @@ namespace SIL.LCModel.Utils
 		public static string FileDialogFilterCaseInsensitiveCombinations(string filter)
 		{
 			// Windows is already case insensitive.
-			if (!MiscUtils.IsUnix)
+			if (!Platform.IsUnix)
 				return filter;
 
 			List<string> filterComponents = new List<string>(filter.Split(new char[] {'|'}));
@@ -872,7 +873,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		public static string ChangeWindowsPathIfLinux(string windowsPath)
 		{
-			if (!MiscUtils.IsUnix)
+			if (!Platform.IsUnix)
 				return windowsPath;
 			if (windowsPath == null)
 				return windowsPath;
@@ -916,7 +917,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		public static string ChangeLinuxPathIfWindows(string linuxPath)
 		{
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				return linuxPath;
 			if (String.IsNullOrEmpty(linuxPath))
 				return linuxPath;
@@ -954,7 +955,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		public static string ChangePathToPlatform(string path)
 		{
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				return ChangeWindowsPathIfLinux(path);
 			return ChangeLinuxPathIfWindows(path);
 		}
@@ -973,7 +974,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		public static string ChangePathToPlatformPreservingPrefix(string path, string prefix)
 		{
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				return ChangeWindowsPathIfLinuxPreservingPrefix(path, prefix);
 			return ChangeLinuxPathIfWindowsPreservingPrefix(path, prefix);
 		}
@@ -1044,7 +1045,7 @@ namespace SIL.LCModel.Utils
 			// Trim any number of beginning slashes
 			path = path.TrimStart('/');
 			// Prepend slash on Linux
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				path = '/' + path;
 
 			return path;
@@ -1056,7 +1057,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		public static void SetExecutable(string path)
 		{
-			if (MiscUtils.IsWindows)
+			if (Platform.IsWindows)
 				return;
 
 			if (!FileExists(path) && !DirectoryExists(path))
@@ -1077,7 +1078,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		public static bool IsExecutable(string path)
 		{
-			if (MiscUtils.IsWindows)
+			if (Platform.IsWindows)
 				return true;
 
 			if (!FileExists(path) && !DirectoryExists(path))

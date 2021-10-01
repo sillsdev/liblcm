@@ -13,17 +13,10 @@ else
     TARGET=$2
 fi
 
-if [ -z "$3" ] ; then
-	FILESAVAILABLE=False
-else
-	FILESAVAILABLE=$3
-fi
-
-if [ -z "$4" ] ; then
-	PLATFORM=x86
-else
-	PLATFORM=$4
+if [ -n "$3" ] ; then
+	echo Usage: "build [(Debug|Release) [<target>]]"
+	exit 1
 fi
 
 . environ
-xbuild /t:$TARGET /p:Configuration=$CONFIG /p:Platform=$PLATFORM /p:UseLocalFiles=$FILESAVAILABLE LCM.sln
+msbuild /t:$TARGET /p:Configuration=$CONFIG LCM.sln

@@ -8,6 +8,7 @@ using System.Reflection;
 using Icu;
 using Microsoft.Win32;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace SIL.LCModel.Core.Attributes
 {
@@ -21,13 +22,17 @@ namespace SIL.LCModel.Core.Attributes
 
 		public int IcuVersion { get; set; }
 
+		public const int CustomIcuVersion = 54;
+
 		public static string PreTestPathEnvironment { get; private set; }
 
-		public override void BeforeTest(TestDetails testDetails)
+		public override void BeforeTest(ITest testDetails)
 		{
 			base.BeforeTest(testDetails);
 
 			PreTestPathEnvironment = Environment.GetEnvironmentVariable("PATH");
+
+			Wrapper.Verbose = true;
 
 			if (IcuVersion > 0)
 				Wrapper.ConfineIcuVersions(IcuVersion);
@@ -38,9 +43,23 @@ namespace SIL.LCModel.Core.Attributes
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine($"InitializeIcuAttribute failed when calling Wrapper.Init() with {e.GetType()}: {e.Message}");
+				Console.WriteLine($"InitializeIcuAttribute: ERROR: failed when calling Wrapper.Init() with {e.GetType()}: {e.Message}");
 			}
 
+			EnsureIcuDataEnvironmentVariableIsSet();
+
+			try
+			{
+				Text.CustomIcu.InitIcuDataDir();
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine($"InitializeIcuAttribute: ERROR: failed with {e.GetType()}: {e.Message}");
+			}
+		}
+
+		private void EnsureIcuDataEnvironmentVariableIsSet()
+		{
 			string dir = null;
 			if (string.IsNullOrEmpty(IcuDataPath))
 			{
@@ -51,14 +70,20 @@ namespace SIL.LCModel.Core.Attributes
 				}
 				else
 				{
-					using (RegistryKey userKey = Registry.CurrentUser.OpenSubKey(@"Software\SIL"))
-					using (RegistryKey machineKey = Registry.LocalMachine.OpenSubKey(@"Software\SIL"))
+					dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+						"SIL", $"Icu{CustomIcuVersion}", $"icudt{CustomIcuVersion}l");
+					if (!Directory.Exists(dir))
 					{
-						const string icuDirValueName = "Icu54DataDir";
-						if (userKey?.GetValue(icuDirValueName) != null)
-							dir = userKey.GetValue(icuDirValueName, null) as string;
-						else if (machineKey?.GetValue(icuDirValueName) != null)
-							dir = machineKey.GetValue(icuDirValueName, null) as string;
+						dir = null;
+						using (var userKey = Registry.CurrentUser.OpenSubKey(@"Software\SIL"))
+						using (var machineKey = Registry.LocalMachine.OpenSubKey(@"Software\SIL"))
+						{
+							var icuDirValueName = $"Icu{CustomIcuVersion}DataDir";
+							if (userKey?.GetValue(icuDirValueName) != null)
+								dir = userKey.GetValue(icuDirValueName, null) as string;
+							else if (machineKey?.GetValue(icuDirValueName) != null)
+								dir = machineKey.GetValue(icuDirValueName, null) as string;
+						}
 					}
 				}
 			}
@@ -68,26 +93,39 @@ namespace SIL.LCModel.Core.Attributes
 			}
 			else
 			{
-				Uri uriBase = new Uri(Assembly.GetExecutingAssembly().CodeBase);
-				string codeDir = Path.GetDirectoryName(Uri.UnescapeDataString(uriBase.AbsolutePath));
+				var uriBase = new Uri(Assembly.GetExecutingAssembly().CodeBase);
+				var codeDir = Path.GetDirectoryName(Uri.UnescapeDataString(uriBase.AbsolutePath));
 				if (codeDir != null)
 					dir = Path.Combine(codeDir, IcuDataPath);
 			}
 
-			if (!string.IsNullOrEmpty(dir))
-				Environment.SetEnvironmentVariable("ICU_DATA", dir);
+			if (string.IsNullOrEmpty(dir))
+			{
+				Console.WriteLine("InitializeIcuAttribute: ERROR: can't determine directory for ICU_DATA.");
+				return;
+			}
 
-			try
+			// dir should point to the directory that contains nfc_fw.nrm and nfkc_fw.nrm
+			// (i.e. icudt54l).
+			if (!File.Exists(Path.Combine(dir, "nfc_fw.nrm")) ||
+				!File.Exists(Path.Combine(dir, "nfkc_fw.nrm")))
 			{
-				Text.CustomIcu.InitIcuDataDir();
+				if (Directory.Exists(Path.Combine(dir, $"icudt{CustomIcuVersion}l")))
+					dir = Path.Combine(dir, $"icudt{CustomIcuVersion}l");
 			}
-			catch (Exception e)
+
+			if (!File.Exists(Path.Combine(dir, "nfc_fw.nrm")) ||
+				!File.Exists(Path.Combine(dir, "nfkc_fw.nrm")))
 			{
-				Console.WriteLine($"InitializeIcuAttribute failed with {e.GetType()}: {e.Message}");
+				Console.WriteLine($"InitializeIcuAttribute: ERROR: can't find files nfc_fw.nrm and/or nfkc_fw.nrm in {dir}");
+				return;
 			}
+
+			Console.WriteLine($"InitializeIcuAttribute: Setting ICU_DATA to {dir}");
+			Environment.SetEnvironmentVariable("ICU_DATA", dir);
 		}
 
-		public override void AfterTest(TestDetails testDetails)
+		public override void AfterTest(ITest testDetails)
 		{
 			Wrapper.Cleanup();
 			Environment.SetEnvironmentVariable("PATH", PreTestPathEnvironment);

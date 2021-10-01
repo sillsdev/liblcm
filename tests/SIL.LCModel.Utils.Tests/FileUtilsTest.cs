@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2017 SIL International
+// Copyright (c) 2009-2020 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -10,6 +10,7 @@ using System.Threading;
 using NUnit.Framework;
 using SIL.IO;
 using Mono.Unix.Native;
+using SIL.PlatformUtilities;
 
 namespace SIL.LCModel.Utils
 {
@@ -88,7 +89,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		///--------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Include="Win")]
+		[Platform(Include = "Win")]
 		public void IsFilePathValid_Windows()
 		{
 			// File names
@@ -104,7 +105,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		///--------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Include="Linux")]
+		[Platform(Include = "Linux")]
 		public void IsFilePathValid_Linux()
 		{
 			// File names
@@ -122,8 +123,8 @@ namespace SIL.LCModel.Utils
 		[Test]
 		public void AreFilesIdentical_DifferentFilesOfDifferentSizeAreDifferent()
 		{
-			using(var file1 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file1"))
-			using(var file2 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file2"))
+			using (var file1 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file1"))
+			using (var file2 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file2"))
 			{
 				m_fileOs.AddFile(file1.Path, Encoding.UTF8.GetString(new byte[] { 0x1, 0x2, 0x3 }), Encoding.UTF8);
 				m_fileOs.AddFile(file2.Path, Encoding.UTF8.GetString(new byte[] { 0x1, 0x2, 0x3, 0x4 }), Encoding.UTF8);
@@ -137,8 +138,8 @@ namespace SIL.LCModel.Utils
 		[Test]
 		public void AreFilesIdentical_DifferentFilesOfSameSizeAreDifferent()
 		{
-			using(var file1 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file1"))
-			using(var file2 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file2"))
+			using (var file1 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file1"))
+			using (var file2 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file2"))
 			{
 				m_fileOs.AddFile(file1.Path, Encoding.UTF8.GetString(new byte[] { 0x1, 0x2, 0x3 }), Encoding.UTF8);
 				m_fileOs.AddFile(file2.Path, Encoding.UTF8.GetString(new byte[] { 0x1, 0x2, 0x4 }), Encoding.UTF8);
@@ -152,8 +153,8 @@ namespace SIL.LCModel.Utils
 		[Test]
 		public void AreFilesIdentical_TwoFilesWithSameContentAreIdentical()
 		{
-			using(var file1 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file1"))
-			using(var file2 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file2"))
+			using (var file1 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file1"))
+			using (var file2 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file2"))
 			{
 				m_fileOs.AddFile(file1.Path, Encoding.UTF8.GetString(new byte[] { 0x1, 0x2, 0x3 }), Encoding.UTF8);
 				Thread.Sleep(1001);
@@ -168,8 +169,8 @@ namespace SIL.LCModel.Utils
 		[Test]
 		public void AreFilesIdentical_SameFilesWithDifferentCreationTimeAreIdentical()
 		{
-			using(var file1 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file1"))
-			using(var file2 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file2"))
+			using (var file1 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file1"))
+			using (var file2 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file2"))
 			{
 				m_fileOs.AddFile(file1.Path, Encoding.UTF8.GetString(new byte[] { 0x1, 0x2, 0x3 }), Encoding.UTF8);
 				Thread.Sleep(1001);
@@ -273,7 +274,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Include="Win")]
+		[Platform(Include = "Win")]
 		public void ActualFilePath_DirectoryNameExactMatchFilenameExistsWithDifferentCase_Windows()
 		{
 			SetFileUtilsDirectoryAndFile(@"c:\My Documents", "AbC");
@@ -287,7 +288,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Include="Linux", Reason="Linux file names are case sensitive")]
+		[Platform(Include = "Linux", Reason = "Linux file names are case sensitive")]
 		public void ActualFilePath_DirectoryNameExactMatchFilenameExistsWithDifferentCase_Linux()
 		{
 			SetFileUtilsDirectoryAndFile("/tmp/MyDocuments", "AbC");
@@ -302,7 +303,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Include="Win")]
+		[Platform(Include = "Win")]
 		public void ActualFilePath_DirectoryNameComposedFilenameExistsWithDifferentCase_Windows()
 		{
 			SetFileUtilsDirectoryAndFile("c:\\My Docum\u00e9nts", "AbC");
@@ -316,7 +317,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Include="Linux", Reason="Linux file names are case sensitive")]
+		[Platform(Include = "Linux", Reason = "Linux file names are case sensitive")]
 		public void ActualFilePath_DirectoryNameComposedFilenameExistsWithDifferentCase_Linux()
 		{
 			SetFileUtilsDirectoryAndFile("/tmp/MyDocum\u00e9nts", "AbC");
@@ -331,7 +332,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Include="Win")]
+		[Platform(Include = "Win")]
 		public void ActualFilePath_DirectoryNameDecomposedFilenameExistsWithDifferentCase_Windows()
 		{
 			SetFileUtilsDirectoryAndFile("c:\\My Docum\u0065\u0301nts", "AbC");
@@ -345,7 +346,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Include="Linux", Reason="Linux file names are case sensitive")]
+		[Platform(Include = "Linux", Reason = "Linux file names are case sensitive")]
 		public void ActualFilePath_DirectoryNameDecomposedFilenameExistsWithDifferentCase_Linux()
 		{
 			SetFileUtilsDirectoryAndFile("/tmp/MyDocum\u0065\u0301nts", "AbC");
@@ -604,8 +605,8 @@ namespace SIL.LCModel.Utils
 
 			using (TextReader tr = FileUtils.OpenFileForRead("file", Encoding.ASCII))
 			{
-					Assert.AreEqual("You idot!", tr.ReadToEnd());
-				}
+				Assert.AreEqual("You idot!", tr.ReadToEnd());
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1108,8 +1109,8 @@ namespace SIL.LCModel.Utils
 
 		private void AssertChangePathToPlatformAsExpected(string linuxPath, string windowsPath)
 		{
-			string inPath = MiscUtils.IsUnix ? windowsPath : linuxPath;
-			string outPath = MiscUtils.IsUnix ? linuxPath : windowsPath;
+			string inPath = Platform.IsUnix ? windowsPath : linuxPath;
+			string outPath = Platform.IsUnix ? linuxPath : windowsPath;
 			Assert.AreEqual(outPath, FileUtils.ChangePathToPlatform(inPath));
 		}
 
@@ -1409,8 +1410,8 @@ namespace SIL.LCModel.Utils
 		private void AssertChangePathToPlatformPreservingPrefixAsExpected(string linuxPath,
 			string windowsPath, string prefix)
 		{
-			string inPath = MiscUtils.IsUnix ? windowsPath : linuxPath;
-			string outPath = MiscUtils.IsUnix ? linuxPath : windowsPath;
+			string inPath = Platform.IsUnix ? windowsPath : linuxPath;
+			string outPath = Platform.IsUnix ? linuxPath : windowsPath;
 			Assert.AreEqual(outPath, FileUtils.ChangePathToPlatformPreservingPrefix(inPath, prefix));
 		}
 
@@ -1521,7 +1522,7 @@ namespace SIL.LCModel.Utils
 		{
 			string input = @"file:///abspath/file";
 			string expected = @"abspath/file";
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				expected = @"/abspath/file";
 			Assert.That(FileUtils.StripFilePrefix(input), Is.EqualTo(expected));
 		}
@@ -1534,7 +1535,7 @@ namespace SIL.LCModel.Utils
 		{
 			string input = @"file://path/path";
 			string expected = @"path/path";
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				expected = @"/path/path";
 			Assert.That(FileUtils.StripFilePrefix(input), Is.EqualTo(expected));
 		}
@@ -1547,7 +1548,7 @@ namespace SIL.LCModel.Utils
 		{
 			string input = @"file:/path/path";
 			string expected = @"path/path";
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				expected = @"/path/path";
 			Assert.That(FileUtils.StripFilePrefix(input), Is.EqualTo(expected));
 		}
@@ -1560,7 +1561,7 @@ namespace SIL.LCModel.Utils
 		{
 			string input = @"file:path/path";
 			string expected = @"path/path";
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				expected = @"/path/path";
 			Assert.That(FileUtils.StripFilePrefix(input), Is.EqualTo(expected));
 		}
@@ -1589,7 +1590,7 @@ namespace SIL.LCModel.Utils
 		{
 			string input = @"file:///c:/path/path";
 			string expected = @"c:/path/path";
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				expected = @"/c:/path/path";
 			Assert.That(FileUtils.StripFilePrefix(input), Is.EqualTo(expected));
 		}
@@ -1609,7 +1610,7 @@ namespace SIL.LCModel.Utils
 		{
 			string input = @"file:///c:\path\path";
 			string expected = @"c:\path\path";
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				expected = @"/c:\path\path";
 			Assert.That(FileUtils.StripFilePrefix(input), Is.EqualTo(expected));
 		}
@@ -1629,7 +1630,7 @@ namespace SIL.LCModel.Utils
 		/// Tests FileUtils.SetExecutable() with a non-executable file.
 		/// </summary>
 		[Test]
-		[Platform(Include="Linux")]
+		[Platform(Include = "Linux")]
 		public void SetExecutable_nonexecutableFile_isExecutable()
 		{
 			string path = null;
@@ -1659,7 +1660,7 @@ namespace SIL.LCModel.Utils
 		/// Tests FileUtils.SetExecutable() with an executable file.
 		/// </summary>
 		[Test]
-		[Platform(Include="Linux")]
+		[Platform(Include = "Linux")]
 		public void SetExecutable_executableFile_stillExecutable()
 		{
 			string path = null;
@@ -1694,7 +1695,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		private void RemoveExecuteBit(string path)
 		{
-			if (MiscUtils.IsWindows)
+			if (Platform.IsWindows)
 				return;
 
 			Stat fileStat;
@@ -1710,7 +1711,7 @@ namespace SIL.LCModel.Utils
 		/// Tests FileUtils.SetExecutable() with a directory.
 		/// </summary>
 		[Test]
-		[Platform(Include="Linux")]
+		[Platform(Include = "Linux")]
 		public void SetExecutable_directory_isSearchable()
 		{
 			string path = null;
@@ -1751,7 +1752,7 @@ namespace SIL.LCModel.Utils
 		/// Tests FileUtils.SetExecutable() with a non-existent file.
 		/// </summary>
 		[Test]
-		[Platform(Include="Linux")]
+		[Platform(Include = "Linux")]
 		public void SetExecutable_nonexistentFile_throws()
 		{
 			// Use a real file for test since testing FileUtils implementation that requires a
@@ -1762,7 +1763,8 @@ namespace SIL.LCModel.Utils
 
 			Assert.That(FileUtils.FileExists(path), Is.False,
 				"Unit test error. File should not exist.");
-			Assert.Throws<FileNotFoundException>(() => {
+			Assert.Throws<FileNotFoundException>(() =>
+			{
 				FileUtils.SetExecutable(path);
 			});
 		}
@@ -1773,7 +1775,7 @@ namespace SIL.LCModel.Utils
 		/// Tests FileUtils.IsExecutable() with a file.
 		/// </summary>
 		[Test]
-		[Platform(Include="Linux")]
+		[Platform(Include = "Linux")]
 		public void IsExecutable_file_works()
 		{
 			string path = null;
@@ -1807,7 +1809,7 @@ namespace SIL.LCModel.Utils
 		/// Tests FileUtils.IsExecutable() with a directory.
 		/// </summary>
 		[Test]
-		[Platform(Include="Linux")]
+		[Platform(Include = "Linux")]
 		public void IsExecutable_directory_works()
 		{
 			string path = null;
@@ -1848,7 +1850,7 @@ namespace SIL.LCModel.Utils
 		/// Tests FileUtils.IsExecutable() with a non-existent path.
 		/// </summary>
 		[Test]
-		[Platform(Include="Linux")]
+		[Platform(Include = "Linux")]
 		public void IsExecutable_nonexistentPath_throws()
 		{
 			// Use a real file for test since testing FileUtils implementation that requires a
@@ -1859,7 +1861,8 @@ namespace SIL.LCModel.Utils
 
 			Assert.That(FileUtils.FileExists(path), Is.False,
 				"Unit test error. File should not exist.");
-			Assert.Throws<FileNotFoundException>(() => {
+			Assert.Throws<FileNotFoundException>(() =>
+			{
 				FileUtils.IsExecutable(path);
 			});
 		}

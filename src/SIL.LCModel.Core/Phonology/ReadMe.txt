@@ -1,4 +1,4 @@
-When you modify the lexer file (phonenv.lexer), invoke PhonPrs.bat to create the corresponding phonenv.lexer.cs file.
+When you modify the lexer file (phonenv.lexer), invoke PhonLex.bat to create the corresponding phonenv.lexer.cs file.
 
 When you modify the parser file (phonenv.parser), invoke PhonPrs.bat to create the corresponding phonenv.parser.cs file.
 

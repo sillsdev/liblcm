@@ -12,7 +12,7 @@ namespace SIL.LCModel.Build.Tasks
 	/// Represents a module description in the XMI file
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
-	public class CellarModule: Base<Model>
+	internal class CellarModule: Base<Model>
 	{
 		private StringKeyCollection<Class> m_classes;
 

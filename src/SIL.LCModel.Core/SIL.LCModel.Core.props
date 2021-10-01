@@ -1,0 +1,11 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<SilLCModelCoreLibPath>$(MSBuildThisFileDirectory)../lib/net461/</SilLCModelCoreLibPath>
+		<SilLcModelCoreIcuDataFilesFolder>$(MSBuildThisFileDirectory)../contentFiles/IcuData</SilLcModelCoreIcuDataFilesFolder>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="$(SilLCModelCoreLibPath)\SIL.LCModel.Core.dll.config" CopyToOutputDirectory="Always" />
+		<SilLcModelCoreKernelInterfaces Include="$(MSBuildThisFileDirectory)..\contentFiles\KernelInterfaces\*.id*" />
+		<SilLcModelCoreKernelReferences Include="$(MSBuildThisFileDirectory)..\contentFiles\KernelInterfaces\*.json" />
+	</ItemGroup>
+</Project>

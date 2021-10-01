@@ -3,31 +3,12 @@
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System;
-using System.Collections.ObjectModel;
 using System.Xml;
 
 namespace SIL.LCModel.Build.Tasks
 {
 	#region StringKeyCollection
-	/// ----------------------------------------------------------------------------------------
-	/// <summary>
-	/// Collection which can also be accessed by Name.
-	/// </summary>
-	/// ----------------------------------------------------------------------------------------
-	public class StringKeyCollection<T> : KeyedCollection<string, T>
-	{
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// When implemented in a derived class, extracts the key from the specified element.
-		/// </summary>
-		/// <param name="item">The element from which to extract the key.</param>
-		/// <returns>The key for the specified element.</returns>
-		/// ------------------------------------------------------------------------------------
-		protected override string GetKeyForItem(T item)
-		{
-			return item.ToString();
-		}
-	}
+
 	#endregion
 
 	/// ----------------------------------------------------------------------------------------
@@ -35,7 +16,7 @@ namespace SIL.LCModel.Build.Tasks
 	///
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
-	public class Model
+	internal class Model
 	{
 		private StringKeyCollection<CellarModule> m_modules;
 		private readonly XmlElement m_node;

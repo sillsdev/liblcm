@@ -23,10 +23,12 @@ namespace SIL.LCModel.Core.Text
 		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetup()
 		{
 			CustomIcu.InitIcuDataDir();
+			Assert.That(CustomIcu.HaveCustomIcuLibrary, Is.True,
+				"These tests require the custom ICU 54 to be installed (is LD_LIBRARY_PATH set on Linux?)");
 		}
 
 		/// <summary>
