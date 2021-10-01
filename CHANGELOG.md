@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [10.1.0] - 2021-10-01
+
 ### Changed
 
 - Create nuget packages
@@ -32,4 +34,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   `MiscUtils.IsMono`, and `MiscUtils.IsDotNet` are deprecated in favor of the corresponding
   `Process.Is*` properties
 
-[Unreleased]: https://github.com/sillsdev/liblcm/compare/v9.0.0...develop
+[Unreleased]: https://github.com/sillsdev/liblcm/compare/v10.1.0...develop
+[10.1.0]: https://github.com/sillsdev/liblcm/compare/v9.0.0...v10.1.0
