@@ -7,7 +7,7 @@ branches:
     regex: (origin/)?(master)
     is-mainline: true
   develop:
-    tag: unstable
+    tag: beta
     regex: (origin/)?develop
     is-mainline: true
   hotfix:
