@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
@@ -39,8 +40,8 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		private class MockFile
 		{
-			public string Contents { get; set; }
-			public Encoding Encoding { get; set; }
+			public string Contents { get; private set; }
+			public Encoding Encoding { get; }
 			private FileLockType m_hardLock = FileLockType.None;
 			private List<IDisposable> m_streams;
 
@@ -162,20 +163,21 @@ namespace SIL.LCModel.Utils
 		/// <summary>Add fake file names to this list to simulate existing files. The value
 		/// is the file contents.</summary>
 		private readonly Dictionary<string, MockFile> m_existingFiles = new Dictionary<string, MockFile>();
-		/// <summary>Add fake folder names to this list to simulate existing folders</summary>
-		private readonly List<string> m_existingDirectories = new List<string>();
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Add fake folder names to this list to simulate existing folders
+		/// The list of simulated existing folders. To add a folder, user <see cref="IFileOS.CreateDirectory"/>
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public List<string> ExistingDirectories
-		{
-			get { return m_existingDirectories; }
-		}
+		public List<string> ExistingDirectories { get; } = new List<string>();
 
 		#region Public Methods to facilitate testing
+
+		/// <summary>
+		/// Returns the text in the file
+		/// </summary>
+		public string ReadAllText(string filename) => m_existingFiles[filename].Contents;
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Adds the given filename to the collection of files that should be considered to
@@ -286,9 +288,9 @@ namespace SIL.LCModel.Utils
 		public void AddFile(string filename, string contents, Encoding encoding)
 		{
 			FileUtils.AssertValidFilePath(filename);
-			string dir = Path.GetDirectoryName(filename);
-			if (!string.IsNullOrEmpty(dir) && !((IFileOS)this).DirectoryExists(dir))
-				ExistingDirectories.Add(dir); // Theoretically, this should add containing folders recursively.
+			var dir = Path.GetDirectoryName(filename);
+			if (!string.IsNullOrEmpty(dir) && !((IFileOS) this).DirectoryExists(dir))
+				((IFileOS) this).CreateDirectory(dir);
 			m_existingFiles[filename] = new MockFile(contents, encoding);
 		}
 
@@ -400,26 +402,7 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		string[] IFileOS.GetFilesInDirectory(string sPath, string searchPattern)
 		{
-			FileUtils.AssertValidFilePath(sPath);
-			if (searchPattern == null)
-				throw new ArgumentNullException("searchPattern");
-			// These next two lines look a little strange, but I think we do this to deal with
-			// normalization issues.
-			int iDir = ExistingDirectories.IndexOf(sPath);
-			if (iDir == -1)
-			{
-				sPath = sPath.TrimEnd(Path.DirectorySeparatorChar);
-				iDir = ExistingDirectories.IndexOf(sPath);
-			}
-			string existingDir = iDir >= 0 ? ExistingDirectories[iDir] : null;
-
-			Regex regex = null;
-			if (searchPattern != "*")
-			{
-				searchPattern = searchPattern.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".");
-				searchPattern = searchPattern.Replace("+", @"\+").Replace("$", @"\$").Replace("(", @"\(").Replace(")", @"\)");
-				regex = new Regex(searchPattern);
-			}
+			var existingDir = GetItemsInDirectorySetup(ref sPath, searchPattern, out var regex);
 
 			List<string> files = new List<string>(m_existingFiles.Count);
 			foreach (string file in m_existingFiles.Keys)
@@ -445,6 +428,57 @@ namespace SIL.LCModel.Utils
 			if (files.Count == 0 && existingDir == null)
 				throw new DirectoryNotFoundException();
 			return files.ToArray();
+		}
+
+		public string[] GetDirectoriesInDirectory(string sPath) => ((IFileOS)this).GetDirectoriesInDirectory(sPath, "*");
+
+		public string[] GetDirectoriesInDirectory(string sPath, string searchPattern)
+		{
+			var existingDir = GetItemsInDirectorySetup(ref sPath, searchPattern, out var regex);
+			if (existingDir == null)
+				throw new DirectoryNotFoundException();
+
+			var directories = new List<string>(ExistingDirectories.Count);
+			foreach (var dir in ExistingDirectories.Where(dir => Path.GetDirectoryName(dir) == sPath))
+			{
+				if (regex != null)
+				{
+					var dirName = Path.GetFileName(dir);
+					var m = regex.Match(dirName);
+					if (m.Value != dirName)
+						continue;
+				}
+
+				directories.Add(dir);
+			}
+			return directories.ToArray();
+		}
+
+		private string GetItemsInDirectorySetup(ref string sPath, string searchPattern, out Regex regex)
+		{
+			FileUtils.AssertValidFilePath(sPath);
+			if (searchPattern == null)
+				throw new ArgumentNullException(nameof(searchPattern));
+			// These next two lines look a little strange, but I think we do this to deal with normalization issues.
+			var iDir = ExistingDirectories.IndexOf(sPath);
+			if (iDir == -1)
+			{
+				sPath = sPath.TrimEnd(Path.DirectorySeparatorChar);
+				iDir = ExistingDirectories.IndexOf(sPath);
+			}
+
+			var existingDir = iDir >= 0 ? ExistingDirectories[iDir] : null;
+
+			regex = null;
+			if (searchPattern != "*")
+			{
+				searchPattern = searchPattern.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".");
+				searchPattern = searchPattern.Replace("+", @"\+").Replace("$", @"\$").Replace("(", @"\(")
+					.Replace(")", @"\)");
+				regex = new Regex(searchPattern);
+			}
+
+			return existingDir;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -604,7 +638,11 @@ namespace SIL.LCModel.Utils
 		/// <summary/>
 		void IFileOS.CreateDirectory(string directory)
 		{
-			ExistingDirectories.Add(directory);
+			while(!string.IsNullOrEmpty(directory) && !((IFileOS)this).DirectoryExists(directory))
+			{
+				ExistingDirectories.Add(directory);
+				directory = Path.GetDirectoryName(directory);
+			}
 		}
 
 		long IFileOS.FileLength(string filePath)

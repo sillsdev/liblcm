@@ -240,14 +240,18 @@ namespace SIL.LCModel.Utils
 
 		/// <summary/>
 		[Test]
-		public void EnsureDirectoryExists_CreatesNonExistentDirectory()
+		public void EnsureDirectoryExists_CreatesNonExistentDirectoryAndSuperDirectories()
 		{
-			var directory = "dir";
+			var directory = Path.Combine($"C:{Path.DirectorySeparatorChar}Dir", "inner", "most");
 			Assert.That(m_fileOs.ExistingDirectories.Contains(directory), Is.False, "Test set up wrong");
 			Assert.That(FileUtils.DirectoryExists(directory), Is.False);
 			FileUtils.EnsureDirectoryExists(directory);
 			Assert.That(FileUtils.DirectoryExists(directory), Is.True);
 			Assert.That(m_fileOs.ExistingDirectories.Contains(directory), Is.True, "Should have added directory to mock filesystem");
+			for (var superDir = Path.GetDirectoryName(directory); !string.IsNullOrEmpty(superDir); superDir = Path.GetDirectoryName(superDir))
+			{
+				Assert.That(FileUtils.DirectoryExists(superDir), Is.True, $"'{superDir}' does not exist, but it has subdirectories");
+			}
 
 			// So should also be able to add files into the directory that was created.
 			var file = Path.Combine(directory, "file.txt");
@@ -260,11 +264,26 @@ namespace SIL.LCModel.Utils
 		[Test]
 		public void EnsureDirectoryExists_NoProblemForExistentDirectory()
 		{
-			var directory = "dir";
+			var directory = $"{Path.DirectorySeparatorChar}dir";
+			var subdirectory = Path.Combine(directory, "subdirectory");
 			FileUtils.EnsureDirectoryExists(directory);
 			Assert.That(m_fileOs.ExistingDirectories.Contains(directory), Is.True);
 			FileUtils.EnsureDirectoryExists(directory);
 			Assert.That(m_fileOs.ExistingDirectories.Contains(directory), Is.True);
+			FileUtils.EnsureDirectoryExists(subdirectory);
+			Assert.That(m_fileOs.ExistingDirectories, Is.EquivalentTo(new[] {Path.DirectorySeparatorChar.ToString(), subdirectory, directory}));
+		}
+
+		/// <remarks>
+		/// The parent directory of an unrooted outermost directory (which 'C:' is on Linux but not Windows,
+		/// and which `dir` is on either platform) is the empty string.
+		/// </remarks>
+		[Test]
+		public void EnsureDirectoryExists_DoesNotCreateEmptyStringDirectory()
+		{
+			const string directory = "dear";
+			FileUtils.EnsureDirectoryExists(directory);
+			Assert.That(m_fileOs.ExistingDirectories, Is.EquivalentTo(new[] {directory}));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -994,7 +1013,7 @@ namespace SIL.LCModel.Utils
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests FileUtils.GetFilesInDirectory, sepcifying the directory with a trailing
+		/// Tests FileUtils.GetFilesInDirectory, specifying the directory with a trailing
 		/// backslash.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
@@ -1099,6 +1118,128 @@ namespace SIL.LCModel.Utils
 			files = FileUtils.GetFilesInDirectory(sPath, "(+)*");
 			Assert.AreEqual(1, files.Length);
 			Assert.AreEqual(file4, files[0]);
+		}
+		#endregion
+
+		#region GetDirectoriesInDirectory tests
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests FileUtils.GetDirectoriesInDirectory with a directory that doesn't exist.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void GetDirectoriesInDirectory_NoPattern_DirectoryDoesNotExist()
+		{
+			Assert.Throws(typeof(DirectoryNotFoundException), () => FileUtils.GetDirectoriesInDirectory(
+				"c:" + Path.DirectorySeparatorChar + "Whatever"));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests FileUtils.GetDirectoriesInDirectory with an empty directory.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void GetDirectoriesInDirectory_NoPattern_None()
+		{
+			m_fileOs.ExistingDirectories.Add($"c:{Path.DirectorySeparatorChar}Whatever");
+			Assert.AreEqual(0, FileUtils.GetDirectoriesInDirectory($"c:{Path.DirectorySeparatorChar}Whatever").Length);
+		}
+
+		/// <summary>
+		/// Tests FileUtils.GetDirectoriesInDirectory with directories in directory in
+		/// question and some other directories in subdirectories and other directories.
+		/// </summary>
+		[Test]
+		public void GetDirectoriesInDirectory_NoPattern_DirectoriesAdded()
+		{
+			var sPath = "c:" + Path.DirectorySeparatorChar + "Whatever";
+			var dir1 = Path.Combine(sPath, "boo");
+			var dir2 = Path.Combine(sPath, "hoo");
+			var dir3 = Path.Combine(dir2, "subDir", "moo");
+			var dir4 = Path.Combine($"c:{Path.DirectorySeparatorChar}Monkey", "too");
+			FileUtils.EnsureDirectoryExists(dir1);
+			FileUtils.EnsureDirectoryExists(dir2);
+			FileUtils.EnsureDirectoryExists(dir3);
+			FileUtils.EnsureDirectoryExists(dir4);
+			var directories = FileUtils.GetDirectoriesInDirectory(sPath);
+			Assert.AreEqual(2, directories.Length);
+			Assert.AreEqual(dir1, directories[0]);
+			Assert.AreEqual(dir2, directories[1]);
+		}
+
+		/// <summary>
+		/// Tests FileUtils.GetDirectoriesInDirectory, specifying the directory with a trailing backslash.
+		/// </summary>
+		[Test]
+		public void GetDirectoriesInDirectory_WithFinalDirectorySeparator()
+		{
+			var sPath = $"c:{Path.DirectorySeparatorChar}Whatever{Path.DirectorySeparatorChar}";
+			var dir1 = Path.Combine(sPath, "boo");
+			FileUtils.EnsureDirectoryExists(dir1);
+			var directories = FileUtils.GetDirectoriesInDirectory(sPath);
+			Assert.AreEqual(1, directories.Length);
+			Assert.AreEqual(dir1, directories[0]);
+		}
+
+		/// <summary>
+		/// Tests FileUtils.GetDirectoriesInDirectory, matching various search patterns.
+		/// </summary>
+		[Test]
+		public void GetDirectoriesInDirectory_SearchPattern()
+		{
+			var sPath = "c:" + Path.DirectorySeparatorChar + "Whatever";
+			var dir1 = Path.Combine(sPath, "boo_jpgs");
+			var dir2 = Path.Combine(sPath, "hoo_jpgs");
+			var dir3 = Path.Combine(sPath, "moo_jpegs");
+			FileUtils.EnsureDirectoryExists(dir1);
+			FileUtils.EnsureDirectoryExists(dir2);
+			FileUtils.EnsureDirectoryExists(dir3);
+			var directories = FileUtils.GetDirectoriesInDirectory(sPath, "*_jpgs");
+			Assert.AreEqual(2, directories.Length);
+			Assert.AreEqual(dir1, directories[0]);
+			Assert.AreEqual(dir2, directories[1]);
+
+			directories = FileUtils.GetDirectoriesInDirectory(sPath, "?oo_*");
+			Assert.AreEqual(3, directories.Length);
+			Assert.AreEqual(dir1, directories[0]);
+			Assert.AreEqual(dir2, directories[1]);
+			Assert.AreEqual(dir3, directories[2]);
+
+			directories = FileUtils.GetDirectoriesInDirectory(sPath, "*");
+			Assert.AreEqual(3, directories.Length);
+			Assert.AreEqual(dir1, directories[0]);
+			Assert.AreEqual(dir2, directories[1]);
+			Assert.AreEqual(dir3, directories[2]);
+		}
+
+		/// <summary>
+		/// Tests FileUtils.GetDirectoriesInDirectory, matching search patterns that include regex special characters.
+		/// </summary>
+		[Test]
+		public void GetDirectoriesInDirectory_SearchPattern_RegexCharsInPattern()
+		{
+			var sPath = "c:" + Path.DirectorySeparatorChar + "Whatever";
+			var dir1 = Path.Combine(sPath, "boo.jpg");
+			var dir2 = Path.Combine(sPath, "hoo.jpg");
+			var dir3 = Path.Combine(sPath, "moo.jpeg");
+			var dir4 = Path.Combine(sPath, "(+)moojpg");
+			FileUtils.EnsureDirectoryExists(dir1);
+			FileUtils.EnsureDirectoryExists(dir2);
+			FileUtils.EnsureDirectoryExists(dir3);
+			FileUtils.EnsureDirectoryExists(dir4);
+			var directories = FileUtils.GetDirectoriesInDirectory(sPath, ".jpg");
+			Assert.AreEqual(0, directories.Length);
+
+			directories = FileUtils.GetDirectoriesInDirectory(sPath, "+");
+			Assert.AreEqual(0, directories.Length);
+
+			directories = FileUtils.GetDirectoriesInDirectory(sPath, "boo.jpg$");
+			Assert.AreEqual(0, directories.Length);
+
+			directories = FileUtils.GetDirectoriesInDirectory(sPath, "(+)*");
+			Assert.AreEqual(1, directories.Length);
+			Assert.AreEqual(dir4, directories[0]);
 		}
 		#endregion
 
