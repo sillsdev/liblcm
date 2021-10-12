@@ -83,19 +83,26 @@ namespace SIL.LCModel.DomainImpl
 		{
 			LexEntry bank1 = null;
 			LexEntry past = null;
+			LexEntry agent = null;
 			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor,
 				() =>
 				{
 					bank1 = (LexEntry)MakeEntryWithForm("bank");
 					past = (LexEntry)MakeAffixWithForm("ed", MoMorphTypeTags.kguidMorphSuffix);
+					// set Citation form on 'er' suffix to set up verification of Citation behavior
+					agent = (LexEntry)MakeAffixWithForm("er", MoMorphTypeTags.kguidMorphSuffix);
+					agent.CitationForm.set_String(Cache.DefaultVernWs, "er");
 					var pos1 = MakePartOfSpeech();
 					MakeAffixMsa(past, pos1, pos1);
 				});
 			Assert.That(bank1.MLHeadWord.VernacularDefaultWritingSystem.Text, Is.EqualTo("bank"));
 			Assert.That(past.MLHeadWord.VernacularDefaultWritingSystem.Text, Is.EqualTo("-ed"));
+			// The presence of a Citation form on agent should result in no suffix marker in the MLHeadword (LT-20704)
+			Assert.That(agent.MLHeadWord.VernacularDefaultWritingSystem.Text, Is.EqualTo("er"));
 			Assert.That(bank1.MLHeadWord.AnalysisDefaultWritingSystem.Text, Is.Null);
 			Assert.That(past.MLHeadWord.AnalysisDefaultWritingSystem.Text, Is.Null,
 				"where all forms are empty, no affix marker");
+
 			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor,
 				() =>
 				{
