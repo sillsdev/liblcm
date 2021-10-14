@@ -1,30 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
     <RootNamespace>Icu.Tests</RootNamespace>
-    <Configurations>Debug;Release</Configurations>
     <Description>TestHelper</Description>
-    <Company>SIL International</Company>
-    <Authors>SIL International</Authors>
-    <Product>liblcm</Product>
-    <Copyright>Copyright © 2010-2021 SIL International</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/sillsdev/liblcm</PackageProjectUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <OutputPath>../../artifacts/$(Configuration)</OutputPath>
-    <PackageOutputPath>../../artifacts</PackageOutputPath>
-    <SignAssembly>true</SignAssembly>
-    <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
-    <AssemblyOriginatorKeyFile>../../liblcm.snk</AssemblyOriginatorKeyFile>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <AppendToReleaseNotesProperty><![CDATA[
-See full changelog at https://github.com/sillsdev/liblcm/blob/develop/CHANGELOG.md]]>
-    </AppendToReleaseNotesProperty>
-    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
     <IsPackable>false</IsPackable>
     <OutputType>Exe</OutputType>
   </PropertyGroup>

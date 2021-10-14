@@ -1,32 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
     <RootNamespace>SIL.LCModel.Tools</RootNamespace>
     <AssemblyName>SIL.LCModel.Tools</AssemblyName>
-    <Configurations>Debug;Release</Configurations>
     <Description>SIL LCModel Lexer/Parser Tools</Description>
-    <Company>SIL International</Company>
-    <Authors>SIL International</Authors>
-    <Product>liblcm</Product>
-    <Copyright>Copyright © 2010-2021 SIL International</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/sillsdev/liblcm</PackageProjectUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <OutputPath>../../../artifacts/$(Configuration)</OutputPath>
     <PackageOutputPath>../../../artifacts</PackageOutputPath>
-    <SignAssembly>true</SignAssembly>
-    <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
     <AssemblyOriginatorKeyFile>../../../liblcm.snk</AssemblyOriginatorKeyFile>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <AppendToReleaseNotesProperty><![CDATA[
-See full changelog at https://github.com/sillsdev/liblcm/blob/develop/CHANGELOG.md]]>
-    </AppendToReleaseNotesProperty>
-    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
-    <ChangelogFile>../../../CHANGELOG.md</ChangelogFile>
     <DefineConstants>TRACE;GENTIME</DefineConstants>
     <NoWarn>1701;1702;0162</NoWarn>
   </PropertyGroup>
