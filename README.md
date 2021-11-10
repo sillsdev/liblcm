@@ -57,9 +57,18 @@ To publish and consume LCModel through local sources:
 
 ### Linux
 
-```bash
-(. environ && cd artifacts/Debug/net461/ && ICU_DATA="IcuData/icudt54l" nunit-console SIL.LCModel*Tests.dll )
-```
+#### In JetBrains Rider
+
+Open the solution in Rider and run them all there. Right-click the solution and choose _"Run Unit Tests"_.
+
+#### In a terminal
+
+- Install `NUnit.ConsoleRunner`
+- then run (adjust the version number `3.11.1` accordingly):
+
+	```bash
+	(. environ && cd artifacts/Debug/net461/ && mono --debug ~/.nuget/packages/nunit.consolerunner/3.11.1/tools/nunit3-console.exe *Tests.dll )
+	```
 
 ### Windows
 
