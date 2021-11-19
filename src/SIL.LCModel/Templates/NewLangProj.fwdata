@@ -7181,19 +7181,6 @@
 <AUni ws="en">Default Template</AUni>
 </Name>
 <SubPossibilities>
-<objsur guid="397636f5-2994-4aee-b6f3-376ca71bddea" t="o" />
-</SubPossibilities>
-</rt>
-<rt class="CmPossibility" guid="397636f5-2994-4aee-b6f3-376ca71bddea" ownerguid="c414012a-ea5e-11de-99fc-0013722f8dec">
-<Abbreviation>
-<AUni ws="en">story</AUni>
-</Abbreviation>
-<DateCreated val="2018-05-09 13:24:02.152" />
-<DateModified val="2018-05-09 13:24:02.152" />
-<Name>
-<AUni ws="en">Story</AUni>
-</Name>
-<SubPossibilities>
 <objsur guid="c41fece2-ea5e-11de-8db3-0013722f8dec" t="o" />
 <objsur guid="c4414da6-ea5e-11de-8c42-0013722f8dec" t="o" />
 <objsur guid="c46e9a18-ea5e-11de-8016-0013722f8dec" t="o" />
