@@ -9,6 +9,8 @@ init:
       set GITVERSION_BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
 
       if defined APPVEYOR_PULL_REQUEST_NUMBER set GitVersion_NoNormalizeEnabled=true
+
+      git config --global core.autocrlf input
 nuget:
   disable_publish_on_pr: true
   disable_publish_octopus: true
