@@ -58,4 +58,10 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/develop/CHANGELOG.
       <LastGenOutput>TestResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+
+  <Target Name="CollectRuntimeOutputs" BeforeTargets="_GetPackageFiles">
+    <ItemGroup>
+      <None Include="$(OutputPath)\**\$(PackageId).dll.config" Pack="true" PackagePath="lib" />
+	</ItemGroup>
+  </Target>
 </Project>

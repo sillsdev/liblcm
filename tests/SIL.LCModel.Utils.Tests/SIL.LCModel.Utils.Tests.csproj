@@ -42,4 +42,9 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/develop/CHANGELOG.
     <ProjectReference Include="..\..\src\SIL.LCModel.Utils\SIL.LCModel.Utils.csproj" />
   </ItemGroup>
 
+  <Target Name="CollectRuntimeOutputs" BeforeTargets="_GetPackageFiles">
+    <ItemGroup>
+      <None Include="$(OutputPath)\**\$(PackageId).dll.config" Pack="true" PackagePath="lib" />
+	</ItemGroup>
+  </Target>
 </Project>
