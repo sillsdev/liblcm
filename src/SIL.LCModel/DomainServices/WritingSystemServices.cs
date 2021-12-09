@@ -858,6 +858,11 @@ namespace SIL.LCModel.DomainServices
 							break;
 						}
 					}
+
+					// If we still have a zero for the retWs then return the default.
+					if (retWs == 0)
+						retWs = defaultAnalWs;
+
 					break;
 				case kwsFirstVernOrNamed:
 				case kwsFirstVern:
@@ -907,6 +912,11 @@ namespace SIL.LCModel.DomainServices
 							break;
 						}
 					}
+
+					// If we still have a zero for the retWs then return the default.
+					if (retWs == 0)
+						retWs = defaultVernWs;
+
 					break;
 				case kwsFirstAnalOrVern:
 					if (flid == 0) // sometimes used this way, just trying for a ws...make robust
