@@ -44,6 +44,16 @@ namespace SIL.LCModel.DomainServices
 		[Test]
 		public void GetMagicStringAlt_TestFirstAnaly()
 		{
+			int wsId;
+			var entry = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
+			var sense = Cache.ServiceLocator.GetInstance<ILexSenseFactory>().Create();
+			entry.SensesOS.Add(sense);
+
+			//SUT magic gets the default analysis when there are no others
+			WritingSystemServices.GetMagicStringAlt(Cache, Cache.MainCacheAccessor,
+				WritingSystemServices.kwsFirstAnal, sense.Hvo, sense.Definition.Flid, false, out wsId);
+			Assert.AreEqual(wsId, Cache.DefaultAnalWs, "Did not get the default analysis when there are no others.");
+
 			CoreWritingSystemDefinition frWs;
 			WritingSystemServices.FindOrCreateWritingSystem(Cache, null, "fr", false, false, out frWs);
 			var frId = frWs.Handle;
@@ -57,13 +67,10 @@ namespace SIL.LCModel.DomainServices
 			Cache.LangProject.AddToCurrentAnalysisWritingSystems(frWs);
 			Cache.LangProject.AddToCurrentAnalysisWritingSystems(enWs);
 			Cache.LangProject.AnalysisWritingSystems.Add(ptWs);
-			var entry = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
-			var sense = Cache.ServiceLocator.GetInstance<ILexSenseFactory>().Create();
-			entry.SensesOS.Add(sense);
 			sense.Definition.set_String(frId, TsStringUtils.MakeString("fr", frId));
 			sense.Definition.set_String(enId, TsStringUtils.MakeString("en", enId));
 			sense.Definition.set_String(ptId, TsStringUtils.MakeString("pt", ptId));
-			int wsId;
+
 			//SUT magic gets first analysis when there is one.
 			WritingSystemServices.GetMagicStringAlt(Cache, Cache.MainCacheAccessor,
 																 WritingSystemServices.kwsFirstAnal, sense.Hvo, sense.Definition.Flid, false, out wsId);
@@ -154,6 +161,14 @@ namespace SIL.LCModel.DomainServices
 		[Test]
 		public void GetMagicStringAlt_TestFirstVern()
 		{
+			int wsId;
+			var entry = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
+
+			//SUT magic gets the default vernacular when there are no others
+			WritingSystemServices.GetMagicStringAlt(Cache, Cache.MainCacheAccessor,
+				WritingSystemServices.kwsFirstVern, entry.Hvo, entry.CitationForm.Flid, false, out wsId);
+			Assert.AreEqual(wsId, Cache.DefaultVernWs, "Did not get the default vernacular when there are no others.");
+
 			CoreWritingSystemDefinition mluWs;
 			WritingSystemServices.FindOrCreateWritingSystem(Cache, null, "mlu", false, false, out mluWs);
 			var mluId = mluWs.Handle;
@@ -167,11 +182,10 @@ namespace SIL.LCModel.DomainServices
 			Cache.LangProject.AddToCurrentVernacularWritingSystems(mluWs);
 			Cache.LangProject.AddToCurrentVernacularWritingSystems(senWs);
 			Cache.LangProject.VernacularWritingSystems.Add(sekWs);
-			var entry = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
 			entry.CitationForm.set_String(mluId, TsStringUtils.MakeString("To'abaita", mluId));
 			entry.CitationForm.set_String(senId, TsStringUtils.MakeString("Sena", senId));
 			entry.CitationForm.set_String(sekId, TsStringUtils.MakeString("Sekani", sekId));
-			int wsId;
+
 			//SUT magic gets first vernacular when there is one.
 			WritingSystemServices.GetMagicStringAlt(Cache, Cache.MainCacheAccessor,
 																 WritingSystemServices.kwsFirstVern, entry.Hvo, entry.CitationForm.Flid, false, out wsId);
