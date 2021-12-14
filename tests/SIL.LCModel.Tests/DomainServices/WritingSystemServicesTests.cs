@@ -50,9 +50,10 @@ namespace SIL.LCModel.DomainServices
 			entry.SensesOS.Add(sense);
 
 			//SUT magic gets the default analysis when there are no others
-			WritingSystemServices.GetMagicStringAlt(Cache, Cache.MainCacheAccessor,
+			var retStr = WritingSystemServices.GetMagicStringAlt(Cache, Cache.MainCacheAccessor,
 				WritingSystemServices.kwsFirstAnal, sense.Hvo, sense.Definition.Flid, false, out wsId);
 			Assert.AreEqual(wsId, Cache.DefaultAnalWs, "Did not get the default analysis when there are no others.");
+			Assert.IsTrue(retStr == null || retStr.Text == null);
 
 			CoreWritingSystemDefinition frWs;
 			WritingSystemServices.FindOrCreateWritingSystem(Cache, null, "fr", false, false, out frWs);
@@ -165,9 +166,10 @@ namespace SIL.LCModel.DomainServices
 			var entry = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
 
 			//SUT magic gets the default vernacular when there are no others
-			WritingSystemServices.GetMagicStringAlt(Cache, Cache.MainCacheAccessor,
+			var retStr = WritingSystemServices.GetMagicStringAlt(Cache, Cache.MainCacheAccessor,
 				WritingSystemServices.kwsFirstVern, entry.Hvo, entry.CitationForm.Flid, false, out wsId);
 			Assert.AreEqual(wsId, Cache.DefaultVernWs, "Did not get the default vernacular when there are no others.");
+			Assert.IsTrue(retStr == null || retStr.Text == null);
 
 			CoreWritingSystemDefinition mluWs;
 			WritingSystemServices.FindOrCreateWritingSystem(Cache, null, "mlu", false, false, out mluWs);
