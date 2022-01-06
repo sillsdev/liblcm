@@ -12,26 +12,26 @@ with language and culture data, including anthropological, text corpus, and ling
 
 1. Install Required Software
 
-	- git
-	- Visual Studio 2019 (with C++), MonoDevelop, or JetBrains Rider
+    - git
+    - Visual Studio 2019 (with C++), MonoDevelop, or JetBrains Rider
 
 2. Clone the liblcm repository
 
-	- Open a terminal (or git bash on Windows) and cd into a desired directory.
-	- Run `git clone https://github.com/sillsdev/liblcm.git`
+    - Open a terminal (or git bash on Windows) and cd into a desired directory.
+    - Run `git clone https://github.com/sillsdev/liblcm.git`
 
 3. Build liblcm
 
-	- cd into the directory of the cloned liblcm repository.
+    - cd into the directory of the cloned liblcm repository.
 
-	On Windows:
+    On Windows:
 
-	- Run the appropriate `vsvars*.bat`. Alternatively, `LCM.sln` can be built from within Visual Studio.
-	- Run `build.cmd` to build the liblcm library.
+    - Run the appropriate `vsvars*.bat`. Alternatively, `LCM.sln` can be built from within Visual Studio.
+    - Run `build.cmd` to build the liblcm library.
 
-	On Linux:
+    On Linux:
 
-	- Run `build.sh` to build the liblcm library.
+    - Run `build.sh` to build the liblcm library.
 
 By default, this will build liblcm in the Debug configuration.
 To build with a different configuration, use:
@@ -57,23 +57,37 @@ To publish and consume LCModel through local sources:
 
 ### Linux
 
-```bash
-(. environ && cd artifacts/Debug/net461/ && ICU_DATA="IcuData/icudt54l" nunit-console SIL.LCModel*Tests.dll )
-```
+#### In JetBrains Rider
 
-**On Windows with ReSharper**
+Open the solution in Rider and run them all there. Right-click the solution and choose _"Run Unit Tests"_.
 
-	Open the solution in Visual Studio and run them all there. Right-click the solution and choose Run Unit Tests.
+#### In a terminal
 
-**On Windows without ReSharper**
+- Install `NUnit.ConsoleRunner`
+- then run (adjust the version number `3.11.1` accordingly):
 
-	To run the tests for a single test dll:
-	1. Go to the liblcm directory.
-	2. Execute: "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\msbuild.exe"
-	   Note: Running the tests after building the solution from inside VS resulted in a BadImageFormatException.
-	         Running the tests after building from the cmd prompt worked.
-	3. Go to the liblcm\artifacts\Debug directory.
-	4. Execute: "..\..\packages\NUnit.ConsoleRunner.3.9.0\tools\nunit3-console.exe" SIL.LCModel.Tests.dll
-	   (Or specify one of the other SIL.LCModel*Tests.dll)
-	5. To debug the tests from Visual Studio; Immediately after the tests have started
-	   running "Attach to Process..." and select 'nunit-agent.exe'.
+	```bash
+	(. environ && cd artifacts/Debug/net461/ && mono --debug ~/.nuget/packages/nunit.consolerunner/3.11.1/tools/nunit3-console.exe *Tests.dll )
+	```
+
+### Windows
+
+#### With ReSharper
+
+Open the solution in Visual Studio and run them all there. Right-click the solution and choose _"Run Unit Tests"_.
+
+#### Without ReSharper
+
+To run the tests for a single test dll:
+
+1. Go to the `liblcm` directory.
+2. Execute: `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\msbuild.exe"`
+
+   **Note:** Running the tests after building the solution from inside VS resulted in a `BadImageFormatException`.
+   Running the tests after building from the cmd prompt worked.
+3. Go to the `liblcm\artifacts\Debug\net461` directory.
+4. Execute: `..\..\..\packages\NUnit.ConsoleRunner.3.9.0\tools\nunit3-console.exe SIL.LCModel.Tests.dll`
+
+   (Or specify one of the other `SIL.LCModel*Tests.dll`)
+5. To debug the tests from Visual Studio: Immediately after the tests have started
+   running _"Attach to Process..."_ and select `nunit-agent.exe`.
