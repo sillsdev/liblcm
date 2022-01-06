@@ -76,6 +76,7 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
     <None Update="KernelInterfaces\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="App.config" Pack="true" PackagePath="contentFiles\any\any\$(AssemblyTitle).dll.config" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -112,9 +113,9 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
   </ItemGroup>
   </Target>
 
-    <PropertyGroup>
+  <PropertyGroup>
     <IcuVersion>54</IcuVersion>
-    </PropertyGroup>
+  </PropertyGroup>
 
   <ItemGroup>
     <IcuDataInputs Include="IcuData\nfc*.txt" />
@@ -164,6 +165,8 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
     <ItemGroup>
       <None Include="$(PackageId).props" Pack="true" PackagePath="build" />
       <None Include="$(PackageId).props" Pack="true" PackagePath="buildMultiTargeting" />
+      <None Include="$(PackageId).targets" Pack="true" PackagePath="build" />
+      <None Include="$(PackageId).targets" Pack="true" PackagePath="buildMultiTargeting" />
       <None Include="KernelInterfaces\*.id*" Pack="true" PackagePath="contentFiles\KernelInterfaces" />
       <None Include="$(OutDir)KernelInterfaces\*.json" Pack="true" PackagePath="contentFiles\KernelInterfaces" />
       <None Include="$(OutputPath)\**\$(PackageId).dll.config" Pack="true" PackagePath="lib" />

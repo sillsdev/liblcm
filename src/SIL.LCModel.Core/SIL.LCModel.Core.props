@@ -4,6 +4,7 @@
 		<SilLcModelCoreIcuDataFilesFolder>$(MSBuildThisFileDirectory)../contentFiles/IcuData</SilLcModelCoreIcuDataFilesFolder>
 	</PropertyGroup>
 	<ItemGroup>
+		<ConfigFiles Include="$(MSBuildThisFileDirectory)../contentFiles/any/any/SIL.LCModel.Core.dll.config" />
 		<None Include="$(SilLCModelCoreLibPath)\SIL.LCModel.Core.dll.config" CopyToOutputDirectory="Always" />
 		<SilLcModelCoreKernelInterfaces Include="$(MSBuildThisFileDirectory)..\contentFiles\KernelInterfaces\*.id*" />
 		<SilLcModelCoreKernelReferences Include="$(MSBuildThisFileDirectory)..\contentFiles\KernelInterfaces\*.json" />
