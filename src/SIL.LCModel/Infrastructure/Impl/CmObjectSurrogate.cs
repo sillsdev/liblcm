@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2017 SIL International
+// Copyright (c) 2015-2022 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -517,13 +518,14 @@ namespace SIL.LCModel.Infrastructure.Impl
 								m_object = (ICmObject)s_classToConstructorInfo[m_classname].Invoke(null);
 								try
 								{
-									((ICmObjectInternal) m_object).LoadFromDataStore(
+									((ICmObjectInternal)m_object).LoadFromDataStore(
 										m_cache,
 										rtElement,
-										((IServiceLocatorInternal) m_cache.ServiceLocator).LoadingServices);
+										((IServiceLocatorInternal)m_cache.ServiceLocator).LoadingServices);
 								}
 								catch (InvalidOperationException)
-								{   // Asserting just so developers know that this is happening
+								{
+									// Asserting just so developers know that this is happening
 									Debug.Assert(false, "See LT-13574: something is corrupt in this database.");
 									// LT-13574 had a m_classname that was different from the that in rtElement.
 									// That causes attributes to be leftover or missing - hence the exception.
@@ -539,7 +541,8 @@ namespace SIL.LCModel.Infrastructure.Impl
 									}
 								}
 							}
-						// Have to set m_objectWasAttached to false, before the registration,
+
+							// Have to set m_objectWasAttached to false, before the registration,
 							// since RegisterActivatedSurrogate calls this' Object prop,
 							// and it would result in a stack overflow, with it still being true,
 							// as it would try again to create the object.
@@ -552,6 +555,11 @@ namespace SIL.LCModel.Infrastructure.Impl
 				catch (ThreadAbortException)
 				{
 					// Ignore. This can happen if the domain loading thread is excessively busy when the application is being shut down.
+				}
+				catch (FileLoadException)
+				{
+					// This happens with some regularity in my developer build. The message (corrupt project) is incorrect, wasting my time.
+					throw;
 				}
 				catch (Exception e)
 				{
