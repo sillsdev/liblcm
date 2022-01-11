@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- [SIL.LCModel.Core] Copy `SIL.LCModel.Core.dll.config` to output directory
+
 ## [10.1.0] - 2021-10-01
 
 ### Changed
