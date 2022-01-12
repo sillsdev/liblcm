@@ -42,7 +42,11 @@ namespace SIL.LCModel.DomainImpl
 			/// <summary>Verse was found</summary>
 			Verse = 1,
 			/// <summary>Chapter was found</summary>
-			Chapter = 2
+			Chapter = 2,
+			/// <summary>
+			/// Content was corrupt
+			/// </summary>
+			Error = 4
 		}
 		#endregion ChapterVerseFound enum
 
@@ -417,11 +421,15 @@ namespace SIL.LCModel.DomainImpl
 						//						tsi.ichLim - tsi.ichMin);
 						int startVerse, endVerse;
 						ScrReference.VerseToInt(sVerseNum, out startVerse, out endVerse);
+						if (startVerse == 999 || endVerse < startVerse)
+						{
+							return ChapterVerseFound.Error;
+						}
 						refStart.Verse = startVerse;
 						refEnd.Verse = endVerse;
 						fGotVerse = true;
 						retVal = ChapterVerseFound.Verse;
-					}
+                    }
 					// See if it is our chapter number style.
 					else if (ttpRun.Style() == ScrStyleNames.ChapterNumber)
 					{
@@ -625,6 +633,12 @@ namespace SIL.LCModel.DomainImpl
 					fGotVerse = true;
 				}
 
+				if ((found & ChapterVerseFound.Error) != 0)
+				{
+					throw new ScriptureUtilsException(SUE_ErrorCode.InvalidVerseNumber,
+						"Paratext", 0, para.Contents?.Text, OwnerStartRef);
+				}
+
 				// if we found a chapter, process it
 				if ((found & ChapterVerseFound.Chapter) != 0)
 				{
@@ -734,6 +748,11 @@ namespace SIL.LCModel.DomainImpl
 				GetOrCreateBT().Translation.get_String(wsBt), ich, true,
 				out curRefStartBt, out curRefEndBt);
 
+			if (cvFoundBt == ChapterVerseFound.Error)
+			{
+				throw new Exception(
+					$"Error looking for verse number in: {GetOrCreateBT().Translation.get_String(wsBt).Text}");
+			}
 			// If we found a verse...
 			if (cvFoundBt == ChapterVerseFound.Verse
 				|| cvFoundBt == (ChapterVerseFound.Chapter | ChapterVerseFound.Verse))
@@ -775,7 +794,7 @@ namespace SIL.LCModel.DomainImpl
 						// get the one we found
 						sVerseRunVern = Contents.get_RunText(Contents.get_RunAt(ichLimVern - 1));
 						// if we found a bridge, we can use it only if we match the start of bridge
-						ScrReference.VerseToInt(sVerseRunVern, out verseStartVern, out verseEndVern);
+						ScrReference.VerseToInt(sVerseRunVern, out verseStartVern, out _);
 						if (verseStartVern != curRefStartBt.Verse)
 						{
 							// our match is deep within a bridged verse number; we can't use it
