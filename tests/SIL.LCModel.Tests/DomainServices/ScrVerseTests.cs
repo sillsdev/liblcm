@@ -146,41 +146,67 @@ namespace SIL.LCModel.DomainServices
 
 			using (ScrVerseSet verseSet = new ScrVerseSet(para, false))
 			{
-			// Iterate through the verses in the paragraph
-			ScrVerse verse;
+				// Iterate through the verses in the paragraph
+				ScrVerse verse;
 
-			Assert.That(verseSet.MoveNext(), Is.True);
-			verse = verseSet.Current;
-			Assert.That(verse.Text.Text, Is.EqualTo("1Verse One. "));
-			Assert.That((int)verse.StartRef, Is.EqualTo(01001001));
-			Assert.That((int)verse.EndRef, Is.EqualTo(01001001));
+				Assert.That(verseSet.MoveNext(), Is.True);
+				verse = verseSet.Current;
+				Assert.That(verse.Text.Text, Is.EqualTo("1Verse One. "));
+				Assert.That((int)verse.StartRef, Is.EqualTo(01001001));
+				Assert.That((int)verse.EndRef, Is.EqualTo(01001001));
 
-			Assert.That(verseSet.MoveNext(), Is.True);
-			verse = verseSet.Current;
-			Assert.That(verse.Text.Text, Is.EqualTo("2 Verse Two. "));
-			Assert.That((int)verse.StartRef, Is.EqualTo(01001002));
-			Assert.That((int)verse.EndRef, Is.EqualTo(01001002));
+				Assert.That(verseSet.MoveNext(), Is.True);
+				verse = verseSet.Current;
+				Assert.That(verse.Text.Text, Is.EqualTo("2 Verse Two. "));
+				Assert.That((int)verse.StartRef, Is.EqualTo(01001002));
+				Assert.That((int)verse.EndRef, Is.EqualTo(01001002));
 
-			Assert.That(verseSet.MoveNext(), Is.True);
-			verse = verseSet.Current;
-			Assert.That(verse.Text.Text, Is.EqualTo("21Verse with chapter and verse number."));
-			Assert.That((int)verse.StartRef, Is.EqualTo(01002001));
-			Assert.That((int)verse.EndRef, Is.EqualTo(01002001));
+				Assert.That(verseSet.MoveNext(), Is.True);
+				verse = verseSet.Current;
+				Assert.That(verse.Text.Text, Is.EqualTo("21Verse with chapter and verse number."));
+				Assert.That((int)verse.StartRef, Is.EqualTo(01002001));
+				Assert.That((int)verse.EndRef, Is.EqualTo(01002001));
 
-			Assert.That(verseSet.MoveNext(), Is.True);
-			verse = verseSet.Current;
-			Assert.That(verse.Text.Text, Is.EqualTo("4     "));
-			Assert.That((int)verse.StartRef, Is.EqualTo(01002004));
-			Assert.That((int)verse.EndRef, Is.EqualTo(01002004));
+				Assert.That(verseSet.MoveNext(), Is.True);
+				verse = verseSet.Current;
+				Assert.That(verse.Text.Text, Is.EqualTo("4     "));
+				Assert.That((int)verse.StartRef, Is.EqualTo(01002004));
+				Assert.That((int)verse.EndRef, Is.EqualTo(01002004));
 
-			Assert.That(verseSet.MoveNext(), Is.True);
-			verse = verseSet.Current;
-			Assert.That(verse.Text.Text, Is.EqualTo("41-3Verses one thru three."));
-			Assert.That((int)verse.StartRef, Is.EqualTo(01004001));
-			Assert.That((int)verse.EndRef, Is.EqualTo(01004003));
+				Assert.That(verseSet.MoveNext(), Is.True);
+				verse = verseSet.Current;
+				Assert.That(verse.Text.Text, Is.EqualTo("41-3Verses one thru three."));
+				Assert.That((int)verse.StartRef, Is.EqualTo(01004001));
+				Assert.That((int)verse.EndRef, Is.EqualTo(01004003));
 
-			Assert.That(verseSet.MoveNext(), Is.False);
+				Assert.That(verseSet.MoveNext(), Is.False);
+			}
 		}
+		/// -----------------------------------------------------------------------------------
+		/// <summary>
+		/// Test that getting the first verse in a
+		/// </summary>
+		/// -----------------------------------------------------------------------------------
+		[Test]
+		public void MoveNext_GarbageVerseNumber_ThrowsDetailedException()
+		{
+			IScrSection sectionCur = AddSectionToMockedBook(m_genesis);
+
+			StTxtParaBldr paraBldr = new StTxtParaBldr(Cache);
+			paraBldr.ParaStyleName = ScrStyleNames.NormalParagraph;
+			paraBldr.AppendRun("8910", StyleUtils.CharStyleTextProps(ScrStyleNames.VerseNumber,
+				Cache.DefaultVernWs));
+			IScrTxtPara para = (IScrTxtPara)paraBldr.CreateParagraph(sectionCur.ContentOA);
+			var ex = Assert.Throws<ScriptureUtilsException>(() =>
+			{
+				using (new ScrVerseSet(para, false))
+				{
+					// Expecting an exception from the constructor
+				}
+			});
+			Assert.That(ex?.Message, Does.Contain("GEN"));
+			Assert.That(ex?.Message, Does.Contain("Chapter: 1"));
+			Assert.That(ex?.Message, Does.Contain("Verse: 1"));
 		}
 
 		/// -----------------------------------------------------------------------------------

@@ -308,6 +308,8 @@ namespace SIL.LCModel.DomainServices
 					string sVerseNum = sPara.Substring(m_ich, tsi.ichLim - tsi.ichMin);
 					int nVerseStart, nVerseEnd;
 					ScrReference.VerseToInt(sVerseNum, out nVerseStart, out nVerseEnd);
+					if (nVerseStart == 999)
+						return false;
 					m_startRef.Verse = nVerseStart;
 					m_endRef.Verse = nVerseEnd;
 					m_ichVerseStart = m_ich; //set VerseStart at beg of verse number
