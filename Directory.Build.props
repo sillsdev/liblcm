@@ -17,6 +17,7 @@
     <AssemblyOriginatorKeyFile>../../liblcm.snk</AssemblyOriginatorKeyFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IsPackable>true</IsPackable>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <AppendToReleaseNotesProperty><![CDATA[
