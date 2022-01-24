@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFrameworks>net461</TargetFrameworks>
     <RootNamespace>SIL.LCModel.Utils</RootNamespace>
   </PropertyGroup>
 
