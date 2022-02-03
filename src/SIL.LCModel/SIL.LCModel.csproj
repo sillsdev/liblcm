@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <RootNamespace>SIL.LCModel</RootNamespace>
     <Description>The liblcm library is the core FieldWorks model for linguistic analyses of languages. Tools in this library provide the ability to store and interact with language and culture data, including anthropological, text corpus, and linguistics data.
 	SIL.LCModel is the main library.</Description>
@@ -17,22 +17,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommonServiceLocator" Version="1.0.0" />
+    <PackageReference Include="CommonServiceLocator" Version="1.4.0" />
     <PackageReference Include="GitVersion.MsBuild" Version="5.6.10" PrivateAssets="All" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="protobuf-net" Version="2.0.0.668" />
-    <PackageReference Include="SharpZipLib" Version="0.86.0" />
+    <PackageReference Include="protobuf-net" Version="2.4.6" />
+    <PackageReference Include="SharpZipLib" Version="1.0.0" />
+    <PackageReference Include="SIL.Lexicon" Version="10.0.0-*" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
+    <PackageReference Include="SIL.WritingSystems" Version="10.0.0-*" />
     <PackageReference Include="structuremap.patched" Version="2.5.4" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SIL.LCModel.Core\SIL.LCModel.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System.ServiceProcess" />
-    <Reference Include="System.Web" />
+    <ProjectReference Include="..\SIL.LCModel.Utils\SIL.LCModel.Utils.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -85,7 +84,8 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <OutDir Condition="'$(OutDir)' == ''">../../artifacts/$(Configuration)/net461/</OutDir>
+    <OutDir Condition="'$(OutDir)' == ''">../../artifacts/$(Configuration)/</OutDir>
+    <MsBuildCommand Condition="'$(MsBuildRuntimeType)'=='Core' And '$(MsBuildCommand)'==''">dotnet build</MsBuildCommand>
     <MsbuildCommand Condition="'$(OS)'=='Windows_NT' And '$(MsBuildCommand)'==''">"$(MSBuildBinPath)\msbuild.exe"</MsbuildCommand>
     <MsbuildCommand Condition="'$(OS)'=='Unix' And '$(MsBuildCommand)'==''">msbuild</MsbuildCommand>
   </PropertyGroup>

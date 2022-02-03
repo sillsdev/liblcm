@@ -290,6 +290,10 @@ namespace SIL.LCModel.DomainServices
 			{
 				var style = m_cache.ServiceLocator.GetInstance<IStStyleRepository>().GetObject(hvo);
 				var styleInfo = new BaseStyleInfo(style);
+				if (m_StyleInfos.Contains(styleInfo))
+				{
+					throw new DuplicateItemException($"Duplicate style found: {styleInfo.Name}");
+				}
 				m_StyleInfos.Add(styleInfo);
 			}
 
