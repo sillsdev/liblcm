@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - [SIL.LCModel.Core] Copy `SIL.LCModel.Core.dll.config` to output directory
+- [SIL.LCModel.Core] (and others) Use the `WritingSystemDefirition.CaseAlias`, if any, in `CaseFunctions`
 
 ## [10.1.0] - 2021-10-01
 

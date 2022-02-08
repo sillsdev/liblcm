@@ -1,9 +1,11 @@
-// Copyright (c) 2003-2017 SIL International
+// Copyright (c) 2003-2022 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using NUnit.Framework;
+using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.Utils;
+// ReSharper disable StringLiteralTypo - spell check is case-hypersensitive
 
 namespace SIL.LCModel.Core.Text
 {
@@ -13,18 +15,48 @@ namespace SIL.LCModel.Core.Text
 	[TestFixture]
 	public class CaseFunctionsTest
 	{
-		/// <summary>
-		///
-		/// </summary>
+		/// <summary/>
+		[TestCase("en", null, ExpectedResult = "en", TestName = "Normal")]
+		[TestCase("qaa", null, ExpectedResult = "root", TestName = "Private Use")]
+		[TestCase("tkr", "az", ExpectedResult = "az", TestName = "Case Alias")]
+		public string WritingSystemCtor(string locale, string caseAlias)
+		{
+			return new CaseFunctions(new CoreWritingSystemDefinition(locale) { CaseAlias = caseAlias }).IcuLocale;
+		}
+
+		/// <summary/>
+		[TestCase("en", "Igloo", ExpectedResult = "igloo")]
+		[TestCase("tur", "I'm NOT dotted", ExpectedResult = "\u0131'm not dotted")]
+		public string ToLower_UsesIcuLocale(string locale, string input)
+		{
+			return new CaseFunctions(locale).ToLower(input);
+		}
+
+		/// <summary/>
+		[TestCase("en", "intp", ExpectedResult = "INTP")]
+		[TestCase("tur", "Dotted i", ExpectedResult = "DOTTED \u0130")]
+		public string ToUpper_UsesIcuLocale(string locale, string input)
+		{
+			return new CaseFunctions(locale).ToUpper(input);
+		}
+
+		/// <summary/>
+		[TestCase("en", "intrepID", ExpectedResult = "Intrepid")]
+		[TestCase("tur", "inDIA", ExpectedResult = "\u0130nd\u0131a")]
+		public string ToTitle_UsesIcuLocale(string locale, string input)
+		{
+			return new CaseFunctions(locale).ToTitle(input);
+		}
+
+		/// <summary/>
 		[Test]
 		public void TestToLower()
 		{
 			CaseFunctions cf = new CaseFunctions("en");
 			Assert.AreEqual("abc", cf.ToLower("ABC"));
 		}
-		/// <summary>
-		///
-		/// </summary>
+
+		/// <summary/>
 		[Test]
 		public void TestStringCase()
 		{
