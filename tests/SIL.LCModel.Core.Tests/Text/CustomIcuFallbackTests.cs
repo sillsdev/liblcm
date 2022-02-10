@@ -26,7 +26,7 @@ namespace SIL.LCModel.Core.Text
 		private string _tmpDir;
 		private string _pathEnvironmentVariable;
 		private const string DefaultIcuLibraryVersionMajor = "62";
-		private const string CustomIcuLibraryVersionMajor = "54";
+		private const string CustomIcuLibraryVersionMajor = "70";
 		private List<string> _dirsToDelete;
 		private string _preTestDataDir;
 		private string _preTestDataDirEnv;
