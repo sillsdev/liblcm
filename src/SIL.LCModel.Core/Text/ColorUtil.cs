@@ -124,7 +124,7 @@ namespace SIL.LCModel.Core.Text
 		public static Color ConvertBGRtoColor(uint bgrColor)
 		{
 			if (bgrColor == 0xC0000000)
-				return Color.FromKnownColor(KnownColor.Transparent);
+				return Color.Transparent;
 			return ColorTranslator.FromWin32((int)bgrColor);
 		}
 
