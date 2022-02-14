@@ -1,4 +1,4 @@
-// Copyright (c) 2003-2017 SIL International
+// Copyright (c) 2003-2022 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -1482,12 +1482,11 @@ namespace SIL.LCModel.DomainServices
 			if (str == null)
 				return null;
 
-			string strLower = null;
-			if (!s_wordformToLower.TryGetValue(str, out strLower))
+			if (!s_wordformToLower.TryGetValue(str, out var strLower))
 			{
 				// add the lowercase form to this dictionary.
-				CoreWritingSystemDefinition ws = m_wsManager.Get(tss.get_WritingSystemAt(0));
-				strLower = UnicodeString.ToLower(str, ws.IcuLocale);
+				var cf = new CaseFunctions(m_wsManager.Get(tss.get_WritingSystemAt(0)));
+				strLower = cf.ToLower(str);
 				s_wordformToLower[str] = strLower;
 			}
 			return strLower;
