@@ -26,7 +26,7 @@ namespace SIL.LCModel.Core.Text
 
 		/// <summary/>
 		[TestCase("en", "Igloo", ExpectedResult = "igloo")]
-		[TestCase("tur", "I'm NOT dotted", ExpectedResult = "\u0131'm not dotted")]
+		[TestCase("tr", "I'm NOT dotted", ExpectedResult = "\u0131'm not dotted")]
 		public string ToLower_UsesIcuLocale(string locale, string input)
 		{
 			return new CaseFunctions(new CoreWritingSystemDefinition(locale)).ToLower(input);
@@ -34,7 +34,7 @@ namespace SIL.LCModel.Core.Text
 
 		/// <summary/>
 		[TestCase("en", "intp", ExpectedResult = "INTP")]
-		[TestCase("tur", "Dotted i", ExpectedResult = "DOTTED \u0130")]
+		[TestCase("tr", "Dotted i", ExpectedResult = "DOTTED \u0130")]
 		public string ToUpper_UsesIcuLocale(string locale, string input)
 		{
 			return new CaseFunctions(new CoreWritingSystemDefinition(locale)).ToUpper(input);
@@ -42,7 +42,7 @@ namespace SIL.LCModel.Core.Text
 
 		/// <summary/>
 		[TestCase("en", "intrepID", ExpectedResult = "Intrepid")]
-		[TestCase("tur", "inDIA", ExpectedResult = "\u0130nd\u0131a")]
+		[TestCase("az", "inDIA", ExpectedResult = "\u0130nd\u0131a")]
 		public string ToTitle_UsesIcuLocale(string locale, string input)
 		{
 			return new CaseFunctions(new CoreWritingSystemDefinition(locale)).ToTitle(input);
