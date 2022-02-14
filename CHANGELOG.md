@@ -19,7 +19,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - [SIL.LCModel.Core] Copy `SIL.LCModel.Core.dll.config` to output directory
-- [SIL.LCModel.Core] (and others) Use the `WritingSystemDefirition.CaseAlias`, if any, in `CaseFunctions`
+- [SIL.LCModel] Use `CaseFunctions` (to use the `WritingSystemDefinition.CaseAlias`, if any)
+- [SIL.LCModel.Core] Use the `WritingSystemDefinition.CaseAlias`, if any, in `CaseFunctions`
+
+### Deprecated
+
+- [SIL.LCModel.Core] `new CaseFunctions(string)` in favor of the new `new CaseFunctions(CoreWritingSystemDefinition)`
 
 ## [10.1.0] - 2021-10-01
 

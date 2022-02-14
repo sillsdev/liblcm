@@ -29,7 +29,7 @@ namespace SIL.LCModel.Core.Text
 		[TestCase("tur", "I'm NOT dotted", ExpectedResult = "\u0131'm not dotted")]
 		public string ToLower_UsesIcuLocale(string locale, string input)
 		{
-			return new CaseFunctions(locale).ToLower(input);
+			return new CaseFunctions(new CoreWritingSystemDefinition(locale)).ToLower(input);
 		}
 
 		/// <summary/>
@@ -37,7 +37,7 @@ namespace SIL.LCModel.Core.Text
 		[TestCase("tur", "Dotted i", ExpectedResult = "DOTTED \u0130")]
 		public string ToUpper_UsesIcuLocale(string locale, string input)
 		{
-			return new CaseFunctions(locale).ToUpper(input);
+			return new CaseFunctions(new CoreWritingSystemDefinition(locale)).ToUpper(input);
 		}
 
 		/// <summary/>
@@ -45,14 +45,14 @@ namespace SIL.LCModel.Core.Text
 		[TestCase("tur", "inDIA", ExpectedResult = "\u0130nd\u0131a")]
 		public string ToTitle_UsesIcuLocale(string locale, string input)
 		{
-			return new CaseFunctions(locale).ToTitle(input);
+			return new CaseFunctions(new CoreWritingSystemDefinition(locale)).ToTitle(input);
 		}
 
 		/// <summary/>
 		[Test]
 		public void TestToLower()
 		{
-			CaseFunctions cf = new CaseFunctions("en");
+			CaseFunctions cf = new CaseFunctions(new CoreWritingSystemDefinition("en"));
 			Assert.AreEqual("abc", cf.ToLower("ABC"));
 		}
 
@@ -60,7 +60,7 @@ namespace SIL.LCModel.Core.Text
 		[Test]
 		public void TestStringCase()
 		{
-			CaseFunctions cf = new CaseFunctions("en");
+			CaseFunctions cf = new CaseFunctions(new CoreWritingSystemDefinition("en"));
 			Assert.AreEqual(StringCaseStatus.allLower, cf.StringCase("abc"));
 			Assert.AreEqual(StringCaseStatus.allLower, cf.StringCase(""));
 			Assert.AreEqual(StringCaseStatus.allLower, cf.StringCase(null));
