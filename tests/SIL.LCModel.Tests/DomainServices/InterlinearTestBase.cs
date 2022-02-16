@@ -257,8 +257,7 @@ namespace SIL.LCModel.DomainServices
 				IAnalysis analysis = tapb.GetAnalysis(iSegment, iSegForm);
 				IWfiWordform wfInstanceOf = analysis.Wordform;
 				ITsString tssWf = wfInstanceOf.Form.get_String(ws);
-				string locale = wfInstanceOf.Services.WritingSystemManager.Get(ws).IcuLocale;
-				var cf = new CaseFunctions(locale);
+				var cf = new CaseFunctions(wfInstanceOf.Services.WritingSystemManager.Get(ws));
 				string context = String.Format("[{0}]", tssStringValue);
 				const string msg = "{0} cba mismatch in {1}.";
 				Assert.AreEqual(cf.ToLower(tssStringValue.Text), cf.ToLower(tssWf.Text),
@@ -500,8 +499,7 @@ namespace SIL.LCModel.DomainServices
 				// Add any relevant 'other case' forms.
 				int nvar;
 				int ws = tssWordformBaseline.get_Properties(0).GetIntPropValues((int)FwTextPropType.ktptWs, out nvar);
-				string locale = m_cache.ServiceLocator.WritingSystemManager.Get(ws).IcuLocale;
-				var cf = new CaseFunctions(locale);
+				var cf = new CaseFunctions(m_cache.ServiceLocator.WritingSystemManager.Get(ws));
 				switch (targetState)
 				{
 					case StringCaseStatus.allLower:
