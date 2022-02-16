@@ -1617,7 +1617,6 @@ namespace SIL.LCModel.DomainImpl
 		/// The specified sense, which must be a sense of this, along with its children, is moved to become the sole
 		/// top-level sense of the new entry. Whatever MSAs are needed by the moved sense(s) are copied to the new
 		/// entry also.
-		/// Enhance JohnT: Create a test for this (it was fairly mechanically ported from 6.0, where there was also no test).
 		/// </summary>
 		public void MoveSenseToCopy(ILexSense ls)
 		{
@@ -1633,7 +1632,7 @@ namespace SIL.LCModel.DomainImpl
 						leNew.LiteralMeaning.MergeAlternatives(this.LiteralMeaning);
 						leNew.Restrictions.MergeAlternatives(this.Restrictions);
 						leNew.SummaryDefinition.MergeAlternatives(this.SummaryDefinition);
-						// Copy the reference attributes.
+						leNew.ImportResidue = this.ImportResidue;
 
 						// Copy the owned attributes carefully.
 						if (LexemeFormOA != null)
@@ -1643,6 +1642,81 @@ namespace SIL.LCModel.DomainImpl
 						CopyObject<ILexPronunciation>.CloneLcmObjects(PronunciationsOS, newPron => leNew.PronunciationsOS.Add(newPron));
 						CopyObject<ILexEntryRef>.CloneLcmObjects(EntryRefsOS, newEr => leNew.EntryRefsOS.Add(newEr));
 						CopyObject<ILexEtymology>.CloneLcmObjects(EtymologyOS, newEty => leNew.EtymologyOS.Add(newEty));
+
+						// Copy the reference attributes.
+
+						// Copy "Dialect Labels (Entry)".
+						foreach (var cmPossibility in DialectLabelsRS) leNew.DialectLabelsRS.Add(cmPossibility);
+						// Copy "Publish Entry In"
+						foreach (var cmPossibility in DoNotPublishInRC) leNew.DoNotPublishInRC.Add(cmPossibility);
+						// Copy "Show As Headword In"
+						foreach (var cmPossibility in DoNotShowMainEntryInRC) leNew.DoNotShowMainEntryInRC.Add(cmPossibility);
+						// Copy "Cross References"
+						foreach (var lexRef in LexEntryReferences) lexRef.TargetsRS.Add(leNew);
+
+						// Copy "Variant Forms"
+						foreach (var lexEntry in VariantFormEntries)
+						{
+							foreach (var ler in lexEntry.VariantEntryRefs)
+							{
+								if (ler.RefType == LexEntryRefTags.krtVariant && ler.ComponentLexemesRS.Contains(this))
+								{
+									ILexEntryRef newLer = null;
+									foreach (var eType in ler.EntryTypes)
+									{
+										if (newLer == null)
+										{
+											newLer = lexEntry.MakeVariantOf(leNew, eType);
+											newLer.Summary.MergeAlternatives(ler.Summary);
+										}
+										else
+											newLer.VariantEntryTypesRS.Add(eType);
+									}
+								}
+							}
+						}
+
+						// Copy "Complex Forms", "Subentries" and "Referenced Complex Forms".
+						foreach (var complexEntry in ComplexFormEntries)
+						{
+							foreach (var ler in complexEntry.ComplexFormEntryRefs)
+							{
+								Debug.Assert(ler.RefType == LexEntryRefTags.krtComplexForm && ler.ComponentLexemesRS.Contains(this));
+
+								// Copy "Complex Forms"
+								// Note: I am using ComponentLexemesRS.Add() instead of calling complexEntry.AddComponent(leNew),
+								// because AddComponent() sometimes also adds to PrimaryLexemesRS and ShowComplexFormsInRS.
+								ler.ComponentLexemesRS.Add(leNew);
+
+								// Copy "Subentries".
+								if (ler.PrimaryLexemesRS.Contains(this))
+									ler.PrimaryLexemesRS.Add(leNew);
+
+								// Copy "Referenced Complex Forms".
+								// Adding leNew to PrimaryLexemesRS also adds leNew to ShowComplexFormsInRS. So this only
+								// adds leNew if it hasn't already been added, and removes leNew if it was incorrectly added.
+								if (ler.ShowComplexFormsInRS.Contains(this))
+								{
+									if (!ler.ShowComplexFormsInRS.Contains(leNew))
+										ler.ShowComplexFormsInRS.Add(leNew);
+								}
+								else if (ler.ShowComplexFormsInRS.Contains(leNew))
+									ler.ShowComplexFormsInRS.Remove(leNew);
+							}
+						}
+
+						// Copy custom properties.
+						Dictionary<Tuple<ICmObject, int>, object> CustomPropertiesToCopy = new Dictionary<Tuple<ICmObject, int>, object>();
+						foreach (var cacheCustomProperty in this.Cache.CustomProperties)
+						{
+							if (cacheCustomProperty.Key.Item1 == this)
+							{
+								var key = new Tuple<ICmObject, int>(leNew, cacheCustomProperty.Key.Item2);
+								CustomPropertiesToCopy.Add(key, cacheCustomProperty.Value);
+							}
+						}
+						foreach (var item in CustomPropertiesToCopy)
+							this.Cache.CustomProperties.Add(item.Key, item.Value);
 
 						UpdateReferencesForSenseMove(this, leNew, ls);
 
