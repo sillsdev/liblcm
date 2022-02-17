@@ -812,36 +812,36 @@ namespace SIL.LCModel.DomainImpl
 
 			Assert.That(newEntry.DoNotPublishInRC, Has.Count.EqualTo(1));
 			Assert.That(newEntry.DoNotShowMainEntryInRC, Has.Count.EqualTo(1));
-			Assert.That(newEntry.LexEntryReferences.Count() == 1);
+			Assert.That(newEntry.LexEntryReferences.Count(), Is.EqualTo(1));
 
 			// Verify "Variant Forms".
-			Assert.That(newEntry.VariantFormEntries.Count() == 1);
-			Assert.That(newEntry.VariantFormEntries.First().VariantEntryRefs.Count() == 2);  // Now references both the old and new entry.
-			Assert.That(newEntry.VariantFormEntries.First().VariantEntryRefs.First().EntryTypes.Count() == 2);
+			Assert.That(newEntry.VariantFormEntries.Count(), Is.EqualTo(1));
+			Assert.That(newEntry.VariantFormEntries.First().VariantEntryRefs.Count(), Is.EqualTo(2));  // Now references both the old and new entry.
+			Assert.That(newEntry.VariantFormEntries.First().VariantEntryRefs.First().EntryTypes.Count(), Is.EqualTo(2));
 			Assert.That(newEntry.VariantFormEntries.First().VariantEntryRefs.First().Summary.UiString, Is.EqualTo("Variant Comment"));
-			Assert.That(newEntry.VariantFormEntries.First().VariantEntryRefs.Last().EntryTypes.Count() == 2);
+			Assert.That(newEntry.VariantFormEntries.First().VariantEntryRefs.Last().EntryTypes.Count(), Is.EqualTo(2));
 			Assert.That(newEntry.VariantFormEntries.First().VariantEntryRefs.Last().Summary.UiString, Is.EqualTo("Variant Comment"));
 
 			// Verify "Complex Forms", "Subentries" and "Referenced Complex Forms".
-			Assert.That(newEntry.ComplexFormEntries.Count() == 2);
-			Assert.That(newEntry.ComplexFormEntries.First().ComplexFormEntryRefs.Count() == 1);
-			Assert.That(newEntry.ComplexFormEntries.Last().ComplexFormEntryRefs.Count() == 1);
+			Assert.That(newEntry.ComplexFormEntries.Count(), Is.EqualTo(2));
+			Assert.That(newEntry.ComplexFormEntries.First().ComplexFormEntryRefs.Count(), Is.EqualTo(1));
+			Assert.That(newEntry.ComplexFormEntries.Last().ComplexFormEntryRefs.Count(), Is.EqualTo(1));
 			var firstRefs = newEntry.ComplexFormEntries.First().ComplexFormEntryRefs.First();
 			var lastRefs = newEntry.ComplexFormEntries.Last().ComplexFormEntryRefs.First();
-			Assert.That(firstRefs.ComponentLexemesRS.Count == 2);  // Now references both the old and new entry.
-			Assert.That(lastRefs.ComponentLexemesRS.Count == 2);  // Now references both the old and new entry.
+			Assert.That(firstRefs.ComponentLexemesRS, Has.Count.EqualTo(2));  // Now references both the old and new entry.
+			Assert.That(lastRefs.ComponentLexemesRS, Has.Count.EqualTo(2));  // Now references both the old and new entry.
 			if (firstRefs.PrimaryLexemesRS.Count == 2)
 			{
-				Assert.That(firstRefs.ShowComplexFormsInRS.Count == 0);
-				Assert.That(lastRefs.PrimaryLexemesRS.Count == 0);
-				Assert.That(lastRefs.ShowComplexFormsInRS.Count == 2);  // Now references both the old and new entry.
+				Assert.That(firstRefs.ShowComplexFormsInRS, Has.Count.EqualTo(0));
+				Assert.That(lastRefs.PrimaryLexemesRS, Has.Count.EqualTo(0));
+				Assert.That(lastRefs.ShowComplexFormsInRS, Has.Count.EqualTo(2));  // Now references both the old and new entry.
 			}
 			else
 			{
-				Assert.That(firstRefs.PrimaryLexemesRS.Count == 0);
-				Assert.That(firstRefs.ShowComplexFormsInRS.Count == 2);  // Now references both the old and new entry.
-				Assert.That(lastRefs.PrimaryLexemesRS.Count == 2);  // Now references both the old and new entry.
-				Assert.That(lastRefs.ShowComplexFormsInRS.Count == 0);
+				Assert.That(firstRefs.PrimaryLexemesRS, Has.Count.EqualTo(0));
+				Assert.That(firstRefs.ShowComplexFormsInRS, Has.Count.EqualTo(2));  // Now references both the old and new entry.
+				Assert.That(lastRefs.PrimaryLexemesRS, Has.Count.EqualTo(2));  // Now references both the old and new entry.
+				Assert.That(lastRefs.ShowComplexFormsInRS, Has.Count.EqualTo(0));
 			}
 
 			// Verify custom properties.

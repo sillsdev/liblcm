@@ -1655,18 +1655,19 @@ namespace SIL.LCModel.DomainImpl
 						foreach (var lexRef in LexEntryReferences) lexRef.TargetsRS.Add(leNew);
 
 						// Copy "Variant Forms"
-						foreach (var lexEntry in VariantFormEntries)
+						foreach (var variantEntry in VariantFormEntries)
 						{
-							foreach (var ler in lexEntry.VariantEntryRefs)
+							foreach (var ler in variantEntry.VariantEntryRefs)
 							{
-								if (ler.RefType == LexEntryRefTags.krtVariant && ler.ComponentLexemesRS.Contains(this))
+								Debug.Assert(ler.RefType == LexEntryRefTags.krtVariant);
+								if (ler.ComponentLexemesRS.Contains(this))
 								{
 									ILexEntryRef newLer = null;
 									foreach (var eType in ler.EntryTypes)
 									{
 										if (newLer == null)
 										{
-											newLer = lexEntry.MakeVariantOf(leNew, eType);
+											newLer = variantEntry.MakeVariantOf(leNew, eType);
 											newLer.Summary.MergeAlternatives(ler.Summary);
 										}
 										else
