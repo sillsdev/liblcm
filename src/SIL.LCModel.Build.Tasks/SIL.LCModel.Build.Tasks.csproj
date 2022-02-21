@@ -7,6 +7,7 @@
 SIL.LCModel.Build.Tasks provides msbuild tasks for generating C# classes for the FieldWorks model: IdlImp and LcmGenerate.</Description>
     <BuildOutputTargetFolder>tools/$(TargetFramework)</BuildOutputTargetFolder>
 	<IsPackable>true</IsPackable>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
