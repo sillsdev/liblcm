@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;netstandard2.1</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>SIL.LCModel.Core</RootNamespace>
     <Description>The liblcm library is the core FieldWorks model for linguistic analyses of languages. Tools in this library provide the ability to store and interact with language and culture data, including anthropological, text corpus, and linguistics data.
 SIL.LCModel.Core provides a base library with core functionality.</Description>
@@ -10,6 +10,7 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.6.10" PrivateAssets="All" />
     <PackageReference Include="Icu4c.Win.Fw.Bin" Version="54.1.31" IncludeAssets="build" />
+    <PackageReference Include="Icu4c.Win.Fw.Lib" Version="54.1.31" IncludeAssets="build" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="NHunspell" Version="1.2.5554.16953" />
     <PackageReference Include="NHunspell.Patched" Version="1.2.5554" />
@@ -79,7 +80,7 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
   </ItemGroup>
 
   <PropertyGroup>
-    <OutDir Condition="'$(OutDir)' == ''">../../artifacts/$(Configuration)/net461/</OutDir>
+    <OutDir Condition="'$(OutDir)' == ''">../../artifacts/$(Configuration)/$(TargetFramework)/</OutDir>
     <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">obj/x86/$(Configuration)/</IntermediateOutputPath>
     <MsbuildCommand Condition="'$(OS)'=='Windows_NT' And '$(MsBuildCommand)'==''">"$(MSBuildBinPath)\msbuild.exe"</MsbuildCommand>
     <MsbuildCommand Condition="'$(OS)'=='Unix' And '$(MsBuildCommand)'==''">msbuild</MsbuildCommand>
