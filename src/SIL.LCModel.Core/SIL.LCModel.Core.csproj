@@ -80,7 +80,7 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
   </ItemGroup>
 
   <PropertyGroup>
-    <OutDir Condition="'$(OutDir)' == ''">../../artifacts/$(Configuration)/$(TargetFramework)/</OutDir>
+    <OutDir Condition="'$(OutDir)' == ''">../../artifacts/$(Configuration)/</OutDir>
     <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">obj/x86/$(Configuration)/</IntermediateOutputPath>
     <MsbuildCommand Condition="'$(OS)'=='Windows_NT' And '$(MsBuildCommand)'==''">"$(MSBuildBinPath)\msbuild.exe"</MsbuildCommand>
     <MsbuildCommand Condition="'$(OS)'=='Unix' And '$(MsBuildCommand)'==''">msbuild</MsbuildCommand>
