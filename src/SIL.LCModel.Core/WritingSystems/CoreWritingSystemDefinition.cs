@@ -43,6 +43,8 @@ namespace SIL.LCModel.Core.WritingSystems
 		public CoreWritingSystemDefinition(CoreWritingSystemDefinition ws, bool cloneId = false)
 			: base(ws, cloneId)
 		{
+			m_mainCharacterSet = ws.m_mainCharacterSet == null ? null : new CharacterSetDefinition(ws.m_mainCharacterSet);
+			m_wordFormingOverrides.AddRange(ws.m_wordFormingOverrides);
 			SetupCollectionChangeListeners();
 		}
 
@@ -256,6 +258,7 @@ namespace SIL.LCModel.Core.WritingSystems
 			Language = source.Language;
 			Script = source.Script;
 			Region = source.Region;
+			LanguageTag = source.LanguageTag;
 			Variants.ReplaceAll(source.Variants);
 			Abbreviation = source.Abbreviation;
 			RightToLeftScript = source.RightToLeftScript;
@@ -270,6 +273,7 @@ namespace SIL.LCModel.Core.WritingSystems
 			LocalKeyboard = source.LocalKeyboard;
 			WindowsLcid = source.WindowsLcid;
 			DefaultRegion = source.DefaultRegion;
+			DefaultFontSize = source.DefaultFontSize;
 			KnownKeyboards.ReplaceAll(source.KnownKeyboards);
 			MatchedPairs.Clear();
 			MatchedPairs.UnionWith(source.MatchedPairs);
@@ -277,12 +281,17 @@ namespace SIL.LCModel.Core.WritingSystems
 			PunctuationPatterns.UnionWith(source.PunctuationPatterns);
 			QuotationMarks.ReplaceAll(source.QuotationMarks);
 			QuotationParagraphContinueType = source.QuotationParagraphContinueType;
+			CaseAlias = source.CaseAlias;
+			DefaultCollationType = source.DefaultCollationType;
 			Collations.ReplaceAll(source.Collations.CloneItems());
 			DefaultCollation = source.DefaultCollation == null ? null : Collations[source.Collations.IndexOf(source.DefaultCollation)];
 			CharacterSets.ReplaceAll(source.CharacterSets.CloneItems());
-			NumberingSystem = source.NumberingSystem;
+			NumberingSystem = new NumberingSystemDefinition(source.NumberingSystem);
 			LegacyMapping = source.LegacyMapping;
 			IsGraphiteEnabled = source.IsGraphiteEnabled;
+			m_mainCharacterSet = source.m_mainCharacterSet == null ? null : new CharacterSetDefinition(source.m_mainCharacterSet);
+			m_wordFormingOverrides.Clear();
+			m_wordFormingOverrides.AddRange(source.m_wordFormingOverrides);
 		}
 
 		/// <summary>
@@ -308,6 +317,23 @@ namespace SIL.LCModel.Core.WritingSystems
 		public override WritingSystemDefinition Clone()
 		{
 			return new CoreWritingSystemDefinition(this);
+		}
+
+		/// <summary>
+		/// Checks for value equality with the specified writing system.
+		/// </summary>
+		public override bool ValueEquals(WritingSystemDefinition other)
+		{
+			if (!(other is CoreWritingSystemDefinition that))
+				return false;
+			if (!base.ValueEquals(other))
+				return false;
+			if (!m_mainCharacterSet?.ValueEquals(that.m_mainCharacterSet) ?? that.m_mainCharacterSet != null)
+				return false;
+			if (!m_wordFormingOverrides.SetEquals(that.m_wordFormingOverrides))
+				return false;
+
+			return true;
 		}
 
 		/// <summary>

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -9,8 +9,8 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
 
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.6.10" PrivateAssets="All" />
-    <PackageReference Include="Icu4c.Win.Fw.Bin" Version="54.1.31" IncludeAssets="build" />
-    <PackageReference Include="Icu4c.Win.Fw.Lib" Version="54.1.31" IncludeAssets="build" PrivateAssets="runtime" />
+    <PackageReference Include="Icu4c.Win.Fw.Bin" Version="70.1.47" IncludeAssets="build" />
+    <PackageReference Include="Icu4c.Win.Fw.Lib" Version="70.1.47" IncludeAssets="build" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="NHunspell" Version="1.2.5554.16953" />
     <PackageReference Include="NHunspell.Patched" Version="1.2.5554" />
@@ -113,7 +113,7 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
   </Target>
 
   <PropertyGroup>
-    <IcuVersion>54</IcuVersion>
+    <IcuVersion>70</IcuVersion>
   </PropertyGroup>
 
   <ItemGroup>
