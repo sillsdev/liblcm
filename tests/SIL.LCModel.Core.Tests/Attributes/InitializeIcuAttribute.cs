@@ -22,7 +22,7 @@ namespace SIL.LCModel.Core.Attributes
 
 		public int IcuVersion { get; set; }
 
-		public const int CustomIcuVersion = 54;
+		public const int CustomIcuVersion = 70;
 
 		public static string PreTestPathEnvironment { get; private set; }
 

@@ -27,7 +27,7 @@ namespace SIL.LCModel.Core.Text
 		/// <summary>
 		/// The ICU major version
 		/// </summary>
-		public const string Version = "54";
+		public const string Version = "70";
 
 		private const string IcuucDllName = "icuuc" + Version + ".dll";
 
