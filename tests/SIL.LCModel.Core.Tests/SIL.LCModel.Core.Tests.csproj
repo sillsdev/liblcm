@@ -12,7 +12,6 @@ This package provides unit tests for SIL.LCModel.Core.</Description>
     <PackageReference Include="Icu4c.Win.Min" Version="62.2.1-beta" IncludeAssets="build" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="NUnit" Version="3.13.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
     <PackageReference Include="SIL.TestUtilities" Version="9.0.0-*" />
   </ItemGroup>
