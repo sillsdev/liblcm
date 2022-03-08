@@ -93,7 +93,6 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
     <KernelInputs Include="KernelInterfaces\Language.idh" />
 
     <KernelOutputs Include="KernelInterfaces\Kernel.cs" />
-    <KernelOutputs Include="$(OutDir)KernelInterfaces\FwKernelTlb.iip" />
     <KernelOutputs Include="$(OutDir)KernelInterfaces\FwKernelTlb.json" />
     <Clean Include="@(KernelOutputs)" />
   </ItemGroup>
