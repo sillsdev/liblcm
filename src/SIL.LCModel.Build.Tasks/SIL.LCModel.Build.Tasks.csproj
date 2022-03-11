@@ -32,11 +32,11 @@ SIL.LCModel.Build.Tasks provides msbuild tasks for generating C# classes for the
     <ItemGroup>
       <None Include="$(PackageId).props" Pack="true" PackagePath="build/" />
       <None Include="$(PackageId).props" Pack="true" PackagePath="buildMultiTargeting/" />
-      <None Include="$(OutputPath)/antlr.runtime.dll" Pack="true" PackagePath="tools/" />
-      <None Include="$(OutputPath)/IDLImporter.dll" Pack="true" PackagePath="tools/" />
-      <None Include="$(OutputPath)/IDLImporter.xml" Pack="true" PackagePath="tools/" />
-      <None Include="$(OutputPath)/Newtonsoft.Json.dll" Pack="true" PackagePath="tools/" />
-      <None Include="$(OutputPath)/NVelocity.dll" Pack="true" PackagePath="tools/" />
+      <None Include="$(OutputPath)/antlr.runtime.dll" Pack="true" PackagePath="tools/$(TargetFramework)/" />
+      <None Include="$(OutputPath)/IDLImporter.dll" Pack="true" PackagePath="tools/$(TargetFramework)/" />
+      <None Include="$(OutputPath)/IDLImporter.xml" Pack="true" PackagePath="tools/$(TargetFramework)/" />
+      <None Include="$(OutputPath)/Newtonsoft.Json.dll" Pack="true" PackagePath="tools/$(TargetFramework)/" />
+      <None Include="$(OutputPath)/NVelocity.dll" Pack="true" PackagePath="tools/$(TargetFramework)/" />
       <None Include="$(OutputPath)/lib/**/_._" Pack="true" PackagePath="lib/" />
     </ItemGroup>
   </Target>
