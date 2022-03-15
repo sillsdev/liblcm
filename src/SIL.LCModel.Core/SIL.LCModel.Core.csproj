@@ -13,8 +13,7 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
     <PackageReference Include="Icu4c.Win.Fw.Bin" Version="70.1.47" IncludeAssets="build" />
     <PackageReference Include="Icu4c.Win.Fw.Lib" Version="70.1.47" IncludeAssets="build" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="NHunspell" Version="1.2.5554.16953" />
-    <PackageReference Include="NHunspell.Patched" Version="1.2.5554" />
+    <PackageReference Include="NHunspell" Version="1.2.5554.16953" GeneratePropertyPath="true" />
     <PackageReference Include="SIL.Core.Desktop" Version="9.0.0-*" />
     <PackageReference Include="SIL.Lexicon" Version="9.0.0-*" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
@@ -78,6 +77,11 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="App.config" Pack="true" PackagePath="contentFiles\any\any\$(AssemblyTitle).dll.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(PkgNHunspell)\content\Hunspellx64.dll" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="$(PkgNHunspell)\content\Hunspellx86.dll" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <PropertyGroup>
