@@ -3136,14 +3136,24 @@ namespace SIL.LCModel
 		List<IConstChartWordGroup> GetChartCellRefs();
 
 		/// ------------------------------------------------------------------------------------
-	   /// <summary>
-	   /// Return a Reference (e.g., Scripture reference, or text abbreviation/para #/sentence#) for the specified character
-	   /// position (in the whole paragraph), which is assumed to belong to the specified segment.
-	   /// (For now, ich is not actually used, but it may become important if we decide not to split segements for
-	   /// verse numbers.)
-	   /// </summary>
+		/// <summary>
+		/// Return a Reference (e.g., Scripture reference, or text abbreviation+para #+sentence #) for the specified character
+		/// position (in the whole paragraph), which is assumed to belong to the specified segment.
+		/// (For now, ich is not actually used, but it may become important if we decide not to split segments for
+		/// verse numbers.)
+		/// </summary>
 		/// ------------------------------------------------------------------------------------
 	   ITsString Reference(ISegment seg, int ich);
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Return a Reference (e.g., Scripture reference, or text abbreviation+para #+sentence #) for the specified character
+		/// position (in the whole paragraph), which is assumed to belong to the specified segment.
+		/// To allow greater accuracy and precision in sorting, numbers are zero-padded to the length of <see cref="int.MaxValue"/> and ich
+		/// is included at the end.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		ITsString ReferenceForSorting(ISegment seg, int ich);
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>

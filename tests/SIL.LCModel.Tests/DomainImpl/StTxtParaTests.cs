@@ -35,6 +35,84 @@ namespace SIL.LCModel.DomainImpl
 		}
 		#endregion
 
+		#region Reference[ForSorting] method tests
+		[Test]
+		public void Reference_ForSorting()
+		{
+			var para1 = AddParaToMockedText(m_stText, null);
+			AddRunToMockedPara(para1, "This text is indexed. It is also segmented.", null);
+
+			var para2 = AddParaToMockedText(m_stText, null);
+			AddRunToMockedPara(para2, "This is the second paragraph. It is runny. It has three sentences.", null);
+
+			// SUT
+			var reference = para1.Reference(para1.SegmentsOS[0], 10);
+			var refForSort = para1.ReferenceForSorting(para1.SegmentsOS[0], 10);
+			Assert.That(reference.Text, Is.EqualTo("My Inter 1.1"));
+			Assert.That(refForSort.Text, Is.EqualTo("My Interlinear Text 0000000001.0000000001 0000000010"));
+			reference = para1.Reference(para1.SegmentsOS[1], 25);
+			refForSort = para1.ReferenceForSorting(para1.SegmentsOS[1], 25);
+			Assert.That(reference.Text, Is.EqualTo("My Inter 1.2"));
+			Assert.That(refForSort.Text, Is.EqualTo("My Interlinear Text 0000000001.0000000002 0000000025"));
+			reference = para2.Reference(para2.SegmentsOS[0], 5);
+			refForSort = para2.ReferenceForSorting(para2.SegmentsOS[0], 5);
+			Assert.That(reference.Text, Is.EqualTo("My Inter 2.1"));
+			Assert.That(refForSort.Text, Is.EqualTo("My Interlinear Text 0000000002.0000000001 0000000005"));
+		}
+
+		[Test]
+		public void Reference_ForSorting_TextHasAbbr()
+		{
+			((IText)m_stText.Owner).Abbreviation.set_String(Cache.DefaultVernWs, "MIT");
+
+			var para1 = AddParaToMockedText(m_stText, null);
+			AddRunToMockedPara(para1, "This text is indexed. It is also segmented.", null);
+
+			var para2 = AddParaToMockedText(m_stText, null);
+			AddRunToMockedPara(para2, "This is the second paragraph that is in this text", null);
+
+			// SUT
+			var reference = para1.Reference(para1.SegmentsOS[0], 10);
+			var refForSort = para1.ReferenceForSorting(para1.SegmentsOS[0], 10);
+			Assert.That(reference.Text, Is.EqualTo("MIT 1.1"));
+			Assert.That(refForSort.Text, Is.EqualTo("MIT 0000000001.0000000001 0000000010"));
+			reference = para1.Reference(para1.SegmentsOS[1], 25);
+			refForSort = para1.ReferenceForSorting(para1.SegmentsOS[1], 25);
+			Assert.That(reference.Text, Is.EqualTo("MIT 1.2"));
+			Assert.That(refForSort.Text, Is.EqualTo("MIT 0000000001.0000000002 0000000025"));
+			reference = para2.Reference(para2.SegmentsOS[0], 5);
+			refForSort = para2.ReferenceForSorting(para2.SegmentsOS[0], 5);
+			Assert.That(reference.Text, Is.EqualTo("MIT 2.1"));
+			Assert.That(refForSort.Text, Is.EqualTo("MIT 0000000002.0000000001 0000000005"));
+			reference = para2.Reference(para2.SegmentsOS[0], 34);
+			refForSort = para2.ReferenceForSorting(para2.SegmentsOS[0], 34);
+			Assert.That(reference.Text, Is.EqualTo("MIT 2.1"));
+			Assert.That(refForSort.Text, Is.EqualTo("MIT 0000000002.0000000001 0000000034"));
+		}
+
+		[Test]
+		public void Reference_ForSorting_TextHasNoTitleOrAbbr()
+		{
+			var untitledText = AddInterlinearTextToLangProj(Strings.ksStars).ContentsOA;
+
+			var para1 = AddParaToMockedText(untitledText, null);
+			AddRunToMockedPara(para1, "This is text.", null);
+
+			// SUT
+			var reference = para1.Reference(para1.SegmentsOS[0], 5);
+			var refForSort = para1.ReferenceForSorting(para1.SegmentsOS[0], 5);
+			Assert.That(reference.Text, Is.EqualTo("1.1"));
+			Assert.That(refForSort.Text, Is.EqualTo(" 0000000001.0000000001 0000000005"));
+		}
+
+		[TestCase(0, ExpectedResult = "0000000000")]
+		[TestCase(1, ExpectedResult = "0000000001")]
+		[TestCase(12, ExpectedResult = "0000000012")]
+		[TestCase(512, ExpectedResult = "0000000512")]
+		[TestCase(int.MaxValue, ExpectedResult = "2147483647")]
+		public string ZeroPadForStringComparison(int i) => StTxtPara.ZeroPadForStringComparison(i);
+		#endregion Reference[ForSorting] method tests
+
 		#region ReplaceTextRange method tests
 		///--------------------------------------------------------------------------------------
 		/// <summary>

@@ -549,23 +549,46 @@ namespace SIL.LCModel.DomainImpl
 			AddDataToMatthew();
 			var para1 = (IStTxtPara) m_book.SectionsOS[1].ContentOA.ParagraphsOS[0]; // Actually ScrTxtPara
 			var seg = para1.SegmentsOS[1]; // first content ref, after the chapter and verse number stuff.
-			Assert.That(para1.Reference(seg, seg.BeginOffset + 1).Text, Is.EqualTo("MAT 1:1"));
+			var v1Seg1Idx = seg.BeginOffset + 1;
+			Assert.That(para1.Reference(seg, v1Seg1Idx).Text, Is.EqualTo("MAT 1:1"));
+			Assert.That(para1.ReferenceForSorting(seg, v1Seg1Idx).Text, Is.EqualTo($"0 Scr 40_MAT 00001:00001 {v1Seg1Idx:D10}"));
 			AddRunToMockedPara(para1, "Verse two second sentence.", null);
-			var v2seg1 = para1.SegmentsOS[3]; // first segment of two-sentence verse
-			Assert.That(para1.Reference(v2seg1, v2seg1.BeginOffset + 1).Text, Is.EqualTo("MAT 1:2a"));
-			var v2seg2 = para1.SegmentsOS[4]; // first segment of two-sentence verse
-			Assert.That(para1.Reference(v2seg2, v2seg2.BeginOffset + 1).Text, Is.EqualTo("MAT 1:2b"));
+			var v2Seg1 = para1.SegmentsOS[3]; // first segment of two-sentence verse
+			var v2Seg1Idx = v2Seg1.BeginOffset + 1;
+			Assert.That(para1.Reference(v2Seg1, v2Seg1Idx).Text, Is.EqualTo("MAT 1:2a"));
+			Assert.That(para1.ReferenceForSorting(v2Seg1, v2Seg1Idx).Text, Is.EqualTo($"0 Scr 40_MAT 00001:00002a {v2Seg1Idx:D10}"));
+			var v2Seg2 = para1.SegmentsOS[4]; // first segment of two-sentence verse
+			var v2Seg2Idx = v2Seg2.BeginOffset + 1;
+			Assert.That(para1.Reference(v2Seg2, v2Seg2Idx).Text, Is.EqualTo("MAT 1:2b"));
+			Assert.That(para1.ReferenceForSorting(v2Seg2, v2Seg2Idx).Text, Is.EqualTo($"0 Scr 40_MAT 00001:00002b {v2Seg2Idx:D10}"));
 			IStTxtPara para2 = AddParaToMockedSectionContent((IScrSection)para1.Owner.Owner, ScrStyleNames.NormalParagraph);
 			AddRunToMockedPara(para2, "Verse 2 seg 3", null);
-			var v2seg3 = para2.SegmentsOS[0]; // third segment of three-sentence verse split over two paragraphs.
-			Assert.That(para2.Reference(v2seg3, v2seg3.BeginOffset + 1).Text, Is.EqualTo("MAT 1:2c"));
+			var v2Seg3 = para2.SegmentsOS[0]; // third segment of three-sentence verse split over two paragraphs.
+			var v2Seg3Idx = v2Seg3.BeginOffset + 1;
+			Assert.That(para2.Reference(v2Seg3, v2Seg3Idx).Text, Is.EqualTo("MAT 1:2c"));
+			Assert.That(para2.ReferenceForSorting(v2Seg3, v2Seg3Idx).Text, Is.EqualTo($"0 Scr 40_MAT 00001:00002c {v2Seg3Idx:D10}"));
 			var newSection = AddSectionToMockedBook(m_book);
 			IStTxtPara para3 = AddParaToMockedSectionContent(newSection, ScrStyleNames.NormalParagraph);
 			AddRunToMockedPara(para3, "Verse 2 seg 4", null);
-			var v2seg4 = para3.SegmentsOS[0]; // fourth segment of four-sentence verse split over two sections(!).
+			var v2Seg4 = para3.SegmentsOS[0]; // fourth segment of four-sentence verse split over two sections(!).
+			var v2Seg4Idx = v2Seg4.BeginOffset + 1;
 			// JohnT: arguably this should give MAT 1:2d. The current implementation does not detect the
 			// segments in the previous section.
-			Assert.That(para3.Reference(v2seg4, v2seg4.BeginOffset + 1).Text, Is.EqualTo("MAT 1:2"));
+			Assert.That(para3.Reference(v2Seg4, v2Seg4Idx).Text, Is.EqualTo("MAT 1:2"));
+			Assert.That(para3.ReferenceForSorting(v2Seg4, v2Seg4Idx).Text, Is.EqualTo($"0 Scr 40_MAT 00001:00002 {v2Seg4Idx:D10}"));
+
+			var scrBook1Samuel = CreateBookData(9, "1 Samuel");
+			var scrBookSusanna = CreateBookData(75/*?*/, "Susanna");
+			// TODO (Hasso) 2022.03: Enoch or some other >100 book
+		}
+
+		[TestCase("", ExpectedResult = "00000")]
+		[TestCase("9", ExpectedResult = "00009")]
+		[TestCase("176", ExpectedResult = "00176")]
+		[TestCase("31103", ExpectedResult = "31103")]
+		public string ZeroPadForStringComparison(string intInRef)
+		{
+			return ScrTxtPara.ZeroPadForStringComparison(intInRef);
 		}
 		#endregion
 
