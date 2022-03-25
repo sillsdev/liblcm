@@ -50,7 +50,7 @@ namespace SIL.LCModel.DomainImpl
 		/// <summary>
 		/// Return a Reference (e.g., Scripture reference, or text abbreviation/para #/sentence#) for the specified character
 		/// position (in the whole paragraph), which is assumed to belong to the specified segment.
-		/// (For now, ich is not actually used, but it may become important if we decide not to split segements for
+		/// (For now, ich is not actually used, but it may become important if we decide not to split segments for
 		/// verse numbers.)
 		/// Overridden in ScrTxtPara to handle special cases for Scripture refs.
 		/// </summary>
@@ -100,10 +100,6 @@ namespace SIL.LCModel.DomainImpl
 			if (bldr.Length > 0)
 				bldr.Replace(bldr.Length, bldr.Length, " ", props);
 
-			// if Scripture.IsResponsibleFor(stText) we should try to get the verse number of the annotation.
-			//if (stText.OwningFlid == (int)Text.TextTags.kflidContents)
-			//{
-
 			// Insert paragraph number.
 			int ipara = stText.ParagraphsOS.IndexOf(this) + 1;
 			bldr.Replace(bldr.Length, bldr.Length, ipara.ToString(), props);
@@ -115,6 +111,58 @@ namespace SIL.LCModel.DomainImpl
 			int iseg = SegmentsOS.IndexOf(seg) + 1;
 			bldr.Replace(bldr.Length, bldr.Length, iseg.ToString(), props);
 			return bldr.GetString();
+		}
+
+		/// <inheritdoc/>
+		public virtual ITsString ReferenceForSorting(ISegment seg, int ich)
+		{
+			if (!(Owner is IStText stText))
+			{
+				return TsStringUtils.EmptyString(Cache.DefaultUserWs);
+			}
+
+			ITsString tssName = null;
+			var fUsingAbbr = false;
+			if (stText.Owner is IText text)
+			{
+				tssName = text.Abbreviation.BestVernacularAnalysisAlternative;
+				if (!TsStringUtils.IsNullOrPlaceholder(tssName, stText.Title.NotFoundTss.Text))
+				{
+					fUsingAbbr = true;
+				}
+			}
+			if (!fUsingAbbr)
+			{
+				tssName = stText.Title.BestVernacularAnalysisAlternative;
+			}
+
+			// Make a TsTextProps specifying only the writing system.
+			var propBldr = TsStringUtils.MakePropsBldr();
+			var wsActual = tssName.get_Properties(0).GetIntPropValues((int)FwTextPropType.ktptWs, out _);
+			propBldr.SetIntPropValues((int)FwTextPropType.ktptWs, (int)FwTextPropVar.ktpvDefault, wsActual);
+			var props = propBldr.GetTextProps();
+
+			var bldr = TsStringUtils.IsNullOrPlaceholder(tssName, stText.Title.NotFoundTss.Text) ? new TsStrBldr() : tssName.GetBldr();
+
+			// Start with a space even if we don't have a title, so untitled texts sort to the top.
+			bldr.Append(" ", props);
+			
+			// Insert paragraph and segment numbers.
+			var iPara = stText.ParagraphsOS.IndexOf(this) + 1;
+			var iSeg = SegmentsOS.IndexOf(seg) + 1;
+			bldr.Append(ZeroPadForStringComparison(iPara), props).Append(".", props).Append(ZeroPadForStringComparison(iSeg), props);
+
+			// Insert the offset so that two references in the same segment are sorted properly (LT-8457)
+			bldr.Append(" ", props).Append(ZeroPadForStringComparison(ich), props);
+
+			return bldr.GetString();
+		}
+
+		/// <summary>Pads the given int with zeroes to the max length of an int</summary>
+		protected internal static string ZeroPadForStringComparison(int i)
+		{
+			// because int.MaxValue.ToString().Length is 10
+			return i.ToString("D10");
 		}
 
 		/// ------------------------------------------------------------------------------------
