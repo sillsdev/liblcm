@@ -14,6 +14,7 @@ using Icu.Normalization;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Utils;
 using SIL.PlatformUtilities;
+using SIL.Reporting;
 
 namespace SIL.LCModel.Core.Text
 {
@@ -170,7 +171,7 @@ namespace SIL.LCModel.Core.Text
 		/// Makes sure the icu directory is set, and any other initialization
 		/// which must be done before we use ICU is done.
 		/// </summary>
-		public static void InitIcuDataDir()
+		public static void InitIcuDataDir(ILogger logger = null)
 		{
 			// Add the architecture specific paths to the native icu dlls for windows into the PATH
 			// this is needed for code that accesses the libraries directly instead of through icudotnet
@@ -190,6 +191,10 @@ namespace SIL.LCModel.Core.Text
 					$"{icu32Path}{Path.PathSeparator}{flexIcu32Path}{Path.PathSeparator}" +
 					$"{icu64Path}{Path.PathSeparator}{flexIcu64Path}{Path.PathSeparator}" +
 					$"{Environment.GetEnvironmentVariable("PATH")}");
+				if (logger != null)
+				{
+					logger.WriteConciseHistoricalEvent($"Path prepended with:{icu32Path};{flexIcu32Path};{icu64Path};{flexIcu64Path}");
+				}
 			}
 
 			var dataDirectory = Wrapper.DataDirectory;
@@ -202,6 +207,10 @@ namespace SIL.LCModel.Core.Text
 			{
 				dataDirectory = Path.Combine(Environment.CurrentDirectory, dataDirectory);
 				Wrapper.DataDirectory = dataDirectory;
+			}
+			if (logger != null)
+			{
+				logger.WriteConciseHistoricalEvent($"Wrapper.DataDirectory set to: {dataDirectory}");
 			}
 
 			// ICU docs say to do this after the directory is set, but before others are called.
@@ -222,31 +231,45 @@ namespace SIL.LCModel.Core.Text
 
 			try
 			{
+				if (logger != null)
+				{
+					logger.WriteConciseHistoricalEvent($"Overrides loaded from: {overrideDataPath}");
+				}
+
 				HaveCustomIcuLibrary = SilIcuInit(overrideDataPath);
 			}
 			catch (DllNotFoundException)
 			{
 				// we don't have a custom ICU installed
 				HaveCustomIcuLibrary = false;
-				Debug.WriteLine("Can't find SilIcuInit() - no custom ICU installed?");
+				LogAndPrintError("Can't find SilIcuInit() - no custom ICU installed?");
 			}
 			catch (BadImageFormatException)
 			{
 				// we found a custom ICU but with an incorrect format (e.g. x64 instead of x86)
 				HaveCustomIcuLibrary = false;
-				Debug.WriteLine("Can't execute SilIcuInit() - incorrect format (e.g. x64 instead of x86)");
+				LogAndPrintError("Can't execute SilIcuInit() - incorrect format (e.g. x64 instead of x86)");
 			}
 
 			if (!HaveCustomIcuLibrary)
 			{
-				Debug.WriteLine("SilIcuInit returned false. It was trying to load from " + overrideDataPath + ". The file " +
-								(File.Exists(overrideDataPath) ? "exists." : "does not exist."));
-				Debug.WriteLine("Falling back to default ICU");
+				LogAndPrintError("SilIcuInit returned false. It was trying to load from " + overrideDataPath + ". The file " +
+				                 (File.Exists(overrideDataPath) ? "exists." : "does not exist."));
+				LogAndPrintError("Falling back to default ICU");
 				return;
 			}
 
 			var version = int.Parse(Version);
 			Wrapper.ConfineIcuVersions(version, version);
+		}
+
+		private static void LogAndPrintError(string errorText, ILogger logger = null)
+		{
+			Debug.WriteLine(errorText);
+			if (logger != null)
+			{
+				logger.WriteConciseHistoricalEvent(errorText);
+			}
 		}
 
 		public static bool HaveCustomIcuLibrary { get; private set; }
