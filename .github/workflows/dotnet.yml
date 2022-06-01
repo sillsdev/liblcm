@@ -21,7 +21,7 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1
     - name: Restore
-      run: nuget restore src/SIL.LCModel/SIL.LCModel.csproj
+      run: nuget restore src/SIL.LCModel/SIL.LCModel.csproj -SolutionDirectory .
     - name: Build
       run: dotnet build -c Release src/SIL.LCModel/SIL.LCModel.csproj
     - name: Pack
