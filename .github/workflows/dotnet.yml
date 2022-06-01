@@ -21,7 +21,7 @@ jobs:
     - name: Restore
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore -c Release src/SIL.LCModel/SIL.LCModel.csproj
+      run: dotnet build -c Release src/SIL.LCModel/SIL.LCModel.csproj
     - name: Pack
       if: github.ref == 'refs/heads/migrationToDotNet6'
       run: dotnet pack -c Release
