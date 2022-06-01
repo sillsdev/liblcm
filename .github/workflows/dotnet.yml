@@ -7,7 +7,7 @@ jobs:
   build_test_deploy:
     env:
       NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     permissions: write-all
     steps:
     - uses: actions/checkout@v3
@@ -21,10 +21,10 @@ jobs:
     - name: Restore
       run: dotnet restore
     - name: Build
-      run: dotnet build -c Release src/SIL.LCModel/SIL.LCModel.csproj
+      run: dotnet build --no-restore -c Release src/SIL.LCModel/SIL.LCModel.csproj
     - name: Pack
       if: github.ref == 'refs/heads/migrationToDotNet6'
-      run: dotnet pack -c Release
+      run: dotnet pack --no-restore -c Release
     #- name: Deploy
      # if: github.ref == 'refs/heads/migrationToDotNet6'
       #run: dotnet nuget push output/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{secrets.SILLSDEV_PUBLISH_NUGET_ORG}} --skip-duplicate
