@@ -2,24 +2,24 @@
 
   <PropertyGroup>
     <RootNamespace>SIL.LCModel.Build.Tasks</RootNamespace>
-    <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <Description>The liblcm library is the core FieldWorks model for linguistic analyses of languages. Tools in this library provide the ability to store and interact with language and culture data, including anthropological, text corpus, and linguistics data.
 SIL.LCModel.Build.Tasks provides msbuild tasks for generating C# classes for the FieldWorks model: IdlImp and LcmGenerate.</Description>
     <BuildOutputTargetFolder>tools/$(TargetFramework)</BuildOutputTargetFolder>
 	<IsPackable>true</IsPackable>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.6.10" PrivateAssets="All" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="NVelocity" Version="1.2.0" PrivateAssets="All" />
-    <PackageReference Include="SIL.IdlImporter" Version="2.0.0" PrivateAssets="All" />
+    <PackageReference Include="SIL.IdlImporter" Version="2.0.1-beta0009" PrivateAssets="All" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.Build.Framework" />
-    <Reference Include="Microsoft.Build.Utilities.v4.0" />
   </ItemGroup>
 
   <Target Name="CopyTargetsAndProps" AfterTargets="Build">
@@ -32,11 +32,11 @@ SIL.LCModel.Build.Tasks provides msbuild tasks for generating C# classes for the
     <ItemGroup>
       <None Include="$(PackageId).props" Pack="true" PackagePath="build/" />
       <None Include="$(PackageId).props" Pack="true" PackagePath="buildMultiTargeting/" />
-      <None Include="$(OutputPath)/net461/antlr.runtime.dll" Pack="true" PackagePath="tools/net461/" />
-      <None Include="$(OutputPath)/net461/IDLImporter.dll" Pack="true" PackagePath="tools/net461/" />
-      <None Include="$(OutputPath)/net461/IDLImporter.xml" Pack="true" PackagePath="tools/net461/" />
-      <None Include="$(OutputPath)/net461/Newtonsoft.Json.dll" Pack="true" PackagePath="tools/net461/" />
-      <None Include="$(OutputPath)/net461/NVelocity.dll" Pack="true" PackagePath="tools/net461/" />
+      <None Include="$(OutputPath)/antlr.runtime.dll" Pack="true" PackagePath="tools/$(TargetFramework)/" />
+      <None Include="$(OutputPath)/IDLImporter.dll" Pack="true" PackagePath="tools/$(TargetFramework)/" />
+      <None Include="$(OutputPath)/IDLImporter.xml" Pack="true" PackagePath="tools/$(TargetFramework)/" />
+      <None Include="$(OutputPath)/Newtonsoft.Json.dll" Pack="true" PackagePath="tools/$(TargetFramework)/" />
+      <None Include="$(OutputPath)/NVelocity.dll" Pack="true" PackagePath="tools/$(TargetFramework)/" />
       <None Include="$(OutputPath)/lib/**/_._" Pack="true" PackagePath="lib/" />
     </ItemGroup>
   </Target>
