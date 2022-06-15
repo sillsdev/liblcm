@@ -1,5 +1,7 @@
 <Project>
   <PropertyGroup>
+    <!-- Projects that produce Nuget packages still need TargetFrameworks for Appveyor Auto Packaging -->
+    <TargetFrameworks>net461</TargetFrameworks>
     <Configurations>Debug;Release</Configurations>
     <Description>The liblcm library is the core FieldWorks model for linguistic analyses of languages. Tools in this library provide the ability to store and interact with language and culture data, including anthropological, text corpus, and linguistics data.</Description>
     <Company>SIL International</Company>
@@ -10,7 +12,6 @@
     <PackageProjectUrl>https://github.com/sillsdev/liblcm</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <OutputPath>$(MSBuildThisFileDirectory)/artifacts/$(Configuration)</OutputPath>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <PackageOutputPath>$(MSBuildThisFileDirectory)/artifacts</PackageOutputPath>
     <SignAssembly>true</SignAssembly>
     <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>

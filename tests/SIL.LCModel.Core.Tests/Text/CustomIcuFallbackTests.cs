@@ -121,6 +121,7 @@ namespace SIL.LCModel.Core.Text
 				"SIL.LCModel.Utils",
 				"icu.net",
 				"SIL.Core",
+				"SIL.Core.Desktop",
 				"Microsoft.Extensions.DependencyModel"
 			})
 			{

@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
     <RootNamespace>SIL.LCModel.FixData</RootNamespace>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
