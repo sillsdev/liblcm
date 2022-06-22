@@ -17,4 +17,5 @@ if not "%3"=="" (
 	exit /b 1
 )
 
-msbuild /t:%TARGET% /p:Configuration=%CONFIG% LCM.sln
+msbuild /t:Restore /p:Configuration=%CONFIG% /p:Platform="Any CPU" LCM.sln
+msbuild /t:%TARGET% /p:Configuration=%CONFIG% /p:Platform="Any CPU" LCM.sln

@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFrameworks>net461</TargetFrameworks>
     <RootNamespace>SIL.LCModel.Tools</RootNamespace>
     <Description>Lexer Generator</Description>
     <OutputPath>../../../artifacts/$(Configuration)</OutputPath>
