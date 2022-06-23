@@ -532,7 +532,8 @@ namespace SIL.LCModel.DomainImpl
 		[VirtualProperty(CellarPropertyType.ReferenceAtomic, "LexSense")]
 		public ILexSense OwningSense
 		{
-			get { return (ILexSense)Owner; }
+			// Return null if the owner is not a ILexSense (LT-21034).
+			get { return Owner as ILexSense; }
 		}
 
 		/// <summary>
