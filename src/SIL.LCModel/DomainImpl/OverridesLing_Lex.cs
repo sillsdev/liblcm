@@ -537,7 +537,7 @@ namespace SIL.LCModel.DomainImpl
 			{
 				if (Owner is ILexSense)
 					return Owner as ILexSense;
-				else if (Owner.Owner is ILexSense)
+				else if (Owner?.Owner is ILexSense)
 					return Owner.Owner as ILexSense;
 				else
 					return null;
