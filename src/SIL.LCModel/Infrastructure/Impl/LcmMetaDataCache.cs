@@ -73,7 +73,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public LcmMetaDataCache()
+		internal LcmMetaDataCache()
 		{
 			m_initialized = false;
 

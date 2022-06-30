@@ -30,7 +30,7 @@
 		/// Construction.
 		/// </summary>
 		/// <param name="cache"></param>
-		public ${className}$classSfx(LcmCache cache)
+		internal ${className}$classSfx(LcmCache cache)
 		{
 			if (cache == null) throw new ArgumentNullException("cache");
 			m_cache = cache;

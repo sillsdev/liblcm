@@ -20,7 +20,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public MemoryOnlyBackendProvider(LcmCache cache, IdentityMap identityMap, ICmObjectSurrogateFactory surrogateFactory,
+		internal MemoryOnlyBackendProvider(LcmCache cache, IdentityMap identityMap, ICmObjectSurrogateFactory surrogateFactory,
 			IFwMetaDataCacheManagedInternal mdc, IDataMigrationManager dataMigrationManager, ILcmUI ui, ILcmDirectories dirs, LcmSettings settings)
 			: base(cache, identityMap, surrogateFactory, mdc, dataMigrationManager, ui, dirs, settings)
 		{

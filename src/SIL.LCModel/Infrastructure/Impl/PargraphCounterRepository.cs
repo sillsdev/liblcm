@@ -28,7 +28,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// </summary>
 		/// <param name="cache">The cache.</param>
 		/// ------------------------------------------------------------------------------------
-		public ParagraphCounterRepository(LcmCache cache)
+		internal ParagraphCounterRepository(LcmCache cache)
 		{
 			m_cache = cache;
 		}
