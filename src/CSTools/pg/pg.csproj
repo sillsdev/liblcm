@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
     <RootNamespace>SIL.LCModel.Tools</RootNamespace>
     <Description>Parser Generator</Description>
     <OutputPath>../../../artifacts/$(Configuration)</OutputPath>

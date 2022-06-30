@@ -1,4 +1,4 @@
-// Copyright (c) 2015 SIL International
+﻿// Copyright (c) 2015 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -13,8 +13,6 @@ using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.DomainImpl;
 using SIL.LCModel.Infrastructure.Impl;
 using SIL.LCModel.Utils;
-using SIL.WritingSystems;
-using Icu.Collation;
 
 namespace SIL.LCModel.DomainServices
 {
@@ -92,39 +90,22 @@ namespace SIL.LCModel.DomainServices
 		/// one of the alternate forms of an Entry (these are currently the only possible owners, so we don't need
 		/// to check), which has a form matching the TsString in the appropriate writing system,
 		/// and which is not an affix.
-		/// Note: This now uses ICU for comparisons, but it may be better to replace the morph lookup using a
-		/// dictionary with TsStrings as keys. TsStrings do not currently implement == properly.
-		/// Therefore, you would need to make a special dictionary with an equals test that uses ITsString.Equals.
+		/// Note: depends on being able to look things up in the dictionary using TsStrings as keys.
+		/// TsStrings do not currently implement == properly.
+		/// Therefore, you need to make a special dictionary with an equals test that uses ITsString.Equals.
 		/// </summary>
 		public static void GetMatchingMonomorphemicMorphs(LcmCache cache, Dictionary<ITsString, IMoStemAllomorph> formCollector)
 		{
 			var morphRepo = (MoStemAllomorphRepository)cache.ServiceLocator.GetInstance<IMoStemAllomorphRepository>();
 			var morphData = morphRepo.MonomorphemicMorphData();
-			// Use ICU Rules if available, otherwise default search
-			if (formCollector.Count == 0)
-				return;
-			var firstKey = formCollector.FirstOrDefault();
-			int ws = TsStringUtils.GetWsAtOffset(firstKey.Key, 0);
-			var wsObj = cache.ServiceLocator.WritingSystemManager.Get(ws);
-			var rules = wsObj.DefaultCollation as IcuRulesCollationDefinition;
-			var srules = rules != null && rules.IsValid ? rules.IcuRules : string.Empty;
-			using (var icuCollator = new RuleBasedCollator(srules))
+			foreach (var key in formCollector.Keys.ToArray())
 			{
-				// Process each of the selected wordforms with possible lexical forms.
-				foreach (var key in formCollector.Keys.ToArray())
-				{
-					string form = key.Text;
-					// Go through selected morphs and if one matches the wordform, provide a possible analysis
-					foreach (var mf in morphData)
-					{
-						var mfForm = mf.Key.Item2.ToString();
-						if (icuCollator.Compare(form, mfForm) == 0)
-						{
-							formCollector[key] = mf.Value;
-							break;
-						}
-					}
-				}
+				int ws = TsStringUtils.GetWsAtOffset(key, 0);
+				string form = key.Text;
+				var dataKey = new Tuple<int, string>(ws, form);
+				IMoStemAllomorph morph;
+				if (morphData.TryGetValue(dataKey, out morph))
+					formCollector[key] = morph;
 			}
 		}
 
