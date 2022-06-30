@@ -42,7 +42,7 @@ namespace SIL.LCModel.Application.Impl
 		/// Therefore, one should not use them for multi-session identity.
 		/// CmObject identity can only be guaranteed by using their Guids (or using '==' in code).
 		/// </remarks>
-		internal DomainDataByFlid(ICmObjectRepository cmObjectRepository, IStTextRepository stTxtRepository,
+		public DomainDataByFlid(ICmObjectRepository cmObjectRepository, IStTextRepository stTxtRepository,
 			IFwMetaDataCacheManaged mdc, ISilDataAccessHelperInternal uowService,
 			ILgWritingSystemFactory wsf)
 		{

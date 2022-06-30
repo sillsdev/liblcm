@@ -55,7 +55,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		internal IdentityMap(IFwMetaDataCacheManaged mdc)
+		public IdentityMap(IFwMetaDataCacheManaged mdc)
 		{
 			if (mdc == null) throw new ArgumentNullException("mdc");
 
