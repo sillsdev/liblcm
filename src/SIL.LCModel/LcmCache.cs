@@ -1434,7 +1434,7 @@ namespace SIL.LCModel
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		internal LcmCache()
+		public LcmCache()
 		{}
 
 		internal ITsString MakeUserTss(string val)

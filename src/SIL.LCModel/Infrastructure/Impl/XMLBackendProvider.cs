@@ -121,7 +121,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		internal XMLBackendProvider(LcmCache cache, IdentityMap identityMap,
+		public XMLBackendProvider(LcmCache cache, IdentityMap identityMap,
 			ICmObjectSurrogateFactory surrogateFactory, IFwMetaDataCacheManagedInternal mdc,
 			IDataMigrationManager dataMigrationManager, ILcmUI ui, ILcmDirectories dirs, LcmSettings settings) :
 			base(cache, identityMap, surrogateFactory, mdc, dataMigrationManager, ui, dirs, settings)

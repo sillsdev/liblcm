@@ -38,7 +38,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		private readonly Dictionary<int, Process> m_peerProcesses;
 		private string m_commitLogDir;
 
-		internal SharedXMLBackendProvider(LcmCache cache, IdentityMap identityMap, ICmObjectSurrogateFactory surrogateFactory, IFwMetaDataCacheManagedInternal mdc,
+		public SharedXMLBackendProvider(LcmCache cache, IdentityMap identityMap, ICmObjectSurrogateFactory surrogateFactory, IFwMetaDataCacheManagedInternal mdc,
 			IDataMigrationManager dataMigrationManager, ILcmUI ui, ILcmDirectories dirs, LcmSettings settings)
 			: base(cache, identityMap, surrogateFactory, mdc, dataMigrationManager, ui, dirs, settings)
 		{

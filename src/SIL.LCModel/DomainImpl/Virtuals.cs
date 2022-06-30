@@ -21,7 +21,7 @@ namespace SIL.LCModel.DomainImpl // TODO: Move this to DomainServices
 		private int m_langProjectAllWordforms;
 		private int m_lexEntryMLHeadWord;
 
-		internal Virtuals(IFwMetaDataCacheManaged mdc)
+		public Virtuals(IFwMetaDataCacheManaged mdc)
 		{
 			m_mdc = mdc;
 		}
