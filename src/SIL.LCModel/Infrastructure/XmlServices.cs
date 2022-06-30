@@ -168,7 +168,7 @@ namespace SIL.LCModel.Infrastructure
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public LoadingServices(IDataSetup dataSetup, ICmObjectIdFactory objIdFactory,
+		internal LoadingServices(IDataSetup dataSetup, ICmObjectIdFactory objIdFactory,
 			IFwMetaDataCacheManaged mdcManaged, ILgWritingSystemFactory wsf, IUnitOfWorkService uowService,
 			ICmObjectSurrogateRepository surrRepository, ICmObjectRepository cmObjRepository)
 		{

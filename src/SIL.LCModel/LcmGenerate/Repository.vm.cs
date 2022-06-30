@@ -22,7 +22,7 @@
 #if ($class.IsSingleton)
 		private I${className} m_cachedSingleton;
 #end
-		public ${className}Repository(LcmCache cache, IDataReader dataReader) : base (cache, dataReader)
+		internal ${className}Repository(LcmCache cache, IDataReader dataReader) : base (cache, dataReader)
 		{
 		}
 

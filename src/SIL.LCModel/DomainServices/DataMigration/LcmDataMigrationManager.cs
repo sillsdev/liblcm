@@ -43,7 +43,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// Constructor
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public LcmDataMigrationManager()
+		internal LcmDataMigrationManager()
 		{
 			// Starting with the first key of 7000001 and continuing in numerical order (with no gaps),
 			// add instances of IDataMigration as values, which will perform the migration for

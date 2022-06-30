@@ -44,7 +44,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public AnalysisRepository(ICmObjectRepository everythingRepos, IWfiWordformRepository wordformRepos,
+		internal AnalysisRepository(ICmObjectRepository everythingRepos, IWfiWordformRepository wordformRepos,
 			IPunctuationFormRepository punctFormRepos, IWfiAnalysisRepository analysisRepos, IWfiGlossRepository glossRepos)
 		{
 			if (everythingRepos == null) throw new ArgumentNullException("everythingRepos");
