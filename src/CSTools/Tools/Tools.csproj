@@ -5,7 +5,6 @@
     <RootNamespace>SIL.LCModel.Tools</RootNamespace>
     <AssemblyName>SIL.LCModel.Tools</AssemblyName>
     <Description>SIL LCModel Lexer/Parser Tools</Description>
-    <OutputPath>../../../artifacts/$(Configuration)</OutputPath>
     <PackageOutputPath>../../../artifacts</PackageOutputPath>
     <ChangelogFile>../../../CHANGELOG.md</ChangelogFile>
     <AssemblyOriginatorKeyFile>../../../liblcm.snk</AssemblyOriginatorKeyFile>

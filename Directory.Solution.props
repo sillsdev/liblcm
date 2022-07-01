@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <Configurations>Debug;Release</Configurations>
+    <Platform>Any CPU</Platform>
+    <BuildInParallel>false</BuildInParallel>
+  </PropertyGroup>
+</Project>

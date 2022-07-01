@@ -19,6 +19,7 @@ SIL.LCModel.Utils provides utility classes.</Description>
     <Reference Include="System.Management" />
   </ItemGroup>
 
+  <!-- Mono.Posix Reference groups -->
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
   </ItemGroup>
