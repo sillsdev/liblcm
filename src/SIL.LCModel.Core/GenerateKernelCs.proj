@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="GenerateKernelCs">
 	<Import Project="$(VSInstallDir)\VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.props" Condition="'$(OS)'=='Windows_NT'"/>
-	<UsingTask TaskName="IdlImp" AssemblyFile="$(OutDir)SIL.LCModel.Build.Tasks.dll" />
+	<UsingTask TaskName="IdlImp" AssemblyFile="$(OutDir)..\netstandard2.0\SIL.LCModel.Build.Tasks.dll" />
 
 	<PropertyGroup Condition="'$(OS)'=='Windows_NT'">
 		<!-- use the vswhere provided VSInstallDir and the VCToolsVersion to locate cl.exe -->
@@ -23,7 +23,7 @@
 
 		<UsingNamespaces Include="SIL.LCModel.Utils" />
 	</ItemGroup>
-	<Target Name="GenerateKernelCs">
+	<Target Name="GenerateKernelCs" Inputs="@(KernelIdhFiles)" Outputs="$(OutDir)KernelInterfaces/FwKernelTlb.json">
 		<Exec Command="$(PreprocessCommand) $(KernelIdl) > $(PreprocessedKernelIdl)" />
 		<IdlImp Output="KernelInterfaces/Kernel.cs"
 				Namespace="SIL.LCModel.Core.KernelInterfaces"

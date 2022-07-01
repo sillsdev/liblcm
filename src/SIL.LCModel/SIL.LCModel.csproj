@@ -84,7 +84,7 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <OutDir Condition="'$(OutDir)' == ''">../../artifacts/$(Configuration)/</OutDir>
+    <OutDir Condition="'$(OutDir)' == ''">../../artifacts/$(Configuration)/$(TargetFramework)/</OutDir>
     <MsBuildCommand Condition="'$(MsBuildRuntimeType)'=='Core' And '$(MsBuildCommand)'==''">dotnet build</MsBuildCommand>
     <MsbuildCommand Condition="'$(OS)'=='Windows_NT' And '$(MsBuildCommand)'==''">"$(MSBuildBinPath)\msbuild.exe"</MsbuildCommand>
     <MsbuildCommand Condition="'$(OS)'=='Unix' And '$(MsBuildCommand)'==''">msbuild</MsbuildCommand>
