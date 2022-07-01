@@ -1,0 +1,109 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build;Pack">
+	<PropertyGroup>
+		<RootDir Condition="'$(teamcity_build_checkoutDir)' == '' And '$(RootDir)'==''">$(MSBuildProjectDirectory)/..</RootDir>
+		<RootDir Condition="'$(teamcity_build_checkoutDir)' != ''">$(teamcity_build_checkoutDir)</RootDir>
+		<Solution>LCM.sln</Solution>
+		<SolutionPath>$(RootDir)/$(Solution)</SolutionPath>
+		<Configuration Condition="'$(Configuration)'==''">Release</Configuration>
+		<ExtraExcludeCategories Condition="'$(OS)'!='Windows_NT'">KnownMonoIssue,</ExtraExcludeCategories>
+		<ExtraExcludeCategories Condition="'$(teamcity_version)' != '' Or '$(JENKINS_URL)' != ''">SkipOnTeamCity,$(ExtraExcludeCategories)</ExtraExcludeCategories>
+		<useNUnit-x86 Condition="'$(OS)'=='Windows_NT'">true</useNUnit-x86>
+		<useNUnit-x86 Condition="'$(OS)'!='Windows_NT'">false</useNUnit-x86>
+		<Platform>Any CPU</Platform>
+		<RestartBuild Condition="!Exists('$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll') Or !Exists('$(RootDir)/packages/NUnit.ConsoleRunner/tools/nunit3-console.exe')">true</RestartBuild>
+		<RestartBuild Condition="Exists('$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll') And Exists('$(RootDir)/packages/NUnit.ConsoleRunner/tools/nunit3-console.exe')">false</RestartBuild>
+		<ContinuousIntegrationBuild Condition="'$(teamcity_version)' != '' Or '$(JENKINS_URL)' != '' Or '$(CI)' != '' ">true</ContinuousIntegrationBuild>
+		<ContinuousIntegrationBuild Condition="'$(teamcity_version)' == '' And '$(JENKINS_URL)' == '' And '$(CI)' == '' ">false</ContinuousIntegrationBuild>
+		<TeamCity Condition="'$(teamcity_version)' != ''">true</TeamCity>
+		<TeamCity Condition="'$(teamcity_version)' == ''">false</TeamCity>
+		<TestOutputXmlFile Condition="'$(teamcity_version)' == ''">$(RootDir)/output/$(Configuration)/TestResults.xml</TestOutputXmlFile>
+		<DeterministicSourcePaths>$(ContinuousIntegrationBuild)</DeterministicSourcePaths>
+	</PropertyGroup>
+
+	<UsingTask TaskName="NUnit3"
+		AssemblyFile="$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll"
+		Condition="Exists('$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll')" />
+
+	<Target Name="Build">
+		<CallTarget Targets="InitialRestore" />
+		<CallTarget Targets="BuildInternal" Condition="!$(RestartBuild)" />
+		<MSBuild Projects="$(MSBuildProjectFullPath)" Targets="BuildInternal"
+			Properties="Configuration=$(Configuration);RootDir=$(RootDir);Platform=$(Platform)"
+			Condition="$(RestartBuild)" />
+	</Target>
+
+	<Target Name="BuildInternal">
+		<CallTarget Targets="Clean"/>
+		<CallTarget Targets="Compile"/>
+		<Message Text="Build Complete"/>
+	</Target>
+
+	<ItemGroup>
+		<PackageDirs Include="$([System.IO.Directory]::GetDirectories(&quot;$(RootDir)/packages/&quot;, &quot;SIL.BuildTasks*&quot;, SearchOption.TopDirectoryOnly))" Condition="Exists('$(RootDir)/packages/')" />
+		<PackageDirs Include="$([System.IO.Directory]::GetDirectories(&quot;$(RootDir)/packages/&quot;, &quot;NUnit.*&quot;, SearchOption.TopDirectoryOnly))" Condition="Exists('$(RootDir)/packages/')" />
+	</ItemGroup>
+
+	<Target Name="InitialRestore">
+		<Message Text="RestartBuild=$(RestartBuild)" />
+		<!-- first remove any existing packages - if they were installed with appended version numbers nuget refuses to install it again, messing up things -->
+		<RemoveDir Directories="@(PackageDirs)" />
+		<MSBuild
+			Projects="$(SolutionPath)"
+			Targets="Restore"
+			Properties="Configuration=$(Configuration);Platform=$(Platform);ContinuousIntegrationBuild=$(ContinuousIntegrationBuild);DeterministicSourcePaths=$(DeterministicSourcePaths)" />
+	</Target>
+
+	<ItemGroup>
+		<ExistingObjectFiles
+			Include="$(RootDir)/output/$(Configuration)/**/*"
+			Exclude="$(RootDir)/.hg/**/*;$(RootDir)/.git/**/*"
+		/>
+	</ItemGroup>
+
+	<Target Name="Clean">
+		<Delete Files="@(ExistingObjectFiles)" />
+		<Delete Condition="'$(OS)'=='Windows_NT' OR $(MSBuildToolsVersion) &gt;= 15"
+			 Files="$(RootDir)/**/obj/**/*" />
+		<Exec Condition="'$(OS)'!='Windows_NT' AND $(MSBuildToolsVersion) &lt; 15"
+			Command="find . %5c( -name obj -o -name bin -o -name test-results %5c) -type d -print0 | xargs -0 rm -rf"
+			WorkingDirectory="$(RootDir)" />
+	</Target>
+
+	<Target Name="Compile" DependsOnTargets="InitialRestore">
+		<MSBuild
+			Projects="$(SolutionPath)"
+			Targets="src\CSTools\pg;src\CSTools\lg;tests\TestHelper;Build"
+			Properties="Configuration=$(Configuration);Platform=$(Platform);ContinuousIntegrationBuild=$(ContinuousIntegrationBuild);DeterministicSourcePaths=$(DeterministicSourcePaths)" />
+	</Target>
+
+	<Target Name="Test" DependsOnTargets="Build">
+		<CallTarget Targets="TestOnly" Condition="!$(RestartBuild)" />
+		<MSBuild Projects="$(MSBuildProjectFullPath)" Targets="TestOnly"
+			Properties="Configuration=$(Configuration);RootDir=$(RootDir);Platform=$(Platform)"
+			Condition="$(RestartBuild)" />
+	</Target>
+
+	<Target Name="TestOnly">
+		<ItemGroup>
+			<TestAssemblies Include="$(RootDir)/output/$(Configuration)/**/*Tests.dll"/>
+		</ItemGroup>
+
+		<NUnit3
+			Assemblies="@(TestAssemblies)"
+			ToolPath="$(RootDir)/packages/NUnit.ConsoleRunner/tools"
+			ExcludeCategory="$(ExtraExcludeCategories)$(excludedCategories)"
+			WorkingDirectory="$(RootDir)/output/$(Configuration)"
+			Force32Bit="$(useNUnit-x86)"
+			Verbose="true"
+			UseNUnit3Xml="false"
+			OutputXmlFile="$(TestOutputXmlFile)"
+			TeamCity="$(TeamCity)"/>
+	</Target>
+
+	<Target Name="Pack" DependsOnTargets="Compile">
+		<MSBuild
+			Projects="$(SolutionPath)"
+			Targets="pack"
+			Properties="Configuration=$(Configuration);Platform=$(Platform);ContinuousIntegrationBuild=$(ContinuousIntegrationBuild);DeterministicSourcePaths=$(DeterministicSourcePaths)" />
+	</Target>
+</Project>

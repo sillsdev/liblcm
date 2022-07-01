@@ -84,7 +84,7 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
   </ItemGroup>
 
   <PropertyGroup>
-    <OutDir Condition="'$(OutDir)' == ''">../../artifacts/$(Configuration)/</OutDir>
+    <OutDir Condition="'$(OutDir)' == ''">../../artifacts/$(TargetFramework)/$(Configuration)/</OutDir>
     <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">obj/x86/$(Configuration)/</IntermediateOutputPath>
     <MsBuildCommand Condition="'$(MsBuildRuntimeType)'=='Core' And '$(MsBuildCommand)'==''">dotnet build</MsBuildCommand>
     <MsbuildCommand Condition="'$(OS)'=='Windows_NT' And '$(MsBuildCommand)'==''">"$(MSBuildBinPath)\msbuild.exe"</MsbuildCommand>
@@ -131,7 +131,7 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
     <Clean Include="@(IcuDataOutputs)" />
   </ItemGroup>
 
-  <Target Name="GenerateIcuData" AfterTargets="Build" Inputs="@(IcuDataInputs)" Outputs="@(IcuDataOutputs)">
+  <Target Name="GenerateIcuData" AfterTargets="CoreBuild" Inputs="@(IcuDataInputs)" Outputs="@(IcuDataOutputs)">
     <PropertyGroup>
       <Folder Condition="'$(Platform)'=='x86'">win-x86</Folder>
       <Folder Condition="'$(Platform)'!='x86'">win-x64</Folder>

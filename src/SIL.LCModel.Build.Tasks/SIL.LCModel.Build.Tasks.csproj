@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <RootNamespace>SIL.LCModel.Build.Tasks</RootNamespace>
@@ -14,12 +14,13 @@ SIL.LCModel.Build.Tasks provides msbuild tasks for generating C# classes for the
     <PackageReference Include="GitVersion.MsBuild" Version="5.6.10" PrivateAssets="All" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="NVelocity" Version="1.2.0" PrivateAssets="All" />
-    <PackageReference Include="SIL.IdlImporter" Version="2.0.1-beta0009" PrivateAssets="All" />
+    <PackageReference Include="SIL.IdlImporter" Version="2.0.1-beta0009" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.Build.Utilities.v4.0" Condition="'$(TargetFramework)'!='netstandard2.0'"></Reference>
   </ItemGroup>
 
   <Target Name="CopyTargetsAndProps" AfterTargets="Build">
@@ -29,14 +30,22 @@ SIL.LCModel.Build.Tasks provides msbuild tasks for generating C# classes for the
   </Target>
 
   <Target Name="CollectRuntimeOutputs" BeforeTargets="_GetPackageFiles">
+    <!-- Because `dotnet pack` does not provide the $(TargetFramework) property to this task -->
+    <!-- we will collect the $(TargetFrameworks) into Items and use msbuild batch functionality -->
+    <!-- to pack all Include files for each TargetFramework -->
+    <ItemGroup><_TargetFrameworksItem Include="$(TargetFrameworks)"/></ItemGroup>
+    <PropertyGroup>
+      <BuildArtifactsFolder>$(MSBuildThisFileDirectory)../../artifacts/</BuildArtifactsFolder>
+    </PropertyGroup>
+    <Message Importance="High"  Text="$(BuildArtifactsFolder)/%(_TargetFrameworksItem.Identity)/$(Configuration)/" />
     <ItemGroup>
       <None Include="$(PackageId).props" Pack="true" PackagePath="build/" />
       <None Include="$(PackageId).props" Pack="true" PackagePath="buildMultiTargeting/" />
-      <None Include="$(OutputPath)/antlr.runtime.dll" Pack="true" PackagePath="tools/$(TargetFramework)/" />
-      <None Include="$(OutputPath)/IDLImporter.dll" Pack="true" PackagePath="tools/$(TargetFramework)/" />
-      <None Include="$(OutputPath)/IDLImporter.xml" Pack="true" PackagePath="tools/$(TargetFramework)/" />
-      <None Include="$(OutputPath)/Newtonsoft.Json.dll" Pack="true" PackagePath="tools/$(TargetFramework)/" />
-      <None Include="$(OutputPath)/NVelocity.dll" Pack="true" PackagePath="tools/$(TargetFramework)/" />
+      <None Include="$(BuildArtifactsFolder)/%(_TargetFrameworksItem.Identity)/$(Configuration)/antlr.runtime.dll" Pack="true" PackagePath="tools/%(_TargetFrameworksItem.Identity)/" />
+      <None Include="$(BuildArtifactsFolder)/%(_TargetFrameworksItem.Identity)/$(Configuration)/IDLImporter.dll" Pack="true" PackagePath="tools/%(_TargetFrameworksItem.Identity)/" />
+      <None Include="$(BuildArtifactsFolder)/%(_TargetFrameworksItem.Identity)/$(Configuration)/IDLImporter.xml" Pack="true" PackagePath="tools/%(_TargetFrameworksItem.Identity)/" />
+      <None Include="$(BuildArtifactsFolder)/%(_TargetFrameworksItem.Identity)/$(Configuration)/Newtonsoft.Json.dll" Pack="true" PackagePath="tools/%(_TargetFrameworksItem.Identity)/" />
+      <None Include="$(BuildArtifactsFolder)/%(_TargetFrameworksItem.Identity)/$(Configuration)/NVelocity.dll" Pack="true" PackagePath="tools/%(_TargetFrameworksItem.Identity)/" />
       <None Include="$(OutputPath)/lib/**/_._" Pack="true" PackagePath="lib/" />
     </ItemGroup>
   </Target>

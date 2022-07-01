@@ -23,7 +23,9 @@
 
 		<UsingNamespaces Include="SIL.LCModel.Utils" />
 	</ItemGroup>
-	<Target Name="GenerateKernelCs">
+	<Target Name="GenerateKernelCs" Inputs="@(KernelIdhFiles>" Outputs="$(OutDir)KernelInterfaces/FwKernelTlb.json">
+		<Copy SourceFiles="C:/Windows/Microsoft.NET/Framework64/v4.0.30319/Microsoft.Build.Utilities.v4.0.dll"
+			DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
 		<Exec Command="$(PreprocessCommand) $(KernelIdl) > $(PreprocessedKernelIdl)" />
 		<IdlImp Output="KernelInterfaces/Kernel.cs"
 				Namespace="SIL.LCModel.Core.KernelInterfaces"
