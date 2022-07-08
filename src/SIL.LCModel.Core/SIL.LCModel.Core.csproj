@@ -193,6 +193,9 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
     </ItemGroup>
   </Target>
 
+  <!-- dotnet pack fails without this hack (some issue with project dependency resolution) -->
+  <Target Name="GetTargetPath" />
+
   <Target Name="CheckWinForms" BeforeTargets="CoreCompile">
     <Error Text="Please do NOT make liblcm reference System.Windows.Forms. It is not supposed to contain UI code!" Condition="'%(Reference.Identity)' == 'System.Windows.Forms' Or '$(UseWindowsForms)' == 'true'" />
   </Target>
