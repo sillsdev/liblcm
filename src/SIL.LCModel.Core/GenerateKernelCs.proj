@@ -23,7 +23,7 @@
 
 		<UsingNamespaces Include="SIL.LCModel.Utils" />
 	</ItemGroup>
-	<Target Name="GenerateKernelCs" Inputs="@(KernelIdhFiles>" Outputs="$(OutDir)KernelInterfaces/FwKernelTlb.json">
+	<Target Name="GenerateKernelCs" Inputs="@(KernelIdhFiles)" Outputs="$(OutDir)KernelInterfaces/FwKernelTlb.json">
 		<Exec Command="$(PreprocessCommand) $(KernelIdl) > $(PreprocessedKernelIdl)" />
 		<IdlImp Output="KernelInterfaces/Kernel.cs"
 				Namespace="SIL.LCModel.Core.KernelInterfaces"
