@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-latest]
     runs-on: ${{ matrix.os }}
     env:
       DOTNET_NOLOGO: true
@@ -38,6 +38,7 @@ jobs:
         
     - name: Run UnitTests
       run: |
-       find artifacts/ -type f -name '*Tests.dll' | paste -sd ' '
-       echo "TESTASSEMBLIES=$(find artifacts/ -type f -name '*Tests.dll' | paste -sd ' ')" >> $GITHUB_ENV
+       Get-ChildItem artifacts -recurse -file -include *Tests.dll -name
+       Get-ChildItem artifacts -recurse -file -include *Tests.dll -name | paste -sd ' '
+       echo "TESTASSEMBLIES=$(Get-ChildItem artifacts -recurse -file -include *Tests.dll -name | paste -sd ' ')" >> $GITHUB_ENV
        ./NUnit.ConsoleRunner.3.13.0/tools/nunit3-console.exe  ${{ env.TESTASSEMBLIES }}
