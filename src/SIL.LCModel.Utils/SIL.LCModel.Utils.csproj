@@ -21,11 +21,13 @@ SIL.LCModel.Utils provides utility classes.</Description>
 
   <!-- Mono.Posix Reference groups -->
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
+    <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" Condition="'$(OS)' == 'Windows_NT'" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
     <PackageReference Include="Mono.Posix" Version="5.4.0.201" PrivateAssets="All" Condition="'$(OS)' == 'Windows_NT'" />
-    <Reference Include="Mono.Posix" Condition="'$(OS)' != 'Windows_NT'" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(OS)' != 'Windows_NT'" >
+    <Reference Include="Mono.Posix"/>
   </ItemGroup>
 
   <Target Name="CheckWinForms" BeforeTargets="CoreCompile">
