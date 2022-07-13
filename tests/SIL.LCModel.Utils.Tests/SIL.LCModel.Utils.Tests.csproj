@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net461</TargetFrameworks>
     <RootNamespace>SIL.LCModel.Utils</RootNamespace>
     <Description>The liblcm library is the core FieldWorks model for linguistic analyses of languages. Tools in this library provide the ability to store and interact with language and culture data, including anthropological, text corpus, and linguistics data.
 This package provides unit tests for SIL.LCModel.Utils and test utility classes</Description>
@@ -18,9 +18,11 @@ This package provides unit tests for SIL.LCModel.Utils and test utility classes<
   <!-- Mono.Posix Reference groups -->
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
+    <Reference Include="Mono.Posix.NETStandard" Condition="'$(OS)' != 'Windows_NT'" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
     <PackageReference Include="Mono.Posix" Version="5.4.0.201" PrivateAssets="All" />
+    <Reference Include="Mono.Posix" Condition="'$(OS)' != 'Windows_NT'" />
   </ItemGroup>
 
   <ItemGroup>

@@ -30,11 +30,15 @@ jobs:
       with:
         dotnet-version: 6.0.x
 
+    - name: Install mono-devel package
+      run: sudo apt-get install mono-devel
+      if: matrix.os == 'ubuntu-latest'
+
     - name: Build
       run: dotnet build
 
     - name: Test
-      run: dotnet test --no-restore --no-build
+      run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false
 
     - name: Package
       run: dotnet pack --include-symbols --no-restore --no-build -p:SymbolPackageFormat=snupkg 

@@ -15,7 +15,18 @@ namespace Icu.Tests
 			// The only purpose of this TestHelper app is to output the ICU version
 			// so that we can run unit tests that test loading of our custom ICU
 			// or fallback to default ICU
-			var baseDir = args?.Length > 0 ? args[0] : CodeDir;
+			string baseDir;
+			if (Environment.CommandLine.StartsWith("dotnet"))
+			{
+				// in a netcore build we execute dotnet with the assembly as the first argument
+				baseDir = args?.Length > 1 ? args[1] : CodeDir;
+			}
+			else
+			{
+				// The first argument is the directory to use as IcuData
+				baseDir = args?.Length > 0 ? args[0] : CodeDir;
+			}
+
 			SetIcuDataDirectory(baseDir, "IcuData");
 			CustomIcu.InitIcuDataDir();
 			Console.WriteLine(Wrapper.IcuVersion);

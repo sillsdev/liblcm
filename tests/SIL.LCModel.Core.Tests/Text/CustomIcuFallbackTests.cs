@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Icu;
@@ -189,6 +190,10 @@ namespace SIL.LCModel.Core.Text
 			// NOTE: if this test fails, check that you don't have icuuc54.dll or icuuc62.dll somewhere,
 			// e.g. in C:\Program Files (x86)\Common Files\SIL
 			CopyIcuFiles(_tmpDir, DefaultIcuLibraryVersionMajor);
+			// Verify that the folder has the correct contents to execute the SUT
+			var icuFilesInTmpDir = Directory.EnumerateFiles(_tmpDir, "icudt*.dll", SearchOption.AllDirectories).ToArray();
+			Assert.That(icuFilesInTmpDir.Where(f => f.Contains(DefaultIcuLibraryVersionMajor)).Count, Is.EqualTo(2));
+			// SUT
 			Assert.That(RunTestHelper(_tmpDir), Is.EqualTo($"{DefaultIcuLibraryVersionMajor}.2{Environment.NewLine}PRIVATE_USE_CHAR{Environment.NewLine}False"));
 		}
 
