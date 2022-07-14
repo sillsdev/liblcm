@@ -192,7 +192,8 @@ namespace SIL.LCModel.Core.Text
 			CopyIcuFiles(_tmpDir, DefaultIcuLibraryVersionMajor);
 			// Verify that the folder has the correct contents to execute the SUT
 			var icuFilesInTmpDir = Directory.EnumerateFiles(_tmpDir, "icudt*.dll", SearchOption.AllDirectories).ToArray();
-			Assert.That(icuFilesInTmpDir.Where(f => f.Contains(DefaultIcuLibraryVersionMajor)).Count, Is.EqualTo(2));
+			Assert.That(icuFilesInTmpDir.Count, Is.EqualTo(2), string.Join("\r\n", icuFilesInTmpDir));
+			Assert.That(icuFilesInTmpDir.All(f => f.Contains(DefaultIcuLibraryVersionMajor)), Is.True, string.Join("\r\n", icuFilesInTmpDir));
 			// SUT
 			Assert.That(RunTestHelper(_tmpDir), Is.EqualTo($"{DefaultIcuLibraryVersionMajor}.2{Environment.NewLine}PRIVATE_USE_CHAR{Environment.NewLine}False"));
 		}
