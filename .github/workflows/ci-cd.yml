@@ -41,6 +41,9 @@ jobs:
     - name: Build
       run: dotnet build
 
+    - name: Where
+      run: where icuuc62.dll
+
     - name: Test
       run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false
 

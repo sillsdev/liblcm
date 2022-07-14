@@ -12,6 +12,7 @@ using Icu;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.LCModel.Core.Attributes;
+// ReSharper disable LocalizableElement
 
 namespace SIL.LCModel.Core.Text
 {
@@ -62,6 +63,10 @@ namespace SIL.LCModel.Core.Text
 		{
 			if (string.IsNullOrEmpty(exeDir))
 				exeDir = _tmpDir;
+
+			var result = Process.Start("where", "icuuc62.dll");
+			result.WaitForExit();
+			Console.WriteLine(result.StandardOutput.ReadToEnd());
 
 			using (var process = new Process())
 			{
@@ -144,6 +149,7 @@ namespace SIL.LCModel.Core.Text
 
 			CopyTestFiles(OutputDirectory, _tmpDir);
 
+			Console.WriteLine($"Original PATH: {Environment.GetEnvironmentVariable("PATH")}");
 			_pathEnvironmentVariable = Environment.GetEnvironmentVariable("PATH");
 		}
 
@@ -152,6 +158,7 @@ namespace SIL.LCModel.Core.Text
 		{
 			Wrapper.Cleanup();
 			Wrapper.ConfineIcuVersions(Wrapper.MinSupportedIcuVersion, Wrapper.MaxSupportedIcuVersion);
+			Console.WriteLine($"TearDown: setting PATH from {Environment.GetEnvironmentVariable("PATH")} back to {_pathEnvironmentVariable}");
 			Environment.SetEnvironmentVariable("PATH", _pathEnvironmentVariable);
 		}
 
@@ -159,6 +166,7 @@ namespace SIL.LCModel.Core.Text
 		public void FixtureSetUp()
 		{
 			// Undo the PATH that got set by the InitializeIcu attribute
+			Console.WriteLine($"FixtureSetup: setting PATH from {Environment.GetEnvironmentVariable("PATH")} to {InitializeIcuAttribute.PreTestPathEnvironment}");
 			Environment.SetEnvironmentVariable("PATH", InitializeIcuAttribute.PreTestPathEnvironment);
 			_dirsToDelete = new List<string>();
 			_preTestDataDir = Wrapper.DataDirectory;
