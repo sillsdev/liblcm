@@ -35,7 +35,9 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
 
     - name: Install icu-fw package
-      run: sudo apt-get install icu-fw
+      run: wget -qO - http://linux.lsdev.sil.org/downloads/sil-testing.gpg | sudo tee /etc/apt/trusted.gpg.d/linux-lsdev-sil-org.asc &&
+        sudo add-apt-repository "deb http://linux.lsdev.sil.org/ubuntu $(lsb_release -sc)-experimental main" &&
+        sudo apt-get install icu-fw
       if: matrix.os == 'ubuntu-latest'
 
     - name: Build
@@ -48,7 +50,7 @@ jobs:
       run: dotnet pack --include-symbols --no-restore --no-build -p:SymbolPackageFormat=snupkg 
 
     - name: Publish to Nuget
-      run: dotnet nuget push output/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{secrets.SILLSDEV_PUBLISH_NUGET_ORG}} --skip-duplicate
+      run: dotnet nuget push artifacts/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{secrets.SILLSDEV_PUBLISH_NUGET_ORG}} --skip-duplicate
       if: github.event_name == 'push' && matrix.os == 'ubuntu-latest'
 
     - name: Publish Artifacts
