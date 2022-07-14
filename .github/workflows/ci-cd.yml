@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-2019, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     env:
       DOTNET_NOLOGO: true
