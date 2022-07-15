@@ -1,10 +1,11 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2018-2022 SIL International
 // This software is licensed under the MIT license (http://opensource.org/licenses/MIT)
 using System;
 using System.IO;
 using System.Reflection;
 using Microsoft.Win32;
 using SIL.LCModel.Core.Text;
+// ReSharper disable LocalizableElement - our test engineers understand English.
 
 namespace Icu.Tests
 {
