@@ -59,7 +59,7 @@ namespace SIL.LCModel.Core.Text
 			return Path.Combine(OutputDirectory, GetArchSubdir(arch));
 		}
 
-		private string RunTestHelper(string workDir, bool expectFailure = false, string exeDir = null)
+		private string RunTestHelper(string workDir, out string stdErr, bool expectFailure = false, string exeDir = null)
 		{
 			if (string.IsNullOrEmpty(exeDir))
 				exeDir = _tmpDir;
@@ -85,11 +85,12 @@ namespace SIL.LCModel.Core.Text
 				process.Start();
 				var output = process.StandardOutput.ReadToEnd();
 				process.WaitForExit();
+				stdErr = process.StandardError.ReadToEnd();
 				if (process.ExitCode != 0)
 				{
 					var expected = expectFailure ? "expected" : "unexpected";
 					Console.WriteLine($"TestHelper.exe failed ({expected}):");
-					Console.WriteLine(process.StandardError.ReadToEnd());
+					Console.WriteLine(stdErr);
 				}
 				return output.TrimEnd('\r', '\n');
 			}
@@ -184,7 +185,8 @@ namespace SIL.LCModel.Core.Text
 		{
 			CopyIcuFiles(_tmpDir, CustomIcuLibraryVersionMajor);
 			Console.WriteLine("InitIcuDataDir_CustomIcuVersion");
-			Assert.That(RunTestHelper(_tmpDir), Is.EqualTo($"{CustomIcuLibraryVersionMajor}.1{Environment.NewLine}NON_SPACING_MARK{Environment.NewLine}True"));
+			//Console.WriteLine(RunTestHelper(_tmpDir));
+			Assert.That(RunTestHelper(_tmpDir, out _), Is.EqualTo($"{CustomIcuLibraryVersionMajor}.1{Environment.NewLine}NON_SPACING_MARK{Environment.NewLine}True"));
 		}
 
 		[Test]
@@ -199,7 +201,7 @@ namespace SIL.LCModel.Core.Text
 			Assert.That(icuFilesInTmpDir.All(f => f.Contains(DefaultIcuLibraryVersionMajor)), Is.True, string.Join("\r\n", icuFilesInTmpDir));
 			// SUT
 			Console.WriteLine("InitIcuDataDir_FallbackDefaultIcuVersion");
-			Assert.That(RunTestHelper(_tmpDir), Is.EqualTo($"{DefaultIcuLibraryVersionMajor}.2{Environment.NewLine}PRIVATE_USE_CHAR{Environment.NewLine}False"));
+			Assert.That(RunTestHelper(_tmpDir, out _), Is.EqualTo($"{DefaultIcuLibraryVersionMajor}.2{Environment.NewLine}PRIVATE_USE_CHAR{Environment.NewLine}False"));
 			Console.WriteLine("InitIcuDataDir_FallbackDefaultIcuVersion finish");
 		}
 
@@ -207,7 +209,8 @@ namespace SIL.LCModel.Core.Text
 		public void InitIcuDataDir_NoIcuLibrary()
 		{
 			Console.WriteLine("InitIcuDataDir_NoIcuLibrary");
-			Assert.That(RunTestHelper(_tmpDir, true), Is.Empty);
+			Assert.That(RunTestHelper(_tmpDir, out var stdErr, true), Is.Empty);
+			Assert.That(stdErr, Does.Contain("Unhandled Exception: System.IO.FileLoadException: Can't load ICU library (version 0)"));
 		}
 	}
 }
