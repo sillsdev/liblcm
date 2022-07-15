@@ -3,7 +3,7 @@
 using System;
 using System.IO;
 using System.Reflection;
-using Microsoft.Win32;
+//using Microsoft.Win32;
 using SIL.LCModel.Core.Text;
 // ReSharper disable LocalizableElement - our test engineers understand English.
 
@@ -33,7 +33,15 @@ namespace Icu.Tests
 			}
 
 			SetIcuDataDirectory(baseDir, "IcuData");
-			CustomIcu.InitIcuDataDir();
+				CustomIcu.InitIcuDataDir();
+			try
+			{
+			}
+			catch (EntryPointNotFoundException e)
+			{
+				Console.Error.WriteLine($"Gotcha! Name: {e.TypeName} :Message: {e.Message}");
+				throw;
+			}
 			Console.WriteLine(Wrapper.IcuVersion);
 			Console.WriteLine(Character.GetCharType('\xF171'));
 			Console.WriteLine(CustomIcu.HaveCustomIcuLibrary);
@@ -44,35 +52,34 @@ namespace Icu.Tests
 		{
 			Console.Error.WriteLine($"BaseDir: {baseDir}");
 			string dir = null;
-			if (string.IsNullOrEmpty(icuDataPath))
+			//if (string.IsNullOrEmpty(icuDataPath))
+			//{
+			//	var environDataPath = Environment.GetEnvironmentVariable("ICU_DATA");
+			//	if (!string.IsNullOrEmpty(environDataPath))
+			//	{
+			//		dir = environDataPath;
+			//	}
+			//	else
+			//	{
+			//		using (var userKey = Registry.CurrentUser.OpenSubKey(@"Software\SIL"))
+			//		using (var machineKey = Registry.LocalMachine.OpenSubKey(@"Software\SIL"))
+			//		{
+			//			const string icuDirValueName = "Icu54DataDir";
+			//			if (userKey?.GetValue(icuDirValueName) != null)
+			//				dir = userKey.GetValue(icuDirValueName, null) as string;
+			//			else if (machineKey?.GetValue(icuDirValueName) != null)
+			//				dir = machineKey.GetValue(icuDirValueName, null) as string;
+			//		}
+			//	}
+			//}
+			//else if (Path.IsPathRooted(icuDataPath))
+			//{
+			//	dir = icuDataPath;
+			//}
+			//else
 			{
-				var environDataPath = Environment.GetEnvironmentVariable("ICU_DATA");
-				if (!string.IsNullOrEmpty(environDataPath))
-				{
-					dir = environDataPath;
-				}
-				else
-				{
-					using (var userKey = Registry.CurrentUser.OpenSubKey(@"Software\SIL"))
-					using (var machineKey = Registry.LocalMachine.OpenSubKey(@"Software\SIL"))
-					{
-						const string icuDirValueName = "Icu54DataDir";
-						if (userKey?.GetValue(icuDirValueName) != null)
-							dir = userKey.GetValue(icuDirValueName, null) as string;
-						else if (machineKey?.GetValue(icuDirValueName) != null)
-							dir = machineKey.GetValue(icuDirValueName, null) as string;
-					}
-				}
-			}
-			else if (Path.IsPathRooted(icuDataPath))
-			{
-				dir = icuDataPath;
-			}
-			else
-			{
-				var codeDir = baseDir;
-				if (codeDir != null)
-					dir = Path.Combine(codeDir, icuDataPath);
+				if (baseDir != null)
+					dir = Path.Combine(baseDir, icuDataPath);
 			}
 
 			if (!string.IsNullOrEmpty(dir))
