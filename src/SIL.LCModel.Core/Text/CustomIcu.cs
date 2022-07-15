@@ -191,7 +191,6 @@ namespace SIL.LCModel.Core.Text
 					$"{icu32Path}{Path.PathSeparator}{flexIcu32Path}{Path.PathSeparator}" +
 					$"{icu64Path}{Path.PathSeparator}{flexIcu64Path}{Path.PathSeparator}" +
 					$"{Environment.GetEnvironmentVariable("PATH")}");
-				Console.Error.WriteLine($"New Path:{Environment.GetEnvironmentVariable("PATH").Replace(Path.PathSeparator.ToString(), Environment.NewLine)}");
 			}
 
 			var dataDirectory = Wrapper.DataDirectory;

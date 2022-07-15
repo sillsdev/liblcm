@@ -183,7 +183,8 @@ namespace SIL.LCModel.Core.Text
 		public void InitIcuDataDir_CustomIcuVersion()
 		{
 			CopyIcuFiles(_tmpDir, CustomIcuLibraryVersionMajor);
-			//Assert.That(RunTestHelper(_tmpDir), Is.EqualTo($"{CustomIcuLibraryVersionMajor}.1{Environment.NewLine}NON_SPACING_MARK{Environment.NewLine}True"));
+			Console.WriteLine("InitIcuDataDir_CustomIcuVersion");
+			Assert.That(RunTestHelper(_tmpDir), Is.EqualTo($"{CustomIcuLibraryVersionMajor}.1{Environment.NewLine}NON_SPACING_MARK{Environment.NewLine}True"));
 		}
 
 		[Test]
@@ -197,13 +198,16 @@ namespace SIL.LCModel.Core.Text
 			Assert.That(icuFilesInTmpDir.Count, Is.EqualTo(2), string.Join("\r\n", icuFilesInTmpDir));
 			Assert.That(icuFilesInTmpDir.All(f => f.Contains(DefaultIcuLibraryVersionMajor)), Is.True, string.Join("\r\n", icuFilesInTmpDir));
 			// SUT
+			Console.WriteLine("InitIcuDataDir_FallbackDefaultIcuVersion");
 			Assert.That(RunTestHelper(_tmpDir), Is.EqualTo($"{DefaultIcuLibraryVersionMajor}.2{Environment.NewLine}PRIVATE_USE_CHAR{Environment.NewLine}False"));
+			Console.WriteLine("InitIcuDataDir_FallbackDefaultIcuVersion finish");
 		}
 
 		[Test]
 		public void InitIcuDataDir_NoIcuLibrary()
 		{
-			//Assert.That(RunTestHelper(_tmpDir, true), Is.Empty);
+			Console.WriteLine("InitIcuDataDir_NoIcuLibrary");
+			Assert.That(RunTestHelper(_tmpDir, true), Is.Empty);
 		}
 	}
 }
