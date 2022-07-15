@@ -192,17 +192,44 @@ namespace SIL.LCModel.Core.Text
 		[Test]
 		public void InitIcuDataDir_FallbackDefaultIcuVersion()
 		{
-			// NOTE: if this test fails, check that you don't have icuuc54.dll or icuuc62.dll somewhere,
-			// e.g. in C:\Program Files (x86)\Common Files\SIL
 			CopyIcuFiles(_tmpDir, DefaultIcuLibraryVersionMajor);
 			// Verify that the folder has the correct contents to execute the SUT
 			var icuFilesInTmpDir = Directory.EnumerateFiles(_tmpDir, "icudt*.dll", SearchOption.AllDirectories).ToArray();
 			Assert.That(icuFilesInTmpDir.Count, Is.EqualTo(2), string.Join("\r\n", icuFilesInTmpDir));
 			Assert.That(icuFilesInTmpDir.All(f => f.Contains(DefaultIcuLibraryVersionMajor)), Is.True, string.Join("\r\n", icuFilesInTmpDir));
 			// SUT
-			Console.WriteLine("InitIcuDataDir_FallbackDefaultIcuVersion");
-			Assert.That(RunTestHelper(_tmpDir, out _), Is.EqualTo($"{DefaultIcuLibraryVersionMajor}.2{Environment.NewLine}PRIVATE_USE_CHAR{Environment.NewLine}False"));
-			Console.WriteLine("InitIcuDataDir_FallbackDefaultIcuVersion finish");
+			var result = RunTestHelper(_tmpDir, out _);
+			var expected = $"{DefaultIcuLibraryVersionMajor}.2{Environment.NewLine}PRIVATE_USE_CHAR{Environment.NewLine}False";
+			if (result.Equals(expected))
+			{
+				// All is well; no need to search all over for unwanted ICU DLL's
+				return;
+			}
+			// If this test fails, check that we don't have icuuc##.dll somewhere, e.g. in C:\Program Files (x86)\Common Files\SIL
+			PrintIcuDllsOnPath();
+			Assert.That(result, Is.EqualTo(expected));
+		}
+
+		private static void PrintIcuDllsOnPath()
+		{
+			var files = new List<string>();
+			// ReSharper disable once PossibleNullReferenceException
+			foreach (var folder in Environment.GetEnvironmentVariable("PATH").Split(Path.PathSeparator))
+			{
+				try
+				{
+					files.AddRange(Directory.EnumerateFiles(folder, "icuuc*.dll"));
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine($"Error enumerating: {e.GetType()}: {e.Message}");
+				}
+			}
+			if (files.Any())
+			{
+				Console.WriteLine($"Found the following ICU DLL's lurking around:\r\n{string.Join("\r\n", files)}");
+				Console.WriteLine("(note: DLL's without a version number in the name should not be a problem)");
+			}
 		}
 
 		[Test]
