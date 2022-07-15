@@ -26,6 +26,10 @@ namespace Icu.Tests
 				// The first argument is the directory to use as IcuData
 				baseDir = args?.Length > 0 ? args[0] : CodeDir;
 			}
+			if (args != null)
+			{
+				Console.WriteLine($"Args: {string.Join(" ", args)}");
+			}
 
 			SetIcuDataDirectory(baseDir, "IcuData");
 			CustomIcu.InitIcuDataDir();
@@ -37,6 +41,7 @@ namespace Icu.Tests
 
 		private static void SetIcuDataDirectory(string baseDir, string icuDataPath)
 		{
+			Console.WriteLine($"BaseDir: {baseDir}");
 			string dir = null;
 			if (string.IsNullOrEmpty(icuDataPath))
 			{

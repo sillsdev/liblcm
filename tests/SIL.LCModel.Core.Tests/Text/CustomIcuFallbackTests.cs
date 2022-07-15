@@ -79,6 +79,7 @@ namespace SIL.LCModel.Core.Text
 				}
 
 				process.StartInfo.FileName = filename;
+				Console.WriteLine($"starting>{process.StartInfo.FileName} {process.StartInfo.Arguments}");
 
 				process.Start();
 				var output = process.StandardOutput.ReadToEnd();
