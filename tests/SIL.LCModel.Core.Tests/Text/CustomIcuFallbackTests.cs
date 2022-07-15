@@ -196,6 +196,8 @@ namespace SIL.LCModel.Core.Text
 			// e.g. in C:\Program Files (x86)\Common Files\SIL
 			CopyIcuFiles(_tmpDir, DefaultIcuLibraryVersionMajor);
 			// Verify that the folder has the correct contents to execute the SUT
+			PrintIcuDllsInDrive("C:\\");
+			PrintIcuDllsInDrive("D:\\");
 			var icuFilesInTmpDir = Directory.EnumerateFiles(_tmpDir, "icudt*.dll", SearchOption.AllDirectories).ToArray();
 			Assert.That(icuFilesInTmpDir.Count, Is.EqualTo(2), string.Join("\r\n", icuFilesInTmpDir));
 			Assert.That(icuFilesInTmpDir.All(f => f.Contains(DefaultIcuLibraryVersionMajor)), Is.True, string.Join("\r\n", icuFilesInTmpDir));
@@ -203,6 +205,21 @@ namespace SIL.LCModel.Core.Text
 			Console.WriteLine("InitIcuDataDir_FallbackDefaultIcuVersion");
 			Assert.That(RunTestHelper(_tmpDir, out _), Is.EqualTo($"{DefaultIcuLibraryVersionMajor}.2{Environment.NewLine}PRIVATE_USE_CHAR{Environment.NewLine}False"));
 			Console.WriteLine("InitIcuDataDir_FallbackDefaultIcuVersion finish");
+		}
+
+		private void PrintIcuDllsInDrive(string letter)
+		{
+			try
+			{
+				var files =
+					Directory.EnumerateFiles(letter, "icuuc*.dll", SearchOption.AllDirectories);
+				Console.WriteLine(
+					$"Found the following DLL's lurking around:\r\n{string.Join("\r\n", files)}");
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine($"Error: {e}\r\n{e.StackTrace}");
+			}
 		}
 
 		[Test]
