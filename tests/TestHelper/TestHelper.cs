@@ -29,7 +29,7 @@ namespace Icu.Tests
 			}
 			if (args != null)
 			{
-				Console.WriteLine($"Args: {string.Join(" ", args)}");
+				Console.Error.WriteLine($"Args: {string.Join(" ", args)}");
 			}
 
 			SetIcuDataDirectory(baseDir, "IcuData");
@@ -42,7 +42,7 @@ namespace Icu.Tests
 
 		private static void SetIcuDataDirectory(string baseDir, string icuDataPath)
 		{
-			Console.WriteLine($"BaseDir: {baseDir}");
+			Console.Error.WriteLine($"BaseDir: {baseDir}");
 			string dir = null;
 			if (string.IsNullOrEmpty(icuDataPath))
 			{

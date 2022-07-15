@@ -180,6 +180,7 @@ namespace SIL.LCModel.Core.Text
 			{
 				var executingAssemblyFolder = Uri.UnescapeDataString(new UriBuilder(Assembly.GetExecutingAssembly().CodeBase).Path);
 				var assemblyDir = Path.GetDirectoryName(executingAssemblyFolder);
+				Console.Error.WriteLine($"Initting ICU DD w/ assembly {executingAssemblyFolder}");
 				// ReSharper disable once AssignNullToNotNullAttribute -- The directory of the executing assembly will not be null
 				var icu32Path = Path.Combine(assemblyDir, "lib", "win-x86");
 				var icu64Path = Path.Combine(assemblyDir, "lib", "win-x64");
@@ -190,9 +191,11 @@ namespace SIL.LCModel.Core.Text
 					$"{icu32Path}{Path.PathSeparator}{flexIcu32Path}{Path.PathSeparator}" +
 					$"{icu64Path}{Path.PathSeparator}{flexIcu64Path}{Path.PathSeparator}" +
 					$"{Environment.GetEnvironmentVariable("PATH")}");
+				Console.Error.WriteLine($"New Path:{Environment.GetEnvironmentVariable("PATH").Replace(Path.PathSeparator.ToString(), Environment.NewLine)}");
 			}
 
 			var dataDirectory = Wrapper.DataDirectory;
+			Console.Error.WriteLine($"original DD: {dataDirectory}");
 			if (string.IsNullOrEmpty(dataDirectory) || dataDirectory == "." + Path.DirectorySeparatorChar)
 			{
 				dataDirectory = DefaultDataDirectory;
@@ -203,6 +206,7 @@ namespace SIL.LCModel.Core.Text
 				dataDirectory = Path.Combine(Environment.CurrentDirectory, dataDirectory);
 				Wrapper.DataDirectory = dataDirectory;
 			}
+			Console.Error.WriteLine($"updated DD: {dataDirectory}");
 
 			// ICU docs say to do this after the directory is set, but before others are called.
 			// And it can be called n times with little hit.
@@ -219,6 +223,7 @@ namespace SIL.LCModel.Core.Text
 					overrideDataPath = Path.Combine(dataDirectory, Path.Combine("..", "data", "UnicodeDataOverrides.txt"));
 				}
 			}
+			Console.Error.WriteLine($"overrideDataPath: {overrideDataPath}");
 
 			try
 			{
