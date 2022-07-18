@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <RootNamespace>SIL.LCModel.Tools</RootNamespace>
     <Description>Lexer Generator</Description>
-    <OutputPath>../../../artifacts/$(Configuration)</OutputPath>
     <PackageOutputPath>../../../artifacts</PackageOutputPath>
     <AssemblyOriginatorKeyFile>../../../liblcm.snk</AssemblyOriginatorKeyFile>
     <IsPackable>false</IsPackable>

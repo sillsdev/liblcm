@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <RootNamespace>SIL.LCModel.Core</RootNamespace>
     <Description>The liblcm library is the core FieldWorks model for linguistic analyses of languages. Tools in this library provide the ability to store and interact with language and culture data, including anthropological, text corpus, and linguistics data.
 SIL.LCModel.Core provides a base library with core functionality.</Description>
@@ -9,18 +9,18 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
 
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.6.10" PrivateAssets="All" />
-    <PackageReference Include="icu.net" Version="2.8.0-beta.21" />
+    <PackageReference Include="icu.net" Version="2.*-*" />
     <PackageReference Include="Icu4c.Win.Fw.Bin" Version="70.1.47" IncludeAssets="build" />
     <PackageReference Include="Icu4c.Win.Fw.Lib" Version="70.1.47" IncludeAssets="build" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="2.0.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.0.4" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="NHunspell.Patched" Version="1.2.5554" />
-    <PackageReference Include="SIL.Core.Desktop" Version="9.0.0-*" />
-    <PackageReference Include="SIL.Lexicon" Version="9.0.0-*" />
+    <PackageReference Include="NHunspell" Version="1.2.5554.16953" GeneratePropertyPath="true" />
+    <PackageReference Include="SIL.Lexicon" Version="10.0.0-*" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
+    <PackageReference Include="SIL.WritingSystems" Version="10.0.0-*" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
-    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
     <PackageReference Include="vswhere" Version="2.8.4" PrivateAssets="all" />
     <ProjectReference Include="..\CSTools\Tools\Tools.csproj" />
     <ProjectReference Include="..\SIL.LCModel.Build.Tasks\SIL.LCModel.Build.Tasks.csproj" />
@@ -80,9 +80,14 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
     <None Include="App.config" Pack="true" PackagePath="contentFiles\any\any\$(AssemblyTitle).dll.config" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="$(PkgNHunspell)\content\Hunspellx64.dll" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="$(PkgNHunspell)\content\Hunspellx86.dll" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <PropertyGroup>
-    <OutDir Condition="'$(OutDir)' == ''">../../artifacts/$(Configuration)/net461/</OutDir>
     <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">obj/x86/$(Configuration)/</IntermediateOutputPath>
+    <MsBuildCommand Condition="'$(MsBuildRuntimeType)'=='Core' And '$(MsBuildCommand)'==''">dotnet build</MsBuildCommand>
     <MsbuildCommand Condition="'$(OS)'=='Windows_NT' And '$(MsBuildCommand)'==''">"$(MSBuildBinPath)\msbuild.exe"</MsbuildCommand>
     <MsbuildCommand Condition="'$(OS)'=='Unix' And '$(MsBuildCommand)'==''">msbuild</MsbuildCommand>
   </PropertyGroup>
@@ -94,7 +99,6 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
     <KernelInputs Include="KernelInterfaces\Language.idh" />
 
     <KernelOutputs Include="KernelInterfaces\Kernel.cs" />
-    <KernelOutputs Include="$(OutDir)KernelInterfaces\FwKernelTlb.iip" />
     <KernelOutputs Include="$(OutDir)KernelInterfaces\FwKernelTlb.json" />
     <Clean Include="@(KernelOutputs)" />
   </ItemGroup>
@@ -105,6 +109,7 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
   </Target>
 
   <Target Name="GenerateKernelCs" BeforeTargets="BeforeCompile" Inputs="@(KernelInputs)" Outputs="@(KernelOutputs)" DependsOnTargets="SetInstallLocation">
+    <Error Condition="'$(OutDir)' == ''" Text="OutDir is not defined." />
     <!-- Call the IdlImp task from SIL.LCModel.Build.Tasks in a separate msbuild process,
          so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
     <Exec Command="$(MsbuildCommand) $(MSBuildThisFileDirectory)GenerateKernelCs.proj /p:OutDir=$(OutDir) /p:IntermediateOutputPath=$(IntermediateOutputPath) /p:Platform=$(Platform) /p:VSInstallDir=&quot;$(VSInstallDir)&quot;" />
@@ -128,7 +133,11 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
     <Clean Include="@(IcuDataOutputs)" />
   </ItemGroup>
 
-  <Target Name="GenerateIcuData" AfterTargets="Build" Inputs="@(IcuDataInputs)" Outputs="@(IcuDataOutputs)">
+  <Target Name="GenerateIcuData" AfterTargets="CoreBuild" Inputs="@(IcuDataInputs)" Outputs="@(IcuDataOutputs)" >
+    <!-- The following errors will highlight broken build configuration situations -->
+    <Error Condition="'$(TargetFramework)'==''" Text='TargetFramework undefined'/>
+    <Error Condition="'$(IcuFwRuntimeWinX86)'==''" Text='IcuFwRuntimeWinX86 undefined'/>
+    <Error Condition="'$(OutDir)' == ''" Text="OutDir is not defined." />
     <PropertyGroup>
       <Folder Condition="'$(Platform)'=='x86'">win-x86</Folder>
       <Folder Condition="'$(Platform)'!='x86'">win-x64</Folder>
@@ -163,18 +172,29 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
   </Target>
 
   <Target Name="CollectRuntimeOutputs" BeforeTargets="_GetPackageFiles">
+    <!-- Because `dotnet pack` does not provide the $(TargetFramework) property to this task -->
+    <!-- we will collect the $(TargetFrameworks) into Items and use msbuild batch functionality -->
+    <!-- to pack all Include files for each TargetFramework -->
+    <ItemGroup><_TargetFrameworksItem Include="$(TargetFrameworks)" /></ItemGroup>
+    <PropertyGroup>
+      <BuildArtifactsFolder>$(MSBuildThisFileDirectory)../../artifacts/</BuildArtifactsFolder>
+	  <TFMArtifactFolder>$(BuildArtifactsFolder)/$(Configuration)/%(_TargetFrameworksItem.Identity)/</TFMArtifactFolder>
+    </PropertyGroup>
     <ItemGroup>
       <None Include="$(PackageId).props" Pack="true" PackagePath="build" />
       <None Include="$(PackageId).props" Pack="true" PackagePath="buildMultiTargeting" />
       <None Include="$(PackageId).targets" Pack="true" PackagePath="build" />
       <None Include="$(PackageId).targets" Pack="true" PackagePath="buildMultiTargeting" />
       <None Include="KernelInterfaces\*.id*" Pack="true" PackagePath="contentFiles\KernelInterfaces" />
-      <None Include="$(OutDir)KernelInterfaces\*.json" Pack="true" PackagePath="contentFiles\KernelInterfaces" />
+      <None Include="$(TFMArtifactFolder)KernelInterfaces\*.json" Pack="true" PackagePath="contentFiles\KernelInterfaces" />
       <None Include="$(OutputPath)\**\$(PackageId).dll.config" Pack="true" PackagePath="lib" />
-      <None Include="$(OutDir)IcuData\data\*.txt" Pack="true" PackagePath="contentFiles\IcuData\data" />
-      <None Include="$(OutDir)IcuData\icudt$(IcuVersion)l\*.nrm" Pack="true" PackagePath="contentFiles\IcuData\icudt$(IcuVersion)l" />
+      <None Include="$(TFMArtifactFolder)IcuData\data\*.txt" Pack="true" PackagePath="contentFiles\IcuData\data" />
+      <None Include="$(TFMArtifactFolder)IcuData\icudt$(IcuVersion)l\*.nrm" Pack="true" PackagePath="contentFiles\IcuData\icudt$(IcuVersion)l" />
     </ItemGroup>
   </Target>
+
+  <!-- dotnet pack fails without this hack (some issue with project dependency resolution) -->
+  <Target Name="GetTargetPath" />
 
   <Target Name="CheckWinForms" BeforeTargets="CoreCompile">
     <Error Text="Please do NOT make liblcm reference System.Windows.Forms. It is not supposed to contain UI code!" Condition="'%(Reference.Identity)' == 'System.Windows.Forms' Or '$(UseWindowsForms)' == 'true'" />

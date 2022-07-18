@@ -37,7 +37,7 @@ namespace SIL.LCModel.Core.Text
 		[Test]
 		public void ConvertTransparentBGRtoColor()
 		{
-			Assert.AreEqual(Color.FromKnownColor(KnownColor.Transparent),
+			Assert.AreEqual(Color.Transparent,
 				ColorUtil.ConvertBGRtoColor(0xC0000000));
 		}
 
@@ -64,7 +64,7 @@ namespace SIL.LCModel.Core.Text
 		public void ConvertTransparentColortoBGR()
 		{
 			Assert.AreEqual(0xC0000000,
-				ColorUtil.ConvertColorToBGR(Color.FromKnownColor(KnownColor.Transparent)));
+				ColorUtil.ConvertColorToBGR(Color.Transparent));
 		}
 	}
 }

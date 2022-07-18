@@ -94,8 +94,9 @@ namespace SIL.LCModel.DomainServices
 			get
 			{
 				var tpb = TsStringUtils.MakePropsBldr();
+				var darkColor = Color.FromArgb(64,64,64);
 				tpb.SetIntPropValues((int)FwTextPropType.ktptForeColor, (int)FwTextPropVar.ktpvDefault,
-					(int)ColorUtil.ConvertColorToBGR(Color.FromKnownColor(KnownColor.ControlDarkDark)));
+					(int)ColorUtil.ConvertColorToBGR(darkColor));
 				//				// This is the formula (red + (blue * 256 + green) * 256) for a FW RGB color,
 				//				// applied to the standard FW color "light blue". This is the default defn of the
 				//				// "Language Code" character style in DN. We could just use this style, except
