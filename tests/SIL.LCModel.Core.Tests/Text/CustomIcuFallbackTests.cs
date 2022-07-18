@@ -25,13 +25,15 @@ namespace SIL.LCModel.Core.Text
 	[TestFixture]
 	public class CustomIcuFallbackTests
 	{
-		private string _tmpDir;
-		private string _pathEnvironmentVariable;
 		private const string DefaultIcuLibraryVersionMajor = "62";
 		private const string CustomIcuLibraryVersionMajor = "70";
+		// ReSharper disable InconsistentNaming
+		private string _tmpDir;
+		private string _pathEnvironmentVariable;
 		private List<string> _dirsToDelete;
 		private string _preTestDataDir;
 		private string _preTestDataDirEnv;
+		// ReSharper restore InconsistentNaming
 
 		private static void CopyFile(string srcPath, string dstDir)
 		{
@@ -80,7 +82,6 @@ namespace SIL.LCModel.Core.Text
 				}
 
 				process.StartInfo.FileName = filename;
-				Console.WriteLine($"starting>{process.StartInfo.FileName} {process.StartInfo.Arguments}");
 
 				process.Start();
 				var output = process.StandardOutput.ReadToEnd();
@@ -184,8 +185,6 @@ namespace SIL.LCModel.Core.Text
 		public void InitIcuDataDir_CustomIcuVersion()
 		{
 			CopyIcuFiles(_tmpDir, CustomIcuLibraryVersionMajor);
-			Console.WriteLine("InitIcuDataDir_CustomIcuVersion");
-			//Console.WriteLine(RunTestHelper(_tmpDir));
 			Assert.That(RunTestHelper(_tmpDir, out _), Is.EqualTo($"{CustomIcuLibraryVersionMajor}.1{Environment.NewLine}NON_SPACING_MARK{Environment.NewLine}True"));
 		}
 
@@ -194,7 +193,7 @@ namespace SIL.LCModel.Core.Text
 		{
 			CopyIcuFiles(_tmpDir, DefaultIcuLibraryVersionMajor);
 			// Verify that the folder has the correct contents to execute the SUT
-			var icuFilesInTmpDir = Directory.EnumerateFiles(_tmpDir, "icudt*.dll", SearchOption.AllDirectories).ToArray();
+			var icuFilesInTmpDir = Directory.EnumerateFiles(_tmpDir, "icuuc*.dll", SearchOption.AllDirectories).ToArray();
 			Assert.That(icuFilesInTmpDir.Count, Is.EqualTo(2), string.Join("\r\n", icuFilesInTmpDir));
 			Assert.That(icuFilesInTmpDir.All(f => f.Contains(DefaultIcuLibraryVersionMajor)), Is.True, string.Join("\r\n", icuFilesInTmpDir));
 			// SUT
@@ -205,7 +204,8 @@ namespace SIL.LCModel.Core.Text
 				// All is well; no need to search all over for unwanted ICU DLL's
 				return;
 			}
-			// If this test fails, check that we don't have icuuc##.dll somewhere, e.g. in C:\Program Files (x86)\Common Files\SIL
+			// If this test fails, check that we don't have icuuc##.dll somewhere, e.g. in C:\Program Files (x86)\Common Files\SIL.
+			// This search seems too expensive to perform when we don't have a problem; search only if we know the test fails.
 			PrintIcuDllsOnPath();
 			Assert.That(result, Is.EqualTo(expected));
 		}
@@ -235,7 +235,6 @@ namespace SIL.LCModel.Core.Text
 		[Test]
 		public void InitIcuDataDir_NoIcuLibrary()
 		{
-			Console.WriteLine("InitIcuDataDir_NoIcuLibrary");
 			Assert.That(RunTestHelper(_tmpDir, out var stdErr, true), Is.Empty);
 			Assert.That(stdErr, Does.Contain("Unhandled Exception: System.IO.FileLoadException: Can't load ICU library (version 0)"));
 		}
