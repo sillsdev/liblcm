@@ -3,9 +3,7 @@
 using System;
 using System.IO;
 using System.Reflection;
-//using Microsoft.Win32;
 using SIL.LCModel.Core.Text;
-// ReSharper disable LocalizableElement - our test engineers understand English.
 
 namespace Icu.Tests
 {
@@ -27,63 +25,16 @@ namespace Icu.Tests
 				// The first argument is the directory to use as IcuData
 				baseDir = args?.Length > 0 ? args[0] : CodeDir;
 			}
-			if (args != null)
+			if (baseDir != null)
 			{
-				Console.Error.WriteLine($"Args: {string.Join(" ", args)}");
+				Environment.SetEnvironmentVariable("ICU_DATA", Path.Combine(baseDir, "IcuData"));
 			}
 
-			SetIcuDataDirectory(baseDir, "IcuData");
-				CustomIcu.InitIcuDataDir();
-			try
-			{
-			}
-			catch (EntryPointNotFoundException e)
-			{
-				Console.Error.WriteLine($"Gotcha! Name: {e.TypeName} :Message: {e.Message}");
-				throw;
-			}
+			CustomIcu.InitIcuDataDir();
 			Console.WriteLine(Wrapper.IcuVersion);
 			Console.WriteLine(Character.GetCharType('\xF171'));
 			Console.WriteLine(CustomIcu.HaveCustomIcuLibrary);
 			Wrapper.Cleanup();
-		}
-
-		private static void SetIcuDataDirectory(string baseDir, string icuDataPath)
-		{
-			Console.Error.WriteLine($"BaseDir: {baseDir}");
-			string dir = null;
-			//if (string.IsNullOrEmpty(icuDataPath))
-			//{
-			//	var environDataPath = Environment.GetEnvironmentVariable("ICU_DATA");
-			//	if (!string.IsNullOrEmpty(environDataPath))
-			//	{
-			//		dir = environDataPath;
-			//	}
-			//	else
-			//	{
-			//		using (var userKey = Registry.CurrentUser.OpenSubKey(@"Software\SIL"))
-			//		using (var machineKey = Registry.LocalMachine.OpenSubKey(@"Software\SIL"))
-			//		{
-			//			const string icuDirValueName = "Icu54DataDir";
-			//			if (userKey?.GetValue(icuDirValueName) != null)
-			//				dir = userKey.GetValue(icuDirValueName, null) as string;
-			//			else if (machineKey?.GetValue(icuDirValueName) != null)
-			//				dir = machineKey.GetValue(icuDirValueName, null) as string;
-			//		}
-			//	}
-			//}
-			//else if (Path.IsPathRooted(icuDataPath))
-			//{
-			//	dir = icuDataPath;
-			//}
-			//else
-			{
-				if (baseDir != null)
-					dir = Path.Combine(baseDir, icuDataPath);
-			}
-
-			if (!string.IsNullOrEmpty(dir))
-				Environment.SetEnvironmentVariable("ICU_DATA", dir);
 		}
 
 		private static string CodeDir
