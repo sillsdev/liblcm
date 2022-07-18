@@ -1,4 +1,4 @@
-// Copyright (c) 2003-2021 SIL International
+// Copyright (c) 2003-2022 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -835,14 +835,12 @@ namespace SIL.LCModel.Utils
 						return true;
 
 					// If the real application is ever installed in a path that includes nunit or
-					// jetbrains, or testhost (for dotnet test) then this will return true and the app. won't run properly. But
+					// jetbrains, or testhost (for dotnet test) then this will return true and the app won't run properly. But
 					// what are the chances of that?...
 					var appPath = Path.GetFullPath(Environment.GetCommandLineArgs()[0]).ToLowerInvariant();
 					runningTests = appPath.IndexOf("nunit", StringComparison.Ordinal) != -1
 					               || appPath.IndexOf("jetbrains", StringComparison.Ordinal) != -1
 					               || appPath.IndexOf("testhost", StringComparison.Ordinal) != -1;
-
-					Console.WriteLine($"RUNNINGTESTS: {commandLine} - {appPath}");
 				}
 				return (bool)runningTests;
 			}
