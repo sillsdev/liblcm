@@ -2791,6 +2791,25 @@ namespace SIL.LCModel.DomainImpl
 				item.set_String(ws, TsStringUtils.MakeString(newValue, ws));
 			}
 		}
+
+		protected override void RemoveObjectSideEffectsInternal(RemoveObjectEventArgs e)
+		{
+			if (e.ObjectRemoved is FsComplexFeature fsComplexFeat)
+			{
+				var fsComplexValueRepo =
+					Cache.ServiceLocator.GetInstance<IFsComplexValueRepository>();
+				foreach (var complexValue in fsComplexValueRepo.AllInstances()
+					.Where(cv => cv.FeatureRA?.Guid == fsComplexFeat.Guid))
+				{
+					var featureStructGuid = complexValue.Owner.Guid;
+					if (featureStructGuid != Guid.Empty)
+					{
+						Cache.ServiceLocator.GetObject(featureStructGuid).Delete();
+					}
+				}
+			}
+			base.RemoveObjectSideEffectsInternal(e);
+		}
 	}
 	#endregion
 
