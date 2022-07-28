@@ -1379,20 +1379,16 @@ namespace SIL.LCModel.DomainImpl
 		/// <summary>
 		/// Initialize a CmObject that was created using the default Constructor.
 		/// </summary>
-		/// <param name="cache"></param>
-		/// <param name="owner"></param>
-		/// <param name="owningFlid"></param>
-		/// <param name="ord"></param>
 		/// <remarks>
 		/// This method should only be called by generated code 'setters'.
 		/// NB: This method should not be called on any unowned object.
 		/// </remarks>
 		void ICmObjectInternal.InitializeNewCmObject(LcmCache cache, ICmObject owner, int owningFlid, int ord)
 		{
-			if (Hvo != (int)SpecialHVOValues.kHvoUninitializedObject)
-				throw new ArgumentException("New object already has a valid HVO.");
 			if (Hvo == (int)SpecialHVOValues.kHvoObjectDeleted)
 				throw new LcmObjectDeletedException("'New' object has been deleted.");
+			if (Hvo != (int)SpecialHVOValues.kHvoUninitializedObject)
+				throw new ArgumentException("New object already has a valid HVO.");
 			if (m_cache != null)
 				throw new ArgumentException("New object already has a cache.");
 			if (cache == null)
