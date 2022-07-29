@@ -2791,6 +2791,23 @@ namespace SIL.LCModel.DomainImpl
 				item.set_String(ws, TsStringUtils.MakeString(newValue, ws));
 			}
 		}
+
+		protected override void RemoveObjectSideEffectsInternal(RemoveObjectEventArgs e)
+		{
+			// When we remove a complex feature we want to delete any ComplexValues which owned it.
+			// According to Andy Black they are no longer valid once any of their features are removed
+			if (e.ObjectRemoved is FsComplexFeature fsComplexFeat)
+			{
+				var fsComplexValueRepo =
+					Cache.ServiceLocator.GetInstance<IFsComplexValueRepository>();
+				foreach (var complexValue in fsComplexValueRepo.AllInstances()
+					.Where(cv => cv.FeatureRA?.Guid == fsComplexFeat.Guid))
+				{
+					complexValue.Delete();
+				}
+			}
+			base.RemoveObjectSideEffectsInternal(e);
+		}
 	}
 	#endregion
 

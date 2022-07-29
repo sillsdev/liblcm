@@ -10,6 +10,7 @@ using NUnit.Framework;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.DomainServices;
+using SIL.LCModel.Infrastructure;
 
 namespace SIL.LCModel.DomainImpl
 {
@@ -666,6 +667,47 @@ namespace SIL.LCModel.DomainImpl
 			// Check for correct LongName
 			Assert.AreEqual("[asp:aor sbj:[pers:1 gen:n num:sg]]", featStruct.LongName, "Incorrect LongName for merged feature struture");
 			Assert.AreEqual("[asp:aor sbj:[gen:n num:sg pers:1]]", featStruct.LongNameSorted, "Incorrect LongNameSorted for merged feature struture");
+		}
+
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests adding complex features to feature system and to a feature structure
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void DeletingComplexFeatureDeletesFeatureStructure()
+		{
+			var lp = Cache.LangProject;
+			Assert.IsNotNull(lp.MsFeatureSystemOA, "Expect a feature system to be present");
+
+			// Set up the xml fs description
+			var doc = new XmlDocument();
+			var sFile = Path.Combine(TestDirectoryFinder.TestDataDirectory, "FeatureSystem2.xml");
+
+			doc.Load(sFile);
+			var itemNeut = doc.SelectSingleNode("//item[@id='vNeut']");
+
+			var msfs = lp.MsFeatureSystemOA;
+			msfs.AddFeatureFromXml(itemNeut);
+
+			// now add to feature structure
+			var pos = lp.PartsOfSpeechOA.PossibilitiesOS[0] as IPartOfSpeech;
+			Assert.That(pos, Is.Not.Null, "Need one non-null pos");
+
+			pos.DefaultFeaturesOA = Cache.ServiceLocator.GetInstance<IFsFeatStrucFactory>().Create();
+			var featStruct = pos.DefaultFeaturesOA;
+
+			// Add the first feature
+			featStruct.AddFeatureFromXml(itemNeut, msfs);
+			Assert.That(lp.MsFeatureSystemOA.FeaturesOC.Count(feat => feat is FsComplexFeature), Is.EqualTo(1), "should have one complex feature");
+			Assert.That(pos.DefaultFeaturesOA.FeatureSpecsOC.Count, Is.EqualTo(1), "part of speech should have one feature");
+			Assert.That(pos.DefaultFeaturesOA.FeatureSpecsOC.First(), Is.InstanceOf<IFsComplexValue>(), "part of speech should have one IFsComplexValue");
+
+			var complexFeature = lp.MsFeatureSystemOA.FeaturesOC.First(feat => feat is FsComplexFeature);
+			complexFeature.Delete();
+			Assert.That(lp.MsFeatureSystemOA.FeaturesOC.Count(feat => feat is FsComplexFeature), Is.EqualTo(0), "Complex feature should have been removed from the project");
+			Assert.That(pos.DefaultFeaturesOA.FeatureSpecsOC.Count, Is.EqualTo(0), "The FsComplexValue should have been removed from POS");
 		}
 
 		/// <summary>
