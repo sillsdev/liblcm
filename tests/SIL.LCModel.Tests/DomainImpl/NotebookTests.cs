@@ -1,11 +1,10 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2015-2022 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using Microsoft.Practices.ServiceLocation;
 using NUnit.Framework;
 using SIL.LCModel.Core.Text;
-using RnGenericRecFactory = SIL.LCModel.DomainImpl.RnGenericRecFactory;
 
 namespace SIL.LCModel.DomainImpl
 {
@@ -56,6 +55,10 @@ namespace SIL.LCModel.DomainImpl
 			var subFish10 = MakeSubRecord(recordFish, "Cleaning the fish", 10);
 			Assert.That(subFish2.SubrecordOfKey(false), Is.LessThan(subFish10.SubrecordOfKey(false)));
 		}
+
+		//[Test]
+		//public void ShortNameTSS_
+
 		/// <summary>
 		/// Ensure there is a record types possibility list with at least one type.
 		/// </summary>
@@ -78,8 +81,7 @@ namespace SIL.LCModel.DomainImpl
 		private RnGenericRec MakeRnRecord(string title)
 		{
 			var typeList = EnsureRecTypesList();
-			IRnGenericRec entry = null;
-			entry = Cache.ServiceLocator.GetInstance<IRnGenericRecFactory>().Create();
+			var entry = Cache.ServiceLocator.GetInstance<IRnGenericRecFactory>().Create();
 			Cache.LangProject.ResearchNotebookOA.RecordsOC.Add(entry);
 			entry.Title = TsStringUtils.MakeString(title, Cache.DefaultAnalWs);
 			entry.TypeRA = typeList.PossibilitiesOS[0];
@@ -89,44 +91,11 @@ namespace SIL.LCModel.DomainImpl
 		private RnGenericRec MakeSubRecord(IRnGenericRec parent, string title, int index)
 		{
 			var typeList = EnsureRecTypesList();
-			IRnGenericRec entry = null;
-			entry = Cache.ServiceLocator.GetInstance<IRnGenericRecFactory>().Create();
+			var entry = Cache.ServiceLocator.GetInstance<IRnGenericRecFactory>().Create();
 			parent.SubRecordsOS.Insert(index, entry);
 			entry.Title = TsStringUtils.MakeString(title, Cache.DefaultAnalWs);
 			entry.TypeRA = typeList.PossibilitiesOS[0];
 			return (RnGenericRec)entry;
-		}
-
-		/// <summary>
-		/// A text in langproject can be moved to a new notebook record.
-		/// </summary>
-		[Test]
-		[Ignore("Texts no longer have owners")]
-		public void MoveToNotebook_MovesLangProjText()
-		{
-			//var text = Cache.ServiceLocator.GetInstance<ITextFactory>().Create();
-			////Cache.LangProject.TextsOC.Add(text);
-			//m_actionHandler.EndUndoTask();
-			//text.AssociateWithNotebook(true);
-			//Assert.That(text.Owner, Is.InstanceOf(typeof(RnGenericRec)));
-		}
-
-		/// <summary>
-		/// A text already in notebook cannot be moved to a new notebook record.
-		/// </summary>
-		[Test]
-		[Ignore("Texts no longer have owners")]
-		public void MoveToNotebook_DoesNotMoveNotebookText()
-		{
-			//var text = Cache.ServiceLocator.GetInstance<ITextFactory>().Create();
-			//var rec = Cache.ServiceLocator.GetInstance<RnGenericRecFactory>().Create();
-			//if (Cache.LangProject.ResearchNotebookOA == null)
-			//    Cache.LangProject.ResearchNotebookOA = Cache.ServiceLocator.GetInstance<IRnResearchNbkFactory>().Create();
-			//Cache.LangProject.ResearchNotebookOA.RecordsOC.Add(rec);
-			//rec.TextOA = text;
-			//m_actionHandler.EndUndoTask();
-			//text.AssociateWithNotebook(true);
-			//Assert.That(text.Owner, Is.EqualTo(rec));
 		}
 
 		/// <summary>
@@ -138,7 +107,7 @@ namespace SIL.LCModel.DomainImpl
 			// Setup
 			var lp = Cache.LangProject;
 			var servLoc = Cache.ServiceLocator;
-			var cLPTextsBefore = lp.Texts.Count;
+			var cTextsBefore = lp.Texts.Count;
 			if (lp.ResearchNotebookOA == null)
 				lp.ResearchNotebookOA = servLoc.GetInstance<IRnResearchNbkFactory>().Create();
 			var rec = servLoc.GetInstance<RnGenericRecFactory>().Create();
@@ -151,7 +120,7 @@ namespace SIL.LCModel.DomainImpl
 			// Verification
 			Assert.That(rec.Hvo, Is.EqualTo((int)SpecialHVOValues.kHvoObjectDeleted),
 				"Notebook record should be deleted.");
-			Assert.That(cLPTextsBefore + 1, Is.EqualTo(lp.Texts.Count),
+			Assert.That(cTextsBefore + 1, Is.EqualTo(lp.Texts.Count),
 				"Should have added one text to the project.");
 			Assert.That(text.Hvo, Is.Not.EqualTo((int)SpecialHVOValues.kHvoObjectDeleted));
 			Assert.That(lp.Texts.Contains(text), Is.True);

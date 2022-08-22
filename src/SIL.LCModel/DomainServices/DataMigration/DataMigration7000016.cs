@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using SIL.LCModel.Utils;
 
 namespace SIL.LCModel.DomainServices.DataMigration
 {
@@ -78,7 +79,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			DomainObjectDTO dtoPerformance = GetDTOIfItExists(repoDTO, ksguidPerformance);
 
 			// Create the new Event, Methodology, and Weather record types.
-			var nowStr = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+			var nowStr = DateTime.Now.ToLCMTimeFormatWithMillisString();
 
 			StringBuilder sb = new StringBuilder();
 			sb.AppendFormat("<rt class=\"CmPossibility\" guid=\"{0}\" ownerguid=\"{1}\">",

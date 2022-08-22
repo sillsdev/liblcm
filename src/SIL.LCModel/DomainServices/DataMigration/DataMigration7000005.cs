@@ -12,6 +12,7 @@ using System;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using SIL.LCModel.Utils;
 
 namespace SIL.LCModel.DomainServices.DataMigration
 {
@@ -81,7 +82,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				typesElement.ToString());
 			var ord = posElement.Elements().Count();
 
-			var nowStr = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+			var nowStr = DateTime.Now.ToLCMTimeFormatWithMillisString();
 			var typeElement = new XElement("rt", new XAttribute("class", "CmPossibility"),
 				new XAttribute("guid", "82290763-1633-4998-8317-0EC3F5027FBD"),
 				new XAttribute("ownerguid", typesGuid),

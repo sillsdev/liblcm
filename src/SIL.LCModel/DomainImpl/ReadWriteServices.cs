@@ -1,4 +1,4 @@
-// Copyright (c) 2015 SIL International
+// Copyright (c) 2015-2022 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -13,6 +13,8 @@ using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Infrastructure;
+using SIL.LCModel.Utils;
+// ReSharper disable PossibleNullReferenceException
 
 namespace SIL.LCModel.DomainImpl
 {
@@ -128,22 +130,34 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		internal static DateTime LoadDateTime(XElement reader)
 		{
-			if (reader == null) throw new ArgumentNullException("reader");
+			if (reader == null) throw new ArgumentNullException(nameof(reader));
 
-			// ENHANCE: it would be better to use DateTime.Parse instead of parsing this ourselves.
-			// However, this changes the way we interpret the milliseconds. Currently 1:2:3.4 is
-			// incorrectly interpreted as 1 hour, 2 minutes, 3 seconds and 4 milliseconds instead
-			// of 4/10 of a second, i.e. 400 milliseconds.
-			var dtParts = reader.Attribute("val").Value.Split(new[] { '-', ' ', ':', '.' });
+			var dtParts = reader.Attribute("val").Value.Split('-', ' ', ':', '.');
 			var asUtc = new DateTime(
-				Int32.Parse(dtParts[0]),
-				Int32.Parse(dtParts[1]),
-				Int32.Parse(dtParts[2]),
-				Int32.Parse(dtParts[3]),
-				Int32.Parse(dtParts[4]),
-				Int32.Parse(dtParts[5]),
-				dtParts.Length > 6 ? Int32.Parse(dtParts[6]) : 0);
-			return asUtc.ToLocalTime(); // Return local time, not UTC, which is what is stored.
+				int.Parse(dtParts[0]),
+				int.Parse(dtParts[1]),
+				int.Parse(dtParts[2]),
+				int.Parse(dtParts[3]),
+				int.Parse(dtParts[4]),
+				int.Parse(dtParts[5]),
+				dtParts.Length > 6 ? int.Parse(MakeMillisecondsThreeDigits(dtParts[6])) : 0);
+			// Return local time, not UTC, which is what is stored.
+			return asUtc.ToLocalTime();
+		}
+
+		/// <summary>
+		/// Without this special handling, 1:2:3.4 is incorrectly interpreted as 1 hour, 2 minutes, 3 seconds
+		/// and 4 milliseconds instead of 4/10 of a second, i.e. 400 milliseconds. (LT-18205)
+		/// </summary>
+		private static string MakeMillisecondsThreeDigits(string millis)
+		{
+			switch (millis.Length)
+			{
+				case 0: return "000";
+				case 1: return $"{millis}00";
+				case 2: return $"{millis}0";
+				default: return millis.Substring(0,3);
+			}
 		}
 
 		/// <summary>
@@ -151,7 +165,7 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		internal static GenDate LoadGenDate(XElement reader)
 		{
-			if (reader == null) throw new ArgumentNullException("reader");
+			if (reader == null) throw new ArgumentNullException(nameof(reader));
 
 			var genDateStr = reader.Attribute("val").Value;
 			return GenDate.LoadFromString(genDateStr);
@@ -255,29 +269,8 @@ namespace SIL.LCModel.DomainImpl
 			if (string.IsNullOrEmpty(elementName)) throw new ArgumentNullException("elementName");
 
 			writer.WriteStartElement(elementName); // Open prop. element.
-			writer.WriteAttributeString("val", FormatDateTime(dataProperty));
+			writer.WriteAttributeString("val", dataProperty.ToLCMTimeFormatWithMillisString());
 			writer.WriteEndElement(); // Close prop. element.
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Formats the date time (converted to UTC).
-		/// </summary>
-		/// <param name="dataProperty">The date/time to format -- will be converted to Universal
-		/// time.</param>
-		/// <returns>A date/time string in a format suitable for parsing by LoadDateTime</returns>
-		/// ------------------------------------------------------------------------------------
-		internal static string FormatDateTime(DateTime dataProperty)
-		{
-			dataProperty = dataProperty.ToUniversalTime(); // Store it as UTC.
-			return String.Format("{0}-{1}-{2} {3}:{4}:{5}.{6}",
-				dataProperty.Year,
-				dataProperty.Month,
-				dataProperty.Day,
-				dataProperty.Hour,
-				dataProperty.Minute,
-				dataProperty.Second,
-				dataProperty.Millisecond);
 		}
 
 		internal static void WriteGuid(XmlWriter writer, string elementName, Guid dataProperty)
