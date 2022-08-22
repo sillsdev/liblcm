@@ -9,7 +9,7 @@
 ## --------------------------------------------------------------------------------------------
 using SIL.LCModel.DomainImpl;
 using SIL.LCModel.Infrastructure.Impl;
-using StructureMap.Configuration.DSL;
+using StructureMap;
 using StructureMap.Pipeline;
 
 namespace SIL.LCModel.IOC
