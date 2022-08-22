@@ -1,4 +1,4 @@
-// Copyright (c) 2015 SIL International
+// Copyright (c) 2015-2022 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -559,7 +559,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("<Abbreviation>");
 			foreach (var abbr in languageAbbrAndNames)
 			{
-				sb.Append(string.Format("<AUni ws=\"{0}\">{1}</AUni>", abbr.Item1, abbr.Item2));
+				sb.Append($"<AUni ws=\"{abbr.Item1}\">{abbr.Item2}</AUni>");
 			}
 			sb.Append("</Abbreviation>");
 			sb.AppendFormat("<DateCreated val=\"{0:yyyy-MM-dd HH:mm:ss.fff}\" />", createTime);
@@ -574,7 +574,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("<Name>");
 			foreach (var abbr in languageAbbrAndNames)
 			{
-				sb.Append(string.Format("<AUni ws=\"{0}\">{1}</AUni>", abbr.Item1, abbr.Item3));
+				sb.Append($"<AUni ws=\"{abbr.Item1}\">{abbr.Item3}</AUni>");
 			}
 			sb.Append("</Name>");
 			if (possibilityItems != null)
@@ -582,7 +582,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				sb.Append("<Possibilities>");
 				foreach (var possibilityGuid in possibilityItems)
 				{
-					sb.Append(string.Format("<objsur guid=\"{0}\" t=\"o\" />", possibilityGuid));
+					sb.Append($"<objsur guid=\"{possibilityGuid}\" t=\"o\" />");
 				}
 				sb.Append("</Possibilities>");
 			}
@@ -590,7 +590,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("<PreventDuplicates val=\"True\" />");
 			sb.Append("<PreventNodeChoices val=\"True\" />");
 			sb.Append("<UseExtendedFields val=\"False\" />");
-			sb.Append(string.Format("<WsSelector val=\"{0}\" />", wsSelector));
+			sb.Append($"<WsSelector val=\"{wsSelector}\" />");
 			sb.Append("</rt>");
 
 			var newList = new DomainObjectDTO(listGuid, "CmPossibilityList", sb.ToString());
@@ -628,8 +628,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("<Abbreviation>");
 			sb.AppendFormat("<AUni ws=\"en\">{0}</AUni>", abbr);
 			sb.Append("</Abbreviation>");
-			sb.Append(string.Format("<DateCreated val=\"{0:yyyy-MM-dd HH:mm:ss.fff}\" />", createTime));
-			sb.Append(string.Format("<DateModified val=\"{0:yyyy-MM-dd HH:mm:ss.fff}\" />", createTime));
+			sb.Append($"<DateCreated val=\"{createTime:yyyy-MM-dd HH:mm:ss.fff}\" />");
+			sb.Append($"<DateModified val=\"{createTime:yyyy-MM-dd HH:mm:ss.fff}\" />");
 			sb.Append("<BackColor val=\"-1073741824\" />");
 			sb.Append("<ForeColor val=\"-1073741824\" />");
 			sb.Append("<IsProtected val=\"True\" />");
@@ -649,7 +649,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 	/// <summary>
 	/// This class stores the begin and end tags for an XML element as byte arrays.
-	/// This is useful in conjuction with the ElementBounds class, which is useful
+	/// This is useful in conjunction with the ElementBounds class, which is useful
 	/// to avoid creating XElement objects and thus consuming time and memory.
 	/// </summary>
 	internal class ElementTags

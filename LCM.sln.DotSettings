@@ -7,6 +7,7 @@
 	<s:String x:Key="/Default/PatternsAndTemplates/Todo/TodoPatterns/=C6562928DAAA5C419C0A4E5109498163/Name/@EntryValue">Review</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/Todo/TodoPatterns/=C6562928DAAA5C419C0A4E5109498163/Pattern/@EntryValue">(?&lt;=\W|^)(?&lt;TAG&gt;REVIEW)(\W|$)(.*)</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/Todo/TodoPatterns/=C6562928DAAA5C419C0A4E5109498163/TodoIconStyle/@EntryValue">Normal</s:String>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Anals/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=analyses/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Charis/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Dlls/@EntryIndexedValue">True</s:Boolean>
@@ -18,8 +19,10 @@
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=ownerless/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Palaso/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Palaso_0027s/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=serv/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Subdir/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Subentry/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Subrecord/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=subrecords/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=unrooted/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=wordform/@EntryIndexedValue">True</s:Boolean>
