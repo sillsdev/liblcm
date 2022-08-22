@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2013 SIL International
+// Copyright (c) 2011-2022 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 //
@@ -7,7 +7,7 @@
 
 using System;
 using System.Xml.Linq;
-using SIL.LCModel.DomainImpl;
+using SIL.LCModel.Utils;
 
 namespace SIL.LCModel.DomainServices.DataMigration
 {
@@ -39,7 +39,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					continue; // Already has a DateModified property (probably an StJounalText
 
 				XElement dateModified = new XElement("DateModified", null);
-				XAttribute value = new XAttribute("val", ReadWriteServices.FormatDateTime(DateTime.Now));
+				XAttribute value = new XAttribute("val", DateTime.Now.ToLCMTimeFormatWithMillisString());
 				dateModified.Add(value);
 				stText.Add(dateModified);
 				DataMigrationServices.UpdateDTO(domainObjectDtoRepository, stTextDTO, stText.ToString());
