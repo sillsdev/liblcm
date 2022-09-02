@@ -16,6 +16,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- [SIL.LCModel.Utils] `DateTime` extension method `ToLCMTimeFormatWithMillisString()` (replaces `ReadWriteServices.FormatDateTime`)
+
+### Fixed
+
+- [SIL.LCModel] Data migration now serializes dates using the culture-neutral `ToLCMTimeFormatWithMillisString` (LT-20698)
+- [SIL.LCModel] `ReadWriteServices.LoadDateTime` now parses milliseconds correctly (LT-18205)
+
 ### Fixed
 
 - [SIL.LCModel.Core] Copy `SIL.LCModel.Core.dll.config` to output directory
