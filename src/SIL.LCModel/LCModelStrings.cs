@@ -6,11 +6,11 @@ using System;
 
 namespace SIL.LCModel
 {
-	public class StringsUtil
+	public class LCModelStrings
 	{
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Expose the "<Not Sure>" string to external modules.
+		/// <inheritdoc cref="Strings.ksNotSure"/> Expose the string to external modules.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public static string NotSure => Strings.ksNotSure;
