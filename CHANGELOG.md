@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- [SIL.LCModel] `LCModelStrings.NotSure` to allow clients to know if a grammatical category is the placeholder
 - [SIL.LCModel.Utils] `DateTime` extension method `ToLCMTimeFormatWithMillisString()` (replaces `ReadWriteServices.FormatDateTime`)
 
 ### Fixed
