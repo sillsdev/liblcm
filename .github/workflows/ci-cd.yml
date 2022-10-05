@@ -46,7 +46,7 @@ jobs:
       if: matrix.os == 'windows-latest'
 
     - name: Build
-      run: dotnet build
+      run: dotnet build --configuration Release
 
     - name: Test
       run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false
