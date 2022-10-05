@@ -49,10 +49,10 @@ jobs:
       run: dotnet build --configuration Release
 
     - name: Test
-      run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false
+      run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release
 
     - name: Package
-      run: dotnet pack --include-symbols --no-restore --no-build -p:SymbolPackageFormat=snupkg 
+      run: dotnet pack --include-symbols --no-restore --no-build -p:SymbolPackageFormat=snupkg --configuration Release
 
     - name: Publish to Nuget
       run: dotnet nuget push artifacts/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{secrets.SILLSDEV_PUBLISH_NUGET_ORG}} --skip-duplicate
