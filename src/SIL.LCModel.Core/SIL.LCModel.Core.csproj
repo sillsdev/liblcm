@@ -16,9 +16,9 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.0.4" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="NHunspell" Version="1.2.5554.16953" GeneratePropertyPath="true" />
-    <PackageReference Include="SIL.Lexicon" Version="10.1.0-*" />
+    <PackageReference Include="SIL.Lexicon" Version="11.0.0-*" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
-    <PackageReference Include="SIL.WritingSystems" Version="10.1.0-*" />
+    <PackageReference Include="SIL.WritingSystems" Version="11.0.0-*" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
     <PackageReference Include="vswhere" Version="2.8.4" PrivateAssets="all" />
@@ -133,10 +133,10 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
     <Clean Include="@(IcuDataOutputs)" />
   </ItemGroup>
 
-  <Target Name="GenerateIcuData" AfterTargets="CoreBuild" Inputs="@(IcuDataInputs)" Outputs="@(IcuDataOutputs)" >
+  <Target Name="GenerateIcuData" AfterTargets="CoreBuild" Inputs="@(IcuDataInputs)" Outputs="@(IcuDataOutputs)">
     <!-- The following errors will highlight broken build configuration situations -->
-    <Error Condition="'$(TargetFramework)'==''" Text='TargetFramework undefined'/>
-    <Error Condition="'$(IcuFwRuntimeWinX86)'==''" Text='IcuFwRuntimeWinX86 undefined'/>
+    <Error Condition="'$(TargetFramework)'==''" Text="TargetFramework undefined" />
+    <Error Condition="'$(IcuFwRuntimeWinX86)'==''" Text="IcuFwRuntimeWinX86 undefined" />
     <Error Condition="'$(OutDir)' == ''" Text="OutDir is not defined." />
     <PropertyGroup>
       <Folder Condition="'$(Platform)'=='x86'">win-x86</Folder>
