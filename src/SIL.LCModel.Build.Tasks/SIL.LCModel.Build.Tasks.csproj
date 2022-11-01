@@ -41,6 +41,7 @@ SIL.LCModel.Build.Tasks provides msbuild tasks for generating C# classes for the
       <None Include="$(TFMArtifactFolder)/IDLImporter.xml" Pack="true" PackagePath="tools/%(_TargetFrameworksItem.Identity)/" />
       <None Include="$(TFMArtifactFolder)/Newtonsoft.Json.dll" Pack="true" PackagePath="tools/%(_TargetFrameworksItem.Identity)/" />
       <None Include="$(TFMArtifactFolder)/NVelocity.dll" Pack="true" PackagePath="tools/%(_TargetFrameworksItem.Identity)/" />
+      <None Include="$(TFMArtifactFolder)/System.CodeDom.dll" Pack="true" PackagePath="tools/%(_TargetFrameworksItem.Identity)/" />
       <None Include="$(BuildArtifactsFolder)/lib/**/_._" Pack="true" PackagePath="lib/" />
     </ItemGroup>
   </Target>
