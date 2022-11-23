@@ -6,6 +6,8 @@ on:
     branches: [ develop ]
   push:
     branches: [ develop ]
+    # Trigger on release tags
+    tags: [ 'v[0-9]+*' ]
 
 jobs:
 
