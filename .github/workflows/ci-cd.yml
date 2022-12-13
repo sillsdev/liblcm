@@ -51,7 +51,10 @@ jobs:
       run: dotnet build --configuration Release
 
     - name: Verify Build
-      run: ls artifacts/Release/*
+      run: |
+        cat artifacts/Release/net461/SIL.LCModel.Core.Tests.dll.config
+        echo ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt
+        cat artifacts/Release/netstandard2.0/SIL.LCModel.Core.Tests.dll.config
       if: matrix.os == 'ubuntu-latest'
 
     - name: Test
