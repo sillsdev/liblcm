@@ -10,6 +10,7 @@ This package provides unit tests for SIL.LCModel.Core.</Description>
 
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.6.10" PrivateAssets="All" />
+    <PackageReference Include="icu.net" Version="2.*-*" />
     <PackageReference Include="Icu4c.Win.Min" Version="62.2.1-beta" IncludeAssets="build" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />

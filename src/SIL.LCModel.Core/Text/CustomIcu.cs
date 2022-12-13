@@ -230,12 +230,6 @@ namespace SIL.LCModel.Core.Text
 				HaveCustomIcuLibrary = false;
 				Debug.WriteLine("Can't find SilIcuInit() - no custom ICU installed?");
 			}
-			catch (EntryPointNotFoundException)
-			{
-				// this started happening on Linux in 2022.12; not sure why
-				HaveCustomIcuLibrary = false;
-				Debug.WriteLine("Can't enter SilIcuInit() - entry point not found!");
-			}
 			catch (BadImageFormatException)
 			{
 				// we found a custom ICU but with an incorrect format (e.g. x64 instead of x86)
