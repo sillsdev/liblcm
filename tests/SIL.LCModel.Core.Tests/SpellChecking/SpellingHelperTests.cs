@@ -26,6 +26,7 @@ namespace SIL.LCModel.Core.SpellChecking
 		/// Check how spelling status is set and cleared.
 		/// </summary>
 		[Test]
+		[Category("RequiresLibdlSo")]
 		public void BasicSpellingStatus()
 		{
 			var dictId = MakeEmptyFooDictionary();
@@ -114,6 +115,7 @@ namespace SIL.LCModel.Core.SpellChecking
 		/// Check that non-ascii text in path to dictionary works.
 		/// </summary>
 		[Test]
+		[Category("RequiresLibdlSo")]
 		public void DictionaryCanHaveNonAsciId()
 		{
 			var dictId = MakeEmptyDictionary("ab\x1234\x3456");
@@ -158,6 +160,7 @@ namespace SIL.LCModel.Core.SpellChecking
 		/// we see a dictionary with a shorter name.
 		/// </summary>
 		[Test]
+		[Category("RequiresLibdlSo")]
 		public void OurDictionaryIsPrivate()
 		{
 			var dictId = MakeEmptyFooDictionary();
@@ -172,6 +175,7 @@ namespace SIL.LCModel.Core.SpellChecking
 		/// A dictionary we did not create should not be private
 		/// </summary>
 		[Test]
+		[Category("RequiresLibdlSo")]
 		public void OtherDictionaryIsNotPrivate()
 		{
 			// Create a dictionary file for "blah" that does NOT look like one of ours.
@@ -210,6 +214,7 @@ namespace SIL.LCModel.Core.SpellChecking
 		/// Tests the ResetDictionary method
 		/// </summary>
 		[Test]
+		[Category("RequiresLibdlSo")]
 		public void ResetDictionaryAddsAllWords()
 		{
 			var id = MakeEmptyFooDictionary();
@@ -249,6 +254,7 @@ namespace SIL.LCModel.Core.SpellChecking
 		/// Check that loading the exceptions works for a non-vernacular dictionary.
 		/// </summary>
 		[Test]
+		[Category("RequiresLibdlSo")]
 		public void ExceptionListIsLoadedForNonVernacularDictionary()
 		{
 			MakeNonPrivateBlahDictionary();
@@ -265,6 +271,7 @@ namespace SIL.LCModel.Core.SpellChecking
 		/// This guards against a weird case we encountered in real life
 		/// </summary>
 		[Test]
+		[Category("RequiresLibdlSo")]
 		public void AddBaddBeforeStarSpellling()
 		{
 			MakeEmptyFooDictionary();
@@ -281,6 +288,7 @@ namespace SIL.LCModel.Core.SpellChecking
 		/// See if we can get suggestions.
 		/// </summary>
 		[Test]
+		[Category("RequiresLibdlSo")]
 		public void GetSimpleSuggestion()
 		{
 			MakeEmptyFooDictionary();
