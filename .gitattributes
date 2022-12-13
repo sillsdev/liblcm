@@ -2,3 +2,4 @@
 *.csproj -whitespace
 *.Designer.cs -whitespace
 *.designer.cs -whitespace
+*.yml -whitespace
