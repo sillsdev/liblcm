@@ -130,6 +130,7 @@ namespace SIL.LCModel.Core.SpellChecking
 		/// Verify that we do not arbitrarily wipe out existing non-FLEx generated dictionaries
 		/// </summary>
 		[Test]
+		[Category("RequiresLibdlSo")]
 		public void EnsureDictionaryDoesNotOverwriteNonVernacularDictionary()
 		{
 			const string dictId = "nonvern";
@@ -238,6 +239,7 @@ namespace SIL.LCModel.Core.SpellChecking
 		/// Check that we don't 'reset' (overwrite) dictionaries we didn't make
 		/// </summary>
 		[Test]
+		[Category("RequiresLibdlSo")]
 		public void ResetDictionary_AddsNoWordsToNonPrivate()
 		{
 			MakeNonPrivateBlahDictionary();

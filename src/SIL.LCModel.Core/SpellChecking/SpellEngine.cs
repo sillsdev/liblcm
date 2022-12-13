@@ -37,6 +37,10 @@ namespace SIL.LCModel.Core.SpellChecking
 			{
 				Debug.WriteLine("Initializing Hunspell: {0} exception: {1} ", e.GetType(), e.Message);
 				spellEngine?.Dispose();
+				if (Platform.IsLinux && e is DllNotFoundException)
+				{
+					return null;
+				}
 				throw;
 			}
 
