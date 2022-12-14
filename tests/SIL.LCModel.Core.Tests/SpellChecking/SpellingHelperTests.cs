@@ -21,6 +21,7 @@ namespace SIL.LCModel.Core.SpellChecking
 	public class SpellingHelperTests
 	{
 		// TODO-Linux: need slightly modified hunspell package installed!
+		// TODO-Linux (2022.12): Figure out how to get libdl.so to load
 
 		/// <summary>
 		/// Check how spelling status is set and cleared.

@@ -50,17 +50,15 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release
 
-    - name: Verify Build
-      run: |
-        cat artifacts/Release/net461/SIL.LCModel.Core.Tests.dll.config
-        echo ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt
-        cat artifacts/Release/netstandard2.0/SIL.LCModel.Core.Tests.dll.config
+    - name: Allow Artifact Inspection
+      run: ls artifacts/Release/*
       if: matrix.os == 'ubuntu-latest'
 
     - name: Test on Windows
       run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release
       if: matrix.os == 'windows-latest'
 
+      # The Linux tests require this extra filter until https://github.com/sillsdev/icu-dotnet/issues/181 is resolved
     - name: Test on Linux
       run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release --filter TestCategory!=RequiresLibdlSo
       if: matrix.os == 'ubuntu-latest'

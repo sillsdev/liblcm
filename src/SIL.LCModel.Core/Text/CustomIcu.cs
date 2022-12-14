@@ -232,9 +232,9 @@ namespace SIL.LCModel.Core.Text
 			}
 			catch (EntryPointNotFoundException)
 			{
-				// this started happening on Linux in 2022.12; not sure why
+				// this started happening on Linux in 2022.12; not sure why (TODO-Linux)
 				HaveCustomIcuLibrary = false;
-				Debug.WriteLine("Can't enter SilIcuInit() - entry point not found!");
+				Debug.WriteLine("Can't find SilIcuInit() - entry point not found!");
 			}
 			catch (BadImageFormatException)
 			{
