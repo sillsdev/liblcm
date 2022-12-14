@@ -50,10 +50,6 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release
 
-    - name: Allow Artifact Inspection
-      run: ls artifacts/Release/*
-      if: matrix.os == 'ubuntu-latest'
-
     - name: Test on Linux
       run: |
         . environ
