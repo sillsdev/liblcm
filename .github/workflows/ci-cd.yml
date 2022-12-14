@@ -54,14 +54,15 @@ jobs:
       run: ls artifacts/Release/*
       if: matrix.os == 'ubuntu-latest'
 
+    - name: Test on Linux
+      run: |
+        . environ
+        dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release
+      if: matrix.os == 'ubuntu-latest'
+
     - name: Test on Windows
       run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release
-      if: matrix.os == 'windows-latest'
-
-      # The Linux tests require this extra filter until https://github.com/sillsdev/icu-dotnet/issues/181 is resolved
-    - name: Test on Linux
-      run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release --filter TestCategory!=RequiresLibdlSo
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os != 'ubuntu-latest'
 
     - name: Package
       run: dotnet pack --include-symbols --no-restore --no-build -p:SymbolPackageFormat=snupkg --configuration Release
