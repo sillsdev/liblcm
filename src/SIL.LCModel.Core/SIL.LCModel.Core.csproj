@@ -10,8 +10,8 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.6.10" PrivateAssets="All" />
     <PackageReference Include="icu.net" Version="2.*-*" />
-    <PackageReference Include="Icu4c.Win.Fw.Bin" Version="70.1.47" IncludeAssets="build" />
-    <PackageReference Include="Icu4c.Win.Fw.Lib" Version="70.1.47" IncludeAssets="build" PrivateAssets="runtime" />
+    <PackageReference Include="Icu4c.Win.Fw.Bin" Version="70.1.152" IncludeAssets="build" />
+    <PackageReference Include="Icu4c.Win.Fw.Lib" Version="70.1.152" IncludeAssets="build" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="2.0.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.0.4" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />

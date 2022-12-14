@@ -234,6 +234,7 @@ namespace SIL.LCModel.Utils
 		/// <summary>
 		/// Returns <c>true</c> if we're running on XP, otherwise <c>false</c>.
 		/// </summary>
+		[Obsolete("Use Windows 10 or newer")]
 		public static bool IsWinXp
 		{
 			get
