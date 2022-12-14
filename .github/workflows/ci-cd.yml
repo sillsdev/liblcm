@@ -57,8 +57,15 @@ jobs:
         cat artifacts/Release/netstandard2.0/SIL.LCModel.Core.Tests.dll.config
       if: matrix.os == 'ubuntu-latest'
 
-    - name: Test
+    - name: Test on Linux
+      run: |
+        . environ
+        dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release
+      if: matrix.os == 'ubuntu-latest'
+
+    - name: Test on Windows
       run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release
+      if: matrix.os != 'ubuntu-latest'
 
     - name: Package
       run: dotnet pack --include-symbols --no-restore --no-build -p:SymbolPackageFormat=snupkg --configuration Release
