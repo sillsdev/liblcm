@@ -44,7 +44,7 @@ jobs:
 
     # Solve problems with CustomIcuFallbackTests: the current windows-latest image (2022) includes this file that breaks our tests.
     - name: Solve problems
-      run: Remove-Item c:\tools\php\icuuc70.dll -Force
+      run: Remove-Item c:\tools\php\icuuc*.dll -Force
       if: matrix.os == 'windows-latest'
 
     - name: Build
