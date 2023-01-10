@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using NUnit.Framework;
 
 namespace SIL.LCModel.Core.Scripture
@@ -18,20 +19,52 @@ namespace SIL.LCModel.Core.Scripture
 	[TestFixture]
 	public class BCVRefTests
 	{
-		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Initializes the VersificationTable class for tests.
+		/// Initialize some testing files and variables, to prepare VersificationTable for test runs. Should only be done once.
 		/// </summary>
-		/// ------------------------------------------------------------------------------------
+		/// <remarks>
+		/// We assert that if these files exist they are the same size as the expected data. Parallel test execution can cause
+		/// this method to be called simultaneously by different test fixtures. No teardown of these files is done.
+		/// </remarks>
 		public static void InitializeVersificationTable()
 		{
-			string vrsPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			File.WriteAllBytes(Path.Combine(vrsPath,
-				VersificationTable.GetFileNameForVersification(ScrVers.English)), Properties.TestResources.eng);
-			File.WriteAllBytes(Path.Combine(vrsPath,
-				VersificationTable.GetFileNameForVersification(ScrVers.Septuagint)), Properties.TestResources.lxx);
-			File.WriteAllBytes(Path.Combine(vrsPath,
-				VersificationTable.GetFileNameForVersification(ScrVers.Original)), Properties.TestResources.org);
+			var vrsPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			var englishFile = VersificationTable.GetFileNameForVersification(ScrVers.English);
+			var septuagintFile = VersificationTable.GetFileNameForVersification(ScrVers.Septuagint);
+			var originalFile = VersificationTable.GetFileNameForVersification(ScrVers.Original);
+			// Avoid race conditions between parallel tests which need the versification initialized
+			var mutex = new Mutex(false, "VersificationTableSetupMutex");
+			try
+			{
+				mutex.WaitOne();
+				if (!File.Exists(
+					    englishFile)) // check only the English file existence for simplicity
+				{
+					File.WriteAllBytes(Path.Combine(vrsPath, englishFile),
+						Properties.TestResources.eng);
+					File.WriteAllBytes(Path.Combine(vrsPath, septuagintFile),
+						Properties.TestResources.lxx);
+					File.WriteAllBytes(Path.Combine(vrsPath, originalFile),
+						Properties.TestResources.org);
+				}
+				else
+				{
+					// This setup code assumes that we aren't modifying the files on disk after initialization
+					Assert.That(File.ReadAllBytes(englishFile),
+						Is.EqualTo(Properties.TestResources.eng),
+						"Error setting up VersificationTable data for Scripture Reference tests.");
+					Assert.That(File.ReadAllBytes(septuagintFile),
+						Is.EqualTo(Properties.TestResources.lxx),
+						"Error setting up VersificationTable data for Scripture Reference tests.");
+					Assert.That(File.ReadAllBytes(originalFile),
+						Is.EqualTo(Properties.TestResources.org),
+						"Error setting up VersificationTable data for Scripture Reference tests.");
+				}
+			}
+			finally
+			{
+				mutex.ReleaseMutex();
+			}
 			VersificationTable.Initialize(vrsPath);
 		}
 
