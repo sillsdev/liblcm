@@ -53,11 +53,11 @@ jobs:
     - name: Test on Linux
       run: |
         . environ
-        dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release
+        dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release -- RunConfiguration.FailWhenNoTestsFound=true
       if: matrix.os == 'ubuntu-latest'
 
     - name: Test on Windows
-      run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release
+      run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release -- RunConfiguration.FailWhenNoTestsFound=true
       if: matrix.os != 'ubuntu-latest'
 
     - name: Package
