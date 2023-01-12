@@ -262,7 +262,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 		private MemoryMappedFile CreateOrOpen(string name, long capacity, bool createdNew)
 		{
-			if (SIL.PlatformUtilities.Platform.IsUnix)
+			if (MiscUtils.IsUnix)
 			{
 				name = Path.Combine(m_commitLogDir, name);
 				// delete old file that could be left after a crash
