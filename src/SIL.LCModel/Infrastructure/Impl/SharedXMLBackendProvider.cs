@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2013-2014 SIL International
+// Copyright (c) 2013-2023 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -270,7 +270,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				if (createdNew && File.Exists(name))
 					File.Delete(name);
 
-				// Mono only supports memory mapped files that are backed by an actual file
+				// Unix supports memory-mapped files only if they are backed by an actual file
 				if (!File.Exists(name))
 				{
 					using (var fs = new FileStream(name, FileMode.CreateNew))
