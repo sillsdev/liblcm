@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2013-2014 SIL International
+// Copyright (c) 2013-2023 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -11,6 +11,7 @@ using System.Linq;
 using ProtoBuf;
 using SIL.LCModel.DomainServices.DataMigration;
 using SIL.LCModel.Utils;
+using SIL.PlatformUtilities;
 using SIL.Threading;
 
 namespace SIL.LCModel.Infrastructure.Impl
@@ -43,7 +44,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		{
 			m_peerProcesses = new Dictionary<int, Process>();
 			m_peerID = Guid.NewGuid();
-			if (MiscUtils.IsMono)
+			if (Platform.IsMono)
 			{
 				// /dev/shm is not guaranteed to be available on all systems, so fall back to temp
 				m_commitLogDir = Directory.Exists("/dev/shm") ? "/dev/shm" : Path.GetTempPath();
@@ -156,7 +157,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 								metadata.FileGeneration = metadata.CurrentGeneration;
 							}
 							RemovePeer(metadata, m_peerID);
-							delete = MiscUtils.IsMono && metadata.Peers.Count == 0;
+							delete = Platform.IsMono && metadata.Peers.Count == 0;
 							SaveMetadata(stream, metadata);
 						}
 					}
@@ -262,14 +263,14 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 		private MemoryMappedFile CreateOrOpen(string name, long capacity, bool createdNew)
 		{
-			if (MiscUtils.IsMono)
+			if (Platform.IsUnix)
 			{
 				name = Path.Combine(m_commitLogDir, name);
 				// delete old file that could be left after a crash
 				if (createdNew && File.Exists(name))
 					File.Delete(name);
 
-				// Mono only supports memory mapped files that are backed by an actual file
+				// Unix supports memory-mapped files only if they are backed by an actual file
 				if (!File.Exists(name))
 				{
 					using (var fs = new FileStream(name, FileMode.CreateNew))
