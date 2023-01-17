@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Core.WritingSystems;
@@ -83,19 +84,26 @@ namespace SIL.LCModel.DomainImpl
 		{
 			LexEntry bank1 = null;
 			LexEntry past = null;
+			LexEntry agent = null;
 			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor,
 				() =>
 				{
 					bank1 = (LexEntry)MakeEntryWithForm("bank");
 					past = (LexEntry)MakeAffixWithForm("ed", MoMorphTypeTags.kguidMorphSuffix);
+					// set Citation form on 'er' suffix to set up verification of Citation behavior
+					agent = (LexEntry)MakeAffixWithForm("er", MoMorphTypeTags.kguidMorphSuffix);
+					agent.CitationForm.set_String(Cache.DefaultVernWs, "er");
 					var pos1 = MakePartOfSpeech();
 					MakeAffixMsa(past, pos1, pos1);
 				});
 			Assert.That(bank1.MLHeadWord.VernacularDefaultWritingSystem.Text, Is.EqualTo("bank"));
 			Assert.That(past.MLHeadWord.VernacularDefaultWritingSystem.Text, Is.EqualTo("-ed"));
+			// The presence of a Citation form on agent should result in no suffix marker in the MLHeadword (LT-20704)
+			Assert.That(agent.MLHeadWord.VernacularDefaultWritingSystem.Text, Is.EqualTo("er"));
 			Assert.That(bank1.MLHeadWord.AnalysisDefaultWritingSystem.Text, Is.Null);
 			Assert.That(past.MLHeadWord.AnalysisDefaultWritingSystem.Text, Is.Null,
 				"where all forms are empty, no affix marker");
+
 			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor,
 				() =>
 				{
@@ -737,10 +745,11 @@ namespace SIL.LCModel.DomainImpl
 		{
 			ILexEntry oldEntry = null;
 			ILexSense complexSense = null;
+			int customFlid = 0;
 			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor,
 				() =>
 					{
-						oldEntry = MakeEntryWithAllPropsSet();
+						oldEntry = MakeEntryWithAllPropsSet(out customFlid);
 						complexSense = AddSenseWithHierarchyOfSubsenses(oldEntry);
 					});
 			oldEntry.MoveSenseToCopy(complexSense); // makes its own UOW
@@ -757,8 +766,8 @@ namespace SIL.LCModel.DomainImpl
 			Assert.That(newEntry.AllSenses, Has.Count.EqualTo(4), "all senses were moved");
 
 			// Check the other properties were copied (and not changed)
-			VerifyCopiedProperties(newEntry);
-			VerifyCopiedProperties(oldEntry);
+			VerifyCopiedProperties(newEntry, customFlid);
+			VerifyCopiedProperties(oldEntry, customFlid);
 
 			// Check MSAs were handled properly.
 			var oldSense = oldEntry.SensesOS[0];
@@ -779,7 +788,7 @@ namespace SIL.LCModel.DomainImpl
 		/// <summary>
 		/// Consistent with MakeEntryWithAllPropsSet
 		/// </summary>
-		private void VerifyCopiedProperties(ILexEntry newEntry)
+		private void VerifyCopiedProperties(ILexEntry newEntry, int customFlid)
 		{
 			Assert.That(newEntry.CitationForm.AnalysisDefaultWritingSystem.Text, Is.EqualTo("cf"));
 			Assert.That(newEntry.Bibliography.AnalysisDefaultWritingSystem.Text, Is.EqualTo("bib"));
@@ -789,7 +798,7 @@ namespace SIL.LCModel.DomainImpl
 			Assert.That(newEntry.Restrictions.AnalysisDefaultWritingSystem.Text, Is.EqualTo("restrict"));
 			Assert.That(newEntry.SummaryDefinition.AnalysisDefaultWritingSystem.Text, Is.EqualTo("sum"));
 			Assert.That(newEntry.DoNotUseForParsing, Is.True);
-			Assert.That(newEntry.ShowMainEntryIn, Has.Count.EqualTo(1));
+			Assert.That(newEntry.ImportResidue.Text, Is.EqualTo("import Residue"));
 			Assert.That(newEntry.LexemeFormOA.Form.VernacularDefaultWritingSystem.Text, Is.EqualTo("lf"));
 			Assert.That(newEntry.AlternateFormsOS, Has.Count.EqualTo(2));
 			Assert.That(newEntry.AlternateFormsOS[0].Form.VernacularDefaultWritingSystem.Text, Is.EqualTo("alt1"));
@@ -797,10 +806,50 @@ namespace SIL.LCModel.DomainImpl
 			Assert.That(newEntry.PronunciationsOS[0].Form.VernacularDefaultWritingSystem.Text, Is.EqualTo("pron"));
 			Assert.That(newEntry.EntryRefsOS, Has.Count.EqualTo(1));
 			Assert.That(newEntry.EtymologyOS, Has.Count.EqualTo(1));
+
+			Assert.That(newEntry.DialectLabelsRS, Has.Count.EqualTo(1));
+			Assert.That(newEntry.DialectLabelsRS.First().ShortName, Is.EqualTo("east"));
+
+			Assert.That(newEntry.DoNotPublishInRC, Has.Count.EqualTo(1));
+			Assert.That(newEntry.DoNotShowMainEntryInRC, Has.Count.EqualTo(1));
+			Assert.That(newEntry.LexEntryReferences.Count(), Is.EqualTo(1));
+
+			// Verify "Variant Forms".
+			Assert.That(newEntry.VariantFormEntries.Count(), Is.EqualTo(1));
+			Assert.That(newEntry.VariantFormEntries.First().VariantEntryRefs.Count(), Is.EqualTo(2));  // Now references both the old and new entry.
+			Assert.That(newEntry.VariantFormEntries.First().VariantEntryRefs.First().EntryTypes.Count(), Is.EqualTo(2));
+			Assert.That(newEntry.VariantFormEntries.First().VariantEntryRefs.First().Summary.UiString, Is.EqualTo("Variant Comment"));
+			Assert.That(newEntry.VariantFormEntries.First().VariantEntryRefs.Last().EntryTypes.Count(), Is.EqualTo(2));
+			Assert.That(newEntry.VariantFormEntries.First().VariantEntryRefs.Last().Summary.UiString, Is.EqualTo("Variant Comment"));
+
+			// Verify "Complex Forms", "Subentries" and "Referenced Complex Forms".
+			Assert.That(newEntry.ComplexFormEntries.Count(), Is.EqualTo(2));
+			Assert.That(newEntry.ComplexFormEntries.First().ComplexFormEntryRefs.Count(), Is.EqualTo(1));
+			Assert.That(newEntry.ComplexFormEntries.Last().ComplexFormEntryRefs.Count(), Is.EqualTo(1));
+			var firstRefs = newEntry.ComplexFormEntries.First().ComplexFormEntryRefs.First();
+			var lastRefs = newEntry.ComplexFormEntries.Last().ComplexFormEntryRefs.First();
+			Assert.That(firstRefs.ComponentLexemesRS, Has.Count.EqualTo(2));  // Now references both the old and new entry.
+			Assert.That(lastRefs.ComponentLexemesRS, Has.Count.EqualTo(2));  // Now references both the old and new entry.
+			if (firstRefs.PrimaryLexemesRS.Count == 2)
+			{
+				Assert.That(firstRefs.ShowComplexFormsInRS, Has.Count.EqualTo(0));
+				Assert.That(lastRefs.PrimaryLexemesRS, Has.Count.EqualTo(0));
+				Assert.That(lastRefs.ShowComplexFormsInRS, Has.Count.EqualTo(2));  // Now references both the old and new entry.
+			}
+			else
+			{
+				Assert.That(firstRefs.PrimaryLexemesRS, Has.Count.EqualTo(0));
+				Assert.That(firstRefs.ShowComplexFormsInRS, Has.Count.EqualTo(2));  // Now references both the old and new entry.
+				Assert.That(lastRefs.PrimaryLexemesRS, Has.Count.EqualTo(2));  // Now references both the old and new entry.
+				Assert.That(lastRefs.ShowComplexFormsInRS, Has.Count.EqualTo(0));
+			}
+
+			// Verify custom properties.
+			Assert.IsTrue(m_sda.get_BooleanProp(newEntry.Hvo, customFlid), "Custom prop is not 'true'.");
 		}
 
 		// Reflect changes in VerifyCopiedProperties
-		ILexEntry MakeEntryWithAllPropsSet()
+		ILexEntry MakeEntryWithAllPropsSet(out int customFlid)
 		{
 			ILexEntry entry = MakeEntry();
 			var sense = MakeSense(entry);
@@ -814,7 +863,7 @@ namespace SIL.LCModel.DomainImpl
 			entry.Restrictions.AnalysisDefaultWritingSystem = MakeAnalysisString("restrict");
 			entry.SummaryDefinition.AnalysisDefaultWritingSystem = MakeAnalysisString("sum");
 			entry.DoNotUseForParsing = true;
-			MakeShowMainEntryInPub(entry);
+			entry.ImportResidue = MakeAnalysisString("import Residue");
 			var form = MakeLexemeForm(entry);
 			form.Form.VernacularDefaultWritingSystem = MakeVernString("lf");
 			var alternate1 = MakeAllomorph(entry);
@@ -828,14 +877,130 @@ namespace SIL.LCModel.DomainImpl
 			var pos1 = MakePartOfSpeech();
 			var msa = MakeMsa(entry, pos1);
 			sense.MorphoSyntaxAnalysisRA = msa;
+			MakeDialectLabel_Entry(entry);
+			MakeDoNotPublishIn(entry);
+			MakeDoNotShowMainEntryIn(entry);
+			MakeCrossReference(entry);
+			MakeVariantOf(entry);
+			MakeComplexForms(entry);
+			customFlid = MakeCustomProperty(entry);
 			return entry;
 		}
 
-		private ICmPossibility MakeShowMainEntryInPub(ILexEntry entry)
+		// Make a Dialect Label on the entry.
+		private ICmPossibility MakeDialectLabel_Entry(ILexEntry entry)
 		{
-			var publication = Cache.ServiceLocator.GetInstance<ICmPossibilityFactory>().Create();
-			entry.ShowMainEntryIn.Add(publication);
-			return publication;
+			var dialectFactory = Cache.ServiceLocator.GetInstance<ICmPossibilityFactory>();
+			var dialectLabel = dialectFactory.Create(Guid.NewGuid(), Cache.LangProject.LexDbOA.DialectLabelsOA);
+			dialectLabel.Name.set_String(Cache.DefaultAnalWs, MakeAnalysisString("east"));
+			entry.DialectLabelsRS.Add(dialectLabel);
+			return dialectLabel;
+		}
+
+		private ICmPossibility MakeDoNotPublishIn(ILexEntry entry)
+		{
+			var publicationTypes = Cache.LangProject.LexDbOA.PublicationTypesOA;
+			var mainDict = publicationTypes.PossibilitiesOS[0];
+			entry.DoNotPublishInRC.Add(mainDict);
+			return mainDict;
+		}
+
+		private ICmPossibility MakeDoNotShowMainEntryIn(ILexEntry entry)
+		{
+			var publicationTypes = Cache.LangProject.LexDbOA.PublicationTypesOA;
+			var mainDict = publicationTypes.PossibilitiesOS[0];
+			entry.DoNotShowMainEntryInRC.Add(mainDict);
+			return mainDict;
+		}
+
+		private void MakeCrossReference(ILexEntry entry)
+		{
+			ILexEntry crossEntry = MakeEntry();
+			var lexRefType1 = MakeLexRefType("TestRelationPartWhole");
+			var lexRef1 = MakeLexReference(lexRefType1, entry);
+			lexRef1.TargetsRS.Insert(1, crossEntry);
+		}
+
+		private ILexReference MakeLexReference(ILexRefType owner, ICmObject firstTarget)
+		{
+			var result = Cache.ServiceLocator.GetInstance<ILexReferenceFactory>().Create();
+			owner.MembersOC.Add(result);
+			result.TargetsRS.Add(firstTarget);
+			return result;
+		}
+
+		private ILexRefType MakeLexRefType(string name)
+		{
+			ILexRefType result = null;
+			if (Cache.LangProject.LexDbOA.ReferencesOA == null)
+				Cache.LangProject.LexDbOA.ReferencesOA = Cache.ServiceLocator.GetInstance<ICmPossibilityListFactory>().Create();
+			result = Cache.ServiceLocator.GetInstance<ILexRefTypeFactory>().Create();
+			Cache.LangProject.LexDbOA.ReferencesOA.PossibilitiesOS.Add(result);
+			result.MappingType = (int)LexRefTypeTags.MappingTypes.kmtSenseTree;
+			result.Name.AnalysisDefaultWritingSystem = TsStringUtils.MakeString(name, Cache.DefaultAnalWs);
+			return result;
+		}
+
+		private void MakeVariantOf(ILexEntry entry)
+		{
+			// Make the variant with two types.
+			var variantEntryTypes = Cache.LangProject.LexDbOA.VariantEntryTypesOA;
+			var lexEntryType1 = (ILexEntryType)variantEntryTypes.PossibilitiesOS[0];
+			var lexEntryType2 = (ILexEntryType)variantEntryTypes.PossibilitiesOS[1];
+
+			ILexEntry otherEntry = MakeEntry();
+			ILexEntryRef newLer = otherEntry.MakeVariantOf(entry, lexEntryType1);
+			newLer.VariantEntryTypesRS.Add(lexEntryType2);
+
+			// Add a variant comment.
+			var english = Cache.LangProject.CurrentAnalysisWritingSystems.ElementAt(0);
+			ITsIncStrBldr tisb = TsStringUtils.MakeIncStrBldr();
+			tisb.SetIntPropValues((int)FwTextPropType.ktptWs, 0, english.Handle);
+			tisb.Append("Variant Comment");
+			Cache.LangProject.MainCountry.set_String(english.Handle, tisb.GetString());
+			newLer.Summary.MergeAlternatives(Cache.LangProject.MainCountry);
+		}
+
+		private void MakeComplexForms(ILexEntry entry)
+		{
+			ILexEntry otherEntry1 = MakeEntry();
+			MakeComplexLexEntryRef(otherEntry1, entry, true, false);
+			ILexEntry otherEntry2 = MakeEntry();
+			MakeComplexLexEntryRef(otherEntry2, entry, false, true);
+		}
+
+		private ILexEntryRef MakeComplexLexEntryRef(ILexEntry owner, ICmObject component, bool primary, bool showIn)
+		{
+			var result = Cache.ServiceLocator.GetInstance<ILexEntryRefFactory>().Create();
+			owner.EntryRefsOS.Add(result);
+			result.RefType = 1; // Complex form
+			result.ComponentLexemesRS.Add(component);
+
+			if (primary)
+				result.PrimaryLexemesRS.Add(component);
+
+			if (showIn)
+			{
+				if (!result.ShowComplexFormsInRS.Contains(component))
+					result.ShowComplexFormsInRS.Add(component);
+			}
+			else
+			{
+				if (result.ShowComplexFormsInRS.Contains(component))
+					result.ShowComplexFormsInRS.Remove(component);
+			}
+			return result;
+		}
+
+		private int MakeCustomProperty(ILexEntry entry)
+		{
+			var servLoc = Cache.ServiceLocator;
+			var mdc = servLoc.GetInstance<IFwMetaDataCacheManaged>();
+			int customCertifiedFlid = mdc.AddCustomField(entry.ClassName, "Certified", CellarPropertyType.Boolean, 0);
+
+			// Set custom boolean property.
+			m_sda.SetBoolean(entry.Hvo, customCertifiedFlid, true);
+			return customCertifiedFlid;
 		}
 
 		private IMoStemMsa MakeMsa(ILexEntry entry, IPartOfSpeech pos)
@@ -1846,7 +2011,7 @@ namespace SIL.LCModel.DomainImpl
 					naturalClass.Delete();
 
 					// Assert that it is no longer in the environment
-					Assert.That(environment.StringRepresentation.Text, Is.StringContaining(@"\_[C][V]"));
+					Assert.That(environment.StringRepresentation.Text, Does.Contain(@"\_[C][V]"));
 				});
 		}
 
@@ -1885,7 +2050,7 @@ namespace SIL.LCModel.DomainImpl
 					naturalClass.Delete();
 
 					// Assert that it is no longer in the environment
-					Assert.That(environment.StringRepresentation.Text, Is.StringContaining(@"\_[C^1]DELETED"));
+					Assert.That(environment.StringRepresentation.Text, Does.Contain(@"\_[C^1]DELETED"));
 				});
 		}
 
@@ -1924,7 +2089,7 @@ namespace SIL.LCModel.DomainImpl
 					naturalClass.Delete();
 
 					// Assert that it is no longer in the allomorph
-					Assert.That(stemAllomorph.Form.get_String(vernWs).Text, Is.StringContaining(@"[C^1]DELETED"));
+					Assert.That(stemAllomorph.Form.get_String(vernWs).Text, Does.Contain(@"[C^1]DELETED"));
 				});
 		}
 
@@ -1963,7 +2128,7 @@ namespace SIL.LCModel.DomainImpl
 					naturalClass.Delete();
 
 					// Assert that it is no longer in the allomorph
-					Assert.That(affixAllomorph.Form.get_String(vernWs).Text, Is.StringContaining(@"[C^1]DELETED"));
+					Assert.That(affixAllomorph.Form.get_String(vernWs).Text, Does.Contain(@"[C^1]DELETED"));
 				});
 		}
 

@@ -94,8 +94,9 @@ namespace SIL.LCModel.DomainServices
 			get
 			{
 				var tpb = TsStringUtils.MakePropsBldr();
+				var darkColor = Color.FromArgb(64,64,64);
 				tpb.SetIntPropValues((int)FwTextPropType.ktptForeColor, (int)FwTextPropVar.ktpvDefault,
-					(int)ColorUtil.ConvertColorToBGR(Color.FromKnownColor(KnownColor.ControlDarkDark)));
+					(int)ColorUtil.ConvertColorToBGR(darkColor));
 				//				// This is the formula (red + (blue * 256 + green) * 256) for a FW RGB color,
 				//				// applied to the standard FW color "light blue". This is the default defn of the
 				//				// "Language Code" character style in DN. We could just use this style, except
@@ -858,6 +859,11 @@ namespace SIL.LCModel.DomainServices
 							break;
 						}
 					}
+
+					// If we still have a zero for the retWs then return the default.
+					if (retWs == 0)
+						retWs = defaultAnalWs;
+
 					break;
 				case kwsFirstVernOrNamed:
 				case kwsFirstVern:
@@ -907,6 +913,11 @@ namespace SIL.LCModel.DomainServices
 							break;
 						}
 					}
+
+					// If we still have a zero for the retWs then return the default.
+					if (retWs == 0)
+						retWs = defaultVernWs;
+
 					break;
 				case kwsFirstAnalOrVern:
 					if (flid == 0) // sometimes used this way, just trying for a ws...make robust

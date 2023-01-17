@@ -8,7 +8,7 @@ using System.Text;
 using System.Globalization;
 //using System.Runtime.Serialization.Formatters.Binary;
 
-namespace Tools
+namespace SIL.LCModel.Tools
 {
 
 	// We cleverly arrange for the Tokens class to serialize itself out of a simple integer array.

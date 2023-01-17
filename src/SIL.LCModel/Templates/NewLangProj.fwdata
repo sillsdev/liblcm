@@ -424,7 +424,7 @@
 </Abbreviation>
 <Description>
 <AStr ws="en">
-<Run ws="en">A suffixing interfix is an suffix that can occur between two roots or stems.</Run>
+<Run ws="en">A suffixing interfix is a suffix that can occur between two roots or stems.</Run>
 </AStr>
 </Description>
 <Hidden val="False" />
@@ -7154,7 +7154,7 @@
 <Depth val="127" />
 <DisplayOption val="0" />
 <IsClosed val="False" />
-<IsSorted val="True" />
+<IsSorted val="False" />
 <IsVernacular val="False" />
 <ItemClsid val="7" />
 <ListVersion val="00000000-0000-0000-0000-000000000000" />
@@ -7175,8 +7175,10 @@
 <AUni ws="en">def</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-11 15:08:55.380" />
 <Name>
-<AUni ws="en">Default</AUni>
+<AUni ws="en">Default Template</AUni>
 </Name>
 <SubPossibilities>
 <objsur guid="c41fece2-ea5e-11de-8db3-0013722f8dec" t="o" />
@@ -7189,6 +7191,8 @@
 <AUni ws="en">prenuc</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-11 15:08:55.380" />
 <Name>
 <AUni ws="en">Pre-nuclear</AUni>
 </Name>
@@ -7202,6 +7206,8 @@
 <AUni ws="en">out</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-11 15:08:55.380" />
 <Name>
 <AUni ws="en">Outer</AUni>
 </Name>
@@ -7211,6 +7217,8 @@
 <AUni ws="en">in</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-11 15:08:55.380" />
 <Name>
 <AUni ws="en">Inner</AUni>
 </Name>
@@ -7220,6 +7228,8 @@
 <AUni ws="en">nuc</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-11 15:08:55.380" />
 <Name>
 <AUni ws="en">Nucleus</AUni>
 </Name>
@@ -7234,6 +7244,8 @@
 <AUni ws="en">subj</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-11 15:08:55.380" />
 <Name>
 <AUni ws="en">Subject</AUni>
 </Name>
@@ -7243,6 +7255,8 @@
 <AUni ws="en">v</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-11 15:08:55.380" />
 <Name>
 <AUni ws="en">Verb</AUni>
 </Name>
@@ -7252,6 +7266,8 @@
 <AUni ws="en">o/c</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-11 15:08:55.380" />
 <Name>
 <AUni ws="en">Object/Complement</AUni>
 </Name>
@@ -7261,6 +7277,8 @@
 <AUni ws="en">postnuc</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-11 15:08:55.380" />
 <Name>
 <AUni ws="en">Post-nuclear</AUni>
 </Name>
@@ -7274,6 +7292,8 @@
 <AUni ws="en">in</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-11 15:08:55.380" />
+<DateModified val="2008-01-28 13:45:01.860" />
 <Name>
 <AUni ws="en">Inner</AUni>
 </Name>
@@ -7283,6 +7303,8 @@
 <AUni ws="en">out</AUni>
 </Abbreviation>
 <Hidden val="False" />
+<DateCreated val="2008-01-28 13:45:38.110" />
+<DateModified val="2008-01-28 13:45:38.110" />
 <Name>
 <AUni ws="en">Outer</AUni>
 </Name>
@@ -8616,7 +8638,7 @@
 </Abbreviation>
 <Description>
 <AStr ws="en">
-<Run ws="en">A root is the portion of a word that (i) is common to a set of derived or inflected forms, if any, when all affixes are removed, (ii) is not further analyzable into meaningful elements, being morphologically simple, and, (iii) carries the principle portion of meaning of the words in which it functions.</Run>
+<Run ws="en">A root is the portion of a word that (i) is common to a set of derived or inflected forms, if any, when all affixes are removed, (ii) is not further analyzable into meaningful elements, being morphologically simple, and, (iii) carries the principal portion of meaning of the words in which it functions.</Run>
 </AStr>
 </Description>
 <Hidden val="False" />

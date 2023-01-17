@@ -17,7 +17,7 @@ namespace SIL.LCModel.Build.Tasks
 	/// LCM code generator
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
-	public class LcmGenerateImpl
+	internal class LcmGenerateImpl
 	{
 		/// <summary></summary>
 		public static LcmGenerateImpl Generator;

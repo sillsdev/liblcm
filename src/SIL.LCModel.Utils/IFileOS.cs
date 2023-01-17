@@ -54,6 +54,28 @@ namespace SIL.LCModel.Utils
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
+		/// Gets the directories in the given directory.
+		/// </summary>
+		/// <param name="sPath">The directory path.</param>
+		/// <returns>list of directories</returns>
+		/// ------------------------------------------------------------------------------------
+		string[] GetDirectoriesInDirectory(string sPath);
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets the directories in the given directory.
+		/// </summary>
+		/// <param name="sPath">The directory path.</param>
+		/// <param name="searchPattern">The search string to match against the names of directories in
+		/// path. The parameter cannot end in two periods ("..") or contain two periods ("..")
+		/// followed by DirectorySeparatorChar or AltDirectorySeparatorChar, nor can it contain
+		/// any of the characters in InvalidPathChars.</param>
+		/// <returns>list of directories</returns>
+		/// ------------------------------------------------------------------------------------
+		string[] GetDirectoriesInDirectory(string sPath, string searchPattern);
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
 		/// Gets the writer.
 		/// </summary>
 		/// <param name="filename">The filename.</param>

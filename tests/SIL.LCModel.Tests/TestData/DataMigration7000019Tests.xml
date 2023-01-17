@@ -1555,6 +1555,16 @@ English
 <Uni>fr__X_ETIC</Uni>
 </ICULocale>
 </rt>
+<rt class="ScrMarkerMapping" guid="F9FF6785-8BBF-40b6-9F80-CBB618F9ABD5" ownerguid="E041613C-AADE-46BE-B2B6-E807D4BD8952">
+<ICULocale>
+<Uni>fr__X_EMIC</Uni>
+</ICULocale>
+</rt>
+<rt class="ScrMarkerMapping" guid="F9FF6785-8BBF-40b6-9F80-CBB618F9ABD6" ownerguid="E041613C-AADE-46BE-B2B6-E807D4BD8952">
+<ICULocale>
+<Uni>sv__X_ETIC_MINE</Uni>
+</ICULocale>
+</rt>
 <rt class="StStyle" guid="4D312F11-439E-11D4-B5E7-00400543A266" ownerguid="2465F3C4-30EC-4B5B-BF0F-9AA0BA23634A">
 <IsBuiltIn val="true" />
 <IsModified val="true" />

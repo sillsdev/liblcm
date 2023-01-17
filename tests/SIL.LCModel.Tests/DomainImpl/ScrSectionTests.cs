@@ -937,7 +937,7 @@ namespace SIL.LCModel.DomainImpl
 			// Move first content paragraph to a heading paragraph.
 			var invalidHeadingStyle = Cache.LangProject.FindStyle(ScrStyleNames.FootnoteMarker);
 			var result = Assert.Throws<InvalidStructureException>(()=> introSection1.MoveHeadingParasToContent(0, invalidHeadingStyle));
-			Assert.That(result.Message, Is.StringContaining(ScrStyleNames.FootnoteMarker));
+			Assert.That(result.Message, Does.Contain(ScrStyleNames.FootnoteMarker));
 		}
 
 		#region MoveContentParasToHeading

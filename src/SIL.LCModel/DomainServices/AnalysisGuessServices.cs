@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2013 SIL International
+// Copyright (c) 2009-2022 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 //
@@ -652,8 +652,8 @@ namespace SIL.LCModel.DomainServices
 			if (occurrence.Analysis is IWfiWordform && occurrence.Index == 0)
 			{
 				ITsString tssWfBaseline = occurrence.BaselineText;
-				CoreWritingSystemDefinition ws = Cache.ServiceLocator.WritingSystemManager.Get(tssWfBaseline.get_WritingSystemAt(0));
-				string sLower = UnicodeString.ToLower(tssWfBaseline.Text, ws.IcuLocale);
+				var cf = new CaseFunctions(Cache.ServiceLocator.WritingSystemManager.Get(tssWfBaseline.get_WritingSystemAt(0)));
+				string sLower = cf.ToLower(tssWfBaseline.Text);
 				// don't bother looking up the lowercased wordform if the instanceOf is already in lowercase form.
 				if (sLower != tssWfBaseline.Text)
 				{

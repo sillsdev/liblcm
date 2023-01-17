@@ -12,7 +12,7 @@ namespace SIL.LCModel.Build.Tasks
 	/// Handles the owning and rel tags in the XMI file
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
-	public class RelationalProperty : Property
+	internal class RelationalProperty : Property
 	{
 		private readonly int m_backRefNumber;
 

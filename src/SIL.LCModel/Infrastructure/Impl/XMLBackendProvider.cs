@@ -14,6 +14,7 @@ using SIL.IO.FileLock;
 using SIL.LCModel.DomainServices.DataMigration;
 using SIL.LCModel.Utils;
 using SIL.Lexicon;
+using SIL.PlatformUtilities;
 using SIL.Reporting;
 
 namespace SIL.LCModel.Infrastructure.Impl
@@ -694,14 +695,26 @@ namespace SIL.LCModel.Infrastructure.Impl
 				ReportProblem(String.Format(Strings.ksCannotWriteBackup, ProjectId.Path, e.Message), null);
 				return;
 			}
-			m_lastWriteTime = File.GetLastWriteTimeUtc(mainPathname);
-			// This seems as though it should do nothing, and maybe it does. However .NET says the LastWriteTime can be
+
+			m_lastWriteTime = GetLastWriteTime(mainPathname);
+		}
+
+		private static DateTime GetLastWriteTime(string pathName)
+		{
+			var lastWriteTime = File.GetLastWriteTimeUtc(pathName);
+			// This seems as though it should do nothing, and maybe it does. However .NET says the GetLastWriteTime can be
 			// unreliable depending on the underlying OS. We've had some problems with it apparently being inaccurate (FWR-3190).
 			// What I'm trying to do here is guard against the possibility that the system hasn't actually finished all the
 			// write operations yet and the last write time will change again when it has.
 			// I'm hoping that explicitly setting it as the last thing we do will ensure that the time we set (which is the
 			// one we just read) will indeed be the time that is written.
-			File.SetLastWriteTimeUtc(mainPathname, m_lastWriteTime);
+			File.SetLastWriteTimeUtc(pathName, lastWriteTime);
+
+			// Now get it again - it's possible that calling SetLastWriteTime set
+			// it to a value a few ticks different.
+			lastWriteTime = File.GetLastWriteTimeUtc(pathName);
+
+			return lastWriteTime;
 		}
 
 		private bool IsLocalDrive(string path)
@@ -712,7 +725,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			// This conditional is a workaround for a Mono problem encountered on a ZFS file system
 			// Mono's filesystem detecting is handled in w32file-unix.c.
 			// See _wapi_drive_types[] , mono_w32file_get_logical_drive(), GetDriveTypeFromPath()
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 			{
 				var drives = Environment.GetLogicalDrives().Select(ds => new DriveInfo(ds)).ToArray();
 				Array.Sort(drives, (a, b) => a.Name.Length.CompareTo(b.Name.Length));

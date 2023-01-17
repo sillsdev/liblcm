@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2017 SIL International
+// Copyright (c) 2009-2022 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 //
@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Icu;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Phonology;
@@ -368,8 +367,17 @@ namespace SIL.LCModel.Infrastructure.Impl
 		{
 			((ICmObjectRepositoryInternal)m_cache.ServiceLocator.ObjectRepository).EnsureCompleteIncomingRefsFrom(
 				ConstituentChartCellPartTags.kflidColumn);
-			return ((ICmObjectInternal)target).IncomingRefsFrom(ConstituentChartCellPartTags.kflidColumn).Cast
-					<IConstituentChartCellPart>();
+			SimpleBag<ICmObject> chartCells = new SimpleBag<ICmObject>();
+			foreach (IReferenceSource referrer in target.ReferringObjects)
+			{
+				if ((referrer as CmObject).ClassID != 5123 /* "DsConstChart" */)
+				{
+					if (referrer.RefersTo(target, ConstituentChartCellPartTags.kflidColumn))
+						chartCells.Add(referrer.Source);
+				}
+			}
+
+			return chartCells.Distinct().Cast<IConstituentChartCellPart>();
 		}
 	}
 	#endregion
@@ -850,7 +858,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			{
 				int ws = TsStringUtils.GetWsAtOffset(tssForm, 0);
 				// try finding a lowercase version.
-				var cf = new CaseFunctions(m_cache.ServiceLocator.WritingSystemManager.Get(ws).IcuLocale);
+				var cf = new CaseFunctions(m_cache.ServiceLocator.WritingSystemManager.Get(ws));
 				string lcForm = cf.ToLower(tssForm.Text);
 				// we want to look up the lower case form only if the given form was not already lowercased.
 				if (lcForm != tssForm.Text)
@@ -1450,9 +1458,9 @@ namespace SIL.LCModel.Infrastructure.Impl
 				//We need to be careful when converting to lowercase therefore use CustomIcu.ToLower()
 				//get the WS of the tsString
 				int wsWf = TsStringUtils.GetWsAtOffset(tssWf, 0);
-				//use that to get the locale for the WS, which is used for
-				string wsLocale = cache.ServiceLocator.WritingSystemManager.Get(wsWf).IcuLocale;
-				string sLower = UnicodeString.ToLower(tssWf.Text, wsLocale);
+				//use that to get the locale-specific CaseFunctions for the WS
+				var caseFunctions = new CaseFunctions(cache.ServiceLocator.WritingSystemManager.Get(wsWf));
+				string sLower = caseFunctions.ToLower(tssWf.Text);
 				ITsTextProps ttp = tssWf.get_PropertiesAt(0);
 				tssWf = TsStringUtils.MakeString(sLower, ttp);
 				entries = FindEntriesForWordformWorker(cache, tssWf, wfa, ref duplicates);
@@ -1542,11 +1550,10 @@ namespace SIL.LCModel.Infrastructure.Impl
 				return null;
 
 			CoreWritingSystemDefinition wsVern = cache.ServiceLocator.WritingSystemManager.Get(tssWf.get_WritingSystemAt(0));
-			string wf = UnicodeString.ToLower(tssWf.Text, wsVern.IcuLocale);
-			ILexEntry matchingEntry = null;
+			string wf = new CaseFunctions(wsVern).ToLower(tssWf.Text);
 
 			// Check for Lexeme form.
-			matchingEntry = (
+			var matchingEntry = (
 				from e in cache.LanguageProject.LexDbOA.Entries
 				where e.LexemeFormOA != null && GetLowercaseStringFromMultiUnicodeSafely(e.LexemeFormOA.Form, wsVern) == wf
 				orderby e.HomographNumber
@@ -1608,7 +1615,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			if (formTsstring == null || formTsstring.Length == 0)
 				return string.Empty;
 
-			return UnicodeString.ToLower(formTsstring.Text, ws.IcuLocale);
+			return new CaseFunctions(ws).ToLower(formTsstring.Text);
 		}
 	}
 	#endregion

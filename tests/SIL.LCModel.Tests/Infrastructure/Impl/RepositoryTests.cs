@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2009-2013 SIL International
+// Copyright (c) 2009-2013 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 //
@@ -260,6 +260,40 @@ namespace SIL.LCModel.Infrastructure.Impl
 		}
 	}
 
+	#region ConstituentChartCellPartRepository Tests
+	/// ----------------------------------------------------------------------------------------
+	/// <summary>
+	/// Class to test additions to ConstituentChartCellPartRepository functionality.
+	/// </summary>
+	/// ----------------------------------------------------------------------------------------
+	[TestFixture]
+	public class ConstituentChartCellPartRepositoryTests : MemoryOnlyBackendProviderRestoredForEachTestTestBase
+	{
+		/// <summary>
+		/// Test InstancesWithChartCellColumn
+		/// </summary>
+		[Test]
+		public void InstancesWithChartCellColumn()
+		{
+			var repo = (ConstituentChartCellPartRepository)Cache.ServiceLocator.GetInstance<IConstituentChartCellPartRepository>();
+			ICmPossibility template = Cache.LangProject.GetDefaultChartTemplate();
+			IDsConstChart chart = SetupChart(template);  // This DOES add the chart as a reference to the template.
+
+			IEnumerable<IConstituentChartCellPart> chartCells = repo.InstancesWithChartCellColumn(template);
+			Assert.AreEqual(1, template.ReferringObjects.Count(), "The chart should be included as a referring object");
+			Assert.AreEqual(0, chartCells.Count(), "The chart should not be included as a chart cell");
+		}
+
+		private IDsConstChart SetupChart(ICmPossibility template)
+		{
+			var servLoc = Cache.ServiceLocator;
+			var text = servLoc.GetInstance<ITextFactory>().Create();
+			var stText = servLoc.GetInstance<IStTextFactory>().Create();
+			text.ContentsOA = stText;
+			return servLoc.GetInstance<IDsConstChartFactory>().Create(Cache.LangProject.DiscourseDataOA, stText, template);
+		}
+	}
+	#endregion
 
 	#region PunctuationFormRepository Tests
 	/// ----------------------------------------------------------------------------------------

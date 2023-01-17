@@ -1,7 +1,8 @@
-﻿// Copyright (c) 2015-2017 SIL International
+// Copyright (c) 2015-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,6 +19,30 @@ namespace SIL.LCModel.DomainServices.DataMigration
 	[TestFixture]
 	public sealed class DataMigrationTests7000019 : DataMigrationTestsBase
 	{
+		private string _globalWritingSystemStoreForTests;
+
+		[OneTimeSetUp]
+		public void OneTimeSetUp()
+		{
+			if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("FW_CommonAppData")))
+				return;
+
+			_globalWritingSystemStoreForTests = Path.Combine(Path.GetTempPath(),
+				"GlobalWritingSystemStoreForTests");
+			Directory.CreateDirectory(_globalWritingSystemStoreForTests);
+			Environment.SetEnvironmentVariable("FW_CommonAppData", _globalWritingSystemStoreForTests);
+		}
+
+		[OneTimeTearDown]
+		public void OneTimeTearDown()
+		{
+			if (string.IsNullOrEmpty(_globalWritingSystemStoreForTests))
+				return;
+
+			Directory.Delete(_globalWritingSystemStoreForTests, true);
+			Environment.SetEnvironmentVariable("FW_CommonAppData", null);
+		}
+
 		private static void PrepareStore(string path)
 		{
 			if (Directory.Exists(path))
@@ -70,32 +95,36 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			XNamespace palaso = "urn://palaso.org/ldmlExtensions/v1";
 			Assert.That(specialNode.Element(palaso + "languageName").Attribute("value").Value, Is.EqualTo("Kalaba"));
 			Assert.That(specialNode.Element(palaso + "abbreviation").Attribute("value").Value, Is.EqualTo("Kal"));
-			// Todo: check a lot more things.
-			//Assert.AreEqual(1033, kalaba.LCID);
 
-			//IWritingSystem frIpa = wsManager.Get("fr-fonipa-x-etic");
-			//Assert.AreEqual("FrnI", frIpa.Abbreviation);
-			//Assert.AreEqual("IPA Unicode 1.0", frIpa.Keyboard);
 
-			//foreach (string id in analysisWss.Split(' '))
-			//    Assert.IsTrue(wsManager.Exists(id));
-			//var vernWss = (string)lpElem.Element("VernWss");
-			//foreach (string id in vernWss.Split(' '))
-			//    Assert.IsTrue(wsManager.Exists(id));
-
-			//CheckWsProperty(dtoRepos.AllInstancesWithSubclasses("CmPossibilityList"), wsManager);
-
-			//foreach (DomainObjectDTO dto in dtoRepos.AllInstancesWithValidClasses())
-			//    CheckStringWsIds(wsManager, dto);
+			kalabaPath = Path.Combine(storePath, "x-kal-fonipa.ldml"); // Note this migration does NOT yet convert to qaa-x-kal-fonipa
+			kalabaNode = XDocument.Parse(Encoding.UTF8.GetString(File.ReadAllBytes(kalabaPath))).Root;
+			Assert.That(kalabaNode.Name.LocalName, Is.EqualTo("ldml"));
+			identityNode = kalabaNode.Element("identity");
+			Assert.That(identityNode.Element("language").Attribute("type").Value, Is.EqualTo("x-kal"));
+			specialNode = kalabaNode.Element("special");
+			Assert.That(specialNode.Attribute(xmlns + "palaso").Value, Is.EqualTo("urn://palaso.org/ldmlExtensions/v1"));
+			Assert.That(specialNode.Element(palaso + "languageName").Attribute("value").Value, Is.EqualTo("Kalaba"));
+			Assert.That(specialNode.Element(palaso + "abbreviation").Attribute("value").Value, Is.EqualTo("KalIPA"));
 
 			DomainObjectDTO importSourceDto = dtoRepos.AllInstancesWithSubclasses("ScrImportSource").First();
 			XElement importSourceElem = XElement.Parse(importSourceDto.Xml);
 			Assert.AreEqual("x-kal", (string)importSourceElem.Element("WritingSystem").Element("Uni"));
 			Assert.IsNull(importSourceElem.Element("ICULocale"));
 
-			DomainObjectDTO mappingDto = dtoRepos.AllInstancesWithSubclasses("ScrMarkerMapping").First();
+			DomainObjectDTO mappingDto = dtoRepos.AllInstancesWithSubclasses("ScrMarkerMapping").First(dto => dto.Guid.Equals("F9FF6785-8BBF-40b6-9F80-CBB618F9ABD4", StringComparison.OrdinalIgnoreCase));
 			XElement mappingElem = XElement.Parse(mappingDto.Xml);
 			Assert.AreEqual("fr-fonipa-x-etic", (string)mappingElem.Element("WritingSystem").Element("Uni"));
+			Assert.IsNull(mappingElem.Element("ICULocale"));
+
+			mappingDto = dtoRepos.AllInstancesWithSubclasses("ScrMarkerMapping").First(dto => dto.Guid.Equals("F9FF6785-8BBF-40b6-9F80-CBB618F9ABD5", StringComparison.OrdinalIgnoreCase));
+			mappingElem = XElement.Parse(mappingDto.Xml);
+			Assert.AreEqual("fr-fonipa-x-emic", (string)mappingElem.Element("WritingSystem").Element("Uni"));
+			Assert.IsNull(mappingElem.Element("ICULocale"));
+
+			mappingDto = dtoRepos.AllInstancesWithSubclasses("ScrMarkerMapping").First(dto => dto.Guid.Equals("F9FF6785-8BBF-40b6-9F80-CBB618F9ABD6", StringComparison.OrdinalIgnoreCase));
+			mappingElem = XElement.Parse(mappingDto.Xml);
+			Assert.AreEqual("sv-fonipa-x-etic-MINE", (string)mappingElem.Element("WritingSystem").Element("Uni"));
 			Assert.IsNull(mappingElem.Element("ICULocale"));
 
 			DomainObjectDTO styleDto = dtoRepos.AllInstancesWithSubclasses("StStyle").First();

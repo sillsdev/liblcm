@@ -33,7 +33,7 @@ namespace SIL.LCModel.DomainServices
 		/// <summary>
 		///
 		/// </summary>
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public override void FixtureSetup()
 		{
 			base.FixtureSetup();

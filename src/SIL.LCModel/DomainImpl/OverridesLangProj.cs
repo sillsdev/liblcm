@@ -75,6 +75,22 @@ namespace SIL.LCModel.DomainImpl
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
+		/// Return all the CmPossibilityList objects.  Custom ones are not owned, so this
+		/// allows FXT export to get to them.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[VirtualProperty(CellarPropertyType.ReferenceCollection, "CmPossibilityList")]
+		public IEnumerable<ICmPossibilityList> AllPossibilityLists
+		{
+			get
+			{
+				ICmPossibilityListRepository repo = Services.GetInstance<ICmPossibilityListRepository>();
+				return repo.AllInstances();
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
 		/// Return LinkedFilesRootDir if explicitly set, otherwise DataDirectory.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------

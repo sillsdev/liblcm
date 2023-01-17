@@ -293,8 +293,13 @@ namespace SIL.LCModel.DomainImpl
 		private ITsString GetBest(int ws)
 		{
 			var bestWs = WritingSystemServices.ActualWs(m_object.Cache, ws, m_object.Hvo, m_flid);
-			return (bestWs == 0 ? null : get_String(bestWs)) ??
-				   TsStringUtils.MakeString(Strings.ksStars, m_object.Cache.WritingSystemFactory.UserWs);
+			ITsString retStr = null;
+			if (bestWs != 0)
+				retStr = get_String(bestWs);
+			if(bestWs == 0 || retStr == null || retStr.Text == null)
+				retStr = TsStringUtils.MakeString(Strings.ksStars, m_object.Cache.WritingSystemFactory.UserWs);
+
+			return retStr;
 		}
 	}
 

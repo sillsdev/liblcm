@@ -17,7 +17,6 @@ using SIL.LCModel.DomainServices.DataMigration;
 using SIL.LCModel.Infrastructure;
 using SIL.LCModel.Infrastructure.Impl;
 using StructureMap;
-using StructureMap.Configuration.DSL;
 using StructureMap.Pipeline;
 
 namespace SIL.LCModel.IOC

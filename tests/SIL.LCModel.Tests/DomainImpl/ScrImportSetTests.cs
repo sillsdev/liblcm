@@ -44,7 +44,7 @@ namespace SIL.LCModel.DomainImpl
 		/// <summary>Constructor</summary>
 		/// ----------------------------------------------------------------------------------------
 		public MappingInfo(string beginMarker, string endMarker, bool isInline,
-			string dataEncoding, MarkerDomain domain,string styleName, string ws,
+			string dataEncoding, MarkerDomain domain, string styleName, string ws,
 			bool isExcluded, MappingTargetType mappingTarget)
 		{
 			this.beginMarker = beginMarker;
@@ -218,7 +218,7 @@ namespace SIL.LCModel.DomainImpl
 			foreach (ImportMappingInfo mapping in scrMappings)
 			{
 				htCheck[mapping.BeginMarker] = true;
-				switch(mapping.BeginMarker)
+				switch (mapping.BeginMarker)
 				{
 					case @"\a":
 						Assert.IsNull(mapping.EndMarker);
@@ -405,7 +405,7 @@ namespace SIL.LCModel.DomainImpl
 			foreach (ImportMappingInfo mapping in notesMappings)
 			{
 				htCheck[mapping.BeginMarker] = true;
-				switch(mapping.BeginMarker)
+				switch (mapping.BeginMarker)
 				{
 					case @"\rem":
 						Assert.IsNull(mapping.EndMarker);
@@ -514,7 +514,7 @@ namespace SIL.LCModel.DomainImpl
 			m_importSettings.SetMapping(MappingSet.Main,
 				new ImportMappingInfo(@"\cc", null, false, MappingTargetType.Figure, MarkerDomain.Default, null, null));
 			m_importSettings.SetMapping(MappingSet.Notes,
-				new ImportMappingInfo(@"\ee", null, false, MappingTargetType.TEStyle, MarkerDomain.Note, ScrStyleNames.Remark, null , m_translatorNoteDefn));
+				new ImportMappingInfo(@"\ee", null, false, MappingTargetType.TEStyle, MarkerDomain.Note, ScrStyleNames.Remark, null, m_translatorNoteDefn));
 
 			// Modify existing "ee" in Main and "aa" in Notes
 			ImportMappingInfo main_ee = m_importSettings.MappingForMarker(@"\ee", MappingSet.Main);
