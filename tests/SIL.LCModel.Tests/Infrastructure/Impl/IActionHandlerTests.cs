@@ -329,7 +329,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			var senseFactory = Cache.ServiceLocator.GetInstance<ILexSenseFactory>();
 			ILexEntry le = null;
 			UndoableUnitOfWorkHelper.Do("undo make entry", "redo", Cache.ActionHandlerAccessor,
-				()=>
+				() =>
 					{
 						le = leFactory.Create();
 					});
@@ -430,7 +430,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		private void WaitForTimeToChange(DateTime old)
 		{
 			while (DateTime.Now == old)
-			{}
+			{ }
 		}
 
 		/// <summary>
@@ -1201,7 +1201,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			var manager = Cache.ServiceLocator.GetInstance<IUndoStackManager>();
 			var stack2 = manager.CreateUndoStack();
 			var oldStack = Cache.ActionHandlerAccessor;
-			Assert.Throws(typeof (ArgumentException), () => manager.DisposeStack(oldStack));
+			Assert.Throws(typeof(ArgumentException), () => manager.DisposeStack(oldStack));
 
 			var leFactory = Cache.ServiceLocator.GetInstance<ILexEntryFactory>();
 			var lsFactory = Cache.ServiceLocator.GetInstance<ILexSenseFactory>();
@@ -1217,8 +1217,8 @@ namespace SIL.LCModel.Infrastructure.Impl
 				() =>
 				{
 					ls1 = lsFactory.Create();
-						le1.SensesOS.Add(ls1);
-					});
+					le1.SensesOS.Add(ls1);
+				});
 
 			manager.SetCurrentStack(stack2);
 			Assert.Throws(typeof(ArgumentException), () => manager.DisposeStack(stack2));
@@ -1229,7 +1229,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				() =>
 				{
 					le2 = leFactory.Create();
-					});
+				});
 			UndoableUnitOfWorkHelper.Do("Undo create sense on new stack", "Redo create sense on new stack", stack2,
 				() =>
 				{
@@ -1367,7 +1367,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				oldStack,
 				() =>
 				{
-					((ILexRefType) lr.Owner).MembersOC.Remove(lr);
+					((ILexRefType)lr.Owner).MembersOC.Remove(lr);
 				});
 			manager.SetCurrentStack(stack2);
 			UndoableUnitOfWorkHelper.Do("Undo deleting sense on new stack", "Redo",
@@ -1504,7 +1504,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 					le1 = leFactory.Create();
 				});
 			Assert.That(m_uowService.UnsavedUnitsOfWork.Count, Is.EqualTo(1));
-			VerifyChanges(new ICmObject[] {le1}, new ICmObject[] {}, new ICmObjectId[0], m_uowService);
+			VerifyChanges(new ICmObject[] { le1 }, new ICmObject[] { }, new ICmObjectId[0], m_uowService);
 
 			// This verifies both that we see changes from both stacks, and that something modified in one UOW
 			// but created in the other only shows up once as created.
@@ -1517,16 +1517,16 @@ namespace SIL.LCModel.Infrastructure.Impl
 				});
 
 			Assert.That(m_uowService.UnsavedUnitsOfWork.Count, Is.EqualTo(2));
-			VerifyChanges(new ICmObject[] { le1, ls1 }, new ICmObject[] {}, new ICmObjectId[0], m_uowService);
+			VerifyChanges(new ICmObject[] { le1, ls1 }, new ICmObject[] { }, new ICmObjectId[0], m_uowService);
 			((IUndoStackManager)m_uowService).Save();
 			Assert.That(m_uowService.UnsavedUnitsOfWork.Count, Is.EqualTo(0));
 			var ls1Id = ls1.Id; // get this before we destroy it.
 			stack2.Undo(); // undo creating the sense: modifies the entry, deletes the sense.
-			VerifyChanges(new ICmObject[0], new ICmObject[] { le1 }, new [] { ls1Id }, m_uowService);
+			VerifyChanges(new ICmObject[0], new ICmObject[] { le1 }, new[] { ls1Id }, m_uowService);
 			manager.SetCurrentStack(oldStack);
 			var le1Id = le1.Id;
 			oldStack.Undo(); // undo creating the entry, too.
-			VerifyChanges(new ICmObject[0], new ICmObject[] {}, new ICmObjectId[] {ls1Id, le1Id}, m_uowService);
+			VerifyChanges(new ICmObject[0], new ICmObject[] { }, new ICmObjectId[] { ls1Id, le1Id }, m_uowService);
 
 			// Make sure changes resulting from Undoing something saved are not lost, even if we do something
 			// else on the same stack.
@@ -1545,18 +1545,18 @@ namespace SIL.LCModel.Infrastructure.Impl
 					ls2 = lsFactory.Create();
 					le2.SensesOS.Add(ls2);
 				});
-			VerifyChanges(new ICmObject[] {le2, ls2}, new ICmObject[] {}, new [] { ls1Id, le1Id }, m_uowService);
+			VerifyChanges(new ICmObject[] { le2, ls2 }, new ICmObject[] { }, new[] { ls1Id, le1Id }, m_uowService);
 			((IUndoStackManager)m_uowService).Save();
 			stack2.Undo();
 			manager.SetCurrentStack(oldStack);
 			oldStack.Undo(); // undo creating the entry, too.
 			var ls2Id = ls2.Id;
 			var le2Id = le2.Id;
-			VerifyChanges(new ICmObject[0], new ICmObject[] {}, new [] { ls2Id, le2Id }, m_uowService);
+			VerifyChanges(new ICmObject[0], new ICmObject[] { }, new[] { ls2Id, le2Id }, m_uowService);
 			((IUndoStackManager)m_uowService).Save();
 			// Check that Redo changes get saved.
 			oldStack.Redo(); // re-creates le2
-			VerifyChanges(new ICmObject[] {le2}, new ICmObject[] {}, new ICmObjectId[0], m_uowService);
+			VerifyChanges(new ICmObject[] { le2 }, new ICmObject[] { }, new ICmObjectId[0], m_uowService);
 			// Now, see what happens if we create an object, delete it, then Save and undo both changes.
 			UndoableUnitOfWorkHelper.Do("Undo delete 2nd entry on old stack", "Redo ",
 				m_actionHandler,
@@ -1565,12 +1565,12 @@ namespace SIL.LCModel.Infrastructure.Impl
 					le2.Delete();
 				});
 			// I don't think we can reasonably hope to detect that lexDb hasn't really changed.
-			VerifyChanges(new ICmObject[0], new ICmObject[] {}, new ICmObjectId[0], m_uowService);
+			VerifyChanges(new ICmObject[0], new ICmObject[] { }, new ICmObjectId[0], m_uowService);
 			((IUndoStackManager)m_uowService).Save();
 			oldStack.Undo();
 			oldStack.Undo();
 			// Now we have on the redo stack changes which undelete it and uncreate it.
-			VerifyChanges(new ICmObject[0], new ICmObject[] {}, new ICmObjectId[0], m_uowService);
+			VerifyChanges(new ICmObject[0], new ICmObject[] { }, new ICmObjectId[0], m_uowService);
 		}
 
 		void VerifyChanges(ICmObject[] expectedNewbies, ICmObject[] expectedDirtballs,
@@ -1970,9 +1970,9 @@ namespace SIL.LCModel.Infrastructure.Impl
 				{
 					text = Cache.ServiceLocator.GetInstance<ITextFactory>().Create();
 					//Cache.LangProject.TextsOC.Add(text);
-					 stText = Cache.ServiceLocator.GetInstance<IStTextFactory>().Create();
+					stText = Cache.ServiceLocator.GetInstance<IStTextFactory>().Create();
 					text.ContentsOA = stText;
-				   var paraFactory = Cache.ServiceLocator.GetInstance<IStTxtParaFactory>();
+					var paraFactory = Cache.ServiceLocator.GetInstance<IStTxtParaFactory>();
 					para1 = paraFactory.Create();
 					stText.ParagraphsOS.Add(para1);
 					para2 = paraFactory.Create();

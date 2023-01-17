@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using Icu;
 using NUnit.Framework;
+using SIL.PlatformUtilities;
 
 namespace SIL.LCModel.Core.Text
 {
@@ -23,10 +24,16 @@ namespace SIL.LCModel.Core.Text
 		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetup()
 		{
 			CustomIcu.InitIcuDataDir();
+			if (Platform.IsLinux && !CustomIcu.HaveCustomIcuLibrary)
+			{
+				// Ignore the assert on Linux since testing the package that the test needs requires that we have a package of LCM
+				Assert.Ignore("These tests require the custom ICU be installed (with LD_LIBRARY_PATH set on Linux - Are we bootstrapping a new ICU?)");
+			}
+			Assert.That(CustomIcu.HaveCustomIcuLibrary, Is.True, "These tests require the custom ICU to be installed");
 		}
 
 		/// <summary>

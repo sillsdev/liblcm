@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2013 SIL International
+// Copyright (c) 2004-2022 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 //
@@ -6,7 +6,9 @@
 // Responsibility: FW Team
 // ---------------------------------------------------------------------------------------------
 
+using System;
 using Icu;
+using SIL.LCModel.Core.WritingSystems;
 
 namespace SIL.LCModel.Core.Text
 {
@@ -20,24 +22,28 @@ namespace SIL.LCModel.Core.Text
 	/// </summary>
 	public class CaseFunctions
 	{
-		private readonly string m_icuLocale;
-
 		/// <summary>
 		/// Make one for the specified locale (which may be null, default, or empty, root).
+		/// NB: This constructor will bypass case aliases, which will cause problems for some languages (LT-20816)
 		/// </summary>
-		/// <param name="icuLocale"></param>
+		[Obsolete]
 		public CaseFunctions(string icuLocale)
 		{
-			m_icuLocale = icuLocale;
+			IcuLocale = icuLocale;
+		}
+
+		/// <summary>
+		/// Make one for the specified Writing System (IcuLocale will be set to the WS's Case Alias, if any)
+		/// </summary>
+		public CaseFunctions(CoreWritingSystemDefinition ws)
+		{
+			IcuLocale = ws.CaseAlias ?? ws.IcuLocale;
 		}
 
 		/// <summary>
 		/// Retrieve the locale used to create it.
 		/// </summary>
-		public string IcuLocale
-		{
-			get { return m_icuLocale; }
-		}
+		public string IcuLocale { get; }
 
 		/// <summary>
 		/// Convert string to lower case equivalent.
@@ -46,7 +52,7 @@ namespace SIL.LCModel.Core.Text
 		/// <returns></returns>
 		public string ToLower(string input)
 		{
-			return UnicodeString.ToLower(input, m_icuLocale);
+			return UnicodeString.ToLower(input, IcuLocale);
 		}
 		/// <summary>
 		/// Convert string to title case equivalent.
@@ -55,7 +61,7 @@ namespace SIL.LCModel.Core.Text
 		/// <returns></returns>
 		public string ToTitle(string input)
 		{
-			return UnicodeString.ToTitle(input, m_icuLocale);
+			return UnicodeString.ToTitle(input, IcuLocale);
 		}
 		/// <summary>
 		/// Convert string to upper case equivalent.
@@ -64,7 +70,7 @@ namespace SIL.LCModel.Core.Text
 		/// <returns></returns>
 		public string ToUpper(string input)
 		{
-			return UnicodeString.ToUpper(input, m_icuLocale);
+			return UnicodeString.ToUpper(input, IcuLocale);
 		}
 
 		/// <summary>

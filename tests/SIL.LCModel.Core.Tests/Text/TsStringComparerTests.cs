@@ -36,7 +36,7 @@ namespace SIL.LCModel.Core.Text
 		/// Fixtures the setup.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			m_wsManager = new WritingSystemManager();
@@ -44,7 +44,7 @@ namespace SIL.LCModel.Core.Text
 		}
 
 		/// <summary/>
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void TearDown()
 		{
 		}

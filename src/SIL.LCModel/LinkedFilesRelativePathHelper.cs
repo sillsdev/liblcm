@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using SIL.LCModel.Utils;
+using SIL.PlatformUtilities;
 
 namespace SIL.LCModel
 {
@@ -81,7 +82,7 @@ namespace SIL.LCModel
 		{
 			if (string.IsNullOrEmpty(path))
 				return string.Empty;
-			if (MiscUtils.IsUnix || MiscUtils.IsMac)
+			if (Platform.IsUnix || Platform.IsMac)
 			{
 				if (path.Contains("\\"))
 					return path.Replace('\\', '/');

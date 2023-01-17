@@ -26,6 +26,7 @@ namespace SIL.LCModel
 	public class LcmCacheTests : MemoryOnlyBackendProviderTestBase
 	{
 		private ILcmUI m_ui;
+		private string m_baseTestDirectory;
 		private string m_projectsDirectory;
 		private ILcmDirectories m_lcmDirectories;
 
@@ -34,7 +35,9 @@ namespace SIL.LCModel
 		{
 			base.FixtureSetup();
 
-			m_projectsDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+			m_baseTestDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+			m_projectsDirectory = Path.Combine(m_baseTestDirectory, Path.GetRandomFileName());
+			Directory.CreateDirectory(m_baseTestDirectory);
 			Directory.CreateDirectory(m_projectsDirectory);
 
 			m_ui = new DummyLcmUI();
@@ -44,7 +47,7 @@ namespace SIL.LCModel
 		/// <summary></summary>
 		public override void FixtureTeardown()
 		{
-			Directory.Delete(m_projectsDirectory, true);
+			Directory.Delete(m_baseTestDirectory, true);
 			base.FixtureTeardown();
 		}
 
@@ -405,18 +408,18 @@ namespace SIL.LCModel
 					frWs = globalRepoForTest.Get("fr");
 
 					// Verify preconditions
-					Assert.That(enWs.SpellCheckingId, Is.StringMatching(globalEn));
-					Assert.That(frWs.SpellCheckingId, Is.StringMatching(globalFr));
-					Assert.That(cache.WritingSystemFactory.get_Engine("en").SpellCheckingId, Is.StringMatching(localEn));
-					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Is.StringMatching(localFr));
+					Assert.That(enWs.SpellCheckingId, Does.Match(globalEn));
+					Assert.That(frWs.SpellCheckingId, Does.Match(globalFr));
+					Assert.That(cache.WritingSystemFactory.get_Engine("en").SpellCheckingId, Does.Match(localEn));
+					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Does.Match(localFr));
 
 					// SUT
 					cache.UpdateWritingSystemsFromGlobalStore("en");
-					Assert.That(cache.WritingSystemFactory.get_Engine("en").SpellCheckingId, Is.StringMatching(localEnResult));
-					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Is.StringMatching(localFr));
-					
+					Assert.That(cache.WritingSystemFactory.get_Engine("en").SpellCheckingId, Does.Match(localEnResult));
+					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Does.Match(localFr));
+
 					cache.UpdateWritingSystemsFromGlobalStore("fr");
-					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Is.StringMatching(localFrResult));
+					Assert.That(cache.WritingSystemFactory.get_Engine("fr").SpellCheckingId, Does.Match(localFrResult));
 				}
 			}
 			finally

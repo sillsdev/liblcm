@@ -1091,79 +1091,138 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				}
 			}
 
-			var locale = new Locale(icuLocale);
-			string languageCode;
-			var icuLanguageCode = locale.Language;
-			if (icuLanguageCode.Length == 4 && icuLanguageCode.StartsWith("x"))
-				languageCode = icuLanguageCode.Substring(1);
-			else
-				languageCode = icuLanguageCode;
-			// Some very old projects may have codes with over-long identifiers. In desperation we truncate these.
-			// 4-letter codes starting with 'e' are a special case.
-			if (languageCode.Length > 3 && !(languageCode.Length == 4 && languageCode.StartsWith("e")))
-				languageCode = languageCode.Substring(0, 3);
-			// The ICU locale strings in FW 6.0 allowed numbers in the language tag.  The
-			// standard doesn't allow this. Map numbers to letters deterministically, even
-			// though the resulting code may have no relation to reality.  (It may be a valid
-			// ISO 639-3 language code that is assigned to a totally unrelated language.)
-			if (languageCode.Contains('0'))
-				languageCode = languageCode.Replace('0', 'a');
-			if (languageCode.Contains('1'))
-				languageCode = languageCode.Replace('1', 'b');
-			if (languageCode.Contains('2'))
-				languageCode = languageCode.Replace('2', 'c');
-			if (languageCode.Contains('3'))
-				languageCode = languageCode.Replace('3', 'd');
-			if (languageCode.Contains('4'))
-				languageCode = languageCode.Replace('4', 'e');
-			if (languageCode.Contains('5'))
-				languageCode = languageCode.Replace('5', 'f');
-			if (languageCode.Contains('6'))
-				languageCode = languageCode.Replace('6', 'g');
-			if (languageCode.Contains('7'))
-				languageCode = languageCode.Replace('7', 'h');
-			if (languageCode.Contains('8'))
-				languageCode = languageCode.Replace('8', 'i');
-			if (languageCode.Contains('9'))
-				languageCode = languageCode.Replace('9', 'j');
-			Version19LanguageSubtag languageSubtag;
-			if (languageCode == icuLanguageCode)
+			if (icuLocale.Contains("_"))
 			{
-				languageSubtag = GetLanguageSubtag(
-					(languageCode.Length == 4 && languageCode.StartsWith("e")) ?
-					languageCode.Substring(1) : languageCode);
+				/*				case "IPA": return "fonipa";
+				case "X_ETIC": return "fonipa-x-etic";
+				case "X_EMIC":
+				case "EMC": return "fonipa-x-emic";
+				case "X_PY":
+				case "PY": return "pinyin";
+*/
+				// Replace well-known codes - then replace underscores with dashes
+				icuLocale = icuLocale.Replace("X_ETIC", "fonipa-x-etic")
+					.Replace("X_EMIC", "fonipa-x-emic")
+					.Replace("IPA", "fonipa")
+					.Replace("X_PY", "pinyin")
+					.Replace("PY", "pinyin")
+					.Replace("__", "-")
+					.Replace("_", "-");
 			}
-			else
+			// handle known special cases of old ICU locale values
+			if (icuLocale.Length == 4 && icuLocale.StartsWith("x"))
 			{
-				languageSubtag = new Version19LanguageSubtag(languageCode, null, true, null);
+				// trim leading 'x' if found at the start of a 4 letter locale name
+				icuLocale = icuLocale.Substring(1);
 			}
-			if (icuLanguageCode == icuLocale)
-				return ToLangTag(languageSubtag, null, null, null);
 
-			var scriptCode = locale.Script;
-			Version19ScriptSubtag scriptSubtag = null;
-			if (!string.IsNullOrEmpty(scriptCode))
-				scriptSubtag = GetScriptSubtag(scriptCode);
-
-			var regionCode = locale.Country;
-			Version19RegionSubtag regionSubtag = null;
-			if (!string.IsNullOrEmpty(regionCode))
-				regionSubtag = GetRegionSubtag(regionCode);
-
-			var variantCode = locale.Variant;
-			Version19VariantSubtag variantSubtag = null;
-			if (!string.IsNullOrEmpty(variantCode))
+			if (IetfLanguageTag.IsValid(icuLocale))
 			{
-				variantCode = TranslateVariantCode(variantCode, code =>
+				if (IetfLanguageTag.TryGetParts(icuLocale, out var language, out var script,
+					out var region, out var variant))
 				{
-					string[] pieces = variantCode.Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
-					return string.Join("-", pieces.Select(item => TranslateVariantCode(item, subItem => subItem.ToLowerInvariant())));
-				});
-				variantSubtag = GetVariantSubtag(variantCode);
+					if (!string.IsNullOrEmpty(variant))
+					{
+						var variants =
+							IetfLanguageTag.TryGetVariantSubtags(variant, out var variantSubtags);
+						if (variantSubtags.Any(x => x.IsPrivateUse && x.Code == "etic"))
+						{
+							var newVariantList = new List<VariantSubtag>( new []{ new VariantSubtag("fonipa") });
+							newVariantList.AddRange(variantSubtags.Where(v => v.Code != "fonipa" && v.Code != "etic"));
+							var scriptTag = string.IsNullOrEmpty(script) ? "" : $"-{script}";
+							var regionTag = string.IsNullOrEmpty(region) ? "" : $"-{region}";
+							string normalVariants =
+								string.Join("-", newVariantList.Where(v => !v.IsPrivateUse).Select(v=>v.Code));
+							if (normalVariants.Length > 1)
+							{
+								normalVariants = $"-{normalVariants}";
+							}
+							string privateVariants = string.Join("-",
+								newVariantList.Where(v => v.IsPrivateUse && v.Code != "fonipa").Select(v => v.Code));
+							if (privateVariants.Length > 1)
+							{
+								privateVariants = $"-{privateVariants}";
+							}
+							return $"{language}{scriptTag}{regionTag}{normalVariants}-fonipa-x-etic{privateVariants}";
+						}
+					}
+				}
+				return IetfLanguageTag.ToLanguageTag(icuLocale);
 			}
 
-			return ToLangTag(languageSubtag, scriptSubtag, regionSubtag, variantSubtag);
+			if (!GetSubtags(icuLocale, out var langSubtag,
+				out var scriptSubtag, out var regionSubtag, out var variantSubtag))
+			{
+				var locale = BuildAntiqueIcuLocale(icuLocale);
+				string languageCode;
+				var icuLanguageCode = locale.Language;
+				if (icuLanguageCode.Length == 4 && icuLanguageCode.StartsWith("x"))
+					languageCode = icuLanguageCode.Substring(1);
+				else
+					languageCode = icuLanguageCode;
+				// Some very old projects may have codes with over-long identifiers. In desperation we truncate these.
+				// 4-letter codes starting with 'e' are a special case.
+				if (languageCode.Length > 3 && !(languageCode.Length == 4 && languageCode.StartsWith("e")))
+					languageCode = languageCode.Substring(0, 3);
+				// The ICU locale strings in FW 6.0 allowed numbers in the language tag.  The
+				// standard doesn't allow this. Map numbers to letters deterministically, even
+				// though the resulting code may have no relation to reality.  (It may be a valid
+				// ISO 639-3 language code that is assigned to a totally unrelated language.)
+				if (languageCode.Contains('0'))
+					languageCode = languageCode.Replace('0', 'a');
+				if (languageCode.Contains('1'))
+					languageCode = languageCode.Replace('1', 'b');
+				if (languageCode.Contains('2'))
+					languageCode = languageCode.Replace('2', 'c');
+				if (languageCode.Contains('3'))
+					languageCode = languageCode.Replace('3', 'd');
+				if (languageCode.Contains('4'))
+					languageCode = languageCode.Replace('4', 'e');
+				if (languageCode.Contains('5'))
+					languageCode = languageCode.Replace('5', 'f');
+				if (languageCode.Contains('6'))
+					languageCode = languageCode.Replace('6', 'g');
+				if (languageCode.Contains('7'))
+					languageCode = languageCode.Replace('7', 'h');
+				if (languageCode.Contains('8'))
+					languageCode = languageCode.Replace('8', 'i');
+				if (languageCode.Contains('9'))
+					languageCode = languageCode.Replace('9', 'j');
+				if (languageCode == icuLanguageCode)
+				{
+					langSubtag = GetLanguageSubtag(
+						(languageCode.Length == 4 && languageCode.StartsWith("e")) ?
+						languageCode.Substring(1) : languageCode);
+				}
+				else
+				{
+					langSubtag = new Version19LanguageSubtag(languageCode, null, true, null);
+				}
+				if (icuLanguageCode == icuLocale)
+					return ToLangTag(langSubtag, null, null, null);
+
+				var scriptCode = locale.Script;
+				if (!string.IsNullOrEmpty(scriptCode))
+					scriptSubtag = GetScriptSubtag(scriptCode);
+
+				var regionCode = locale.Region;
+				if (!string.IsNullOrEmpty(regionCode))
+					regionSubtag = GetRegionSubtag(regionCode);
+
+				var variantCode = locale.Variant;
+				if (!string.IsNullOrEmpty(variantCode))
+				{
+					variantSubtag = GetVariantSubtag(variantCode);
+				}
+			}
+			return ToLangTag(langSubtag, scriptSubtag, regionSubtag, variantSubtag);
 		}
+
+		private static AntiqueIcuLocale BuildAntiqueIcuLocale(string icuLocale)
+		{
+			return new AntiqueIcuLocale(icuLocale);
+		}
+
 		/// <summary>
 		/// Generates a language tag from the specified subtags.
 		/// </summary>
@@ -1221,28 +1280,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 
 			return sb.ToString();
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Translates standard variant codes to their expanded (semi-human-readable) format;
-		/// all others are translated using the given function.
-		/// </summary>
-		/// <param name="variantCode">The variant code.</param>
-		/// <param name="defaultFunc">The default translation function.</param>
-		/// ------------------------------------------------------------------------------------
-		private static string TranslateVariantCode(string variantCode, Func<string, string> defaultFunc)
-		{
-			switch (variantCode)
-			{
-				case "IPA": return "fonipa";
-				case "X_ETIC": return "fonipa-x-etic";
-				case "X_EMIC":
-				case "EMC": return "fonipa-x-emic";
-				case "X_PY":
-				case "PY": return "pinyin";
-				default: return defaultFunc(variantCode);
-			}
 		}
 
 		public static bool IsPrivateUseRegionCode(string regionCode)
@@ -1429,6 +1466,43 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				subTagIndex++;
 			}
 			return subTags[subTagIndex++];
+		}
+
+		internal class AntiqueIcuLocale
+		{
+			public AntiqueIcuLocale(string icuLocale)
+			{
+				var parts = new Stack<string>(icuLocale.Split('-').Reverse());
+				Language = parts.Pop();
+				PopAndSetScriptIfPresent(parts);
+				PopAndSetRegionIfPresent(parts);
+				Variant = string.Join("-", parts);
+			}
+
+			private void PopAndSetScriptIfPresent(Stack<string> parts)
+			{
+				if (parts.Count > 1)
+				{
+					if (s_scriptPattern.IsMatch(parts.Peek()))
+					{
+						Script = parts.Pop();
+					}
+				}
+			}
+			private void PopAndSetRegionIfPresent(Stack<string> parts)
+			{
+				if (parts.Count > 1)
+				{
+					if (s_regionPattern.IsMatch(parts.Peek()))
+					{
+						Region = parts.Pop();
+					}
+				}
+			}
+			public string Language { get; private set; }
+			public string Script { get; private set; }
+			public string Region { get; private set; }
+			public string Variant { get; private set; }
 		}
 	}
 }

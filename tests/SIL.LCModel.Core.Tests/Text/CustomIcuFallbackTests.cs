@@ -1,16 +1,18 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2018-2022 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Icu;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.LCModel.Core.Attributes;
+// ReSharper disable LocalizableElement - our test engineers understand English.
 
 namespace SIL.LCModel.Core.Text
 {
@@ -23,13 +25,15 @@ namespace SIL.LCModel.Core.Text
 	[TestFixture]
 	public class CustomIcuFallbackTests
 	{
+		private const string DefaultIcuLibraryVersionMajor = "62";
+		private const string CustomIcuLibraryVersionMajor = "70";
+		// ReSharper disable InconsistentNaming
 		private string _tmpDir;
 		private string _pathEnvironmentVariable;
-		private const string DefaultIcuLibraryVersionMajor = "62";
-		private const string CustomIcuLibraryVersionMajor = "54";
 		private List<string> _dirsToDelete;
 		private string _preTestDataDir;
 		private string _preTestDataDirEnv;
+		// ReSharper restore InconsistentNaming
 
 		private static void CopyFile(string srcPath, string dstDir)
 		{
@@ -57,7 +61,7 @@ namespace SIL.LCModel.Core.Text
 			return Path.Combine(OutputDirectory, GetArchSubdir(arch));
 		}
 
-		private string RunTestHelper(string workDir, string exeDir = null)
+		private string RunTestHelper(string workDir, out string stdErr, bool expectFailure = false, string exeDir = null)
 		{
 			if (string.IsNullOrEmpty(exeDir))
 				exeDir = _tmpDir;
@@ -82,9 +86,12 @@ namespace SIL.LCModel.Core.Text
 				process.Start();
 				var output = process.StandardOutput.ReadToEnd();
 				process.WaitForExit();
+				stdErr = process.StandardError.ReadToEnd();
 				if (process.ExitCode != 0)
 				{
-					Console.WriteLine(process.StandardError.ReadToEnd());
+					var expected = expectFailure ? "expected" : "unexpected";
+					Console.WriteLine($"TestHelper.exe failed ({expected}):");
+					Console.WriteLine(stdErr);
 				}
 				return output.TrimEnd('\r', '\n');
 			}
@@ -118,7 +125,7 @@ namespace SIL.LCModel.Core.Text
 				"SIL.LCModel.Core",
 				"SIL.LCModel.Utils",
 				"icu.net",
-				"SIL.Core.Desktop",
+				"SIL.Core",
 				"Microsoft.Extensions.DependencyModel"
 			})
 			{
@@ -152,7 +159,7 @@ namespace SIL.LCModel.Core.Text
 			Environment.SetEnvironmentVariable("PATH", _pathEnvironmentVariable);
 		}
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetUp()
 		{
 			// Undo the PATH that got set by the InitializeIcu attribute
@@ -162,7 +169,7 @@ namespace SIL.LCModel.Core.Text
 			_preTestDataDirEnv = Environment.GetEnvironmentVariable("ICU_DATA");
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void FixtureTearDown()
 		{
 			Thread.Sleep(500);
@@ -178,22 +185,58 @@ namespace SIL.LCModel.Core.Text
 		public void InitIcuDataDir_CustomIcuVersion()
 		{
 			CopyIcuFiles(_tmpDir, CustomIcuLibraryVersionMajor);
-			Assert.That(RunTestHelper(_tmpDir), Is.EqualTo($"{CustomIcuLibraryVersionMajor}.1{Environment.NewLine}NON_SPACING_MARK{Environment.NewLine}True"));
+			Assert.That(RunTestHelper(_tmpDir, out _), Is.EqualTo($"{CustomIcuLibraryVersionMajor}.1{Environment.NewLine}NON_SPACING_MARK{Environment.NewLine}True"));
 		}
 
 		[Test]
 		public void InitIcuDataDir_FallbackDefaultIcuVersion()
 		{
-			// NOTE: if this test fails, check that you don't have icuuc54.dll or icuuc62.dll somewhere,
-			// e.g. in C:\Program Files (x86)\Common Files\SIL
 			CopyIcuFiles(_tmpDir, DefaultIcuLibraryVersionMajor);
-			Assert.That(RunTestHelper(_tmpDir), Is.EqualTo($"{DefaultIcuLibraryVersionMajor}.1{Environment.NewLine}PRIVATE_USE_CHAR{Environment.NewLine}False"));
+			// Verify that the folder has the correct contents to execute the SUT
+			var icuFilesInTmpDir = Directory.EnumerateFiles(_tmpDir, "icuuc*.dll", SearchOption.AllDirectories).ToArray();
+			Assert.That(icuFilesInTmpDir.Count, Is.EqualTo(2), string.Join("\r\n", icuFilesInTmpDir));
+			Assert.That(icuFilesInTmpDir.All(f => f.Contains(DefaultIcuLibraryVersionMajor)), Is.True, string.Join("\r\n", icuFilesInTmpDir));
+			// SUT
+			var result = RunTestHelper(_tmpDir, out _);
+			var expected = $"{DefaultIcuLibraryVersionMajor}.2{Environment.NewLine}PRIVATE_USE_CHAR{Environment.NewLine}False";
+			if (result.Equals(expected))
+			{
+				// All is well; no need to search all over for unwanted ICU DLL's
+				return;
+			}
+			// If this test fails, check that we don't have icuuc##.dll somewhere, e.g. in C:\Program Files (x86)\Common Files\SIL.
+			// This search seems too expensive to perform when we don't have a problem; search only if we know the test fails.
+			PrintIcuDllsOnPath();
+			Assert.That(result, Is.EqualTo(expected));
+		}
+
+		private static void PrintIcuDllsOnPath()
+		{
+			var files = new List<string>();
+			// ReSharper disable once PossibleNullReferenceException
+			foreach (var folder in Environment.GetEnvironmentVariable("PATH").Split(Path.PathSeparator))
+			{
+				try
+				{
+					files.AddRange(Directory.EnumerateFiles(folder, "icuuc*.dll"));
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine($"Error enumerating: {e.GetType()}: {e.Message}");
+				}
+			}
+			if (files.Any())
+			{
+				Console.WriteLine($"Found the following ICU DLL's lurking around:\r\n{string.Join("\r\n", files)}");
+				Console.WriteLine("(note: DLL's without a version number in the name should not be a problem)");
+			}
 		}
 
 		[Test]
 		public void InitIcuDataDir_NoIcuLibrary()
 		{
-			Assert.That(RunTestHelper(_tmpDir), Is.Empty);
+			Assert.That(RunTestHelper(_tmpDir, out var stdErr, true), Is.Empty);
+			Assert.That(stdErr, Does.Contain("Unhandled Exception: System.IO.FileLoadException: Can't load ICU library (version 0)"));
 		}
 	}
 }

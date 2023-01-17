@@ -14,7 +14,7 @@ namespace SIL.LCModel.Build.Tasks
 	///
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
-	public class Property: Base<Class>
+	internal class Property: Base<Class>
 	{
 		private static int s_id = 1;
 		private readonly int m_id;

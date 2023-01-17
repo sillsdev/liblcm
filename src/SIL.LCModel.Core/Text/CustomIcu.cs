@@ -13,6 +13,7 @@ using Icu;
 using Icu.Normalization;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Utils;
+using SIL.PlatformUtilities;
 
 namespace SIL.LCModel.Core.Text
 {
@@ -26,7 +27,7 @@ namespace SIL.LCModel.Core.Text
 		/// <summary>
 		/// The ICU major version
 		/// </summary>
-		public const string Version = "54";
+		public const string Version = "70";
 
 		private const string IcuucDllName = "icuuc" + Version + ".dll";
 
@@ -175,7 +176,7 @@ namespace SIL.LCModel.Core.Text
 			// this is needed for code that accesses the libraries directly instead of through icudotnet
 			// Both 32bit and 64bit are added because a 64bit application may be communicating with a 32bit
 			// application (e.g. Flex & Paratext)
-			if (MiscUtils.IsWindows)
+			if (Platform.IsWindows)
 			{
 				var executingAssemblyFolder = Uri.UnescapeDataString(new UriBuilder(Assembly.GetExecutingAssembly().CodeBase).Path);
 				var assemblyDir = Path.GetDirectoryName(executingAssemblyFolder);
@@ -212,6 +213,11 @@ namespace SIL.LCModel.Core.Text
 			{
 				// See if we can get the 'original' one in the data directory.
 				overrideDataPath = Path.Combine(dataDirectory, Path.Combine("data", "UnicodeDataOverrides.txt"));
+
+				if (!File.Exists(overrideDataPath))
+				{
+					overrideDataPath = Path.Combine(dataDirectory, Path.Combine("..", "data", "UnicodeDataOverrides.txt"));
+				}
 			}
 
 			try
@@ -222,11 +228,13 @@ namespace SIL.LCModel.Core.Text
 			{
 				// we don't have a custom ICU installed
 				HaveCustomIcuLibrary = false;
+				Debug.WriteLine("Can't find SilIcuInit() - no custom ICU installed?");
 			}
 			catch (BadImageFormatException)
 			{
 				// we found a custom ICU but with an incorrect format (e.g. x64 instead of x86)
 				HaveCustomIcuLibrary = false;
+				Debug.WriteLine("Can't execute SilIcuInit() - incorrect format (e.g. x64 instead of x86)");
 			}
 
 			if (!HaveCustomIcuLibrary)

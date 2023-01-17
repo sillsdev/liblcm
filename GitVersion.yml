@@ -1,0 +1,28 @@
+mode: ContinuousDeployment
+increment: Patch
+assembly-versioning-scheme: MajorMinor
+assembly-file-versioning-format: '{Major}.{Minor}.{Patch}.{WeightedPreReleaseNumber}'
+branches:
+  master:
+    tag: beta
+    regex: (origin/)?(master)
+    is-mainline: true
+  develop:
+    tag: beta
+    regex: (origin/)?develop
+    is-mainline: true
+  hotfix:
+    tag: beta
+    regex: (origin/)?hotfix[/-]
+    increment: Patch
+    prevent-increment-of-merged-branch-version: false
+    track-merge-target: false
+    tracks-release-branches: false
+    is-release-branch: false
+  pull-request:
+    mode: ContinuousDeployment
+    tag: PR
+  feature:
+    regex: feature[/-]
+    mode: ContinuousDeployment
+    tag: alpha

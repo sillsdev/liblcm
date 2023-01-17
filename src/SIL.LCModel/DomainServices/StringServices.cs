@@ -292,6 +292,11 @@ namespace SIL.LCModel.DomainServices
 				InsertHomographNumber(tisb, nHomograph, hc, hv, cache);
 		}
 
+		private static bool NeedsAffixDecorations(ILexEntry entry, ILgWritingSystem ws)
+		{
+			return !IsAudioWritingSystem(ws) && string.IsNullOrEmpty(entry.CitationForm.get_String(ws.Handle).Text);
+		}
+
 		private static bool IsAudioWritingSystem(ILgWritingSystem ws)
 		{
 			return ws != null &&
@@ -501,7 +506,7 @@ namespace SIL.LCModel.DomainServices
 				return "";
 			// Audio writing systems actually store a filename as the contents. Do not corrupt it with affix markers.
 			var ws = entry.Cache?.WritingSystemFactory?.get_EngineOrNull(wsVern);
-			return IsAudioWritingSystem(ws) ? form : DecorateFormWithAffixMarkers(entry, form);
+			return NeedsAffixDecorations(entry, ws) ? DecorateFormWithAffixMarkers(entry, form) : form;
 		}
 
 		internal static string DecorateFormWithAffixMarkers(ILexEntry entry, string form)

@@ -1,5 +1,5 @@
 %lexer
-%namespace SIL.CoreImpl.Phonology
+%namespace SIL.LCModel.Core.Phonology
 [/\[\]()_#]	%TOKEN
 [ \t\n\r]	;
 [^/\[\]()_# \t\n\r]+	%Ident

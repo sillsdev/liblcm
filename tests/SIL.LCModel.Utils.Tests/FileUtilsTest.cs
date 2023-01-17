@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2017 SIL International
+// Copyright (c) 2009-2020 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -10,6 +10,7 @@ using System.Threading;
 using NUnit.Framework;
 using SIL.IO;
 using Mono.Unix.Native;
+using SIL.PlatformUtilities;
 
 namespace SIL.LCModel.Utils
 {
@@ -88,7 +89,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		///--------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Include="Win")]
+		[Platform(Include = "Win")]
 		public void IsFilePathValid_Windows()
 		{
 			// File names
@@ -104,7 +105,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		///--------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Include="Linux")]
+		[Platform(Include = "Linux")]
 		public void IsFilePathValid_Linux()
 		{
 			// File names
@@ -122,8 +123,8 @@ namespace SIL.LCModel.Utils
 		[Test]
 		public void AreFilesIdentical_DifferentFilesOfDifferentSizeAreDifferent()
 		{
-			using(var file1 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file1"))
-			using(var file2 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file2"))
+			using (var file1 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file1"))
+			using (var file2 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file2"))
 			{
 				m_fileOs.AddFile(file1.Path, Encoding.UTF8.GetString(new byte[] { 0x1, 0x2, 0x3 }), Encoding.UTF8);
 				m_fileOs.AddFile(file2.Path, Encoding.UTF8.GetString(new byte[] { 0x1, 0x2, 0x3, 0x4 }), Encoding.UTF8);
@@ -137,8 +138,8 @@ namespace SIL.LCModel.Utils
 		[Test]
 		public void AreFilesIdentical_DifferentFilesOfSameSizeAreDifferent()
 		{
-			using(var file1 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file1"))
-			using(var file2 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file2"))
+			using (var file1 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file1"))
+			using (var file2 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file2"))
 			{
 				m_fileOs.AddFile(file1.Path, Encoding.UTF8.GetString(new byte[] { 0x1, 0x2, 0x3 }), Encoding.UTF8);
 				m_fileOs.AddFile(file2.Path, Encoding.UTF8.GetString(new byte[] { 0x1, 0x2, 0x4 }), Encoding.UTF8);
@@ -152,8 +153,8 @@ namespace SIL.LCModel.Utils
 		[Test]
 		public void AreFilesIdentical_TwoFilesWithSameContentAreIdentical()
 		{
-			using(var file1 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file1"))
-			using(var file2 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file2"))
+			using (var file1 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file1"))
+			using (var file2 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file2"))
 			{
 				m_fileOs.AddFile(file1.Path, Encoding.UTF8.GetString(new byte[] { 0x1, 0x2, 0x3 }), Encoding.UTF8);
 				Thread.Sleep(1001);
@@ -168,8 +169,8 @@ namespace SIL.LCModel.Utils
 		[Test]
 		public void AreFilesIdentical_SameFilesWithDifferentCreationTimeAreIdentical()
 		{
-			using(var file1 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file1"))
-			using(var file2 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file2"))
+			using (var file1 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file1"))
+			using (var file2 = TempFile.WithFilenameInTempFolder("AreFilesIdentical.file2"))
 			{
 				m_fileOs.AddFile(file1.Path, Encoding.UTF8.GetString(new byte[] { 0x1, 0x2, 0x3 }), Encoding.UTF8);
 				Thread.Sleep(1001);
@@ -239,14 +240,18 @@ namespace SIL.LCModel.Utils
 
 		/// <summary/>
 		[Test]
-		public void EnsureDirectoryExists_CreatesNonExistentDirectory()
+		public void EnsureDirectoryExists_CreatesNonExistentDirectoryAndSuperDirectories()
 		{
-			var directory = "dir";
+			var directory = Path.Combine($"C:{Path.DirectorySeparatorChar}Dir", "inner", "most");
 			Assert.That(m_fileOs.ExistingDirectories.Contains(directory), Is.False, "Test set up wrong");
 			Assert.That(FileUtils.DirectoryExists(directory), Is.False);
 			FileUtils.EnsureDirectoryExists(directory);
 			Assert.That(FileUtils.DirectoryExists(directory), Is.True);
 			Assert.That(m_fileOs.ExistingDirectories.Contains(directory), Is.True, "Should have added directory to mock filesystem");
+			for (var superDir = Path.GetDirectoryName(directory); !string.IsNullOrEmpty(superDir); superDir = Path.GetDirectoryName(superDir))
+			{
+				Assert.That(FileUtils.DirectoryExists(superDir), Is.True, $"'{superDir}' does not exist, but it has subdirectories");
+			}
 
 			// So should also be able to add files into the directory that was created.
 			var file = Path.Combine(directory, "file.txt");
@@ -259,11 +264,26 @@ namespace SIL.LCModel.Utils
 		[Test]
 		public void EnsureDirectoryExists_NoProblemForExistentDirectory()
 		{
-			var directory = "dir";
+			var directory = $"{Path.DirectorySeparatorChar}dir";
+			var subdirectory = Path.Combine(directory, "subdirectory");
 			FileUtils.EnsureDirectoryExists(directory);
 			Assert.That(m_fileOs.ExistingDirectories.Contains(directory), Is.True);
 			FileUtils.EnsureDirectoryExists(directory);
 			Assert.That(m_fileOs.ExistingDirectories.Contains(directory), Is.True);
+			FileUtils.EnsureDirectoryExists(subdirectory);
+			Assert.That(m_fileOs.ExistingDirectories, Is.EquivalentTo(new[] {Path.DirectorySeparatorChar.ToString(), subdirectory, directory}));
+		}
+
+		/// <remarks>
+		/// The parent directory of an unrooted outermost directory (which 'C:' is on Linux but not Windows,
+		/// and which `dir` is on either platform) is the empty string.
+		/// </remarks>
+		[Test]
+		public void EnsureDirectoryExists_DoesNotCreateEmptyStringDirectory()
+		{
+			const string directory = "dear";
+			FileUtils.EnsureDirectoryExists(directory);
+			Assert.That(m_fileOs.ExistingDirectories, Is.EquivalentTo(new[] {directory}));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -273,7 +293,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Include="Win")]
+		[Platform(Include = "Win")]
 		public void ActualFilePath_DirectoryNameExactMatchFilenameExistsWithDifferentCase_Windows()
 		{
 			SetFileUtilsDirectoryAndFile(@"c:\My Documents", "AbC");
@@ -287,7 +307,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Include="Linux", Reason="Linux file names are case sensitive")]
+		[Platform(Include = "Linux", Reason = "Linux file names are case sensitive")]
 		public void ActualFilePath_DirectoryNameExactMatchFilenameExistsWithDifferentCase_Linux()
 		{
 			SetFileUtilsDirectoryAndFile("/tmp/MyDocuments", "AbC");
@@ -302,7 +322,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Include="Win")]
+		[Platform(Include = "Win")]
 		public void ActualFilePath_DirectoryNameComposedFilenameExistsWithDifferentCase_Windows()
 		{
 			SetFileUtilsDirectoryAndFile("c:\\My Docum\u00e9nts", "AbC");
@@ -316,7 +336,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Include="Linux", Reason="Linux file names are case sensitive")]
+		[Platform(Include = "Linux", Reason = "Linux file names are case sensitive")]
 		public void ActualFilePath_DirectoryNameComposedFilenameExistsWithDifferentCase_Linux()
 		{
 			SetFileUtilsDirectoryAndFile("/tmp/MyDocum\u00e9nts", "AbC");
@@ -331,7 +351,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Include="Win")]
+		[Platform(Include = "Win")]
 		public void ActualFilePath_DirectoryNameDecomposedFilenameExistsWithDifferentCase_Windows()
 		{
 			SetFileUtilsDirectoryAndFile("c:\\My Docum\u0065\u0301nts", "AbC");
@@ -345,7 +365,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Include="Linux", Reason="Linux file names are case sensitive")]
+		[Platform(Include = "Linux", Reason = "Linux file names are case sensitive")]
 		public void ActualFilePath_DirectoryNameDecomposedFilenameExistsWithDifferentCase_Linux()
 		{
 			SetFileUtilsDirectoryAndFile("/tmp/MyDocum\u0065\u0301nts", "AbC");
@@ -604,8 +624,8 @@ namespace SIL.LCModel.Utils
 
 			using (TextReader tr = FileUtils.OpenFileForRead("file", Encoding.ASCII))
 			{
-					Assert.AreEqual("You idot!", tr.ReadToEnd());
-				}
+				Assert.AreEqual("You idot!", tr.ReadToEnd());
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -993,7 +1013,7 @@ namespace SIL.LCModel.Utils
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests FileUtils.GetFilesInDirectory, sepcifying the directory with a trailing
+		/// Tests FileUtils.GetFilesInDirectory, specifying the directory with a trailing
 		/// backslash.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
@@ -1101,6 +1121,128 @@ namespace SIL.LCModel.Utils
 		}
 		#endregion
 
+		#region GetDirectoriesInDirectory tests
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests FileUtils.GetDirectoriesInDirectory with a directory that doesn't exist.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void GetDirectoriesInDirectory_NoPattern_DirectoryDoesNotExist()
+		{
+			Assert.Throws(typeof(DirectoryNotFoundException), () => FileUtils.GetDirectoriesInDirectory(
+				"c:" + Path.DirectorySeparatorChar + "Whatever"));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests FileUtils.GetDirectoriesInDirectory with an empty directory.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void GetDirectoriesInDirectory_NoPattern_None()
+		{
+			m_fileOs.ExistingDirectories.Add($"c:{Path.DirectorySeparatorChar}Whatever");
+			Assert.AreEqual(0, FileUtils.GetDirectoriesInDirectory($"c:{Path.DirectorySeparatorChar}Whatever").Length);
+		}
+
+		/// <summary>
+		/// Tests FileUtils.GetDirectoriesInDirectory with directories in directory in
+		/// question and some other directories in subdirectories and other directories.
+		/// </summary>
+		[Test]
+		public void GetDirectoriesInDirectory_NoPattern_DirectoriesAdded()
+		{
+			var sPath = "c:" + Path.DirectorySeparatorChar + "Whatever";
+			var dir1 = Path.Combine(sPath, "boo");
+			var dir2 = Path.Combine(sPath, "hoo");
+			var dir3 = Path.Combine(dir2, "subDir", "moo");
+			var dir4 = Path.Combine($"c:{Path.DirectorySeparatorChar}Monkey", "too");
+			FileUtils.EnsureDirectoryExists(dir1);
+			FileUtils.EnsureDirectoryExists(dir2);
+			FileUtils.EnsureDirectoryExists(dir3);
+			FileUtils.EnsureDirectoryExists(dir4);
+			var directories = FileUtils.GetDirectoriesInDirectory(sPath);
+			Assert.AreEqual(2, directories.Length);
+			Assert.AreEqual(dir1, directories[0]);
+			Assert.AreEqual(dir2, directories[1]);
+		}
+
+		/// <summary>
+		/// Tests FileUtils.GetDirectoriesInDirectory, specifying the directory with a trailing backslash.
+		/// </summary>
+		[Test]
+		public void GetDirectoriesInDirectory_WithFinalDirectorySeparator()
+		{
+			var sPath = $"c:{Path.DirectorySeparatorChar}Whatever{Path.DirectorySeparatorChar}";
+			var dir1 = Path.Combine(sPath, "boo");
+			FileUtils.EnsureDirectoryExists(dir1);
+			var directories = FileUtils.GetDirectoriesInDirectory(sPath);
+			Assert.AreEqual(1, directories.Length);
+			Assert.AreEqual(dir1, directories[0]);
+		}
+
+		/// <summary>
+		/// Tests FileUtils.GetDirectoriesInDirectory, matching various search patterns.
+		/// </summary>
+		[Test]
+		public void GetDirectoriesInDirectory_SearchPattern()
+		{
+			var sPath = "c:" + Path.DirectorySeparatorChar + "Whatever";
+			var dir1 = Path.Combine(sPath, "boo_jpgs");
+			var dir2 = Path.Combine(sPath, "hoo_jpgs");
+			var dir3 = Path.Combine(sPath, "moo_jpegs");
+			FileUtils.EnsureDirectoryExists(dir1);
+			FileUtils.EnsureDirectoryExists(dir2);
+			FileUtils.EnsureDirectoryExists(dir3);
+			var directories = FileUtils.GetDirectoriesInDirectory(sPath, "*_jpgs");
+			Assert.AreEqual(2, directories.Length);
+			Assert.AreEqual(dir1, directories[0]);
+			Assert.AreEqual(dir2, directories[1]);
+
+			directories = FileUtils.GetDirectoriesInDirectory(sPath, "?oo_*");
+			Assert.AreEqual(3, directories.Length);
+			Assert.AreEqual(dir1, directories[0]);
+			Assert.AreEqual(dir2, directories[1]);
+			Assert.AreEqual(dir3, directories[2]);
+
+			directories = FileUtils.GetDirectoriesInDirectory(sPath, "*");
+			Assert.AreEqual(3, directories.Length);
+			Assert.AreEqual(dir1, directories[0]);
+			Assert.AreEqual(dir2, directories[1]);
+			Assert.AreEqual(dir3, directories[2]);
+		}
+
+		/// <summary>
+		/// Tests FileUtils.GetDirectoriesInDirectory, matching search patterns that include regex special characters.
+		/// </summary>
+		[Test]
+		public void GetDirectoriesInDirectory_SearchPattern_RegexCharsInPattern()
+		{
+			var sPath = "c:" + Path.DirectorySeparatorChar + "Whatever";
+			var dir1 = Path.Combine(sPath, "boo.jpg");
+			var dir2 = Path.Combine(sPath, "hoo.jpg");
+			var dir3 = Path.Combine(sPath, "moo.jpeg");
+			var dir4 = Path.Combine(sPath, "(+)moojpg");
+			FileUtils.EnsureDirectoryExists(dir1);
+			FileUtils.EnsureDirectoryExists(dir2);
+			FileUtils.EnsureDirectoryExists(dir3);
+			FileUtils.EnsureDirectoryExists(dir4);
+			var directories = FileUtils.GetDirectoriesInDirectory(sPath, ".jpg");
+			Assert.AreEqual(0, directories.Length);
+
+			directories = FileUtils.GetDirectoriesInDirectory(sPath, "+");
+			Assert.AreEqual(0, directories.Length);
+
+			directories = FileUtils.GetDirectoriesInDirectory(sPath, "boo.jpg$");
+			Assert.AreEqual(0, directories.Length);
+
+			directories = FileUtils.GetDirectoriesInDirectory(sPath, "(+)*");
+			Assert.AreEqual(1, directories.Length);
+			Assert.AreEqual(dir4, directories[0]);
+		}
+		#endregion
+
 		#region ChangeWindowsPathIfLinux and ChangeLinuxPathIfWindows common tests using ChangePathToPlatform
 		// Tests use ChangePathToPlatform to test ChangeWindowsPathIfLinux or
 		// ChangeLinuxPathIfWindows depending on which platform the tests are run on.
@@ -1108,8 +1250,8 @@ namespace SIL.LCModel.Utils
 
 		private void AssertChangePathToPlatformAsExpected(string linuxPath, string windowsPath)
 		{
-			string inPath = MiscUtils.IsUnix ? windowsPath : linuxPath;
-			string outPath = MiscUtils.IsUnix ? linuxPath : windowsPath;
+			string inPath = Platform.IsUnix ? windowsPath : linuxPath;
+			string outPath = Platform.IsUnix ? linuxPath : windowsPath;
 			Assert.AreEqual(outPath, FileUtils.ChangePathToPlatform(inPath));
 		}
 
@@ -1409,8 +1551,8 @@ namespace SIL.LCModel.Utils
 		private void AssertChangePathToPlatformPreservingPrefixAsExpected(string linuxPath,
 			string windowsPath, string prefix)
 		{
-			string inPath = MiscUtils.IsUnix ? windowsPath : linuxPath;
-			string outPath = MiscUtils.IsUnix ? linuxPath : windowsPath;
+			string inPath = Platform.IsUnix ? windowsPath : linuxPath;
+			string outPath = Platform.IsUnix ? linuxPath : windowsPath;
 			Assert.AreEqual(outPath, FileUtils.ChangePathToPlatformPreservingPrefix(inPath, prefix));
 		}
 
@@ -1521,7 +1663,7 @@ namespace SIL.LCModel.Utils
 		{
 			string input = @"file:///abspath/file";
 			string expected = @"abspath/file";
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				expected = @"/abspath/file";
 			Assert.That(FileUtils.StripFilePrefix(input), Is.EqualTo(expected));
 		}
@@ -1534,7 +1676,7 @@ namespace SIL.LCModel.Utils
 		{
 			string input = @"file://path/path";
 			string expected = @"path/path";
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				expected = @"/path/path";
 			Assert.That(FileUtils.StripFilePrefix(input), Is.EqualTo(expected));
 		}
@@ -1547,7 +1689,7 @@ namespace SIL.LCModel.Utils
 		{
 			string input = @"file:/path/path";
 			string expected = @"path/path";
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				expected = @"/path/path";
 			Assert.That(FileUtils.StripFilePrefix(input), Is.EqualTo(expected));
 		}
@@ -1560,7 +1702,7 @@ namespace SIL.LCModel.Utils
 		{
 			string input = @"file:path/path";
 			string expected = @"path/path";
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				expected = @"/path/path";
 			Assert.That(FileUtils.StripFilePrefix(input), Is.EqualTo(expected));
 		}
@@ -1589,7 +1731,7 @@ namespace SIL.LCModel.Utils
 		{
 			string input = @"file:///c:/path/path";
 			string expected = @"c:/path/path";
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				expected = @"/c:/path/path";
 			Assert.That(FileUtils.StripFilePrefix(input), Is.EqualTo(expected));
 		}
@@ -1609,7 +1751,7 @@ namespace SIL.LCModel.Utils
 		{
 			string input = @"file:///c:\path\path";
 			string expected = @"c:\path\path";
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				expected = @"/c:\path\path";
 			Assert.That(FileUtils.StripFilePrefix(input), Is.EqualTo(expected));
 		}
@@ -1629,7 +1771,7 @@ namespace SIL.LCModel.Utils
 		/// Tests FileUtils.SetExecutable() with a non-executable file.
 		/// </summary>
 		[Test]
-		[Platform(Include="Linux")]
+		[Platform(Include = "Linux")]
 		public void SetExecutable_nonexecutableFile_isExecutable()
 		{
 			string path = null;
@@ -1659,7 +1801,7 @@ namespace SIL.LCModel.Utils
 		/// Tests FileUtils.SetExecutable() with an executable file.
 		/// </summary>
 		[Test]
-		[Platform(Include="Linux")]
+		[Platform(Include = "Linux")]
 		public void SetExecutable_executableFile_stillExecutable()
 		{
 			string path = null;
@@ -1694,7 +1836,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		private void RemoveExecuteBit(string path)
 		{
-			if (MiscUtils.IsWindows)
+			if (Platform.IsWindows)
 				return;
 
 			Stat fileStat;
@@ -1710,7 +1852,7 @@ namespace SIL.LCModel.Utils
 		/// Tests FileUtils.SetExecutable() with a directory.
 		/// </summary>
 		[Test]
-		[Platform(Include="Linux")]
+		[Platform(Include = "Linux")]
 		public void SetExecutable_directory_isSearchable()
 		{
 			string path = null;
@@ -1751,7 +1893,7 @@ namespace SIL.LCModel.Utils
 		/// Tests FileUtils.SetExecutable() with a non-existent file.
 		/// </summary>
 		[Test]
-		[Platform(Include="Linux")]
+		[Platform(Include = "Linux")]
 		public void SetExecutable_nonexistentFile_throws()
 		{
 			// Use a real file for test since testing FileUtils implementation that requires a
@@ -1762,7 +1904,8 @@ namespace SIL.LCModel.Utils
 
 			Assert.That(FileUtils.FileExists(path), Is.False,
 				"Unit test error. File should not exist.");
-			Assert.Throws<FileNotFoundException>(() => {
+			Assert.Throws<FileNotFoundException>(() =>
+			{
 				FileUtils.SetExecutable(path);
 			});
 		}
@@ -1773,7 +1916,7 @@ namespace SIL.LCModel.Utils
 		/// Tests FileUtils.IsExecutable() with a file.
 		/// </summary>
 		[Test]
-		[Platform(Include="Linux")]
+		[Platform(Include = "Linux")]
 		public void IsExecutable_file_works()
 		{
 			string path = null;
@@ -1807,7 +1950,7 @@ namespace SIL.LCModel.Utils
 		/// Tests FileUtils.IsExecutable() with a directory.
 		/// </summary>
 		[Test]
-		[Platform(Include="Linux")]
+		[Platform(Include = "Linux")]
 		public void IsExecutable_directory_works()
 		{
 			string path = null;
@@ -1848,7 +1991,7 @@ namespace SIL.LCModel.Utils
 		/// Tests FileUtils.IsExecutable() with a non-existent path.
 		/// </summary>
 		[Test]
-		[Platform(Include="Linux")]
+		[Platform(Include = "Linux")]
 		public void IsExecutable_nonexistentPath_throws()
 		{
 			// Use a real file for test since testing FileUtils implementation that requires a
@@ -1859,7 +2002,8 @@ namespace SIL.LCModel.Utils
 
 			Assert.That(FileUtils.FileExists(path), Is.False,
 				"Unit test error. File should not exist.");
-			Assert.Throws<FileNotFoundException>(() => {
+			Assert.Throws<FileNotFoundException>(() =>
+			{
 				FileUtils.IsExecutable(path);
 			});
 		}

@@ -157,7 +157,7 @@ namespace SIL.LCModel.DomainImpl
 			var allo6 = alloFactory.Create();
 			le2.AlternateFormsOS.Add(allo6);
 
-			 // Move allo1 from first entry's list to second entry's list
+			// Move allo1 from first entry's list to second entry's list
 			le2.AlternateFormsOS.Insert(0, allo1);
 			Assert.IsTrue(le1.AlternateFormsOS.SequenceEqual(new IMoForm[] { allo2, allo3 }));
 			Assert.IsTrue(le2.AlternateFormsOS.SequenceEqual(new IMoForm[] { allo1, allo4, allo5, allo6 }));
@@ -747,7 +747,7 @@ namespace SIL.LCModel.DomainImpl
 			var acp = Cache.ServiceLocator.GetInstance<IMoAlloAdhocProhibFactory>().Create();
 			oc.Add(acp);
 			int count = oc.Count();
-			oc.Add(acp);	// Try adding it again.
+			oc.Add(acp);    // Try adding it again.
 			Assert.AreEqual(count, oc.Count);
 		}
 

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Security;
@@ -11,6 +12,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using Mono.Unix.Native;
+using SIL.PlatformUtilities;
 
 namespace SIL.LCModel.Utils
 {
@@ -66,6 +68,10 @@ namespace SIL.LCModel.Utils
 		/// System.IO.Directory
 		/// </summary>
 		/// ----------------------------------------------------------------------------------------
+		[SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass",
+			Justification = "This class contains implementations of proxy methods in the outer class.")]
+		[SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression",
+			Justification = "ReSharper.MemberHidesStaticFromOuterClass was deemed unnecessary.")]
 		private class SystemIOAdapter : IFileOS
 		{
 			/// ------------------------------------------------------------------------------------
@@ -116,6 +122,16 @@ namespace SIL.LCModel.Utils
 			public string[] GetFilesInDirectory(string sPath, string searchPattern)
 			{
 				return Directory.GetFiles(sPath, searchPattern);
+			}
+
+			public string[] GetDirectoriesInDirectory(string sPath)
+			{
+				return Directory.GetDirectories(sPath);
+			}
+
+			public string[] GetDirectoriesInDirectory(string sPath, string searchPattern)
+			{
+				return Directory.GetDirectories(sPath, searchPattern);
 			}
 
 			/// ------------------------------------------------------------------------------------
@@ -270,7 +286,7 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		public static bool PathsAreEqual(string file1, string file2)
 		{
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				return string.Equals(file1, file2, StringComparison.InvariantCulture);
 			return string.Equals(file1.Replace('/', '\\'), file2.Replace('/', '\\'),
 				StringComparison.InvariantCultureIgnoreCase);
@@ -388,6 +404,25 @@ namespace SIL.LCModel.Utils
 			return s_fileos.GetFilesInDirectory(sPath, searchPattern);
 		}
 
+		/// <summary>
+		/// Gets the directories in the given directory.
+		/// </summary>
+		/// <param name="sPath">The directory path.</param>
+		/// <returns>list of directories</returns>
+		public static string[] GetDirectoriesInDirectory(string sPath) => s_fileos.GetDirectoriesInDirectory(sPath);
+
+		/// <summary>
+		/// Gets the directories in the given directory.
+		/// </summary>
+		/// <param name="sPath">The directory path.</param>
+		/// <param name="searchPattern">The search string to match against the names of directories
+		/// in sPath. The parameter cannot end in two periods ("..") or contain two periods ("..")
+		/// followed by DirectorySeparatorChar or AltDirectorySeparatorChar, nor can it contain
+		/// any of the characters in InvalidPathChars.</param>
+		/// <returns>list of directories</returns>
+		public static string[] GetDirectoriesInDirectory(string sPath, string searchPattern) =>
+			s_fileos.GetDirectoriesInDirectory(sPath, searchPattern);
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Try to match the given pathname to an existing file, playing whatever games are
@@ -407,7 +442,7 @@ namespace SIL.LCModel.Utils
 
 			string sDir = Path.GetDirectoryName(sPathname);
 			string sFile = Path.GetFileName(sPathname).Normalize();
-			if (!MiscUtils.IsUnix) // Using IsUnix to decide if a file system is case sensitive
+			if (!Platform.IsUnix) // Using IsUnix to decide if a file system is case sensitive
 			{					// isn't the best way since some Unix file systems are case
 								// insensitive, but it works for most cases
 				sFile = sFile.ToLowerInvariant();
@@ -421,7 +456,7 @@ namespace SIL.LCModel.Utils
 			{
 				foreach (string sPath in s_fileos.GetFilesInDirectory(sDir))
 				{
-					string sName = MiscUtils.IsUnix ? Path.GetFileName(sPath).Normalize() :
+					string sName = Platform.IsUnix ? Path.GetFileName(sPath).Normalize() :
 						Path.GetFileName(sPath).Normalize().ToLowerInvariant();
 					if (sName == sFile)
 						return sPath;
@@ -567,6 +602,9 @@ namespace SIL.LCModel.Utils
 			return s_fileos.OpenStreamForWrite(filename, FileMode.Open);
 		}
 
+		[Obsolete("Use WriteStringToFile")]
+		public static void WriteStringtoFile(string filename, string contents, Encoding encoding) => WriteStringToFile(filename, contents, encoding);
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Writes the string to file.
@@ -575,7 +613,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="contents">The contents to write to the file.</param>
 		/// <param name="encoding">The encoding.</param>
 		/// ------------------------------------------------------------------------------------
-		public static void WriteStringtoFile(string filename, string contents, Encoding encoding)
+		public static void WriteStringToFile(string filename, string contents, Encoding encoding)
 		{
 			using (TextWriter write = OpenFileForWrite(filename, encoding))
 			{
@@ -695,7 +733,7 @@ namespace SIL.LCModel.Utils
 			if (DirectoryExists(directory))
 				return true;
 
-			// Attempt to create the directoy if it doesn't exist yet.
+			// Attempt to create the directory if it doesn't exist yet.
 			try
 			{
 				s_fileos.CreateDirectory(directory);
@@ -762,7 +800,7 @@ namespace SIL.LCModel.Utils
 		public static string FileDialogFilterCaseInsensitiveCombinations(string filter)
 		{
 			// Windows is already case insensitive.
-			if (!MiscUtils.IsUnix)
+			if (!Platform.IsUnix)
 				return filter;
 
 			List<string> filterComponents = new List<string>(filter.Split(new char[] {'|'}));
@@ -872,7 +910,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		public static string ChangeWindowsPathIfLinux(string windowsPath)
 		{
-			if (!MiscUtils.IsUnix)
+			if (!Platform.IsUnix)
 				return windowsPath;
 			if (windowsPath == null)
 				return windowsPath;
@@ -916,7 +954,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		public static string ChangeLinuxPathIfWindows(string linuxPath)
 		{
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				return linuxPath;
 			if (String.IsNullOrEmpty(linuxPath))
 				return linuxPath;
@@ -954,7 +992,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		public static string ChangePathToPlatform(string path)
 		{
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				return ChangeWindowsPathIfLinux(path);
 			return ChangeLinuxPathIfWindows(path);
 		}
@@ -973,7 +1011,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		public static string ChangePathToPlatformPreservingPrefix(string path, string prefix)
 		{
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				return ChangeWindowsPathIfLinuxPreservingPrefix(path, prefix);
 			return ChangeLinuxPathIfWindowsPreservingPrefix(path, prefix);
 		}
@@ -1044,7 +1082,7 @@ namespace SIL.LCModel.Utils
 			// Trim any number of beginning slashes
 			path = path.TrimStart('/');
 			// Prepend slash on Linux
-			if (MiscUtils.IsUnix)
+			if (Platform.IsUnix)
 				path = '/' + path;
 
 			return path;
@@ -1056,7 +1094,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		public static void SetExecutable(string path)
 		{
-			if (MiscUtils.IsWindows)
+			if (Platform.IsWindows)
 				return;
 
 			if (!FileExists(path) && !DirectoryExists(path))
@@ -1077,7 +1115,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		public static bool IsExecutable(string path)
 		{
-			if (MiscUtils.IsWindows)
+			if (Platform.IsWindows)
 				return true;
 
 			if (!FileExists(path) && !DirectoryExists(path))

@@ -63,7 +63,7 @@ namespace SIL.LCModel.DomainServices
 				(int)FwTextPropVar.ktpvMilliPoint, 4000);
 			props.SetIntPropValues((int)FwTextPropType.ktptBorderColor,
 				(int)FwTextPropVar.ktpvDefault,
-				(int)ColorUtil.ConvertColorToBGR(Color.FromKnownColor(KnownColor.Thistle)));
+				(int)ColorUtil.ConvertColorToBGR(Color.FromName("Thistle")));
 			normalParaStyle.Rules = props.GetTextProps();
 			normalParaStyle.BasedOnRA = normal;
 			normalParaStyle.NextRA = normalParaStyle;
@@ -80,7 +80,7 @@ namespace SIL.LCModel.DomainServices
 				(int)FwTextToggleVal.kttvOff);
 			props.SetIntPropValues((int)FwTextPropType.ktptBackColor,
 				(int)FwTextPropVar.ktpvDefault,
-				(int)ColorUtil.ConvertColorToBGR(Color.FromKnownColor(KnownColor.Aquamarine)));
+				(int)ColorUtil.ConvertColorToBGR(Color.FromName("Aquamarine")));
 			props.SetStrPropValue((int)FwTextPropType.ktptFontFamily, StyleServices.DefaultFont);
 			sectionHead.Rules = props.GetTextProps();
 			sectionHead.BasedOnRA = normal;
@@ -120,10 +120,10 @@ namespace SIL.LCModel.DomainServices
 				(int)FwUnderlineType.kuntDouble);
 			props.SetIntPropValues((int)FwTextPropType.ktptUnderColor,
 				(int)FwTextPropVar.ktpvDefault,
-				(int)ColorUtil.ConvertColorToBGR(Color.FromKnownColor(KnownColor.SteelBlue)));
+				(int)ColorUtil.ConvertColorToBGR(Color.FromName("SteelBlue")));
 			props.SetIntPropValues((int)FwTextPropType.ktptForeColor,
 				(int)FwTextPropVar.ktpvDefault,
-				(int)ColorUtil.ConvertColorToBGR(Color.FromKnownColor(KnownColor.Tomato)));
+				(int)ColorUtil.ConvertColorToBGR(Color.FromName("Tomato")));
 			props.SetStrPropValue((int)FwTextPropType.ktptFontFamily, "Courier");
 			verseNumberStyle.Rules = props.GetTextProps();
 			verseNumberStyle.BasedOnRA = null;
@@ -147,7 +147,7 @@ namespace SIL.LCModel.DomainServices
 			Assert.AreEqual(2000, entry.BorderTop);
 			Assert.AreEqual(3000, entry.BorderTrailing);
 			Assert.AreEqual(4000, entry.BorderBottom);
-			Assert.AreEqual((Color.FromKnownColor(KnownColor.Thistle)).ToArgb(), entry.BorderColor.ToArgb());
+			Assert.AreEqual((Color.FromName("Thistle")).ToArgb(), entry.BorderColor.ToArgb());
 			//		Inherited properties
 			FontInfo fontInfo = entry.FontInfoForWs(-1);
 			Assert.IsNotNull(fontInfo);
@@ -208,7 +208,7 @@ namespace SIL.LCModel.DomainServices
 			Assert.AreEqual(2000, entry.BorderTop);
 			Assert.AreEqual(3000, entry.BorderTrailing);
 			Assert.AreEqual(4000, entry.BorderBottom);
-			Assert.AreEqual((Color.FromKnownColor(KnownColor.Thistle)).ToArgb(), entry.BorderColor.ToArgb());
+			Assert.AreEqual((Color.FromName("Thistle")).ToArgb(), entry.BorderColor.ToArgb());
 
 			// Check Title Main style
 			//		Explicit properties
@@ -230,7 +230,7 @@ namespace SIL.LCModel.DomainServices
 			Assert.AreEqual(FwUnderlineType.kuntNone, fontInfo.m_underline.Value);
 			Assert.AreEqual(Color.Black, fontInfo.m_underlineColor.Value);
 			Assert.IsNull(fontInfo.m_features.Value);
-			Assert.AreEqual((Color.FromKnownColor(KnownColor.Aquamarine)).ToArgb(), fontInfo.m_backColor.Value.ToArgb());
+			Assert.AreEqual((Color.FromName("Aquamarine")).ToArgb(), fontInfo.m_backColor.Value.ToArgb());
 			Assert.AreEqual(Color.Black, fontInfo.m_fontColor.Value);
 			Assert.AreEqual("<default font>", fontInfo.m_fontName.Value);
 			Assert.AreEqual(16000, entry.LineSpacing.m_lineHeight);
@@ -254,7 +254,7 @@ namespace SIL.LCModel.DomainServices
 			Assert.AreEqual(FwUnderlineType.kuntNone, fontInfo.m_underline.Value);
 			Assert.AreEqual(Color.Black, fontInfo.m_underlineColor.Value);
 			Assert.IsNull(fontInfo.m_features.Value);
-			Assert.AreEqual((Color.FromKnownColor(KnownColor.Aquamarine)).ToArgb(), fontInfo.m_backColor.Value.ToArgb());
+			Assert.AreEqual((Color.FromName("Aquamarine")).ToArgb(), fontInfo.m_backColor.Value.ToArgb());
 			Assert.AreEqual("<default font>", fontInfo.m_fontName.Value);
 			Assert.AreEqual(table["Normal"].StyleNumber, entry.BasedOnStyleNumber);
 			Assert.AreEqual(table["Paragraph"].StyleNumber, entry.NextStyleNumber);
@@ -284,8 +284,8 @@ namespace SIL.LCModel.DomainServices
 			Assert.IsTrue(fontInfo.m_italic.Value);
 			Assert.AreEqual(FwSuperscriptVal.kssvSuper, fontInfo.m_superSub.Value);
 			Assert.AreEqual(FwUnderlineType.kuntDouble, fontInfo.m_underline.Value);
-			Assert.AreEqual((Color.FromKnownColor(KnownColor.SteelBlue)).ToArgb(), fontInfo.m_underlineColor.Value.ToArgb());
-			Assert.AreEqual((Color.FromKnownColor(KnownColor.Tomato)).ToArgb(), fontInfo.m_fontColor.Value.ToArgb());
+			Assert.AreEqual((Color.FromName("SteelBlue")).ToArgb(), fontInfo.m_underlineColor.Value.ToArgb());
+			Assert.AreEqual((Color.FromName("Tomato")).ToArgb(), fontInfo.m_fontColor.Value.ToArgb());
 			Assert.AreEqual("Courier", fontInfo.m_fontName.Value);
 			Assert.AreEqual(0, entry.BasedOnStyleNumber);
 			//		Inherited properties
@@ -305,8 +305,8 @@ namespace SIL.LCModel.DomainServices
 			Assert.IsTrue(fontInfo.m_italic.Value);
 			Assert.AreEqual(FwSuperscriptVal.kssvSuper, fontInfo.m_superSub.Value);
 			Assert.AreEqual(FwUnderlineType.kuntDouble, fontInfo.m_underline.Value);
-			Assert.AreEqual((Color.FromKnownColor(KnownColor.SteelBlue)).ToArgb(), fontInfo.m_underlineColor.Value.ToArgb());
-			Assert.AreEqual((Color.FromKnownColor(KnownColor.Tomato)).ToArgb(), fontInfo.m_fontColor.Value.ToArgb());
+			Assert.AreEqual((Color.FromName("SteelBlue")).ToArgb(), fontInfo.m_underlineColor.Value.ToArgb());
+			Assert.AreEqual((Color.FromName("Tomato")).ToArgb(), fontInfo.m_fontColor.Value.ToArgb());
 			Assert.AreEqual("Courier", fontInfo.m_fontName.Value);
 			//		Inherited properties
 			Assert.IsTrue(fontInfo.m_fontSize.IsInherited);

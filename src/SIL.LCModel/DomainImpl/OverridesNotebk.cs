@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2015 SIL International
+﻿// Copyright (c) 2015-2022 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using SIL.LCModel.Application.ApplicationServices;
 using SIL.LCModel.Core.Cellar;
@@ -155,7 +156,7 @@ namespace SIL.LCModel.DomainImpl
 				tisb.Append(" - ");
 				tisb.AppendTsString(Title);
 				tisb.Append(" - ");
-				tisb.Append(DateModified.ToString("d"));
+				tisb.Append(DateModified.ToString("d", CultureInfo.CurrentUICulture));
 				return tisb.GetString();
 			}
 		}
