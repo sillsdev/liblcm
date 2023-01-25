@@ -1,11 +1,10 @@
-// Copyright (c) 2011-2015 SIL International
+// Copyright (c) 2011-2023 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System;
 using System.IO;
 using System.Reflection;
-using System.Threading;
 using NUnit.Framework;
 using SIL.Threading;
 
@@ -36,8 +35,8 @@ namespace SIL.LCModel.Core.Scripture
 			var originalFile = Path.Combine(vrsPath, VersificationTable.GetFileNameForVersification(ScrVers.Original));
 			// Avoid race conditions between parallel tests which need the versification initialized
 			using (var mutex = new GlobalMutex("VersificationTableSetupMutex"))
+			using (mutex.InitializeAndLock())
 			{
-				mutex.InitializeAndLock();
 				if (!File.Exists(englishFile)) // check only the English file existence for simplicity
 				{
 					File.WriteAllBytes(englishFile, Properties.TestResources.eng);
@@ -54,7 +53,6 @@ namespace SIL.LCModel.Core.Scripture
 					Assert.That(File.ReadAllBytes(originalFile), Is.EqualTo(Properties.TestResources.org),
 						"Error setting up VersificationTable data for Scripture Reference tests.");
 				}
-				mutex.Unlink();
 			}
 			VersificationTable.Initialize(vrsPath);
 		}
