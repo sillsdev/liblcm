@@ -46,14 +46,11 @@ namespace SIL.LCModel.Core.Scripture
 				else
 				{
 					// This setup code assumes that we aren't modifying the files on disk after initialization
-					Assert.That(File.ReadAllBytes(englishFile),
-						Is.EqualTo(Properties.TestResources.eng),
+					Assert.That(File.ReadAllBytes(englishFile), Is.EqualTo(Properties.TestResources.eng),
 						"Error setting up VersificationTable data for Scripture Reference tests.");
-					Assert.That(File.ReadAllBytes(septuagintFile),
-						Is.EqualTo(Properties.TestResources.lxx),
+					Assert.That(File.ReadAllBytes(septuagintFile), Is.EqualTo(Properties.TestResources.lxx),
 						"Error setting up VersificationTable data for Scripture Reference tests.");
-					Assert.That(File.ReadAllBytes(originalFile),
-						Is.EqualTo(Properties.TestResources.org),
+					Assert.That(File.ReadAllBytes(originalFile), Is.EqualTo(Properties.TestResources.org),
 						"Error setting up VersificationTable data for Scripture Reference tests.");
 				}
 			}
