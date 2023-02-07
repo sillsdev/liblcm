@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using CommonServiceLocator;
 using SIL.LCModel.Application;
@@ -16,6 +17,7 @@ using SIL.LCModel.DomainServices;
 using SIL.LCModel.DomainServices.DataMigration;
 using SIL.LCModel.Infrastructure;
 using SIL.LCModel.Infrastructure.Impl;
+using SIL.Reporting;
 using StructureMap;
 using StructureMap.Pipeline;
 
@@ -56,6 +58,13 @@ namespace SIL.LCModel.IOC
 		/// ------------------------------------------------------------------------------------
 		public IServiceProvider CreateServiceLocator()
 		{
+			ITransactionLogger logger = null;
+
+			var logPath = Environment.GetEnvironmentVariable("LCM_TransactionLogPath");
+			if (!string.IsNullOrEmpty(logPath))
+			{
+				logger = new FileTransactionLogger(Path.Combine(logPath, $"lcm_transaction.{DateTime.Now.Ticks}.log"));
+			}
 			// NOTE: When creating an object through IServiceLocator.GetInstance the caller has
 			// to call Dispose() on the newly created object, unless it's a singleton
 			// (registered with LifecycleIs(new SingletonLifecycle())) in which case
@@ -108,12 +117,6 @@ namespace SIL.LCModel.IOC
 				.For<IdentityMap>()
 				.LifecycleIs(new SingletonLifecycle())
 				.Use<IdentityMap>();
-			// No. This makes a second instance of IdentityMap,
-			// which is probably not desirable.
-			//registry
-			//	.For<ICmObjectIdFactory>()
-			//	.LifecycleIs(new SingletonLifecycle())
-			//	.Use<IdentityMap>();
 			// Register IdentityMap's other interface.
 			registry
 				.For<ICmObjectIdFactory>()
@@ -184,7 +187,7 @@ namespace SIL.LCModel.IOC
 			registry
 				.For<IUndoStackManager>()
 				.Use(c => (IUndoStackManager)c.GetInstance<IUnitOfWorkService>());
-
+			registry.For<ITransactionLogger>().Use(() => logger);
 			// Add generated factories.
 			AddFactories(registry);
 
