@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016 SIL International
+// Copyright (c) 2016 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -36,10 +36,7 @@ namespace SIL.LCModel.Core.Text
 		/// <summary>
 		/// Gets the number of runs.
 		/// </summary>
-		public int RunCount
-		{
-			get { return Runs.Count; }
-		}
+		public int RunCount => Runs.Count;
 
 		/// <summary>
 		/// Gets the run at the specified character offset. If the offset is equal to the length of text,
@@ -50,10 +47,10 @@ namespace SIL.LCModel.Core.Text
 			ThrowIfCharOffsetOutOfRange("ich", ich, Length);
 
 			if (ich == Length)
-				return Runs.Count - 1;
+				return RunCount - 1;
 
 			int lower = 0;
-			int upper = Runs.Count - 1;
+			int upper = RunCount - 1;
 			while (lower <= upper)
 			{
 				int middle = lower + (upper - lower) / 2;
@@ -180,8 +177,8 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		protected void ThrowIfRunIndexOutOfRange(string paramName, int irun)
 		{
-			if (irun < 0 || irun >= Runs.Count)
-				throw new ArgumentOutOfRangeException(paramName);
+			if (irun < 0 || irun >= RunCount)
+				throw new ArgumentOutOfRangeException(paramName, $@"irun: {irun} Runs.Count: {RunCount}");
 		}
 
 
@@ -191,7 +188,7 @@ namespace SIL.LCModel.Core.Text
 		protected void ThrowIfCharOffsetOutOfRange(string paramName, int ichMin, int ichLim)
 		{
 			if (ichMin < 0 || ichMin > ichLim)
-				throw new ArgumentOutOfRangeException(paramName);
+				throw new ArgumentOutOfRangeException(paramName, $@"ichMin: {ichMin} ichLim:{ichLim}");
 		}
 	}
 }
