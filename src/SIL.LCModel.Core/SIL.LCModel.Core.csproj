@@ -112,7 +112,7 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
     <Error Condition="'$(OutDir)' == ''" Text="OutDir is not defined." />
     <!-- Call the IdlImp task from SIL.LCModel.Build.Tasks in a separate msbuild process,
          so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
-    <Exec Command="$(MsbuildCommand) $(MSBuildThisFileDirectory)GenerateKernelCs.proj /p:OutDir=$(OutDir) /p:IntermediateOutputPath=$(IntermediateOutputPath) /p:Platform=$(Platform) /p:VSInstallDir=&quot;$(VSInstallDir)&quot;" />
+    <Exec Command="$(MsbuildCommand) $(MSBuildThisFileDirectory)GenerateKernelCs.proj /p:OutDir=$(OutDir) /p:IntermediateOutputPath=$(IntermediateOutputPath) /p:Platform=&quot;$(Platform)&quot; /p:VSInstallDir=&quot;$(VSInstallDir)&quot;" />
   <ItemGroup>
       <Compile Remove="KernelInterfaces\Kernel.cs" />
       <Compile Include="KernelInterfaces\Kernel.cs" />
