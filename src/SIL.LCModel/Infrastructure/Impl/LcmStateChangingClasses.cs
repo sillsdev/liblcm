@@ -705,7 +705,8 @@ namespace SIL.LCModel.Infrastructure.Impl
 		public override ChangeInformation GetChangeInfo(bool fForUndo)
 		{
 			var result = new List<T>(m_reader());
-			// Special cases: adding or deleting just one object. We want these to go out as a single item change if possible.
+			// Special cases: The change happening results in the insertion of a single object.
+			// We want these to go out as a single item change if possible.
 			// If we are redoing an insertion or undoing a deletion, the current value contains the item so we can
 			// be precise about where it was inserted.
 			if (m_added.Count == 1 && m_removed.Count == 0 && !fForUndo)
@@ -718,22 +719,12 @@ namespace SIL.LCModel.Infrastructure.Impl
 			{
 				var removed = m_removed.ToArray()[0];
 				int index = result.IndexOf(removed);
-				return new ChangeInformation(Object, ModifiedFlid, index, 1, 0);
+				 // Build the change for the delete, ChangeForUndo on the ChangeInformation does the swapping
+				return new ChangeInformation(Object, ModifiedFlid, index, 0, 1);
 			}
-			// If we're undoing, the change is to insert the removed objects and delete the added ones.
-			// We depend on the fact that all (real) changes have been made by the time we collect change info.
-			// Thus, if we're undoing, result is the 'Undone' value. That is, it includes the removed
-			// but not the added objects. We want to make a propchanged where exactly those current objects
-			// claim to have been (all) inserted, while the number deleted is the number when the change is
-			// done, that is, the current result minus those removed plus those added.
-			// If this is for Redo, the current value is the 'Redone' one. In that case the length of the
-			// other value is found by removing the added objects and adding the removed ones!
-			// The current value includes the added ones; we pretend the change will remove all of these.
-			// It's safest to regard the whole property as changed, however.
-			if (fForUndo)
-				return new ChangeInformation(Object, ModifiedFlid, 0, result.Count, result.Count - m_removed.Count + m_added.Count);
-			else
-				return new ChangeInformation(Object, ModifiedFlid, 0, result.Count, result.Count + m_removed.Count - m_added.Count);
+			// Build the state change info for the list with the insert total being the result of all adds and removes,
+			// and the delete representing the former count. ChangeForUndo will reverse this in the case of an Undo
+			return new ChangeInformation(Object, ModifiedFlid, 0, result.Count - m_removed.Count + m_added.Count, result.Count);
 		}
 
 		/// <summary>
