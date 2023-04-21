@@ -44,7 +44,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		{
 			m_peerProcesses = new Dictionary<int, Process>();
 			m_peerID = Guid.NewGuid();
-			if (Platform.IsMono)
+			if (Platform.IsUnix)
 			{
 				// /dev/shm is not guaranteed to be available on all systems, so fall back to temp
 				m_commitLogDir = Directory.Exists("/dev/shm") ? "/dev/shm" : Path.GetTempPath();
