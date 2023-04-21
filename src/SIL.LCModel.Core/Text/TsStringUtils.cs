@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2020 SIL International
+// Copyright (c) 2004-2022 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -1855,6 +1855,14 @@ namespace SIL.LCModel.Core.Text
 		public static bool IsNullOrEmpty(ITsString testMe)
 		{
 			return testMe == null || testMe.Length <= 0;
+		}
+
+		/// <returns>
+		/// True if the string is null, empty, or a placeholder (e.g. ***)
+		/// </returns>
+		public static bool IsNullOrPlaceholder(ITsString testMe, string placeholder)
+		{
+			return IsNullOrEmpty(testMe) || testMe.Text.Equals(placeholder);
 		}
 	}
 	#endregion

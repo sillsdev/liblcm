@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2021 SIL International
+// Copyright (c) 2004-2022 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -2110,6 +2110,28 @@ namespace SIL.LCModel.Core.Text
 			Assert.That(TsStringUtils.RemoveIllegalXmlChars(outOfOrderSurrogates).Text, Is.EqualTo("\xd800\xdc00z"));
 		}
 
+		[Test]
+		public void IsNull_OrMissing_Null()
+		{
+			Assert.That(TsStringUtils.IsNullOrEmpty(null), Is.True, "null is null or empty");
+			Assert.That(TsStringUtils.IsNullOrPlaceholder(null, "***"), Is.True, "null is null or placeholder");
+		}
+
+		[TestCase("", ExpectedResult = true)]
+		[TestCase("***", ExpectedResult = false)]
+		[TestCase("t", ExpectedResult = false)]
+		public bool IsNullOrEmpty(string actual)
+		{
+			return TsStringUtils.IsNullOrEmpty(TsStringUtils.MakeString(actual, m_wsf.UserWs));
+		}
+
+		[TestCase("", ExpectedResult = true)]
+		[TestCase("***", ExpectedResult = true)]
+		[TestCase("t", ExpectedResult = false)]
+		public bool IsNullOrPlaceholder(string actual)
+		{
+			return TsStringUtils.IsNullOrPlaceholder(TsStringUtils.MakeString(actual, m_wsf.UserWs), "***");
+		}
 		#endregion
 	}
 }

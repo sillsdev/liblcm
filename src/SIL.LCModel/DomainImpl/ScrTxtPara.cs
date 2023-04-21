@@ -1,4 +1,4 @@
-// Copyright (c) 2003-2018 SIL International
+// Copyright (c) 2003-2022 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -6,6 +6,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using Icu;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Scripture;
@@ -2117,7 +2120,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			var stText = Owner as IStText;
 			if (stText == null)
-				return Cache.MakeUserTss("unknown"); // should never happen, I think?
+				return Cache.MakeUserTss(Strings.ksStars); // should never happen, I think?
 			if (stText.OwningFlid == ScrSectionTags.kflidContent)
 			{
 				// Body of Scripture. Figure a book/chapter/verse
@@ -2125,17 +2128,82 @@ namespace SIL.LCModel.DomainImpl
 				string mainRef = ScriptureServices.FullScrRef(this, ich, book.BestUIAbbrev).Trim();
 				return Cache.MakeUserTss(mainRef + ScriptureServices.VerseSegLabel(this, SegmentsOS.IndexOf(seg)));
 			}
-			if (stText.OwningFlid == ScrSectionTags.kflidHeading)
-			{
-				// use the section title without qualifiers.
-				return stText.Title.BestVernacularAnalysisAlternative;
-			}
+			//if (stText.OwningFlid == ScrSectionTags.kflidHeading)
+			//{
+			//	// use the section title without qualifiers.
+			//	return stText.Title.BestVernacularAnalysisAlternative;
+			//}
 			if (stText.OwningFlid == ScrBookTags.kflidTitle)
 			{
 				return stText.Title.BestVernacularAnalysisAlternative;
 			}
-			return Cache.MakeUserTss("unknown"); // should never happen, I think?
+			return Cache.MakeUserTss(Strings.ksStars); // should never happen, I think?
 		}
+
+		/// <inheritdoc/>
+		public override ITsString ReferenceForSorting(ISegment seg, int ich)
+		{
+			if (!(Owner is IStText stText))
+			{
+				return Scripture.Name.NotFoundTss;
+			}
+
+			// Use a prefix to make scripture references sort together when mixed with other references
+			// (Scripture is sorted canonically, but a comparer for mixed references would sort alphabetically)
+			var bldr = new StringBuilder(RefForSortingPrefix);
+			switch (stText.OwningFlid)
+			{
+				case ScrSectionTags.kflidContent:
+					RefForSortAddBookInfo(bldr, (IScrBook) stText.Owner.Owner);
+
+					// Append the numerical portion of the reference, including any letter indicating part of a verse
+					var refSansBookBldr = new StringBuilder(ScriptureServices.FullScrRef(this, ich, string.Empty).Trim());
+					var numbersInRef = new Regex(@"\d+").Matches(refSansBookBldr.ToString());
+					foreach (var number in numbersInRef.Cast<Match>().Reverse())
+					{
+						ZeroPadForStringComparison(refSansBookBldr, number.Index, number.Length);
+					}
+					bldr.Append(" ").Append(refSansBookBldr).Append(ScriptureServices.VerseSegLabel(this, SegmentsOS.IndexOf(seg)));
+					break;
+				case ScrBookTags.kflidTitle:
+					RefForSortAddBookInfo(bldr, (IScrBook) stText.Owner);
+					// The book title should sort before anything else in the book
+					bldr.Append(" 0");
+					break;
+				default:
+					return Cache.MakeUserTss(Strings.ksStars);
+			}
+
+			// add ich
+			bldr.Append(" ").Append(ZeroPadForStringComparison(ich));
+			return Cache.MakeUserTss(bldr.ToString());
+		}
+
+		protected internal const string RefForSortingPrefix = "0 Scr ";
+
+		protected static void RefForSortAddBookInfo(StringBuilder bldr, IScrBook book)
+		{
+			// Append the book number to sort in canonical order.
+			bldr.Append(book.CanonicalNum);
+			// Append the book name. It makes no difference for sorting, but could make debugging easier.
+			bldr.Append("_").Append(book.BestUIAbbrev);
+		}
+
+		protected internal static void ZeroPadForStringComparison(StringBuilder bldr, int index, int cExistingDigits)
+		{
+			for (var remaining = 5 - cExistingDigits; remaining > 0; remaining--)
+			{
+				bldr.Insert(index, "0");
+			}
+		}
+
+		protected internal static string ZeroPadForStringComparison(string intInRef)
+		{
+			var bldr = new StringBuilder(intInRef);
+			ZeroPadForStringComparison(bldr, 0, intInRef.Length);
+			return bldr.ToString();
+		}
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Gets the footnote sequence.
