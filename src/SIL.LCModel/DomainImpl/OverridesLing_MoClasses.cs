@@ -1357,7 +1357,11 @@ namespace SIL.LCModel.DomainImpl
 			cch = bldr.Length;
 			var features = MsFeaturesOA;
 			if (features != null)
+			{
+				bldr.ReplaceTsString(cch, cch, TsStringUtils.MakeString(" ", userWs));
+				cch = bldr.Length;
 				bldr.ReplaceTsString(cch, cch, TsStringUtils.MakeString(features.ShortName, userWs));
+			}
 
 			return bldr.GetString();
 		}
