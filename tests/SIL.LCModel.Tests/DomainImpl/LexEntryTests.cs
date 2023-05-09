@@ -334,6 +334,49 @@ namespace SIL.LCModel.DomainImpl
 								 "The allomorph in the new entry doesn't have the same form as the original");
 		}
 
+		/// <summary>
+		/// Ensure that a trailing space is only added when there is a MsFeaturesOA.
+		/// </summary>
+		[Test]
+		public void TrailingSpaceInName()
+		{
+			// All these null assignments are redundant, but the compiler does not know that the Do block will be executed.
+			ILexEntry bankN = null;
+			ILexSense bankMoney = null;
+			ILexSense bankRiver = null;
+			IPartOfSpeech posNoun = null;
+			IMoMorphSynAnalysis msaNoun = null;
+			IFsFeatStruc msFeaturesOa = null;
+
+			var nounStr = TsStringUtils.MakeString("Noun", Cache.DefaultAnalWs);
+			var nounStrTrailingSpace = TsStringUtils.MakeString("Noun ", Cache.DefaultAnalWs);
+
+			UndoableUnitOfWorkHelper.Do("undoit", "doit", Cache.ActionHandlerAccessor,
+				() =>
+				{
+					if (Cache.LangProject.PartsOfSpeechOA == null)
+						Cache.LangProject.PartsOfSpeechOA = Cache.ServiceLocator.GetInstance<ICmPossibilityListFactory>().Create();
+					posNoun = MakePartOfSpeech("Noun");
+
+					bankN = MakeEntry("bank", "money", posNoun);
+					bankMoney = bankN.SensesOS[0];
+					msaNoun = bankMoney.MorphoSyntaxAnalysisRA;
+					bankRiver = MakeSense(bankN, "river");
+					bankRiver.MorphoSyntaxAnalysisRA = msaNoun;
+
+					var msaNewNoun = bankRiver.MorphoSyntaxAnalysisRA as MoStemMsa;
+					Assert.That(msaNewNoun.InterlinearNameTSS, Is.EqualTo(nounStr), "the InterlinearName should be 'Noun', without a trailing space");
+
+					// Add a MsFeaturesOA.
+					var servLoc = Cache.ServiceLocator;
+					msFeaturesOa = servLoc.GetInstance<IFsFeatStrucFactory>().Create();
+					msaNewNoun.MsFeaturesOA = msFeaturesOa;
+
+					// SUT
+					Assert.That(msaNewNoun.InterlinearNameTSS, Is.EqualTo(nounStrTrailingSpace), "the InterlinearName should be 'Noun ', with a trailing space");
+				});
+		}
+
 		IWfiWordform MakeWordform(string form)
 		{
 			var result = Cache.ServiceLocator.GetInstance<IWfiWordformFactory>().Create();
