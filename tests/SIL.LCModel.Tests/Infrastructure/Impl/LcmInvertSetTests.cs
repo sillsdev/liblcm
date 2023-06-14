@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2015 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -23,10 +23,13 @@ namespace SIL.LCModel.Infrastructure.Impl
 		[Test]
 		public void Replace()
 		{
+			int publishInFlid = Cache.MetaDataCacheAccessor.GetFieldId2(LexEntryTags.kClassId, "PublishIn", false);
 			var kick = MakeEntry("kick", "strike with foot");
 			var mainDict = Cache.LangProject.LexDbOA.PublicationTypesOA.PossibilitiesOS[0];
 			var pocket = MakePossibility(Cache.LangProject.LexDbOA.PublicationTypesOA, "pocket");
 			var scholar = MakePossibility(Cache.LangProject.LexDbOA.PublicationTypesOA, "scholar");
+			Assert.That(kick.PublishIn.Count(), Is.EqualTo(1));
+			Cache.DomainDataByFlid.Replace(kick.Hvo, publishInFlid, 1, 2, new int[] { pocket.Hvo, scholar.Hvo }, 2);
 			Assert.That(kick.PublishIn.Count(), Is.EqualTo(3));
 			kick.PublishIn.Replace(new ICmObject[] {pocket}, new ICmObject[0]);
 			var result = kick.PublishIn.ToArray();
@@ -39,7 +42,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 			Assert.That(result[0], Is.EqualTo(pocket));
 			Assert.That(result[1], Is.EqualTo(scholar));
 
-			int publishInFlid = Cache.MetaDataCacheAccessor.GetFieldId2(LexEntryTags.kClassId, "PublishIn", false);
 			Cache.DomainDataByFlid.Replace(kick.Hvo, publishInFlid, 1, 2, new int[] {mainDict.Hvo}, 1);
 			result = kick.PublishIn.ToArray();
 			Assert.That(result.Length, Is.EqualTo(2));
@@ -57,7 +59,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		}
 
 		/// <summary>
-		/// Test the replace method. This is what we most care about.
+		/// Test the Add and Remove methods.
 		/// </summary>
 		[Test]
 		public void AddRemove()
@@ -65,8 +67,9 @@ namespace SIL.LCModel.Infrastructure.Impl
 			var kick = MakeEntry("kick", "strike with foot");
 			var mainDict = Cache.LangProject.LexDbOA.PublicationTypesOA.PossibilitiesOS[0];
 			var pocket = MakePossibility(Cache.LangProject.LexDbOA.PublicationTypesOA, "pocket");
+			kick.PublishIn.Add(pocket);
 			var result = kick.PublishIn.ToArray();
-			Assert.That(result.Length, Is.EqualTo(2)); // no action, they are all there to start!
+			Assert.That(result.Length, Is.EqualTo(2));
 			Assert.That(result[0], Is.EqualTo(mainDict));
 			Assert.That(result[1], Is.EqualTo(pocket));
 

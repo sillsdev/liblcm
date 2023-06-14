@@ -776,6 +776,27 @@ namespace SIL.LCModel.DomainImpl
 			base.SetDefaultValuesAfterInit();
 
 			RegisterVirtualsModifiedForObjectCreation(((IServiceLocatorInternal)m_cache.ServiceLocator).UnitOfWorkService);
+
+			// For a new lexical entry, default to only publish in the Main Dictionary.
+			// Note: The Main Dictionary can be renamed, but not deleted, so look for the publication that can't be deleted.
+			var mainDictIndex = this.PublishIn.ToList().FindIndex(pub => pub.CanDelete == false);
+			if (mainDictIndex != -1)
+			{
+				var flid = Cache.MetaDataCacheAccessor.GetFieldId2(LexEntryTags.kClassId, "PublishIn", true);
+
+				// Remove the publications after Main Dictionary.
+				if (mainDictIndex < PublishIn.Count() - 1)
+				{
+					m_cache.DomainDataByFlid.Replace(this.Hvo, flid, mainDictIndex+1, PublishIn.Count(), new int[0], 0);
+				}
+
+				// Remove the publications before Main Dictionary (not sure if this condition can ever occure).
+				if (mainDictIndex > 0)
+				{
+					m_cache.DomainDataByFlid.Replace(this.Hvo, flid, 0, mainDictIndex, new int[0], 0);
+				}
+
+			}
 		}
 
 		public override ICmObject ReferenceTargetOwner(int flid)

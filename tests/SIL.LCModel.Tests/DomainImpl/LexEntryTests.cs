@@ -2210,5 +2210,76 @@ namespace SIL.LCModel.DomainImpl
 					CollectionAssert.DoesNotContain(Cache.LangProject.PhonologicalDataOA.EnvironmentsOS, environment);
 				});
 		}
+
+		/// <summary>
+		/// Test that a new Lex Entry defaults to only publish in the Main Dictionary.
+		/// </summary>
+		[Test]
+		public void NewLexEntryOnlyPublishedInMainDictionary()
+		{
+			UndoableUnitOfWorkHelper.Do("undo", "redo", m_actionHandler,
+				() =>
+				{
+					MakePublication("Pub 1", 1);
+					ILexEntry lme1 = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
+					Assert.That(lme1.PublishIn.Count, Is.EqualTo(1));
+					Assert.That(lme1.PublishIn.First().ToString(), Is.EqualTo("Main Dictionary"));
+				});
+		}
+
+		/// <summary>
+		/// Test that a new publication is not added to the PublishIn list for an existing Lex Entry.
+		/// The new publication is created by calling MakeNewObject().
+		/// </summary>
+		[Test]
+		public void NewPublicationNotAddedToExistingLexEntry()
+		{
+			UndoableUnitOfWorkHelper.Do("undo", "redo", m_actionHandler,
+				() =>
+				{
+					ILexEntry lme1 = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
+					MakePublication("Pub 1", 1);
+					Assert.That(lme1.PublishIn.Count, Is.EqualTo(1));
+					Assert.That(lme1.PublishIn.First().ToString(), Is.EqualTo("Main Dictionary"));
+				});
+		}
+
+		/// <summary>
+		/// Test that a new publication is not added to the PublishIn list for an existing Lex Entry.
+		/// The new publication is created by creating a possibility and adding it to the list of publications.
+		/// </summary>
+		[Test]
+		public void NewPublicationNotAddedToExistingLexEntry_2()
+		{
+			UndoableUnitOfWorkHelper.Do("undo", "redo", m_actionHandler,
+				() =>
+				{
+					ILexEntry lme1 = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
+
+					// Instead of creating a new publication we create a new possibility and add it to the Publication List.
+					MakePossibility(Cache.LangProject.LexDbOA.PublicationTypesOA, "Pub 1");
+
+					Assert.That(lme1.PublishIn.Count, Is.EqualTo(1));
+					Assert.That(lme1.PublishIn.First().ToString(), Is.EqualTo("Main Dictionary"));
+				});
+		}
+
+		private ICmPossibility MakePublication(string name, int order)
+		{
+			var publications = Cache.LangProject.LexDbOA.PublicationTypesOA.PossibilitiesOS as
+				SIL.LCModel.DomainImpl.LcmOwningSequence<SIL.LCModel.ICmPossibility>;
+			var hvoPub = m_sda.MakeNewObject(CmPossibilityTags.kClassId, publications.MainObject.Hvo,
+				publications.Flid, order);
+
+			return Cache.ServiceLocator.GetInstance<ICmPossibilityRepository>().GetObject(hvoPub);
+		}
+
+		private ICmPossibility MakePossibility(ICmPossibilityList list, string name)
+		{
+			ICmPossibility result = m_possFact.Create();
+			list.PossibilitiesOS.Add(result);
+			result.Name.AnalysisDefaultWritingSystem = TsStringUtils.MakeString(name, Cache.DefaultAnalWs);
+			return result;
+		}
 	}
 }
