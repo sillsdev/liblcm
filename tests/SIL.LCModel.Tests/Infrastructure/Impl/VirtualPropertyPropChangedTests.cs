@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2015 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -1421,6 +1421,14 @@ namespace SIL.LCModel.Infrastructure.Impl
 				"Removing a publication from DoNoPublishIn should add it to PublishIn");
 
 			var pocket = MakePossibility(Cache.LangProject.LexDbOA.PublicationTypesOA, "pocket");
+			// By default lexEntries are only published in the Main Dictionary.
+			if (lexItem is ILexEntry)
+			{
+				Assert.That(reader().Count(), Is.EqualTo(1));
+				int publishInFlid = Cache.MetaDataCacheAccessor.GetFieldId2(LexEntryTags.kClassId, "PublishIn", false);
+				UndoableUnitOfWorkHelper.Do("undo clear DoNotPublish", "redo", m_actionHandler,
+					() => Cache.DomainDataByFlid.Replace(lexItem.Hvo, publishInFlid, 1, 2, new int[] { pocket.Hvo }, 1));
+			}
 			// Enhance JohnT: possibly making a new publication should generate PropChanged for
 			// all PublishIn lists in the system! But it can't be relevant to do so, because
 			// no window can be displaying the new publication. It's also probably rare enough

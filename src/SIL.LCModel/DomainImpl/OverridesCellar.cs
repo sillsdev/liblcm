@@ -1149,6 +1149,29 @@ namespace SIL.LCModel.DomainImpl
 			}
 		}
 
+		protected override void AddObjectSideEffectsInternal(AddObjectEventArgs e)
+		{
+			// For a new publication, default all of the existing lexical entries to not publish in it.
+			if (this.ObjectIdName.Length >= 32 && this.ObjectIdName.GetSubstring(0, 32).Text == "Publications - CmPossibilityList")
+			{
+				IEnumerable<ILexEntry> lexEntries = this.Cache.LangProject.LexDbOA.Entries;
+				if (lexEntries.Count() > 0)
+				{
+					var flid = this.Cache.MetaDataCacheAccessor.GetFieldId2(LexEntryTags.kClassId, "PublishIn", true);
+					foreach (var lexEntry in lexEntries)
+					{
+						var newPubIndex = lexEntry.PublishIn.ToList().FindIndex(pub => pub.Hvo == e.ObjectAdded.Hvo);
+						if (newPubIndex != -1)
+						{
+							// Remove the new publication from the list of publications where this lex entry should be published.
+							lexEntry.Cache.DomainDataByFlid.Replace(lexEntry.Hvo, flid, newPubIndex, newPubIndex + 1, new int[0], 0);
+						}
+					}
+				}
+			}
+
+			base.AddObjectSideEffectsInternal(e);
+		}
 	}
 	#endregion
 
@@ -1643,7 +1666,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			get
 			{
-				ICmPossibilityList ccTempl = Cache.LangProject.DiscourseDataOA.ConstChartTemplOA;
+				ICmPossibilityList ccTempl = Cache.LangProject.DiscourseDataOA?.ConstChartTemplOA;
 				if (OwningList != ccTempl)
 					return false;
 
@@ -1656,7 +1679,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			get
 			{
-				if (OwningList != Cache.LangProject.DiscourseDataOA.ConstChartTemplOA)
+				if (OwningList != Cache.LangProject.DiscourseDataOA?.ConstChartTemplOA)
 					return false;
 
 				CmPossibility rootPossibility = this;
