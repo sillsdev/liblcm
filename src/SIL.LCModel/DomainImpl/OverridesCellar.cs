@@ -1152,7 +1152,7 @@ namespace SIL.LCModel.DomainImpl
 		protected override void AddObjectSideEffectsInternal(AddObjectEventArgs e)
 		{
 			// For a new publication, default all of the existing lexical entries to not publish in it.
-			if (this.ObjectIdName.Length >= 32 && this.ObjectIdName.GetSubstring(0, 32).Text == "Publications - CmPossibilityList")
+			if (this.OwningFlid == 5005024)
 			{
 				IEnumerable<ILexEntry> lexEntries = this.Cache.LangProject.LexDbOA.Entries;
 				if (lexEntries.Count() > 0)

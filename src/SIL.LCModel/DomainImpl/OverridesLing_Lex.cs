@@ -779,9 +779,14 @@ namespace SIL.LCModel.DomainImpl
 
 			// For a new lexical entry, default to only publish in the Main Dictionary.
 			// Note: The Main Dictionary can be renamed, but not deleted, so look for the publication that can't be deleted.
-			var mainDictIndex = this.PublishIn.ToList().FindIndex(pub => pub.CanDelete == false);
-			if (mainDictIndex != -1)
+			var allCanNotDelete = this.PublishIn.ToList().FindAll(pub => pub.CanDelete == false);
+			if (allCanNotDelete.Count != 1)
 			{
+				throw new Exception("None, or more than one publication is blocked from being deleted. Expecting only the Main Dictionary to block deletion.");
+			}
+			else
+			{
+				var mainDictIndex = this.PublishIn.ToList().FindIndex(pub => pub.CanDelete == false);
 				var flid = Cache.MetaDataCacheAccessor.GetFieldId2(LexEntryTags.kClassId, "PublishIn", true);
 
 				// Remove the publications after Main Dictionary.
@@ -795,7 +800,6 @@ namespace SIL.LCModel.DomainImpl
 				{
 					m_cache.DomainDataByFlid.Replace(this.Hvo, flid, 0, mainDictIndex, new int[0], 0);
 				}
-
 			}
 		}
 
