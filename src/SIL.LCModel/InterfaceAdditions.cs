@@ -654,6 +654,9 @@ namespace SIL.LCModel
 		/// <returns>this.Owner.SensesOS.ExamplesOS</returns>
 		IEnumerable<ILexExampleSentence> ExampleSentences { get; }
 
+		/// <returns>this.Owner.SensesOS.ExtendedNoteOS</returns>
+		IEnumerable<ILexExtendedNote> ExtendedNote { get; }
+
 		/// <returns>this.Owner.SensesOS.DefinitionOrGloss</returns>
 		IEnumerable<IMultiStringAccessor>  DefinitionOrGloss { get; }
 

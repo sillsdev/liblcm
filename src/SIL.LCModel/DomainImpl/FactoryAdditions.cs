@@ -454,6 +454,32 @@ namespace SIL.LCModel.DomainImpl
 	}
 	#endregion
 
+	#region LexExtendedNoteFactory class
+	internal partial class LexExtendedNoteFactory
+	{
+		#region Implementation of ILexExtendedNoteFactory
+
+		public ILexExtendedNote Create(Guid guid, ILexSense owner)
+		{
+			if (owner == null) throw new ArgumentNullException("owner");
+
+			ILexExtendedNote len;
+			if (guid == Guid.Empty)
+			{
+				len = new LexExtendedNote();
+			}
+			else
+			{
+				int hvo = ((IDataReader)m_cache.ServiceLocator.GetInstance<IDataSetup>()).GetNextRealHvo();
+				len = new LexExtendedNote(m_cache, hvo, guid);
+			}
+			owner.ExtendedNoteOS.Add(len);
+			return len;
+		}
+		#endregion
+	}
+	#endregion
+
 	#region LexEntryFactory class
 	internal partial class LexEntryFactory
 	{

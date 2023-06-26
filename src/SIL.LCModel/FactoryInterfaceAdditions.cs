@@ -700,6 +700,17 @@ namespace SIL.LCModel
 	}
 
 	/// <summary>
+	/// IExtendedNote factory additions.
+	/// </summary>
+	public partial interface ILexExtendedNoteFactory
+	{
+		/// <summary>
+		/// Create a new extended note with the given guid.  This is needed for SFM/LIFT import.
+		/// </summary>
+		ILexExtendedNote Create(Guid guid, ILexSense owner);
+	}
+
+	/// <summary>
 	/// IMoAffixAllomorph factory additions.
 	/// </summary>
 	public partial interface IMoAffixAllomorphFactory
