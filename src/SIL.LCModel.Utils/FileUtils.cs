@@ -507,24 +507,13 @@ namespace SIL.LCModel.Utils
 		/// <summary>
 		/// Determine if given URI is a file uri or a path.
 		/// </summary>
-		/// <returns>false if the given URI is a known non-file URI scheme</returns>
 		/// ------------------------------------------------------------------------------------
 		public static bool IsFileUriOrPath(string uri)
 		{
 			uri = uri.Trim();
-			var iScheme = uri.IndexOf(':');
-			if (iScheme == -1)
-			{
-				// Unix paths do not contain ':'
-				return true;
-			}
-			var scheme = uri.Substring(0, iScheme);
-			string[] nonFileUris = { Uri.UriSchemeFtp, Uri.UriSchemeGopher, Uri.UriSchemeHttp,
-									Uri.UriSchemeHttps, Uri.UriSchemeMailto, Uri.UriSchemeNetPipe,
-									Uri.UriSchemeNetTcp, Uri.UriSchemeNews, Uri.UriSchemeNntp,
-									"silfw" };
-
-			return !nonFileUris.Contains(scheme);
+			var iScheme = uri.IndexOf(Uri.SchemeDelimiter, StringComparison.Ordinal);
+			// Paths do not contain '://'
+			return iScheme == -1 || uri.Substring(0, iScheme).Equals(Uri.UriSchemeFile);
 		}
 
 		/// ------------------------------------------------------------------------------------
