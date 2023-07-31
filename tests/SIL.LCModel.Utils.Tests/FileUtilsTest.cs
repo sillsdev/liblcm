@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2020 SIL International
+// Copyright (c) 2009-2023 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -42,25 +42,17 @@ namespace SIL.LCModel.Utils
 		#endregion
 
 		#region IsFileUriOrPath test
-		///--------------------------------------------------------------------------------------
-		/// <summary>
-		/// Tests the method IsFileUriOrPath
-		/// </summary>
-		///--------------------------------------------------------------------------------------
-		[Test]
-		public void IsFileUriOrPath()
-		{
-			Assert.IsTrue(FileUtils.IsFileUriOrPath("somePath/path"));
-			Assert.IsTrue(FileUtils.IsFileUriOrPath("/somePath/path"));
-			Assert.IsTrue(FileUtils.IsFileUriOrPath(@"somePath\path"));
-			Assert.IsTrue(FileUtils.IsFileUriOrPath(@"C:\somePath\path"));
-			Assert.IsTrue(FileUtils.IsFileUriOrPath("file://somePath/path"));
-
-			Assert.IsFalse(FileUtils.IsFileUriOrPath("http://www.google.com"));
-			Assert.IsFalse(FileUtils.IsFileUriOrPath("https://www.google.com"));
-			Assert.IsFalse(FileUtils.IsFileUriOrPath("ftp://www.google.com"));
-			Assert.IsFalse(FileUtils.IsFileUriOrPath("   http://www.google.com"));
-		}
+		[TestCase("somePath/path", ExpectedResult = true)]
+		[TestCase("/somePath/path", ExpectedResult = true)]
+		[TestCase(@"somePath\path", ExpectedResult = true)]
+		[TestCase(@"C:\somePath\path", ExpectedResult = true)]
+		[TestCase("file://somePath/path", ExpectedResult = true)]
+		[TestCase("http://www.google.com", ExpectedResult = false)]
+		[TestCase("https://www.google.com", ExpectedResult = false)]
+		[TestCase("ftp://www.google.com", ExpectedResult = false)]
+		[TestCase("   http://www.google.com", ExpectedResult = false)]
+		[TestCase("silfw:\\localhost\\link?app%3dFlex%26database%3dc%3a%5cFwProjects%5cSena+3%5cSena+3.fwdata", ExpectedResult = false)]
+		public bool IsFileUriOrPath(string path) => FileUtils.IsFileUriOrPath(path);
 		#endregion
 
 		#region IsFilePathValid test
