@@ -25,12 +25,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - [SIL.LCModel] Data migration now serializes dates using the culture-neutral `ToLCMTimeFormatWithMillisString` (LT-20698)
 - [SIL.LCModel] `ReadWriteServices.LoadDateTime` now parses milliseconds correctly (LT-18205)
-
-### Fixed
-
 - [SIL.LCModel.Core] Copy `SIL.LCModel.Core.dll.config` to output directory
 - [SIL.LCModel] Use `CaseFunctions` (to use the `WritingSystemDefinition.CaseAlias`, if any)
 - [SIL.LCModel.Core] Use the `WritingSystemDefinition.CaseAlias`, if any, in `CaseFunctions`
+
+### Changed
+
+- [SIL.LCModel] `FileUtils.IsFileUriOrPath` checks for the presence of "file:" rather than the absence of known non-file URI schemes
 
 ### Deprecated
 

@@ -511,9 +511,10 @@ namespace SIL.LCModel.Utils
 		public static bool IsFileUriOrPath(string uri)
 		{
 			uri = uri.Trim();
-			var iScheme = uri.IndexOf(Uri.SchemeDelimiter, StringComparison.Ordinal);
-			// Paths do not contain '://'
-			return iScheme == -1 || uri.Substring(0, iScheme).Equals(Uri.UriSchemeFile);
+			// ":" instead of Uri.SchemeDelimiter in case someone enters http:\example.com
+			var limScheme = uri.IndexOf(":", StringComparison.Ordinal);
+			// Unix paths do not contain ":"; Windows paths begin "C:\" or similar
+			return limScheme == -1 || limScheme == 1 || uri.Substring(0, limScheme).Equals(Uri.UriSchemeFile);
 		}
 
 		/// ------------------------------------------------------------------------------------
