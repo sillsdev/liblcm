@@ -427,8 +427,12 @@ namespace SIL.LCModel
 	/// <summary>
 	/// Enum listing types of change being made for synchronization purposes. These messages are
 	/// used to indicate the type of change that was made.
+	/// REVIEW (Hasso) 2023.08: it seems ksyncStyle is the only SyncMsg ever sent anywhere (LCM and FieldWorks, at least).
+	/// I also searched github.com/sillsdev and saw matches in WorldPad not listed here that lead me to believe this is a relic of TE.
+	/// REVIEW: Can this enum be removed?
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
+	[Obsolete("Only ksyncStyle is published as far as I can tell")]
 	public enum SyncMsg
 	{
 		/// <summary>

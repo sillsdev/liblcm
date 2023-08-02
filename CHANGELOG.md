@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Deprecated
 
+- [SIL.LCModel] `SyncMsg` seems to be a relic of TE, which was disconinued years ago
 - [SIL.LCModel.Core] `new CaseFunctions(string)` in favor of the new `new CaseFunctions(CoreWritingSystemDefinition)`
 
 ## [10.1.0] - 2021-10-01
