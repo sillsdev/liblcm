@@ -52,7 +52,18 @@ namespace SIL.LCModel
 		/// repository of writing systems. There is probably no legitimate reason to use this
 		/// except for testing the shared XML BEP.
 		/// </summary>
-		kSharedXMLWithMemoryOnlyWsMgr = 105
+		kSharedXMLWithMemoryOnlyWsMgr = 105,
+
+		/// <summary>
+		/// The LCM data persisted as CRDT operations, mergeable with other copies of the same project.
+		/// </summary>
+		kCRDTLog = 204,
+
+		/// <summary>
+		/// The LCM data persisted as CRDT operations, mergeable with other copies of the same project.
+		/// This does not use the real repository of writing systems. For testing the CRDT BEP only.
+		/// </summary>
+		kCRDTWithMemoryOnlyWsMgr = 205,
 	};
 	#endregion
 

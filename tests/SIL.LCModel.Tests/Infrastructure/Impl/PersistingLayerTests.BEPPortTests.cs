@@ -59,7 +59,9 @@ namespace SIL.LCModel.Infrastructure.Impl
 				case BackendProviderType.kXMLWithMemoryOnlyWsMgr:
 					name = Path.Combine(m_projectsFolder.Path, LcmFileHelper.GetXmlDataFileName("TLP" + nameSuffix));
 					break;
-				//case BackendProviderType.kMemoryOnly: name = null;
+				case BackendProviderType.kCRDTWithMemoryOnlyWsMgr:
+					name = Path.Combine(m_projectsFolder.Path, $"TLP{nameSuffix}.json");
+					break;
 			}
 
 			return new BackendStartupParameter(true, BackendBulkLoadDomain.All, new TestProjectId(type, name));
@@ -151,7 +153,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		[Test]
 		[Combinatorial]
 		public void PortAllBEPsTestsUsingAnAlreadyOpenedSource(
-			[Values(BackendProviderType.kXMLWithMemoryOnlyWsMgr, BackendProviderType.kMemoryOnly)]
+			[Values(BackendProviderType.kXMLWithMemoryOnlyWsMgr, BackendProviderType.kMemoryOnly, BackendProviderType.kCRDTWithMemoryOnlyWsMgr)]
 			BackendProviderType sourceType,
 			[Values(BackendProviderType.kXMLWithMemoryOnlyWsMgr, BackendProviderType.kMemoryOnly)]
 			BackendProviderType targetType)
@@ -207,7 +209,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		[Test]
 		[Combinatorial]
 		public void PortAllBEPsTestsUsingAnUnopenedSource(
-			[Values(BackendProviderType.kXMLWithMemoryOnlyWsMgr)]
+			[Values(BackendProviderType.kXMLWithMemoryOnlyWsMgr, BackendProviderType.kCRDTWithMemoryOnlyWsMgr)]
 			BackendProviderType sourceType,
 			[Values(BackendProviderType.kXMLWithMemoryOnlyWsMgr, BackendProviderType.kMemoryOnly)]
 			BackendProviderType targetType)

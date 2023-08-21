@@ -157,6 +157,12 @@ namespace SIL.LCModel.IOC
 						.LifecycleIs(new SingletonLifecycle())
 						.Use<SharedXMLBackendProvider>();
 					break;
+				case BackendProviderType.kCRDTLog:
+					registry
+						.For<IDataSetup>()
+						.LifecycleIs(new SingletonLifecycle())
+						.Use<CRDTBackendProvider>();
+					break;
 			}
 			// Register two additional interfaces of the BEP, which are injected into other services.
 			registry

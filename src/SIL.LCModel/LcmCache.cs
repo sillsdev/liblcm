@@ -220,6 +220,8 @@ namespace SIL.LCModel
 					return LcmSettings.IsProjectSharingEnabled(projectId.ProjectFolder)
 						? BackendProviderType.kSharedXML
 						: BackendProviderType.kXML;
+				case BackendProviderType.kCRDTWithMemoryOnlyWsMgr:
+					return BackendProviderType.kCRDTLog;
 				default:
 					return projectId.Type;
 			}
@@ -262,7 +264,8 @@ namespace SIL.LCModel
 			BackendProviderType providerType = projectId.Type;
 			bool useMemoryWsManager = (providerType == BackendProviderType.kMemoryOnly
 				|| providerType == BackendProviderType.kXMLWithMemoryOnlyWsMgr
-				|| providerType == BackendProviderType.kSharedXMLWithMemoryOnlyWsMgr);
+				|| providerType == BackendProviderType.kSharedXMLWithMemoryOnlyWsMgr
+				|| providerType == BackendProviderType.kCRDTWithMemoryOnlyWsMgr);
 			LcmCache createdCache = CreateCacheInternal(projectId, ui, dirs, settings);
 
 			try
