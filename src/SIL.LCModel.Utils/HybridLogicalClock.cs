@@ -11,20 +11,8 @@ namespace SIL.LCModel.Utils
 		public readonly int EventCount;
 
 		[JsonConstructor]
-		public HybridLogicalClock(string jsonValue)
+		public HybridLogicalClock()
 		{
-			if (jsonValue == null)
-			{
-				throw new ArgumentException("clock can not be null", nameof(jsonValue));
-			}
-			var parts = jsonValue.Split('_');
-			if (parts.Length != 3)
-			{
-				throw new ArgumentException("Not a clock serialization", nameof(jsonValue));
-			}
-			Id = parts[0];
-			DateTime = long.Parse(parts[1]);
-			EventCount = int.Parse(parts[2]);
 		}
 		public HybridLogicalClock(string id, long dateTime)
 		{

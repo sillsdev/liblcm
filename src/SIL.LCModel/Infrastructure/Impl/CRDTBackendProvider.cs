@@ -2,18 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using Newtonsoft.Json;
 using SIL.Extensions;
 using SIL.LCModel.Application;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
-using SIL.LCModel.DomainImpl;
 using SIL.LCModel.DomainServices.DataMigration;
 using SIL.LCModel.Utils;
 using SIL.Lexicon;
-using static SIL.LCModel.Infrastructure.Impl.CRDTBackendProvider;
 
 namespace SIL.LCModel.Infrastructure.Impl
 {
@@ -24,7 +21,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 	{
 		private HybridLogicalClock _clock;
 
-		private CRDTFile CRDTLogFile { get; set; }
+		private CRDTJsonContent CRDTLogFile { get; set; }
 
 		public CRDTBackendProvider(LcmCache cache, IdentityMap identityMap, ICmObjectSurrogateFactory surrogateFactory, IFwMetaDataCacheManagedInternal mdc, IDataMigrationManager dataMigrationManager, ILcmUI ui, ILcmDirectories dirs, LcmSettings settings) : base(cache, identityMap, surrogateFactory, mdc, dataMigrationManager, ui, dirs, settings)
 		{
@@ -32,7 +29,16 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 		protected override int StartupInternal(int currentModelVersion)
 		{
-			CRDTLogFile = new CRDTFile(ProjectId.Path);
+			// TODO: Implement performant streaming of changes to disc without having to deserialize the whole file
+			CRDTLogFile = JsonConvert.DeserializeObject<CRDTJsonContent>(File.ReadAllText(ProjectId.Path));
+			foreach (var cmObject in CRDTLogFile.Changes)
+			{
+				if (!cmObject.Deleted)
+				{
+					// TODO: Modify surrogate to support the new backend
+					m_identityMap.RegisterInactiveSurrogate(m_surrogateFactory.Create(cmObject.Id, m_cache.MetaDataCache.GetClassName(cmObject.ObjectType), "<rt/>"));
+				}
+			}
 			return CRDTLogFile.ModelVersion;
 		}
 
@@ -54,10 +60,9 @@ namespace SIL.LCModel.Infrastructure.Impl
 			var doc = new CRDTJsonContent
 			{
 				ModelVersion = ModelVersion,
-				Changes = new CmObjectChange[]{},
 				LogicalClock = _clock
 			};
-			CRDTLogFile = new CRDTFile(ProjectId.Path);
+			CRDTLogFile = doc;
 			File.WriteAllText(ProjectId.Path, JsonConvert.SerializeObject(doc));
 		}
 
@@ -74,8 +79,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 		public override bool Commit(HashSet<ICmObjectOrSurrogate> newbies, HashSet<ICmObjectOrSurrogate> dirtballs, HashSet<ICmObjectId> goners)
 		{
-			// TODO: Implement performant streaming of changes to disc without having to deserialize the whole file
-			var currentContent = JsonConvert.DeserializeObject<CRDTJsonContent>(File.ReadAllText(CRDTLogFile.Path));
+			var currentContent = CRDTLogFile;
 			_clock++;
 			currentContent.LogicalClock = _clock;
 			foreach (var newObj in newbies)
@@ -93,12 +97,18 @@ namespace SIL.LCModel.Infrastructure.Impl
 				currentContent.Changes.Add(new CmObjectChange {Id = goner.Guid, ModelVersion = ModelVersion, Deleted = true, Timestamp = _clock.ToString()});
 			}
 
-			File.WriteAllText(CRDTLogFile.Path, JsonConvert.SerializeObject(currentContent));
+			File.WriteAllText(ProjectId.Path, JsonConvert.SerializeObject(currentContent));
 			return base.Commit(newbies, dirtballs, goners);
 		}
 
-		private static string EncodeTsString(ITsString tsString, int ws)
+		//TODO: Serialize all string properties(TSStringProps) and runs
+		private static string EncodeTsString(ITsString tsString, int ws = 0)
 		{
+			if (ws == 0)
+			{
+				// Default to the writing system of the first run of the string
+				ws = tsString.get_WritingSystem(0);
+			}
 			return ws + TSStringDilemeter + tsString.Text;
 		}
 
@@ -132,7 +142,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 							fieldChange.FieldValue = silDal.get_IntProp(obj.Hvo, field).ToString();
 							break;
 						case (int)CellarPropertyType.String:
-							fieldChange.FieldValue = silDal.get_StringProp(obj.Hvo, field).Text;
+							fieldChange.FieldValue = EncodeTsString(silDal.get_StringProp(obj.Hvo, field)); // TODO: Encode full string info with styles
 							break;
 						case (int)CellarPropertyType.Unicode:
 							fieldChange.FieldValue = silDal.get_UnicodeProp(obj.Hvo, field);
@@ -274,20 +284,13 @@ namespace SIL.LCModel.Infrastructure.Impl
 			}
 		}
 
-		private class CRDTFile
-		{
-			public readonly string Path;
-
-			public CRDTFile(string path)
-			{
-				Path = path;
-			}
-
-			public int ModelVersion => JsonConvert.DeserializeObject<CRDTJsonContent>(File.ReadAllText(Path)).ModelVersion;
-		}
-
 		internal class CRDTJsonContent
 		{
+			public CRDTJsonContent()
+			{
+				Changes = new List<CmObjectChange>();
+			}
+
 			[JsonProperty("modelVersion")]
 			public int ModelVersion;
 
