@@ -82,13 +82,13 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			IDomainObjectDTORepository dtoRepos = new DomainObjectDtoRepository(7000009, dtos, mockMDC, null, TestDirectoryFinder.LcmDirectories);
 
 			// Collect the various annotation defns.
-			var annDefnDtos = new Dictionary<string, DomainObjectDTO>();
+			var annDefnDtos = new Dictionary<string, DomainObjectXMLDTO>();
 			foreach (var annDto in dtoRepos.AllInstancesSansSubclasses("CmAnnotationDefn"))
 				annDefnDtos.Add(annDto.Guid.ToUpper(), annDto);
-			var stTextDtos = new Dictionary<string, DomainObjectDTO>();
+			var stTextDtos = new Dictionary<string, DomainObjectXMLDTO>();
 			foreach (var annDto in dtoRepos.AllInstancesSansSubclasses("StText"))
 				stTextDtos.Add(annDto.Guid.ToUpper(), annDto);
-			var stTxtParaDtos = new Dictionary<string, DomainObjectDTO>();
+			var stTxtParaDtos = new Dictionary<string, DomainObjectXMLDTO>();
 			foreach (var annDto in dtoRepos.AllInstancesSansSubclasses("StTxtPara"))
 				stTxtParaDtos.Add(annDto.Guid.ToUpper(), annDto);
 
@@ -147,7 +147,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.AreEqual("en", run.Attribute("ws").Value, "Wrong IcuLocale.");
 			Assert.AreEqual(".", run.Value, "Wrong punctuation form.");
 
-			var newNotesDtos = new List<DomainObjectDTO>(dtoRepos.AllInstancesSansSubclasses("Note"));
+			var newNotesDtos = new List<DomainObjectXMLDTO>(dtoRepos.AllInstancesSansSubclasses("Note"));
 			Assert.AreEqual(2, newNotesDtos.Count, "Wrong number of new Notes.");
 			var noteAltValues = new List<string> { "Note1.", "Note2.", "Nota1.", "Nota2." };
 			var noteGuids = new List<string>(2);
@@ -172,7 +172,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 										"068DC680-CD40-4C47-BBE7-00E572EE2602",
 										punctFormDto.Guid
 									};
-			DomainObjectDTO newSegmentDto;
+			DomainObjectXMLDTO newSegmentDto;
 			var newSegmentInnerElement = CheckNewSegment(dtoRepos, 0, currentParaDto, newSegmentObjSurElements[0], out newSegmentDto);
 			CheckComment(newSegmentInnerElement, "LiteralTranslation", true, 2);
 			CheckComment(newSegmentInnerElement, "FreeTranslation", true, 2);
@@ -216,7 +216,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			var lpElement = XElement.Parse(lpDto.Xml);
 			Assert.IsNull(lpElement.Element("LangProject").Element("Annotations"), "Still has Annotations.");
 
-			var newNotesDtos = new List<DomainObjectDTO>(dtoRepos.AllInstancesSansSubclasses("Note"));
+			var newNotesDtos = new List<DomainObjectXMLDTO>(dtoRepos.AllInstancesSansSubclasses("Note"));
 			Assert.AreEqual(2, newNotesDtos.Count, "Wrong number of new Notes.");
 			var noteAltValues = new List<string> { "Note1.", "Note2.", "Nota1.", "Nota2." };
 			var noteGuids = new List<string>(2);
@@ -238,7 +238,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			var analysesGuids = new List<string>()
 									{
 									};
-			DomainObjectDTO newSegmentDto;
+			DomainObjectXMLDTO newSegmentDto;
 			var newSegmentInnerElement = CheckNewSegment(dtoRepos, 0, currentParaDto, newSegmentObjSurElements[0], out newSegmentDto);
 			CheckComment(newSegmentInnerElement, "LiteralTranslation", true, 2);
 			CheckComment(newSegmentInnerElement, "FreeTranslation", true, 2);
@@ -299,7 +299,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 										"068DC680-CD40-4C47-BBE6-00E572EE2602",
 										punctFormDto.Guid
 									};
-			DomainObjectDTO newSegmentDto;
+			DomainObjectXMLDTO newSegmentDto;
 			var newSegmentInnerElement = CheckNewSegment(dtoRepos, 0, currentParaDto, newSegmentObjSurElements[0], out newSegmentDto);
 			CheckComment(newSegmentInnerElement, "LiteralTranslation", false, 0);
 			CheckComment(newSegmentInnerElement, "FreeTranslation", false, 0);
@@ -415,7 +415,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 									{
 										"068DC680-CD40-4C47-BBE6-00E572EE2602"
 									};
-			DomainObjectDTO newSegmentDto;
+			DomainObjectXMLDTO newSegmentDto;
 			var newSegmentInnerElement = CheckNewSegment(dtoRepos, 0, currentParaDto, newSegmentObjSurElements[0], out newSegmentDto);
 			CheckComment(newSegmentInnerElement, "LiteralTranslation", false, 0);
 			CheckComment(newSegmentInnerElement, "FreeTranslation", false, 0);
@@ -456,7 +456,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			// The previous version of the migration code ended up with "ChangeME" as the
 			// segment in this case when converting a CCA that referenced that wfic.
 			var oneSegmentParaDto = CheckPara(dtoRepos, "14f703d9-c849-4251-9b0f-09d964b6b69c", 1, true, false, out newSegmentObjSurElements); // all paragraphs now get reparsed on load
-			DomainObjectDTO oneSegmentDto;
+			DomainObjectXMLDTO oneSegmentDto;
 			var oneSegmentInnerElement = CheckNewSegment(dtoRepos, 0, oneSegmentParaDto,
 				newSegmentObjSurElements[0], out oneSegmentDto);
 			Assert.AreEqual("0", oneSegmentInnerElement.Element("BeginOffset").Attribute("val").Value);
@@ -554,7 +554,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 									{
 										"068DC680-CD40-4C47-BBE6-00E572EE2602"
 									};
-			DomainObjectDTO newSegmentDto;
+			DomainObjectXMLDTO newSegmentDto;
 			var newSegmentInnerElement = CheckNewSegment(dtoRepos, 0, currentParaDto, newSegmentObjSurElements[0], out newSegmentDto);
 			CheckComment(newSegmentInnerElement, "LiteralTranslation", false, 0);
 			CheckComment(newSegmentInnerElement, "FreeTranslation", false, 0);
@@ -788,7 +788,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 										"d0c52468-ceb3-4860-8cbf-2e68ac5b68ad",
 										punctPeriodDto.Guid
 									};
-			DomainObjectDTO newSegmentDto;
+			DomainObjectXMLDTO newSegmentDto;
 			var newSegmentInnerElement = CheckNewSegment(dtoRepos, 0, paraDto, firstSegmentObjsur, out newSegmentDto);
 			// 4 different twfics (one repeated) and 2 pfics.
 			CheckXfics(dtoRepos, newSegmentInnerElement, 6, analysesGuids);
@@ -1134,7 +1134,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			return dtoRepos;
 		}
 
-		private static IDomainObjectDTORepository SetupMDC(HashSet<DomainObjectDTO> dtos)
+		private static IDomainObjectDTORepository SetupMDC(HashSet<DomainObjectXMLDTO> dtos)
 		{
 			var mockMDC = new MockMDCForDataMigration();
 			mockMDC.AddClass(1, "CmObject", null, new List<string> { "CmProject", "StPara", "CmAnnotation",
@@ -1190,7 +1190,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 		}
 
-		private static void CheckNotes(IDomainObjectDTORepository dtoRepos, DomainObjectDTO newSegmentDto, ICollection noteGuids, XContainer newSegmentInnerElement, bool expectedToHaveNotes, int expectedNumberOfNotes)
+		private static void CheckNotes(IDomainObjectDTORepository dtoRepos, DomainObjectXMLDTO newSegmentDto, ICollection noteGuids, XContainer newSegmentInnerElement, bool expectedToHaveNotes, int expectedNumberOfNotes)
 		{
 			// Check Nts.
 			var notesElements = newSegmentInnerElement.Elements("Notes");
@@ -1244,7 +1244,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.AreEqual(altenativeCount, alternativesNodes.Count(), "Wrong number of alternatives.");
 		}
 
-		private static DomainObjectDTO CheckPara(IDomainObjectDTORepository dtoRepos, string paraGuid,
+		private static DomainObjectXMLDTO CheckPara(IDomainObjectDTORepository dtoRepos, string paraGuid,
 			int segmentCount, bool checkForParseIsCurrent, bool expectedParseIsCurrentValue,
 			out List<XElement> newSegmentObjSurElements)
 		{
@@ -1276,7 +1276,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			return currentParaDto;
 		}
 
-		private static XElement CheckNewSegment(IDomainObjectDTORepository dtoRepos, int beginOffset, DomainObjectDTO owningPara, XElement newSegmentObjSurElement, out DomainObjectDTO newSegmentDto)
+		private static XElement CheckNewSegment(IDomainObjectDTORepository dtoRepos, int beginOffset, DomainObjectXMLDTO owningPara, XElement newSegmentObjSurElement, out DomainObjectXMLDTO newSegmentDto)
 		{
 			newSegmentDto = dtoRepos.GetDTO(newSegmentObjSurElement.Attribute("guid").Value);
 			Assert.IsNotNull(newSegmentDto, "Missing new Segment DTO.");

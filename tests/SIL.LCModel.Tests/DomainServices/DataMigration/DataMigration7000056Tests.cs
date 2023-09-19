@@ -37,13 +37,13 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			// check that PhPhonData has the PhonRuleFeats possibility list
 			{
 				var dtosList = dtoRepos.AllInstancesSansSubclasses("PhPhonData");
-				DomainObjectDTO dtoPhPhonDataTest = dtosList.First();
+				DomainObjectXMLDTO dtoPhPhonDataTest = dtosList.First();
 				CheckPhPhonData(dtoPhPhonDataTest, dtoRepos);
 			}
 
 			// In the extremely unlikely event that there is no PhPhonData yet, check that we add it
 			{
-				dtos = new HashSet<DomainObjectDTO>();
+				dtos = new HashSet<DomainObjectXMLDTO>();
 
 				var sb = new StringBuilder();
 				// Add WfiMorphBundle that already has a form.
@@ -51,7 +51,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 				sb.AppendFormat("<rt class=\"LangProj\" guid=\"{0}\">", sGuid_wmbLangProj);
 				sb.Append("</rt>");
-				var dtoLangProj = new DomainObjectDTO(sGuid_wmbLangProj, "LangProj", sb.ToString());
+				var dtoLangProj = new DomainObjectXMLDTO(sGuid_wmbLangProj, "LangProj", sb.ToString());
 				dtos.Add(dtoLangProj);
 				sb.Length = 0;
 
@@ -61,7 +61,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				Assert.AreEqual(7000056, dtoRepos.CurrentModelVersion, "Wrong updated version.");
 
 				var dtosList = dtoRepos.AllInstancesSansSubclasses("LangProj");
-				DomainObjectDTO dtoLangProjTest = dtosList.First();
+				DomainObjectXMLDTO dtoLangProjTest = dtosList.First();
 				var eltWmbLangProjTest = XElement.Parse(dtoLangProjTest.Xml);
 				// get phon rule feats
 				var eltPhonologicalDataTest = eltWmbLangProjTest.Element("PhonologicalData");
@@ -71,7 +71,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				// get possibility list itself
 				var guidPhPhonDataTest = eltObjsurTest.Attribute("guid").Value;
 				Assert.IsNotNull(guidPhPhonDataTest);
-				DomainObjectDTO dtoPhPhonDataTest;
+				DomainObjectXMLDTO dtoPhPhonDataTest;
 				dtoRepos.TryGetValue(guidPhPhonDataTest, out dtoPhPhonDataTest);
 				Assert.IsNotNull(dtoPhPhonDataTest);
 				CheckPhPhonData(dtoPhPhonDataTest, dtoRepos);
@@ -79,7 +79,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 		}
 
-		private static void CheckPhPhonData(DomainObjectDTO dtoPhPhonDataTest, IDomainObjectDTORepository dtoRepos)
+		private static void CheckPhPhonData(DomainObjectXMLDTO dtoPhPhonDataTest, IDomainObjectDTORepository dtoRepos)
 		{
 			var eltWmbPhPhonDataTest = XElement.Parse(dtoPhPhonDataTest.Xml);
 			// get phon rule feats
@@ -90,7 +90,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			// get possibility list itself
 			var guidPossibilityListTest = eltObjsurTest.Attribute("guid").Value;
 			Assert.IsNotNull(guidPossibilityListTest);
-			DomainObjectDTO dtoCmPossiblityTest;
+			DomainObjectXMLDTO dtoCmPossiblityTest;
 			dtoRepos.TryGetValue(guidPossibilityListTest, out dtoCmPossiblityTest);
 			Assert.IsNotNull(dtoCmPossiblityTest);
 			var eltWmbCmPossibilityListTest = XElement.Parse(dtoCmPossiblityTest.Xml);

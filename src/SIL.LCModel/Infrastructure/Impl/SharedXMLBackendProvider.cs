@@ -438,8 +438,8 @@ namespace SIL.LCModel.Infrastructure.Impl
 						Source = m_peerID,
 						WriteGeneration = metadata.CurrentGeneration + 1,
 						ObjectsDeleted = goners.Select(g => g.Guid).ToList(),
-						ObjectsAdded = newbies.Select(n => n.XMLBytes).ToList(),
-						ObjectsUpdated = dirtballs.Select(d => d.XMLBytes).ToList()
+						ObjectsAdded = newbies.Select(n => ((ICmObjectXMLDTO)n.DTO).XMLBytes).ToList(),
+						ObjectsUpdated = dirtballs.Select(d => ((ICmObjectXMLDTO)d.DTO).XMLBytes).ToList()
 					};
 
 				using (var buffer = new MemoryStream())
@@ -562,7 +562,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				{
 					foreach (byte[] dirtballXml in commitRec.ObjectsUpdated)
 					{
-						ICmObjectSurrogate dirtballSurrogate = surrogateFactory.Create(dirtballXml);
+						ICmObjectSurrogate dirtballSurrogate = surrogateFactory.Create(new ICmObjectXMLDTO(dirtballXml));
 						// This shouldn't be necessary; if a previous foreign transaction deleted it, it
 						// should not show up as a dirtball in a later transaction until it has shown up as a newby.
 						// goners.Remove(dirtball);
@@ -576,7 +576,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				{
 					foreach (byte[] newbyXml in commitRec.ObjectsAdded)
 					{
-						ICmObjectSurrogate newObj = surrogateFactory.Create(newbyXml);
+						ICmObjectSurrogate newObj = surrogateFactory.Create(new ICmObjectXMLDTO(newbyXml));
 						if (goners.Remove(newObj.Guid))
 						{
 							// an object which an earlier transaction deleted is being re-created.

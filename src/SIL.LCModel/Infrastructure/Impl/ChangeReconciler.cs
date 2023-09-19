@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015-2017 SIL International
+// Copyright (c) 2015-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -99,7 +99,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				var gonerGuids = new HashSet<Guid>(from id in goners select id.Guid);
 				foreach (var surrogate in m_foreignNewbies.Concat(m_foreignDirtballs))
 				{
-					var xml = surrogate.XML;
+					var xml = ((ICmObjectXMLDTO)surrogate.DTO).XML;
 					// Scan all the objsur elements.
 					for (int ich = 0; ; )
 					{
@@ -205,7 +205,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			var fakeService = new UowServiceSimulator();
 			foreach (var newby in m_foreignNewbies)
 			{
-				var xml = newby.XML; // may be destroyed by getting the Object.
+				var xml = ((ICmObjectXMLDTO)newby.DTO).XML; // may be destroyed by getting the Object.
 				var objectCreation = new LcmStateChangeObjectCreation(newby.Object);
 				objectCreation.SetAfterXml(xml);
 				uow.AddAction(objectCreation);
@@ -780,7 +780,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		{
 			var currentObj = UowService.GetObject(dirtball.Id);
 			var currentInternal = (ICmObjectInternal)currentObj;
-			var rtElement = XElement.Parse(dirtball.XML);
+			var rtElement = XElement.Parse(((ICmObjectXMLDTO)dirtball.DTO).XML);
 			var mdc = (IFwMetaDataCacheManaged)currentObj.Cache.MetaDataCache;
 			// First see if it changed owners.
 			var ownerAttr = rtElement.Attribute("ownerguid");

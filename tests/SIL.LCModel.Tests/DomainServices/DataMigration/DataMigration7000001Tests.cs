@@ -27,7 +27,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void DataMigration7000001_and_Delint_Tests()
 		{
-			var dtos = new HashSet<DomainObjectDTO>();
+			var dtos = new HashSet<DomainObjectXMLDTO>();
 			// 1. Add barebones LP.
 			// LP will have one extra property to make sure it isnt; affected.
 			// LP will also have a couple 'dangling' references for when 'Delint' is tested.
@@ -54,7 +54,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 						"</CurVernWss>{0}" +
 					"</LangProject>{0}" +
 				"</rt>", Environment.NewLine);
-			var lpDto = new DomainObjectDTO("9719A466-2240-4DEA-9722-9FE0746A30A6",
+			var lpDto = new DomainObjectXMLDTO("9719A466-2240-4DEA-9722-9FE0746A30A6",
 											"LangProject",
 											xml);
 			dtos.Add(lpDto);
@@ -69,7 +69,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 						"</Wordforms>{0}" +
 					"</WordformInventory>{0}" +
 				"</rt>", Environment.NewLine);
-			var wfiDto = new DomainObjectDTO("6C84F84A-5B99-4CF5-A7D5-A308DDC604E0",
+			var wfiDto = new DomainObjectXMLDTO("6C84F84A-5B99-4CF5-A7D5-A308DDC604E0",
 											 "WordformInventory",
 											 xml);
 			dtos.Add(wfiDto);
@@ -87,7 +87,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 						"<SpellingStatus val=\"1\"/>{0}" +
 					"</WfiWordform>{0}" +
 				"</rt>", Environment.NewLine);
-			var wf1Dto = new DomainObjectDTO("88304983-CDB2-460B-B3D5-5F95C66F27FF",
+			var wf1Dto = new DomainObjectXMLDTO("88304983-CDB2-460B-B3D5-5F95C66F27FF",
 											 "WfiWordform",
 											 xml);
 			dtos.Add(wf1Dto);
@@ -104,14 +104,14 @@ namespace SIL.LCModel.DomainServices.DataMigration
 						"<SpellingStatus val=\"1\"/>{0}" +
 					"</WfiWordform>{0}" +
 				"</rt>", Environment.NewLine);
-			var wf2Dto = new DomainObjectDTO("59821DAB-AB03-470E-B430-5696A0503A08",
+			var wf2Dto = new DomainObjectXMLDTO("59821DAB-AB03-470E-B430-5696A0503A08",
 											 "WfiWordform",
 											 xml);
 			dtos.Add(wf2Dto);
 
 			// Add zombie, which is where an object's owner does not exist.
 			xml = @"<rt class=""LexSense"" guid=""3462BE3E-4817-4BBE-B2B9-30828B48E2C7"" ownerguid=""0875E978-79C5-4F87-95FE-A4235C0711C1"" owningflid=""5002011"" owningord=""1"" />";
-			var zombie = new DomainObjectDTO("3462BE3E-4817-4BBE-B2B9-30828B48E2C7",
+			var zombie = new DomainObjectXMLDTO("3462BE3E-4817-4BBE-B2B9-30828B48E2C7",
 											 "LexSense",
 											 xml);
 			dtos.Add(zombie);
@@ -119,7 +119,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			// which is where an object's owner *does* exist,
 			// but it doesn't know it owns the zombie.
 			xml = @"<rt class=""Text"" guid=""c1ecaa72-e382-11de-8a39-0800200c9a66"" ownerguid=""9719A466-2240-4DEA-9722-9FE0746A30A6"" owningflid=""6001006"" owningord=""1"" />";
-			var zombie2 = new DomainObjectDTO("c1ecaa72-e382-11de-8a39-0800200c9a66",
+			var zombie2 = new DomainObjectXMLDTO("c1ecaa72-e382-11de-8a39-0800200c9a66",
 											 "Text",
 											 xml);
 			dtos.Add(zombie2);

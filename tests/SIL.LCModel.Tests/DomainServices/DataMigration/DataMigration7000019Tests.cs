@@ -107,12 +107,12 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.That(specialNode.Element(palaso + "languageName").Attribute("value").Value, Is.EqualTo("Kalaba"));
 			Assert.That(specialNode.Element(palaso + "abbreviation").Attribute("value").Value, Is.EqualTo("KalIPA"));
 
-			DomainObjectDTO importSourceDto = dtoRepos.AllInstancesWithSubclasses("ScrImportSource").First();
+			DomainObjectXMLDTO importSourceDto = dtoRepos.AllInstancesWithSubclasses("ScrImportSource").First();
 			XElement importSourceElem = XElement.Parse(importSourceDto.Xml);
 			Assert.AreEqual("x-kal", (string)importSourceElem.Element("WritingSystem").Element("Uni"));
 			Assert.IsNull(importSourceElem.Element("ICULocale"));
 
-			DomainObjectDTO mappingDto = dtoRepos.AllInstancesWithSubclasses("ScrMarkerMapping").First(dto => dto.Guid.Equals("F9FF6785-8BBF-40b6-9F80-CBB618F9ABD4", StringComparison.OrdinalIgnoreCase));
+			DomainObjectXMLDTO mappingDto = dtoRepos.AllInstancesWithSubclasses("ScrMarkerMapping").First(dto => dto.Guid.Equals("F9FF6785-8BBF-40b6-9F80-CBB618F9ABD4", StringComparison.OrdinalIgnoreCase));
 			XElement mappingElem = XElement.Parse(mappingDto.Xml);
 			Assert.AreEqual("fr-fonipa-x-etic", (string)mappingElem.Element("WritingSystem").Element("Uni"));
 			Assert.IsNull(mappingElem.Element("ICULocale"));
@@ -127,7 +127,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.AreEqual("sv-fonipa-x-etic-MINE", (string)mappingElem.Element("WritingSystem").Element("Uni"));
 			Assert.IsNull(mappingElem.Element("ICULocale"));
 
-			DomainObjectDTO styleDto = dtoRepos.AllInstancesWithSubclasses("StStyle").First();
+			DomainObjectXMLDTO styleDto = dtoRepos.AllInstancesWithSubclasses("StStyle").First();
 			XElement styleElem = XElement.Parse(styleDto.Xml);
 			Assert.AreEqual("<default font>", (string)styleElem.Element("Rules").Element("Prop").Attribute("fontFamily"));
 		}

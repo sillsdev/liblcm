@@ -43,7 +43,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			TryThisProject(dtos, mockMDC, 1); // no Publications posibility list
 		}
 
-		private void TryThisProject(HashSet<DomainObjectDTO> dtos, MockMDCForDataMigration mockMDC, int numOfPubs)
+		private void TryThisProject(HashSet<DomainObjectXMLDTO> dtos, MockMDCForDataMigration mockMDC, int numOfPubs)
 		{
 			IDomainObjectDTORepository dtoRepos = new DomainObjectDtoRepository(7000040, dtos, mockMDC,
 				@"C:\Path\Not\Used", TestDirectoryFinder.LcmDirectories);

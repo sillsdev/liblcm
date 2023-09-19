@@ -33,7 +33,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		// it simplifies the code and testing.
 		public void Migrate()
 		{
-			foreach (DomainObjectDTO dto in m_repoDto.AllInstances())
+			foreach (DomainObjectXMLDTO dto in m_repoDto.AllInstances())
 			{
 				var changed = false;
 				XElement data = XElement.Parse(dto.Xml);
@@ -123,7 +123,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					DataMigrationServices.UpdateDTO(m_repoDto, dto, data.ToString());
 				}
 			}
-			DomainObjectDTO langProjDto = m_repoDto.AllInstancesSansSubclasses("LangProject").First();
+			DomainObjectXMLDTO langProjDto = m_repoDto.AllInstancesSansSubclasses("LangProject").First();
 			XElement langProj = XElement.Parse(langProjDto.Xml);
 			bool lpChanged = UpdateAttr(langProj, "AnalysisWss");
 			lpChanged |= UpdateAttr(langProj, "CurVernWss");

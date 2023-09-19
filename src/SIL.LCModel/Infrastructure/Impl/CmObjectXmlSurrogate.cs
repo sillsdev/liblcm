@@ -30,9 +30,8 @@ namespace SIL.LCModel.Infrastructure.Impl
 	/// In the case where bulk loading is best, then both the Guid and the object are stored
 	/// at the same time.
 	/// </summary>
-	internal sealed class CmObjectSurrogate : ICmObjectSurrogate //, IEquatable<CmObjectSurrogate>
+	internal sealed class CmObjectXmlSurrogate : ICmObjectSurrogate //, IEquatable<CmObjectSurrogate>
 	{
-		private static Dictionary<string, ConstructorInfo> s_classToConstructorInfo;
 		/// <summary>
 		/// It's common that hundreds of thousands of surrogates only use a few hundred class names. This is a local interning
 		/// of those names.
@@ -60,6 +59,9 @@ namespace SIL.LCModel.Infrastructure.Impl
 		private string m_classname;
 		private byte[] m_xml;
 		private bool m_objectWasAttached;
+		private ICmObjectDTO Xml => (ICmObjectXMLDTO)DTO;
+
+		public ICmObjectDTO DTO { get; set; }
 
 		/// <summary>
 		/// Constructor.
@@ -68,14 +70,14 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// This Constructor is used for lazy load cases.
 		/// The stored XML string (from the data store) is used to instantiate m_object.
 		/// </remarks>
-		internal CmObjectSurrogate(LcmCache cache, string xmlData)
+		internal CmObjectXmlSurrogate(LcmCache cache, ICmObjectDTO xmlData)
 		{
 			if (cache == null) throw new ArgumentNullException("cache");
-			if (xmlData == null) throw new ArgumentNullException("xmlData");
+			if (!(xmlData is ICmObjectXMLDTO)) throw new ArgumentNullException("xmlData");
 
 			m_cache = cache;
 			m_object = null;
-			Xml = xmlData;
+			DTO = xmlData;
 			SetBasics();
 		}
 
@@ -86,25 +88,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// This Constructor is used for lazy load cases.
 		/// The stored XML string (from the data store) is used to instantiate m_object.
 		/// </remarks>
-		internal CmObjectSurrogate(LcmCache cache, byte[] xmlData)
-		{
-			if (cache == null) throw new ArgumentNullException("cache");
-			if (xmlData == null) throw new ArgumentNullException("xmlData");
-
-			m_cache = cache;
-			m_object = null;
-			RawXmlBytes = xmlData;
-			SetBasics();
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <remarks>
-		/// This Constructor is used for lazy load cases.
-		/// The stored XML string (from the data store) is used to instantiate m_object.
-		/// </remarks>
-		internal CmObjectSurrogate(LcmCache cache, Guid guid, string classname, string xmlData)
+		internal CmObjectXmlSurrogate(LcmCache cache, Guid guid, string classname, ICmObjectDTO xmlData)
 			: this(cache, ((IServiceLocatorInternal)cache.ServiceLocator).IdentityMap.CreateObjectIdWithHvo(guid), classname, xmlData)
 		{
 		}
@@ -116,28 +100,16 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// This Constructor is used for lazy load cases.
 		/// The stored XML string (from the data store) is used to instantiate m_object.
 		/// </remarks>
-		internal CmObjectSurrogate(LcmCache cache, Guid guid, string classname, byte[] xmlData)
-			: this(cache, ((IServiceLocatorInternal)cache.ServiceLocator).IdentityMap.CreateObjectIdWithHvo(guid), classname, xmlData)
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <remarks>
-		/// This Constructor is used for lazy load cases.
-		/// The stored XML string (from the data store) is used to instantiate m_object.
-		/// </remarks>
-		internal CmObjectSurrogate(LcmCache cache, ICmObjectId objId, string classname, string xmlData)
+		internal CmObjectXmlSurrogate(LcmCache cache, ICmObjectId objId, string classname, ICmObjectDTO xmlData)
 		{
 			if (cache == null) throw new ArgumentNullException("cache");
 			if (objId == null) throw new ArgumentNullException("objId");
 			if (string.IsNullOrEmpty(classname)) throw new ArgumentNullException("classname");
-			if (string.IsNullOrEmpty(xmlData)) throw new ArgumentNullException("xmlData");
+			if (!(xmlData is ICmObjectXMLDTO)) throw new ArgumentNullException("xmlData");
 
 			m_cache = cache;
 			m_object = null;
-			Xml = xmlData;
+			DTO = xmlData;
 			m_guid = objId is CmObjectIdWithHvo ? objId
 				: ((IServiceLocatorInternal)cache.ServiceLocator).IdentityMap.CreateObjectIdWithHvo(objId.Guid);
 			SetClassName(classname);
@@ -150,7 +122,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// This Constructor is used for lazy load cases.
 		/// The stored XML string (from the data store) is used to instantiate m_object.
 		/// </remarks>
-		internal CmObjectSurrogate(LcmCache cache, ICmObjectId objId, string classname, byte[] xmlData)
+		internal CmObjectXmlSurrogate(LcmCache cache, ICmObjectId objId, string classname, byte[] xmlData)
 		{
 			if (cache == null) throw new ArgumentNullException("cache");
 			if (objId == null) throw new ArgumentNullException("objId");
@@ -159,7 +131,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 			m_cache = cache;
 			m_object = null;
-			RawXmlBytes = xmlData;
+			DTO = new ICmObjectXMLDTO(xmlData);
 			m_guid = objId is CmObjectIdWithHvo ? objId
 				: ((IServiceLocatorInternal)cache.ServiceLocator).IdentityMap.CreateObjectIdWithHvo(objId.Guid);
 			SetClassName(classname);
@@ -172,18 +144,15 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// This Constructor is used for porting from one BEP to another.
 		/// It's faster than getting all the stuff from the xml string.
 		/// </remarks>
-		internal CmObjectSurrogate(LcmCache cache, ICmObjectSurrogate sourceSurrogate)
+		internal CmObjectXmlSurrogate(LcmCache cache, ICmObjectSurrogate sourceSurrogate)
 		{
 			if (cache == null) throw new ArgumentNullException("cache");
 			if (sourceSurrogate == null) throw new ArgumentNullException("sourceSurrogate");
 
-			var surr = (CmObjectSurrogate) sourceSurrogate;
+			var surr = (CmObjectXmlSurrogate) sourceSurrogate;
 			m_cache = cache;
 			m_object = null;
-			if (surr.RawXmlBytes != null)
-				RawXmlBytes = surr.RawXmlBytes;
-			else
-				Xml = sourceSurrogate.XML;
+			DTO = surr.Xml;
 			ICmObjectId objId = surr.Id;
 			m_guid = objId is CmObjectIdWithHvo ? objId
 				: ((IServiceLocatorInternal)cache.ServiceLocator).IdentityMap.CreateObjectIdWithHvo(objId.Guid);
@@ -196,7 +165,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <remarks>
 		/// This Constructor is used for newly created CmObject cases.
 		/// </remarks>
-		internal CmObjectSurrogate(ICmObject obj)
+		internal CmObjectXmlSurrogate(ICmObject obj)
 		{
 			if (obj == null) throw new ArgumentNullException("obj");
 
@@ -213,30 +182,14 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// but not linked to it. Currently this is just used in testing, to simulate state obtained from
 		/// another client.
 		/// </summary>
-		internal static CmObjectSurrogate CreateSnapshot(ICmObject obj)
+		internal static CmObjectXmlSurrogate CreateSnapshot(ICmObject obj)
 		{
-			var result = new CmObjectSurrogate(obj);
+			var result = new CmObjectXmlSurrogate(obj);
 			result.m_object = null;
-			result.Xml = ((ICmObjectInternal)obj).ToXmlString();
+			result.DTO = new ICmObjectXMLDTO(((ICmObjectInternal)obj).ToXmlBytes());
 			return result;
 		}
 
-
-
-		internal static void InitializeConstructors(List<Type> cmObjectTypes)
-		{
-			if (s_classToConstructorInfo != null) return;
-
-			s_classToConstructorInfo = new Dictionary<string, ConstructorInfo>();
-			// Get default constructor.
-			// Only do this once, since they are stored in a static data member.
-			foreach (var lcmType in cmObjectTypes)
-			{
-				if (lcmType.IsAbstract) continue;
-
-				s_classToConstructorInfo.Add(lcmType.Name, lcmType.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, Type.EmptyTypes, null));
-			}
-		}
 
 		/// <summary>
 		/// Initialize from the data store (which uses byte arrays).
@@ -263,42 +216,13 @@ namespace SIL.LCModel.Infrastructure.Impl
 				// e.g., in Refreshing a surrogate to align it with another client,
 				// we might be making a new object, yet the CmObject might already exist!
 				m_object = ((ICmObjectRepositoryInternal) m_cache.ServiceLocator.ObjectRepository).GetObjectIfFluffed(objId);
-				RawXmlBytes = xmlData;
+				DTO = new ICmObjectXMLDTO(xmlData);
 				m_guid = objId is CmObjectIdWithHvo ? objId
 					: ((IServiceLocatorInternal)cache.ServiceLocator).IdentityMap.CreateObjectIdWithHvo(objId.Guid);
 				SetClassName(className);
 			}
 		}
-
-		private string Xml
-		{
-			get
-			{
-				byte[] xmlBytes = m_xml; // Use local variable to prevent race condition
-				return xmlBytes == null ? null : Encoding.UTF8.GetString(xmlBytes);
-			}
-			set
-			{
-				if (value == null)
-				{
-					m_xml = null;
-					return;
-				}
-				m_xml = Encoding.UTF8.GetBytes(value);
-			}
-		}
-
-		/// <summary>
-		/// Get the main XML string converted to a byte array encoded in UTF8. Typically this is how it is
-		/// actually stored, so it is more efficient to work with this than the XML string unless you
-		/// really need a string. Note that this (unlike ICmObjectOrSurrogate.XMLBytes) may answer null;
-		/// it will NOT generate the XML from the object.
-		/// </summary>
-		public byte[] RawXmlBytes
-		{
-			get { return m_xml;}
-			set { m_xml = value; }
-		}
+		
 
 		/// <summary>
 		/// Gets the synchronization root. This is the object that should be
@@ -366,12 +290,12 @@ namespace SIL.LCModel.Infrastructure.Impl
 			m_classname = m_xml.Substring(startIdx + 7, endIdx - 7 - startIdx);
 #endif
 #if SecondByStringManipulation // 3.407/3.518 (s) // Seems to be the fastest, to date.
-			var startIdx = RawXmlBytes.IndexOfSubArray(GuidEquals) + GuidEquals.Length;
-			m_guid = ((IServiceLocatorInternal)m_cache.ServiceLocator).IdentityMap.CreateObjectIdWithHvo(GuidFromByteSubArray(RawXmlBytes, startIdx));
+			var startIdx = ((ICmObjectXMLDTO)Xml).XMLBytes.IndexOfSubArray(GuidEquals) + GuidEquals.Length;
+			m_guid = ((IServiceLocatorInternal)m_cache.ServiceLocator).IdentityMap.CreateObjectIdWithHvo(GuidFromByteSubArray(((ICmObjectXMLDTO)Xml).XMLBytes, startIdx));
 
-			startIdx = RawXmlBytes.IndexOfSubArray(ClassEquals) + ClassEquals.Length;
-			var endIdx = Array.IndexOf(RawXmlBytes, QuoteChar, startIdx + 1);
-			SetClassName(Encoding.UTF8.GetString(RawXmlBytes, startIdx, endIdx - startIdx));
+			startIdx = ((ICmObjectXMLDTO)Xml).XMLBytes.IndexOfSubArray(ClassEquals) + ClassEquals.Length;
+			var endIdx = Array.IndexOf(((ICmObjectXMLDTO)Xml).XMLBytes, QuoteChar, startIdx + 1);
+			SetClassName(Encoding.UTF8.GetString(((ICmObjectXMLDTO)Xml).XMLBytes, startIdx, endIdx - startIdx));
 #endif
 #if ThirdByStringManipulation // 4.371/4.479 (s)
 			var haveGuid = false;
@@ -434,16 +358,16 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <summary>
 		/// Get the main XML string for the internal CmObject.
 		/// </summary>
-		string ICmObjectOrSurrogate.XML
+		string XML
 		{
 			get
 			{
-				string sXml = Xml; // Use local variable to prevent race conditions
+				string sXml = ((ICmObjectXMLDTO)Xml).XML; // Use local variable to prevent race conditions
 				if (sXml == null)
 				{
 					var asInternal = (ICmObjectInternal)(((ICmObjectSurrogate)this).Object);
 					var result = asInternal.ToXmlString();
-					Xml = result;
+					DTO = new ICmObjectXMLDTO(result);
 					return result; // avoids converting back again!
 				}
 				return sXml;
@@ -453,7 +377,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <summary>
 		/// Get the main byte array of the XML string for the internal CmObject.
 		/// </summary>
-		byte[] ICmObjectOrSurrogate.XMLBytes
+		byte[] XMLBytes
 		{
 			get
 			{
@@ -507,47 +431,12 @@ namespace SIL.LCModel.Infrastructure.Impl
 						// fluffing it up in the meantime.
 						if (m_object == null || m_objectWasAttached)
 						{
-							if (RawXmlBytes == null)
+							if (((ICmObjectXMLDTO)Xml).XMLBytes == null)
 								throw new InvalidOperationException("Can't load an object with no XML data.");
-
-							sXml = Xml; // Must be inside the lock to prevent race conditions (FWR-3624)
-							var rtElement = XElement.Parse(sXml);
-							RawXmlBytes = null;
 							if (!m_objectWasAttached)
 							{
-								m_object = (ICmObject)s_classToConstructorInfo[m_classname].Invoke(null);
-								try
-								{
-									((ICmObjectInternal)m_object).LoadFromDataStore(
-										m_cache,
-										rtElement,
-										((IServiceLocatorInternal)m_cache.ServiceLocator).LoadingServices);
-								}
-								catch (InvalidOperationException)
-								{
-									// Asserting just so developers know that this is happening
-									Debug.Assert(false, "See LT-13574: something is corrupt in this database.");
-									// LT-13574 had a m_classname that was different from the that in rtElement.
-									// That causes attributes to be leftover or missing - hence the exception.
-									rtElement = XElement.Parse(sXml); // rtElement is consumed in loading, so re-init
-									var className = rtElement.Attribute("class").Value;
-									if (className != m_classname)
-									{
-										m_object = (ICmObject)s_classToConstructorInfo[className].Invoke(null);
-										((ICmObjectInternal)m_object).LoadFromDataStore(
-											m_cache,
-											rtElement,
-											((IServiceLocatorInternal)m_cache.ServiceLocator).LoadingServices);
-									}
-								}
+								return m_object = Xml.Transfer(m_cache, m_classname);
 							}
-
-							// Have to set m_objectWasAttached to false, before the registration,
-							// since RegisterActivatedSurrogate calls this' Object prop,
-							// and it would result in a stack overflow, with it still being true,
-							// as it would try again to create the object.
-							m_objectWasAttached = false;
-							((IServiceLocatorInternal)m_cache.ServiceLocator).IdentityMap.RegisterActivatedSurrogate(this);
 						}
 					}
 					Debug.Assert(m_object != null, "Surrogate should not exist without being able to create an object");
@@ -648,7 +537,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 			if (m_classname != className)
 				SetClassName(className);
-			Xml = xml;
+			DTO = new ICmObjectXMLDTO(xml);
 		}
 
 		/// <summary>
@@ -807,54 +696,27 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// This gets the full XML string of the object from the BEP.
 		/// </summary>
 		/// <param name="xmlData"></param>
-		public ICmObjectSurrogate Create(string xmlData)
+		public ICmObjectSurrogate Create(ICmObjectDTO xmlData)
 		{
-			return new CmObjectSurrogate(m_cache, xmlData);
+			return new CmObjectXmlSurrogate(m_cache, xmlData);
 		}
 
 		/// <summary>
 		/// Create a surrogate from the data store.
 		/// This gets the full XML string of the object from the BEP.
 		/// </summary>
-		public ICmObjectSurrogate Create(byte[] xmlData)
+		public ICmObjectSurrogate Create(Guid guid, string classname, ICmObjectDTO xmlData)
 		{
-			return new CmObjectSurrogate(m_cache, xmlData);
+			return new CmObjectXmlSurrogate(m_cache, guid, classname, xmlData);
 		}
 
 		/// <summary>
 		/// Create a surrogate from the data store.
 		/// This gets the full XML string of the object from the BEP.
 		/// </summary>
-		public ICmObjectSurrogate Create(Guid guid, string classname, string xmlData)
+		public ICmObjectSurrogate Create(ICmObjectId objId, string classname, ICmObjectDTO xmlData)
 		{
-			return new CmObjectSurrogate(m_cache, guid, classname, xmlData);
-		}
-
-		/// <summary>
-		/// Create a surrogate from the data store.
-		/// This gets the full XML string of the object from the BEP.
-		/// </summary>
-		public ICmObjectSurrogate Create(Guid guid, string classname, byte[] xmlData)
-		{
-			return new CmObjectSurrogate(m_cache, guid, classname, xmlData);
-		}
-
-		/// <summary>
-		/// Create a surrogate from the data store.
-		/// This gets the full XML string of the object from the BEP.
-		/// </summary>
-		public ICmObjectSurrogate Create(ICmObjectId objId, string classname, string xmlData)
-		{
-			return new CmObjectSurrogate(m_cache, objId, classname, xmlData);
-		}
-
-		/// <summary>
-		/// Create a surrogate from the data store.
-		/// This gets the full XML string of the object from the BEP.
-		/// </summary>
-		public ICmObjectSurrogate Create(ICmObjectId objId, string classname, byte[] xmlData)
-		{
-			return new CmObjectSurrogate(m_cache, objId, classname, xmlData);
+			return new CmObjectXmlSurrogate(m_cache, objId, classname, xmlData);
 		}
 
 		/// <summary>
@@ -875,13 +737,13 @@ namespace SIL.LCModel.Infrastructure.Impl
 				// since we don't even want to think of just reusing the ICmObject.
 				var asCmObject = (ICmObject)source;
 				var asInternal = (ICmObjectInternal)asCmObject;
-				return new CmObjectSurrogate(
+				return new CmObjectXmlSurrogate(
 					m_cache,
 					CmObjectId.Create(asCmObject.Guid),
 					asCmObject.ClassName,
-					asInternal.ToXmlString());
+					new ICmObjectXMLDTO(asInternal.ToXmlString()));
 			}
-			return new CmObjectSurrogate(m_cache, sourceSurrogate);
+			return new CmObjectXmlSurrogate(m_cache, sourceSurrogate);
 		}
 
 		/// <summary>
@@ -889,7 +751,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// </summary>
 		public ICmObjectSurrogate Create(ICmObject obj)
 		{
-			return CmObjectSurrogate.CreateSnapshot(obj);
+			return CmObjectXmlSurrogate.CreateSnapshot(obj);
 		}
 
 

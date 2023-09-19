@@ -83,7 +83,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				File.Copy(Path.Combine(TestDirectoryFinder.TestDataDirectory, "am-Ethi-fonipa_7000070.ldml"), xkalFonipaPath);
 				File.SetAttributes(xkalFonipaPath, FileAttributes.Normal); // don't want to copy readonly property.
 
-				HashSet<DomainObjectDTO> dtos = DataMigrationTestServices.ParseProjectFile("DataMigration7000071.xml");
+				HashSet<DomainObjectXMLDTO> dtos = DataMigrationTestServices.ParseProjectFile("DataMigration7000071.xml");
 				// Create all the Mock classes for the classes in my test data.
 				var mockMdc = new MockMDCForDataMigration();
 				mockMdc.AddClass(1, "CmObject", null, new List<string>

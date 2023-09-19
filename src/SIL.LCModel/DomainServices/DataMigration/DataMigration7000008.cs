@@ -72,7 +72,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				};
 
 			//Collect up the ones to be removed.
-			var goners = new List<DomainObjectDTO>();
+			var goners = new List<DomainObjectXMLDTO>();
 			foreach (var annDTO in domainObjectDtoRepository.AllInstancesSansSubclasses("CmBaseAnnotation"))
 			{
 				var annElement = XElement.Parse(annDTO.Xml);

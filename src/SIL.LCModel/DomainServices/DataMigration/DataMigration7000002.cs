@@ -48,7 +48,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		{
 			DataMigrationServices.CheckVersionNumber(domainObjectDtoRepository, 7000001);
 
-			var parasToChangeClasses = new List<DomainObjectDTO>();
+			var parasToChangeClasses = new List<DomainObjectXMLDTO>();
 			foreach (var stTxtPara in domainObjectDtoRepository.AllInstancesSansSubclasses("StTxtPara"))
 			{
 				var paraOwner = domainObjectDtoRepository.GetOwningDTO(stTxtPara);

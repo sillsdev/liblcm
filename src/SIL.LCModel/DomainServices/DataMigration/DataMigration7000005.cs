@@ -102,7 +102,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 						new XElement("AUni", new XAttribute("ws", "en"), "Analysis")),
 					new XElement("UnderColor", new XAttribute("val", "255")),
 					new XElement("UnderStyle", new XAttribute("val", "1"))));
-			domainObjectDtoRepository.Add(new DomainObjectDTO("82290763-1633-4998-8317-0EC3F5027FBD",
+			domainObjectDtoRepository.Add(new DomainObjectXMLDTO("82290763-1633-4998-8317-0EC3F5027FBD",
 				"CmPossibility", typeElement.ToString()));
 
 			// 3. Move the attributes that are in RnEvent and RnAnalysis into RnGenericRec.

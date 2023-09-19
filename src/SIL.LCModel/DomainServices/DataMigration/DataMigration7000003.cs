@@ -49,7 +49,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		{
 			DataMigrationServices.CheckVersionNumber(domainObjectDtoRepository, 7000002);
 
-			var footnotesToChangeClasses = new List<DomainObjectDTO>();
+			var footnotesToChangeClasses = new List<DomainObjectXMLDTO>();
 			foreach (var footnote in domainObjectDtoRepository.AllInstancesSansSubclasses("StFootnote"))
 			{
 				XElement footnoteEl = XElement.Parse(footnote.Xml);

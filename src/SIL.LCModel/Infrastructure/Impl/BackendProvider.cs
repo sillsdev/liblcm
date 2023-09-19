@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.WritingSystems;
+using SIL.LCModel.DomainImpl;
 using SIL.LCModel.DomainServices;
 using SIL.LCModel.DomainServices.DataMigration;
 using SIL.LCModel.Utils;
@@ -399,8 +400,8 @@ namespace SIL.LCModel.Infrastructure.Impl
 			// only if passed an actual collection of some sort. Passing just the enumeration is therefore actually LESS
 			// efficient, and may cause the large object heap to become fragmented. Please don't take the ToArray() call out
 			// unless you really know what you're doing, and preferably discuss with JohnT first.
-			var dtos = new HashSet<DomainObjectDTO>((from surrogate in m_identityMap.AllObjectsOrSurrogates()
-				select new DomainObjectDTO(surrogate.Id.Guid.ToString(), surrogate.Classname, surrogate.XMLBytes)).ToArray());
+			var dtos = new HashSet<DomainObjectXMLDTO>((from surrogate in m_identityMap.AllObjectsOrSurrogates()
+				select new DomainObjectXMLDTO(surrogate.Id.Guid.ToString(), surrogate.Classname, ((ICmObjectXMLDTO)surrogate.DTO).XMLBytes)).ToArray());
 			var dtoRepository = new DomainObjectDtoRepository(
 				currentDataStoreVersion,
 				dtos,
@@ -418,7 +419,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			foreach (var dirtball in dtoRepository.Dirtballs)
 			{
 				// Since we're doing migration, everything in the map should still be a surrogate.
-				var originalSurr = (CmObjectSurrogate)m_identityMap.GetObjectOrSurrogate(idFact.FromGuid(new Guid(dirtball.Guid)));
+				var originalSurr = (CmObjectXmlSurrogate)m_identityMap.GetObjectOrSurrogate(idFact.FromGuid(new Guid(dirtball.Guid)));
 				originalSurr.Reset(dirtball.Classname, dirtball.XmlBytes);
 				dirtballs.Add(originalSurr);
 			}
@@ -444,7 +445,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				var newSurr = m_surrogateFactory.Create(
 					new Guid(newbie.Guid),
 					newbie.Classname,
-					newbie.Xml);
+					new ICmObjectXMLDTO(newbie.Xml));
 				RegisterInactiveSurrogate(newSurr);
 				newbies.Add(newSurr);
 			}
@@ -1223,6 +1224,8 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// Update the version number.
 		/// </summary>
 		protected abstract void UpdateVersionNumber();
+
+		public abstract ICmObjectDTO MakeDTO(ICmObject cmObject);
 	}
 
 	/// <summary>

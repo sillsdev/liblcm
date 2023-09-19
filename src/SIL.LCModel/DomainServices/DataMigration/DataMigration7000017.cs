@@ -32,7 +32,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		public void PerformMigration(IDomainObjectDTORepository repoDTO)
 		{
-			var collectOverlaysToRemove = new List<DomainObjectDTO>();
+			var collectOverlaysToRemove = new List<DomainObjectXMLDTO>();
 			bool fWeatherUsed = IsWeatherUsed(repoDTO, collectOverlaysToRemove);
 			if (fWeatherUsed)
 				ConvertWeatherToCustomListAndField(repoDTO);
@@ -45,9 +45,9 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			DataMigrationServices.IncrementVersionNumber(repoDTO);
 		}
 
-		private void RemoveUnwantedOverlays(IDomainObjectDTORepository repoDTO, List<DomainObjectDTO> collectOverlaysToRemove)
+		private void RemoveUnwantedOverlays(IDomainObjectDTORepository repoDTO, List<DomainObjectXMLDTO> collectOverlaysToRemove)
 		{
-			DomainObjectDTO dtoLP = GetDtoLangProj(repoDTO);
+			DomainObjectXMLDTO dtoLP = GetDtoLangProj(repoDTO);
 			foreach (var dto in collectOverlaysToRemove)
 			{
 				RemoveOverlayElement(dtoLP, dto.Guid);
@@ -62,10 +62,10 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		private void DeleteWeatherListAndField(IDomainObjectDTORepository repoDTO)
 		{
 			// Remove the Weather list.
-			DomainObjectDTO dtoLP = GetDtoLangProj(repoDTO);
+			DomainObjectXMLDTO dtoLP = GetDtoLangProj(repoDTO);
 			string sWeatherListGuid = RemoveWeatherConditionsElement(dtoLP).ToLowerInvariant();
 			repoDTO.Update(dtoLP);
-			DomainObjectDTO dtoDeadList = null;
+			DomainObjectXMLDTO dtoDeadList = null;
 			foreach (var dto in repoDTO.AllInstancesWithSubclasses("CmPossibilityList"))
 			{
 				if (dto.Guid.ToLowerInvariant() == sWeatherListGuid)
@@ -74,7 +74,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					break;
 				}
 			}
-			List<DomainObjectDTO> rgdtoDead = new List<DomainObjectDTO>();
+			List<DomainObjectXMLDTO> rgdtoDead = new List<DomainObjectXMLDTO>();
 			GatherDeadObjects(repoDTO, dtoDeadList, rgdtoDead);
 			foreach (var dto in rgdtoDead)
 				repoDTO.Remove(dto);
@@ -92,9 +92,9 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 		}
 
-		private DomainObjectDTO GetDtoLangProj(IDomainObjectDTORepository repoDTO)
+		private DomainObjectXMLDTO GetDtoLangProj(IDomainObjectDTORepository repoDTO)
 		{
-			DomainObjectDTO dtoLP = null;
+			DomainObjectXMLDTO dtoLP = null;
 			foreach (var dto in repoDTO.AllInstancesWithSubclasses("LangProject"))
 			{
 				dtoLP = dto;
@@ -116,15 +116,15 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			return sXml;
 		}
 
-		private void GatherDeadObjects(IDomainObjectDTORepository repoDTO, DomainObjectDTO dtoDead,
-			List<DomainObjectDTO> rgdtoDead)
+		private void GatherDeadObjects(IDomainObjectDTORepository repoDTO, DomainObjectXMLDTO dtoDead,
+			List<DomainObjectXMLDTO> rgdtoDead)
 		{
 			rgdtoDead.Add(dtoDead);
 			foreach (var dto in repoDTO.GetDirectlyOwnedDTOs(dtoDead.Guid))
 				GatherDeadObjects(repoDTO, dto, rgdtoDead);
 		}
 
-		private string RemoveWeatherConditionsElement(DomainObjectDTO dtoLP)
+		private string RemoveWeatherConditionsElement(DomainObjectXMLDTO dtoLP)
 		{
 			string sLpXml = dtoLP.Xml;
 			int idx = sLpXml.IndexOf("<WeatherConditions>");
@@ -135,7 +135,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			return ExtractFirstGuid(sWeatherConditions, 0, " guid=\"");
 		}
 
-		private void RemoveOverlayElement(DomainObjectDTO dtoLP, string overlayGuid)
+		private void RemoveOverlayElement(DomainObjectXMLDTO dtoLP, string overlayGuid)
 		{
 			string sLpXml = dtoLP.Xml;
 			int idx = sLpXml.IndexOf("<Overlays>");
@@ -197,7 +197,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		private void ConvertWeatherToCustomListAndField(IDomainObjectDTORepository repoDTO)
 		{
 			// Change the Weather list to being unowned.
-			DomainObjectDTO dtoLP = null;
+			DomainObjectXMLDTO dtoLP = null;
 			foreach (var dto in repoDTO.AllInstancesWithSubclasses("LangProject"))
 			{
 				dtoLP = dto;
@@ -205,7 +205,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 			string sWeatherListGuid = RemoveWeatherConditionsElement(dtoLP).ToLowerInvariant();
 			repoDTO.Update(dtoLP);
-			DomainObjectDTO dtoWeatherList = null;
+			DomainObjectXMLDTO dtoWeatherList = null;
 			foreach (var dto in repoDTO.AllInstancesWithSubclasses("CmPossibilityList"))
 			{
 				if (dto.Guid.ToLowerInvariant() == sWeatherListGuid)
@@ -254,13 +254,13 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			return sXml.Remove(idx, idxLim - idx);
 		}
 
-		private bool IsWeatherUsed(IDomainObjectDTORepository repoDTO, List<DomainObjectDTO> collectOverlaysToRemove)
+		private bool IsWeatherUsed(IDomainObjectDTORepository repoDTO, List<DomainObjectXMLDTO> collectOverlaysToRemove)
 		{
-			DomainObjectDTO dtoLP = GetDtoLangProj(repoDTO);
+			DomainObjectXMLDTO dtoLP = GetDtoLangProj(repoDTO);
 			string sLpXml = dtoLP.Xml;
 			int idxW = sLpXml.IndexOf("<WeatherConditions>");
 			var sguidWeather = ExtractFirstGuid(sLpXml, idxW, " guid=\"");
-			DomainObjectDTO dtoWeather = repoDTO.GetDTO(sguidWeather);
+			DomainObjectXMLDTO dtoWeather = repoDTO.GetDTO(sguidWeather);
 			var weatherItems = new HashSet<string>();
 			CollectItems(repoDTO, dtoWeather, weatherItems);
 			foreach (var dto in repoDTO.AllInstancesWithSubclasses("RnGenericRec"))
@@ -337,7 +337,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// Add to weatherItems the guids of all the things owned directly or indirectly by dtoRoot.
 		/// Does not include the root itself.
 		/// </summary>
-		private void CollectItems(IDomainObjectDTORepository repoDTO, DomainObjectDTO dtoRoot, HashSet<string> guidCollector)
+		private void CollectItems(IDomainObjectDTORepository repoDTO, DomainObjectXMLDTO dtoRoot, HashSet<string> guidCollector)
 		{
 			foreach (var dto in repoDTO.GetDirectlyOwnedDTOs(dtoRoot.Guid))
 			{

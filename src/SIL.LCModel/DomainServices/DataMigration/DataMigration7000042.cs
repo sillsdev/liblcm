@@ -116,7 +116,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				var cFixed = 0;
 				foreach (var dtoSub in repoDto.GetDirectlyOwnedDTOs(dto.Guid))
 				{
-					DomainObjectDTO dtoOwner;
+					DomainObjectXMLDTO dtoOwner;
 					if (!repoDto.TryGetOwner(dtoSub.Guid, out dtoOwner) || dtoOwner != dto)
 					{
 						// we have a broken ownership link -- fix it!
@@ -183,14 +183,14 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			if (m_mapNameGuid.Count > 0)
 			{
 				BuildNewTypeMaps();
-				var newTypes = new HashSet<DomainObjectDTO>();
+				var newTypes = new HashSet<DomainObjectXMLDTO>();
 				foreach (var guid in m_mapGuidName.Keys)
 				{
 					// We need to create this LexEntryType!
 					var rgNewDtos = m_mapGuidNewDtos[guid];
 					foreach (var info in rgNewDtos)
 					{
-						var dto = new DomainObjectDTO(info.Guid, info.ClassName, info.Xml);
+						var dto = new DomainObjectXMLDTO(info.Guid, info.ClassName, info.Xml);
 						repoDto.Add(dto);
 						if (info.ClassName == "LexEntryType")
 							newTypes.Add(dto);
@@ -257,7 +257,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				m_mapBadGoodGuids.Add(guidBad, guidStd);
 			var className = info.DTO.Classname;
 			repoDto.Remove(info.DTO);
-			info.DTO = new DomainObjectDTO(guidStd, className, info.XmlElement.ToString());
+			info.DTO = new DomainObjectXMLDTO(guidStd, className, info.XmlElement.ToString());
 			repoDto.Add(info.DTO);
 			// Fix the owning reference (but only if it's one of the two lists, because otherwise
 			// it might be contained in a LexTypeInfo that hasn't yet been processed).
@@ -265,7 +265,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			var good = String.Format("guid=\"{0}\"", guidStd);
 			var bad2 = String.Format("guid='{0}'", guidBad);	// probably pure paranoia...
 			var good2 = String.Format("guid='{0}'", guidStd);
-			DomainObjectDTO dtoOwner;
+			DomainObjectXMLDTO dtoOwner;
 			if (repoDto.TryGetOwner(info.DTO.Guid, out dtoOwner) && dtoOwner.Classname == "CmPossibilityList")
 			{
 				dtoOwner.Xml = dtoOwner.Xml.Replace(bad, good).Replace(bad2, good2);
@@ -1847,10 +1847,10 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		internal class LexTypeInfo
 		{
-			public DomainObjectDTO DTO { get; set; }
+			public DomainObjectXMLDTO DTO { get; set; }
 			public XElement XmlElement { get; private set; }
 
-			internal LexTypeInfo(DomainObjectDTO dto, XElement xe)
+			internal LexTypeInfo(DomainObjectXMLDTO dto, XElement xe)
 			{
 				DTO = dto;
 				XmlElement = xe;

@@ -99,6 +99,11 @@ namespace SIL.LCModel.Infrastructure.Impl
 			// Do nothing.
 		}
 
+		public override ICmObjectDTO MakeDTO(ICmObject cmObject)
+		{
+			return new ICmObjectXMLDTO(((ICmObjectInternal)cmObject).ToXmlBytes());
+		}
+
 		/// <summary>
 		/// Rename the database, which means renaming the files.
 		/// </summary>

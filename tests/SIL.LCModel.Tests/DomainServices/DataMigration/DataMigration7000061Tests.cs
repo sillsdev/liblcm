@@ -52,7 +52,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 			// Check Step 1.A.
 			// <rt class="StStyle" guid ="bb68f6bc-f233-4cd4-8894-c33b4b4c43ba">
-			DomainObjectDTO dto;
+			DomainObjectXMLDTO dto;
 			dtoRepos.TryGetValue("bb68f6bc-f233-4cd4-8894-c33b4b4c43ba", out dto);
 			Assert.IsNull(dto);
 			// Step 1.A. Control

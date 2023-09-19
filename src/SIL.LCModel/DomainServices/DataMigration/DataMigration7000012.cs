@@ -48,7 +48,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// <param name="objElement">Name of the object containing fieldToDelete.</param>
 		/// <param name="fieldToDelete">The name of the field to delete.</param>
 		/// ------------------------------------------------------------------------------------
-		private void RemoveField(DomainObjectDTO dto, XElement objElement, string fieldToDelete)
+		private void RemoveField(DomainObjectXMLDTO dto, XElement objElement, string fieldToDelete)
 		{
 			XElement rmElement = objElement.Element(fieldToDelete);
 			if (rmElement != null)

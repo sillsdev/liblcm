@@ -49,10 +49,10 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		{
 			DataMigrationServices.CheckVersionNumber(repoDto, 7000046);
 
-			Dictionary<Guid, DomainObjectDTO> mapOfRenderingsToChk = new Dictionary<Guid, DomainObjectDTO>();
-			HashSet<DomainObjectDTO> renderingsToDelete = new HashSet<DomainObjectDTO>();
+			Dictionary<Guid, DomainObjectXMLDTO> mapOfRenderingsToChk = new Dictionary<Guid, DomainObjectXMLDTO>();
+			HashSet<DomainObjectXMLDTO> renderingsToDelete = new HashSet<DomainObjectXMLDTO>();
 
-			foreach (DomainObjectDTO dto in repoDto.AllInstances())
+			foreach (DomainObjectXMLDTO dto in repoDto.AllInstances())
 			{
 				XElement data = XElement.Parse(dto.Xml);
 				XAttribute classAttr = data.Attribute("class");
@@ -71,9 +71,9 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				}
 			}
 
-			foreach (DomainObjectDTO rendering in renderingsToDelete)
+			foreach (DomainObjectXMLDTO rendering in renderingsToDelete)
 			{
-				DomainObjectDTO chkTerm = mapOfRenderingsToChk[new Guid(rendering.Guid)];
+				DomainObjectXMLDTO chkTerm = mapOfRenderingsToChk[new Guid(rendering.Guid)];
 				XElement termData = XElement.Parse(chkTerm.Xml);
 				XElement renderings = termData.Element("Renderings");
 				XElement bogusRendering = renderings.Elements().First(e => e.Attribute("guid").Value.Equals(rendering.Guid, StringComparison.OrdinalIgnoreCase));
