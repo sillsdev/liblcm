@@ -34,10 +34,10 @@ namespace SIL.LCModel.Infrastructure.Impl
 			{
 				Newbies = new SortedDictionary<Guid, byte[]>();
 				foreach (ICmObjectOrSurrogate newby in newbies)
-					Newbies.Add(newby.Id.Guid, ((ICmObjectXMLDTO)newby.DTO).XMLBytes);
+					Newbies.Add(newby.Id.Guid, ((CmObjectXmlDTO)newby.DTO).XMLBytes);
 				Dirtballs = new Dictionary<Guid, byte[]>(dirtballs.Count);
 				foreach (ICmObjectOrSurrogate dirtball in dirtballs)
-					Dirtballs.Add(dirtball.Id.Guid, ((ICmObjectXMLDTO)dirtball.DTO).XMLBytes);
+					Dirtballs.Add(dirtball.Id.Guid, ((CmObjectXmlDTO)dirtball.DTO).XMLBytes);
 				// JohnT: strangely, this may actually help reduce the chance of running out of memory,
 				// as compared to simply Goners = new HashSet<Guid>(goners.Select(id => id.Guid)).
 				// The problem is that a hashset created on an enumeration can't set its initial size,
@@ -122,11 +122,11 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		internal XMLBackendProvider(LcmCache cache, IdentityMap identityMap,
-			ICmObjectSurrogateFactory surrogateFactory, IFwMetaDataCacheManagedInternal mdc,
+		internal XMLBackendProvider(LcmCache cache, IdentityMap identityMap, IFwMetaDataCacheManagedInternal mdc,
 			IDataMigrationManager dataMigrationManager, ILcmUI ui, ILcmDirectories dirs, LcmSettings settings) :
-			base(cache, identityMap, surrogateFactory, mdc, dataMigrationManager, ui, dirs, settings)
+			base(cache, identityMap, mdc, dataMigrationManager, ui, dirs, settings)
 		{
+			m_surrogateFactory = new CmObjectXmlSurrogateFactory(cache);
 		}
 
 		public IList<string> ListOfDuplicateGuids
@@ -761,7 +761,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 		public override ICmObjectDTO MakeDTO(ICmObject cmObject)
 		{
-			return new ICmObjectXMLDTO(((ICmObjectInternal)cmObject).ToXmlBytes());
+			return new CmObjectXmlDTO(((ICmObjectInternal)cmObject).ToXmlBytes());
 		}
 		#endregion IDataStorer implementation
 
@@ -831,7 +831,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			var surrogate = m_surrogateFactory.Create(
 				new Guid(GetAttribute(s_guid, xmlBytes)),
 				GetAttribute(s_class, xmlBytes),
-				new ICmObjectXMLDTO(xmlBytes));
+				new CmObjectXmlDTO(xmlBytes));
 
 			if (m_identityMap.HasObject(surrogate.Guid))
 			{

@@ -598,9 +598,9 @@ namespace SIL.LCModel.Infrastructure.Impl
 			lock (SyncRoot)
 			{
 				ICmObjectOrSurrogate canonicalItem = m_IdentityMap[id];
-				if (canonicalItem is CmObjectXmlSurrogate)
+				if (canonicalItem is ICmObjectSurrogate)
 				{
-					ICmObjectId canonicalId = ((CmObjectXmlSurrogate) canonicalItem).Id;
+					ICmObjectId canonicalId = ((ICmObjectSurrogate) canonicalItem).Id;
 					if (canonicalId is CmObjectIdWithHvo)
 						return ((CmObjectIdWithHvo) canonicalId).Hvo;
 				}

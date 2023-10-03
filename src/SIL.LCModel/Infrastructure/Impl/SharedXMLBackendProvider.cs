@@ -38,10 +38,11 @@ namespace SIL.LCModel.Infrastructure.Impl
 		private readonly Dictionary<int, Process> m_peerProcesses;
 		private string m_commitLogDir;
 
-		internal SharedXMLBackendProvider(LcmCache cache, IdentityMap identityMap, ICmObjectSurrogateFactory surrogateFactory, IFwMetaDataCacheManagedInternal mdc,
+		internal SharedXMLBackendProvider(LcmCache cache, IdentityMap identityMap, IFwMetaDataCacheManagedInternal mdc,
 			IDataMigrationManager dataMigrationManager, ILcmUI ui, ILcmDirectories dirs, LcmSettings settings)
-			: base(cache, identityMap, surrogateFactory, mdc, dataMigrationManager, ui, dirs, settings)
+			: base(cache, identityMap, mdc, dataMigrationManager, ui, dirs, settings)
 		{
+			m_surrogateFactory = new CmObjectXmlSurrogateFactory(cache);
 			m_peerProcesses = new Dictionary<int, Process>();
 			m_peerID = Guid.NewGuid();
 			if (Platform.IsUnix)
@@ -438,8 +439,8 @@ namespace SIL.LCModel.Infrastructure.Impl
 						Source = m_peerID,
 						WriteGeneration = metadata.CurrentGeneration + 1,
 						ObjectsDeleted = goners.Select(g => g.Guid).ToList(),
-						ObjectsAdded = newbies.Select(n => ((ICmObjectXMLDTO)n.DTO).XMLBytes).ToList(),
-						ObjectsUpdated = dirtballs.Select(d => ((ICmObjectXMLDTO)d.DTO).XMLBytes).ToList()
+						ObjectsAdded = newbies.Select(n => ((CmObjectXmlDTO)n.DTO).XMLBytes).ToList(),
+						ObjectsUpdated = dirtballs.Select(d => ((CmObjectXmlDTO)d.DTO).XMLBytes).ToList()
 					};
 
 				using (var buffer = new MemoryStream())
@@ -562,7 +563,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				{
 					foreach (byte[] dirtballXml in commitRec.ObjectsUpdated)
 					{
-						ICmObjectSurrogate dirtballSurrogate = surrogateFactory.Create(new ICmObjectXMLDTO(dirtballXml));
+						ICmObjectSurrogate dirtballSurrogate = surrogateFactory.Create(new CmObjectXmlDTO(dirtballXml));
 						// This shouldn't be necessary; if a previous foreign transaction deleted it, it
 						// should not show up as a dirtball in a later transaction until it has shown up as a newby.
 						// goners.Remove(dirtball);
@@ -576,7 +577,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				{
 					foreach (byte[] newbyXml in commitRec.ObjectsAdded)
 					{
-						ICmObjectSurrogate newObj = surrogateFactory.Create(new ICmObjectXMLDTO(newbyXml));
+						ICmObjectSurrogate newObj = surrogateFactory.Create(new CmObjectXmlDTO(newbyXml));
 						if (goners.Remove(newObj.Guid))
 						{
 							// an object which an earlier transaction deleted is being re-created.

@@ -32,14 +32,14 @@ namespace SIL.LCModel.Infrastructure.Impl
 	/// will insert it, and our change to the LexDb will be modified to indiate a 'before' state that includes
 	/// that entry.
 	/// </summary>
-	class ChangeReconciler : IReconcileChanges
+	class XMLChangeReconciler : IReconcileChanges
 	{
 		private UnitOfWorkService UowService;
 		private List<ICmObjectSurrogate> m_foreignNewbies;
 		private List<ICmObjectSurrogate> m_foreignDirtballs;
 		private List<ICmObjectId> m_foreignGoners;
 
-		public ChangeReconciler(UnitOfWorkService uowService, List<ICmObjectSurrogate> foreignNewbies,
+		public XMLChangeReconciler(UnitOfWorkService uowService, List<ICmObjectSurrogate> foreignNewbies,
 			List<ICmObjectSurrogate> foreignDirtballs, List<ICmObjectId> foreignGoners)
 		{
 			UowService = uowService;
@@ -99,7 +99,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				var gonerGuids = new HashSet<Guid>(from id in goners select id.Guid);
 				foreach (var surrogate in m_foreignNewbies.Concat(m_foreignDirtballs))
 				{
-					var xml = ((ICmObjectXMLDTO)surrogate.DTO).XML;
+					var xml = ((CmObjectXmlDTO)surrogate.DTO).XML;
 					// Scan all the objsur elements.
 					for (int ich = 0; ; )
 					{
@@ -205,7 +205,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			var fakeService = new UowServiceSimulator();
 			foreach (var newby in m_foreignNewbies)
 			{
-				var xml = ((ICmObjectXMLDTO)newby.DTO).XML; // may be destroyed by getting the Object.
+				var xml = ((CmObjectXmlDTO)newby.DTO).XML; // may be destroyed by getting the Object.
 				var objectCreation = new LcmStateChangeObjectCreation(newby.Object);
 				objectCreation.SetAfterXml(xml);
 				uow.AddAction(objectCreation);
@@ -780,7 +780,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		{
 			var currentObj = UowService.GetObject(dirtball.Id);
 			var currentInternal = (ICmObjectInternal)currentObj;
-			var rtElement = XElement.Parse(((ICmObjectXMLDTO)dirtball.DTO).XML);
+			var rtElement = XElement.Parse(((CmObjectXmlDTO)dirtball.DTO).XML);
 			var mdc = (IFwMetaDataCacheManaged)currentObj.Cache.MetaDataCache;
 			// First see if it changed owners.
 			var ownerAttr = rtElement.Attribute("ownerguid");

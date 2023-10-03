@@ -20,10 +20,11 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		internal MemoryOnlyBackendProvider(LcmCache cache, IdentityMap identityMap, ICmObjectSurrogateFactory surrogateFactory,
-			IFwMetaDataCacheManagedInternal mdc, IDataMigrationManager dataMigrationManager, ILcmUI ui, ILcmDirectories dirs, LcmSettings settings)
-			: base(cache, identityMap, surrogateFactory, mdc, dataMigrationManager, ui, dirs, settings)
+		internal MemoryOnlyBackendProvider(LcmCache cache, IdentityMap identityMap, IFwMetaDataCacheManagedInternal mdc,
+			IDataMigrationManager dataMigrationManager, ILcmUI ui, ILcmDirectories dirs, LcmSettings settings)
+			: base(cache, identityMap, mdc, dataMigrationManager, ui, dirs, settings)
 		{
+			m_surrogateFactory = new CmObjectXmlSurrogateFactory(cache);
 			m_projectSettingsStore = new MemorySettingsStore();
 			m_userSettingsStore = new MemorySettingsStore();
 		}
@@ -101,7 +102,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 		public override ICmObjectDTO MakeDTO(ICmObject cmObject)
 		{
-			return new ICmObjectXMLDTO(((ICmObjectInternal)cmObject).ToXmlBytes());
+			return new CmObjectXmlDTO(((ICmObjectInternal)cmObject).ToXmlBytes());
 		}
 
 		/// <summary>
