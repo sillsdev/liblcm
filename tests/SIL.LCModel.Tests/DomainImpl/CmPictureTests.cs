@@ -603,5 +603,63 @@ namespace SIL.LCModel.DomainImpl
 				typeof(CmPictureFactory),
 				"ParseScaleFactor", "43%"));
 		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the Caption for the writing system.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void CaptionOrHeadword_CaptionBeatsHeadword()
+		{
+			var wsId = Cache.LangProject.DefaultVernacularWritingSystem.Id;
+			int wsHandle = Cache.LangProject.DefaultVernacularWritingSystem.Handle;
+			var entry = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
+			var sense = Cache.ServiceLocator.GetInstance<ILexSenseFactory>().Create();
+			entry.SensesOS.Add(sense);
+			var lexform = Cache.ServiceLocator.GetInstance<IMoStemAllomorphFactory>().Create();
+			entry.LexemeFormOA = lexform;
+			lexform.Form.VernacularDefaultWritingSystem = TsStringUtils.MakeString("Headword", wsHandle);
+			var picture = MakePicture(sense.Hvo, TsStringUtils.MakeString("Caption", wsHandle));
+
+			// SUT
+			var outStr = picture.GetCaptionOrHeadword(wsId, out _);
+			Assert.That(outStr.Text, Contains.Substring("Caption"));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// If the Caption is null or empty then get the Headword for the writing system.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void CaptionOrHeadword_CaptionNullOrEmptyGivesHeadword()
+		{
+			var wsId = Cache.LangProject.DefaultVernacularWritingSystem.Id;
+			int wsHandle = Cache.LangProject.DefaultVernacularWritingSystem.Handle;
+			var entry = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
+			var sense = Cache.ServiceLocator.GetInstance<ILexSenseFactory>().Create();
+			entry.SensesOS.Add(sense);
+			var lexform = Cache.ServiceLocator.GetInstance<IMoStemAllomorphFactory>().Create();
+			entry.LexemeFormOA = lexform;
+			lexform.Form.VernacularDefaultWritingSystem = TsStringUtils.MakeString("Headword", wsHandle);
+			var pictureNull = MakePicture(sense.Hvo, null);
+			var pictureEmpty = MakePicture(sense.Hvo, TsStringUtils.EmptyString(wsHandle));
+
+			// SUT
+			var outStr1 = pictureNull.GetCaptionOrHeadword(wsId, out _);
+			var outStr2 = pictureEmpty.GetCaptionOrHeadword(wsId, out _);
+			Assert.That(outStr1.Text, Contains.Substring("Headword"));
+			Assert.That(outStr2.Text, Contains.Substring("Headword"));
+		}
+
+		private ICmPicture MakePicture(int hvoOwner, ITsString captionTss)
+		{
+			var sda = Cache.DomainDataByFlid;
+			var hvoPicture = sda.MakeNewObject(CmPictureTags.kClassId, hvoOwner, LexSenseTags.kflidPictures, 0);
+			var picture = Cache.ServiceLocator.GetInstance<ICmPictureRepository>().GetObject(hvoPicture);
+			picture.UpdatePicture(m_internalPath, captionTss, CmFolderTags.LocalPictures, Cache.DefaultVernWs);
+			return picture;
+		}
 	}
 }
