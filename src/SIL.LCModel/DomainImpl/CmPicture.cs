@@ -250,10 +250,8 @@ namespace SIL.LCModel.DomainImpl
 				bestString = Caption.GetAlternativeOrBestTss(wsId, out wsActual);
 				if (String.IsNullOrEmpty(bestString.Text))
 				{
-					// Need to call this to get the actual ws.
-					WritingSystemServices.GetMagicStringAlt(Cache, wsId, Hvo, Caption.Flid, true, out wsActual);
-
-					// Second try to get the headword.
+					// Second try to get the headword (and actual ws).
+					wsActual = WritingSystemServices.ActualWs(Cache, wsId, Hvo, 0);
 					bestString = this.OwningSense.Entry.HeadWordForWs(wsActual);
 				}
 			}

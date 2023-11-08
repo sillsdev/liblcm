@@ -653,6 +653,32 @@ namespace SIL.LCModel.DomainImpl
 			Assert.That(outStr2.Text, Contains.Substring("Headword"));
 		}
 
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Confirm that we get the correct result when a magic ws is passed in.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void CaptionOrHeadword_MagicWS()
+		{
+			var magicDefaultVernacular = "vernacular";
+			int wsHandle = Cache.LangProject.DefaultVernacularWritingSystem.Handle;
+			var entry = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
+			var sense = Cache.ServiceLocator.GetInstance<ILexSenseFactory>().Create();
+			entry.SensesOS.Add(sense);
+			var lexform = Cache.ServiceLocator.GetInstance<IMoStemAllomorphFactory>().Create();
+			entry.LexemeFormOA = lexform;
+			lexform.Form.VernacularDefaultWritingSystem = TsStringUtils.MakeString("Headword", wsHandle);
+			var pictureNullCaption = MakePicture(sense.Hvo, null);
+
+			// SUT
+			int wsActual = 0;
+			var outStr = pictureNullCaption.GetCaptionOrHeadword(magicDefaultVernacular, out wsActual);
+
+			Assert.That(outStr.Text, Contains.Substring("Headword"));
+			Assert.AreEqual(wsActual, wsHandle);
+		}
+
 		private ICmPicture MakePicture(int hvoOwner, ITsString captionTss)
 		{
 			var sda = Cache.DomainDataByFlid;
