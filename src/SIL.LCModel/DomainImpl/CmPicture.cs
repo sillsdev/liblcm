@@ -211,6 +211,53 @@ namespace SIL.LCModel.DomainImpl
 			// TODO (TE-7759) Include LocationRangeType and ScaleFactor
 			return sResult;
 		}
+
+		/// <summary>
+		/// First try to get the Caption property of this CmPicture,for the given writing system name. If
+		/// there isn't one then try to get the Headword property, for the given writing system name.
+		/// </summary>
+		/// <param name="wsName">The name of the writing system, which could be "magic".</param>
+		/// <param name="wsActual">Output the id of the writing system to which the TsString belongs.</param>
+		/// <returns>The TsString of the Caption or Headword property.</returns>
+		public ITsString GetCaptionOrHeadword(string wsName, out int wsActual)
+		{
+			ITsString bestString;
+			var wsId = WritingSystemServices.GetMagicWsIdFromName(wsName);
+			// Non-magic ws.
+			if (wsId == 0)
+			{
+				wsId = Cache.WritingSystemFactory.GetWsFromStr(wsName);
+				// The config is bad or stale, so just return null
+				if (wsId == 0)
+				{
+					Debug.WriteLine("Writing system requested that is not known in the local store: {0}", wsName);
+					wsActual = 0;
+					return null;
+				}
+				// First try to get the caption.
+				bestString = Caption.get_String(wsId);
+				if (String.IsNullOrEmpty(bestString.Text))
+				{
+					// Second try to get the headword.
+					bestString = this.OwningSense.Entry.HeadWordForWs(wsId);
+				}
+				wsActual = wsId;
+			}
+			// Magic ws. (i.e. default analysis)
+			else
+			{
+				// First try to get the caption (and actual ws).
+				bestString = Caption.GetAlternativeOrBestTss(wsId, out wsActual);
+				if (String.IsNullOrEmpty(bestString.Text))
+				{
+					// Second try to get the headword (and actual ws).
+					wsActual = WritingSystemServices.ActualWs(Cache, wsId, Hvo, 0);
+					bestString = this.OwningSense.Entry.HeadWordForWs(wsActual);
+				}
+			}
+
+			return bestString;
+		}
 		#endregion
 
 		#region Public properties

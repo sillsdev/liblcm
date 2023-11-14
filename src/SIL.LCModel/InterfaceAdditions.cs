@@ -4614,6 +4614,15 @@ namespace SIL.LCModel
 		/// Get the sense number of the owning LexSense.
 		/// </summary>
 		ITsString SenseNumberTSS { get; }
+
+		/// <summary>
+		/// First try to get the Caption property of this CmPicture,for the given writing system name. If
+		/// there isn't one then try to get the Headword property, for the given writing system name.
+		/// </summary>
+		/// <param name="wsName">The name of the writing system, which could be "magic".</param>
+		/// <param name="wsActual">Output the id of the writing system to which the TsString belongs.</param>
+		/// <returns>The TsString of the Caption or Headword property.</returns>
+		ITsString GetCaptionOrHeadword(string wsName, out int wsActual);
 	}
 
 	/// ----------------------------------------------------------------------------------------
