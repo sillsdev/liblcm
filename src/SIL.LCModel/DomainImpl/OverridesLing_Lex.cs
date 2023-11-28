@@ -4028,6 +4028,11 @@ namespace SIL.LCModel.DomainImpl
 		{
 			get
 			{
+				// Test the cache for null and yeild an empty list - This can happen during a bulk delete operation
+				if (m_cache == null)
+				{
+					yield break;
+				}
 				((ICmObjectRepositoryInternal) Services.ObjectRepository).EnsureCompleteIncomingRefsFrom(
 					LexEntryRefTags.kflidComponentLexemes);
 				foreach (var item in m_incomingRefs)
