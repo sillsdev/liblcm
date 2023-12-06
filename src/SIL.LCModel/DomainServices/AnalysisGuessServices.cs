@@ -645,11 +645,15 @@ namespace SIL.LCModel.DomainServices
 		/// This guess factors in the placement of an occurrence in its segment for making other
 		/// decisions like matching lowercase alternatives for sentence initial occurrences.
 		/// </summary>
-		public IAnalysis GetBestGuess(AnalysisOccurrence occurrence)
+		/// <param name="onlyIndexZeroLowercaseMatching">
+		/// True: Do lowercase matching only if the occurrence index is zero.
+		/// False: Do lowercase matching regardless of the occurrence index.
+		/// </param>
+		public IAnalysis GetBestGuess(AnalysisOccurrence occurrence, bool onlyIndexZeroLowercaseMatching = true)
 		{
 			// first see if we can make a guess based on the lowercase form of a sentence initial (non-lowercase) wordform
 			// TODO: make it look for the first word in the sentence...may not be at Index 0!
-			if (occurrence.Analysis is IWfiWordform && occurrence.Index == 0)
+			if (occurrence.Analysis is IWfiWordform && (!onlyIndexZeroLowercaseMatching || occurrence.Index == 0))
 			{
 				ITsString tssWfBaseline = occurrence.BaselineText;
 				var cf = new CaseFunctions(Cache.ServiceLocator.WritingSystemManager.Get(tssWfBaseline.get_WritingSystemAt(0)));
@@ -693,9 +697,13 @@ namespace SIL.LCModel.DomainServices
 		/// <summary>
 		///
 		/// </summary>
-		public bool TryGetBestGuess(AnalysisOccurrence occurrence, out IAnalysis bestGuess)
+		/// <param name="onlyIndexZeroLowercaseMatching">
+		/// True: Do lowercase matching only if the occurrence index is zero.
+		/// False: Do lowercase matching regardless of the occurrence index.
+		/// </param>
+		public bool TryGetBestGuess(AnalysisOccurrence occurrence, out IAnalysis bestGuess, bool onlyIndexZeroLowercaseMatching = true)
 		{
-			bestGuess = GetBestGuess(occurrence);
+			bestGuess = GetBestGuess(occurrence, onlyIndexZeroLowercaseMatching);
 			return !(bestGuess is NullWAG);
 		}
 	}
