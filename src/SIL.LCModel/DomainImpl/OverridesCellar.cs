@@ -4412,6 +4412,14 @@ namespace SIL.LCModel.DomainImpl
 						() => wf.AddOccurenceInText(this),
 						wf,
 						Cache.MetaDataCache.GetFieldId2(WfiWordformTags.kClassId, "FullConcordanceCount", false)));
+
+					// Fix undo problem when a uppercase word uses a guess for the lowercase word  (LT-21424).
+					Cache.ActionHandlerAccessor.AddAction(new GenericPropChangeUndoAction(
+						() => wf.RemoveOccurenceInText(this),
+						() => wf.AddOccurenceInText(this),
+						wf,
+						Cache.MetaDataCache.GetFieldId2(WfiWordformTags.kClassId, "Analyses", false)));
+
 				}
 				return;
 			}
