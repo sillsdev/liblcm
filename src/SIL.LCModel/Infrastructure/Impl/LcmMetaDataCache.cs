@@ -971,6 +971,9 @@ namespace SIL.LCModel.Infrastructure.Impl
 			{
 				extraId++;
 				result = defaultLabel + extraId;
+				// LT-21212 This is an attempt to get a stack trace in the rare cases where fields get incorrectly duplicated.
+				// This code should never get hit during normal operations in Flex.
+				throw new Exception($"Attempting to create duplicate custom field with the name {result}. PLEASE REPORT THIS TO FlexErrors.");
 			}
 			return result;
 		}
