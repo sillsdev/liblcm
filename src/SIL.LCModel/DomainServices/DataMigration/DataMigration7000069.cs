@@ -188,7 +188,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 		}
 
-		private static void ChangeMultiUnicodeElementToMultiString(IDomainObjectDTORepository repoDto, DomainObjectDTO dto,
+		private static void ChangeMultiUnicodeElementToMultiString(IDomainObjectDTORepository repoDto, DomainObjectXMLDTO dto,
 			string xpathToMultiUnicodeElement)
 		{
 			const string auniXpath = "/AUni";
@@ -328,7 +328,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			repoDto.Update(entryTypeDto);
 		}
 
-		internal static void AddRefType(XElement data, IDomainObjectDTORepository repoDto, DomainObjectDTO dto, string tagName, string guid, bool owned)
+		internal static void AddRefType(XElement data, IDomainObjectDTORepository repoDto, DomainObjectXMLDTO dto, string tagName, string guid, bool owned)
 		{
 			var varElementTag = data.Element(tagName);
 			if (varElementTag == null)

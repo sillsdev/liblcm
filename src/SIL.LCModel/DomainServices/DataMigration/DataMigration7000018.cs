@@ -27,15 +27,15 @@ namespace SIL.LCModel.DomainServices.DataMigration
 	{
 		IDomainObjectDTORepository m_repoDTO;
 		/// <summary>list of objects affected by TE's stylesheet</summary>
-		HashSet<DomainObjectDTO> m_scrDtos = new HashSet<DomainObjectDTO>();
+		HashSet<DomainObjectXMLDTO> m_scrDtos = new HashSet<DomainObjectXMLDTO>();
 		/// <summary>the LangProject object</summary>
-		DomainObjectDTO m_dtoLangProj;
+		DomainObjectXMLDTO m_dtoLangProj;
 		/// <summary>XML string representation of the &lt;Styles&gt; field in the LangProject object</summary>
 		string m_sLangProjStyles;
 		/// <summary>the LangProject StStyle objects</summary>
-		List<DomainObjectDTO> m_langProjStyles = new List<DomainObjectDTO>();
+		List<DomainObjectXMLDTO> m_langProjStyles = new List<DomainObjectXMLDTO>();
 		/// <summary></summary>
-		Dictionary<string, DomainObjectDTO> m_mapPropsToStyle = new Dictionary<string, DomainObjectDTO>();
+		Dictionary<string, DomainObjectXMLDTO> m_mapPropsToStyle = new Dictionary<string, DomainObjectXMLDTO>();
 		Dictionary<string, string> m_mapStyleNameToGuid = new Dictionary<string, string>();
 		int m_cNewCharStyles = 0;
 		int m_cNewParaStyles = 0;
@@ -59,12 +59,12 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			// Get the list of StStyle DTOs from the LexDb.Styles field, and delete the
 			// LexDb.Styles field.
 			string sClass = "LexDb";
-			DomainObjectDTO dtoLexDb = GetFirstInstance(sClass);
+			DomainObjectXMLDTO dtoLexDb = GetFirstInstance(sClass);
 			string sXmlLexDb = dtoLexDb.Xml;
 			int idxStyles = sXmlLexDb.IndexOf("<Styles>");
 			int idxStylesLim = sXmlLexDb.IndexOf("</Styles>") + 9;
 			string sLexDbStyles = sXmlLexDb.Substring(idxStyles, idxStylesLim - idxStyles);
-			List<DomainObjectDTO> stylesLexDb = new List<DomainObjectDTO>();
+			List<DomainObjectXMLDTO> stylesLexDb = new List<DomainObjectXMLDTO>();
 			foreach (string sGuid in GetGuidList(sLexDbStyles))
 			{
 				var dto = m_repoDTO.GetDTO(sGuid);
@@ -84,12 +84,12 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			List<string> styleNames = new List<string>();
 			m_langProjStyles.Clear();
 			m_mapStyleNameToGuid.Clear();
-			DomainObjectDTO dtoHyperlink = null;
-			DomainObjectDTO dtoExternalLink = null;
-			DomainObjectDTO dtoInternalLink = null;
-			DomainObjectDTO dtoLanguageCode = null;
-			DomainObjectDTO dtoWrtSysAbbr = null;
-			DomainObjectDTO dtoStrong = null;
+			DomainObjectXMLDTO dtoHyperlink = null;
+			DomainObjectXMLDTO dtoExternalLink = null;
+			DomainObjectXMLDTO dtoInternalLink = null;
+			DomainObjectXMLDTO dtoLanguageCode = null;
+			DomainObjectXMLDTO dtoWrtSysAbbr = null;
+			DomainObjectXMLDTO dtoStrong = null;
 			foreach (string sGuid in GetGuidList(m_sLangProjStyles))
 			{
 				var dto = m_repoDTO.GetDTO(sGuid);
@@ -303,9 +303,9 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 		}
 
-		private DomainObjectDTO CreateCharStyle(string sName, string sProp, ContextValues context)
+		private DomainObjectXMLDTO CreateCharStyle(string sName, string sProp, ContextValues context)
 		{
-			DomainObjectDTO dtoStyle;
+			DomainObjectXMLDTO dtoStyle;
 			Guid guid = Guid.NewGuid();
 			string sGuid = guid.ToString().ToLowerInvariant();
 			StringBuilder sb = new StringBuilder();
@@ -322,7 +322,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			if (context != ContextValues.General)
 				sb.AppendLine(String.Format("<Context val=\"{0}\" />", (int)context));
 			sb.AppendLine("</rt>");
-			dtoStyle = new DomainObjectDTO(sGuid, "StStyle", sb.ToString());
+			dtoStyle = new DomainObjectXMLDTO(sGuid, "StStyle", sb.ToString());
 			m_repoDTO.Add(dtoStyle);
 			int idxEnd = m_sLangProjStyles.IndexOf("</Styles>");
 			m_sLangProjStyles = m_sLangProjStyles.Insert(idxEnd, String.Format("<objsur guid=\"{0}\" t=\"o\"/>{1}", sGuid, Environment.NewLine));
@@ -331,7 +331,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 		private void UpdateStyleLinks(Dictionary<string, string> mapStyleGuids)
 		{
-			foreach (DomainObjectDTO dto in m_repoDTO.AllInstancesSansSubclasses("StStyle"))
+			foreach (DomainObjectXMLDTO dto in m_repoDTO.AllInstancesSansSubclasses("StStyle"))
 			{
 				string sXml = dto.Xml;
 				if (sXml.Contains("<BasedOn>") || sXml.Contains("<Next>"))
@@ -348,7 +348,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 			// Also change any references in Data Notebook UserViewField objects, even though
 			// these probably don't matter.
-			foreach (DomainObjectDTO dto in m_repoDTO.AllInstancesSansSubclasses("UserViewField"))
+			foreach (DomainObjectXMLDTO dto in m_repoDTO.AllInstancesSansSubclasses("UserViewField"))
 			{
 				string sXml = dto.Xml;
 				if (!sXml.Contains("<Flid val=\"40"))
@@ -399,7 +399,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			return false;
 		}
 
-		private string DeleteStyle(string sLangProjStyles, DomainObjectDTO dto)
+		private string DeleteStyle(string sLangProjStyles, DomainObjectXMLDTO dto)
 		{
 			string sGuid = dto.Guid.ToLowerInvariant();
 			m_repoDTO.Remove(dto);
@@ -415,7 +415,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			return sLangProjStyles;
 		}
 
-		private void SetOwnerGuid(DomainObjectDTO dto, string sGuidNewOwner)
+		private void SetOwnerGuid(DomainObjectXMLDTO dto, string sGuidNewOwner)
 		{
 			string sXml = dto.Xml;
 			int idx = sXml.IndexOf(" ownerguid=") + 11;
@@ -437,7 +437,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			return sXmlName.Substring(idx, idxLim - idx);
 		}
 
-		private DomainObjectDTO GetFirstInstance(string sClass)
+		private DomainObjectXMLDTO GetFirstInstance(string sClass)
 		{
 			foreach (var dto in m_repoDTO.AllInstancesSansSubclasses(sClass))
 			{
@@ -475,7 +475,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			byte[] rgbExternalLink2 = Encoding.UTF8.GetBytes(" namedStyle='External Link'");
 			byte[] rgbInternalLink2 = Encoding.UTF8.GetBytes(" namedStyle='Internal Link'");
 			byte[] rgbLanguageCode2 = Encoding.UTF8.GetBytes(" namedStyle='Language Code'");
-			foreach (DomainObjectDTO dto in m_repoDTO.AllInstancesWithValidClasses())
+			foreach (DomainObjectXMLDTO dto in m_repoDTO.AllInstancesWithValidClasses())
 			{
 				if (m_scrDtos.Contains(dto))
 					continue;
@@ -518,7 +518,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		{
 			if (m_scrDtos.Count == 0)
 			{
-				foreach (DomainObjectDTO dto in m_repoDTO.AllInstancesSansSubclasses("Scripture"))
+				foreach (DomainObjectXMLDTO dto in m_repoDTO.AllInstancesSansSubclasses("Scripture"))
 				{
 					m_scrDtos.Add(dto);
 					AddOwnedObjects(dto, m_scrDtos);
@@ -530,7 +530,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		{
 			EnsureScrObjListFull();
 			byte[] rgbRun = Encoding.UTF8.GetBytes("<Run ");
-			foreach (DomainObjectDTO dto in m_repoDTO.AllInstancesWithValidClasses())
+			foreach (DomainObjectXMLDTO dto in m_repoDTO.AllInstancesWithValidClasses())
 			{
 				if (m_scrDtos.Contains(dto))
 					continue;
@@ -545,7 +545,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					string sNormDirectFmt = GetDirectStringFormats(xe);
 					if (string.IsNullOrEmpty(sNormDirectFmt))
 						continue;
-					DomainObjectDTO dtoStyle = GetMatchingStyle(sNormDirectFmt, "<Type val=\"1\"/>");
+					DomainObjectXMLDTO dtoStyle = GetMatchingStyle(sNormDirectFmt, "<Type val=\"1\"/>");
 					ReplaceRunDirectFmts(xe, GetStyleName(dtoStyle.Xml));
 					fUpdate = true;
 				}
@@ -556,7 +556,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				}
 			}
 			byte[] rgbProp = Encoding.UTF8.GetBytes("<Prop ");
-			foreach (DomainObjectDTO dtoPara in m_repoDTO.AllInstancesWithSubclasses("StTxtPara"))
+			foreach (DomainObjectXMLDTO dtoPara in m_repoDTO.AllInstancesWithSubclasses("StTxtPara"))
 			{
 				if (m_scrDtos.Contains(dtoPara))
 					continue;
@@ -569,7 +569,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					string sNormDirectFmt = GetDirectParaFormats(xe, true);
 					if (String.IsNullOrEmpty(sNormDirectFmt))
 						continue;
-					DomainObjectDTO dtoStyle = GetMatchingStyle(sNormDirectFmt, null);
+					DomainObjectXMLDTO dtoStyle = GetMatchingStyle(sNormDirectFmt, null);
 					ReplacePropDirectFmts(xe, GetStyleName(dtoStyle.Xml));
 					fUpdate = true;
 				}
@@ -604,11 +604,11 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			return fModified;
 		}
 
-		private DomainObjectDTO GetMatchingStyle(string sNormProps, string sTypeVal)
+		private DomainObjectXMLDTO GetMatchingStyle(string sNormProps, string sTypeVal)
 		{
 			if (m_mapPropsToStyle.Count == 0)
 				LoadPropsToStyleMap();
-			DomainObjectDTO dtoStyle;
+			DomainObjectXMLDTO dtoStyle;
 			if (!m_mapPropsToStyle.TryGetValue(sNormProps, out dtoStyle))
 			{
 				StringBuilder sb = new StringBuilder();
@@ -625,7 +625,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				if (!String.IsNullOrEmpty(sTypeVal))
 					sb.AppendLine(sTypeVal);
 				sb.AppendLine("</rt>");
-				dtoStyle = new DomainObjectDTO(guidNew.ToString().ToLowerInvariant(), "StStyle", sb.ToString());
+				dtoStyle = new DomainObjectXMLDTO(guidNew.ToString().ToLowerInvariant(), "StStyle", sb.ToString());
 				m_repoDTO.Add(dtoStyle);
 				int idxEnd = m_sLangProjStyles.IndexOf("</Styles>");
 				m_sLangProjStyles = m_sLangProjStyles.Insert(idxEnd, String.Format("<objsur guid=\"{0}\" t=\"o\"/>{1}",
@@ -637,14 +637,14 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 		private void LoadPropsToStyleMap()
 		{
-			foreach (DomainObjectDTO dto in m_langProjStyles)
+			foreach (DomainObjectXMLDTO dto in m_langProjStyles)
 			{
 				string sNormProps = GetNormalizedStyleProps(dto);
 				if (String.IsNullOrEmpty(sNormProps))
 					continue;	// empty definition is possible...
 				// More than one style can have the same properties -- we'll use the first, or
 				// the first without a <Context> element (ie, the general context).
-				DomainObjectDTO dtoPrior;
+				DomainObjectXMLDTO dtoPrior;
 				if (m_mapPropsToStyle.TryGetValue(sNormProps, out dtoPrior))
 				{
 					if (dtoPrior.Xml.Contains("<Context ") && !dto.Xml.Contains("<Context "))
@@ -672,7 +672,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					sNormProps2 = sNormProps2.Replace(" spaceBefore=\"0\"", "");
 					sNormProps2 = sNormProps2.Replace(" trailingIndent=\"0\"", "");
 				}
-				DomainObjectDTO dtoPrior2;
+				DomainObjectXMLDTO dtoPrior2;
 				if (sNormProps2 != sNormProps)
 				{
 					if (m_mapPropsToStyle.TryGetValue(sNormProps2, out dtoPrior2))
@@ -688,7 +688,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 		}
 
-		private string GetNormalizedStyleProps(DomainObjectDTO dtoStyle)
+		private string GetNormalizedStyleProps(DomainObjectXMLDTO dtoStyle)
 		{
 			XElement xeStyle = XElement.Parse(dtoStyle.Xml);
 			string sType = null;
@@ -939,9 +939,9 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				return rgbXml.IndexOfSubArray(rgbTarget) > 0;
 		}
 
-		private void AddOwnedObjects(DomainObjectDTO dto, HashSet<DomainObjectDTO> scrObjs)
+		private void AddOwnedObjects(DomainObjectXMLDTO dto, HashSet<DomainObjectXMLDTO> scrObjs)
 		{
-			foreach (DomainObjectDTO dtoOwned in m_repoDTO.GetDirectlyOwnedDTOs(dto.Guid))
+			foreach (DomainObjectXMLDTO dtoOwned in m_repoDTO.GetDirectlyOwnedDTOs(dto.Guid))
 			{
 				scrObjs.Add(dtoOwned);
 				AddOwnedObjects(dtoOwned, scrObjs);
@@ -1031,7 +1031,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 		private void EnsureBuiltinStylesAreMarkedBuiltin()
 		{
-			foreach (DomainObjectDTO dto in m_langProjStyles)
+			foreach (DomainObjectXMLDTO dto in m_langProjStyles)
 			{
 				string sXml = dto.Xml;
 				if (IsStyleBuiltIn(sXml))

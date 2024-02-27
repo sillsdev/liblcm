@@ -25,7 +25,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void DataMigration7000052Test()
 		{
-			var dtos = new HashSet<DomainObjectDTO>();
+			var dtos = new HashSet<DomainObjectXMLDTO>();
 			var sb = new StringBuilder();
 			// Add WfiMorphBundle that already has a form.
 			const string sGuid_wmbWithForm = "00b35f9f-86ce-4f07-bde7-b65c28503641";
@@ -37,7 +37,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("</AStr>");
 			sb.Append("</Form>");
 			sb.Append("</rt>");
-			var dtoWithForm = new DomainObjectDTO(sGuid_wmbWithForm, "WfiMorphBundle", sb.ToString());
+			var dtoWithForm = new DomainObjectXMLDTO(sGuid_wmbWithForm, "WfiMorphBundle", sb.ToString());
 			dtos.Add(dtoWithForm);
 			sb.Length = 0;
 
@@ -48,7 +48,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.AppendFormat("<AUni ws=\"wsMorph1\">{0}</AUni>", "morphForm1");
 			sb.Append("</Form>");
 			sb.Append("</rt>");
-			var dtoMoAffix = new DomainObjectDTO(sGuid_moAffixAllomorph, "MoAffixAllomorph", sb.ToString());
+			var dtoMoAffix = new DomainObjectXMLDTO(sGuid_moAffixAllomorph, "MoAffixAllomorph", sb.ToString());
 			dtos.Add(dtoMoAffix);
 			sb.Length = 0;
 
@@ -63,7 +63,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.AppendFormat("<objsur guid=\"{0}\" t=\"r\" />", sGuid_moAffixAllomorph);
 			sb.Append("</Morph>");
 			sb.Append("</rt>");
-			var dtoNoForm = new DomainObjectDTO(sGuid_wmbNoForm, "WfiMorphBundle", sb.ToString());
+			var dtoNoForm = new DomainObjectXMLDTO(sGuid_wmbNoForm, "WfiMorphBundle", sb.ToString());
 			dtos.Add(dtoNoForm);
 			sb.Length = 0;
 
@@ -80,7 +80,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 			// check that MorphBundle with form still has its form.
 			{
-				DomainObjectDTO dtoWithFormTest;
+				DomainObjectXMLDTO dtoWithFormTest;
 				dtoRepos.TryGetValue(sGuid_wmbWithForm, out dtoWithFormTest);
 				var eltWmbWithFormTest = XElement.Parse(dtoWithFormTest.Xml);
 				var eltFormTest = eltWmbWithFormTest.Element("Form");
@@ -100,7 +100,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			// check that MorphBundle without form now has a new alternative forms,
 			// identical to the Morph alternative Form.
 			{
-				DomainObjectDTO dtoNewFormTest;
+				DomainObjectXMLDTO dtoNewFormTest;
 				dtoRepos.TryGetValue(sGuid_wmbNoForm, out dtoNewFormTest);
 				var eltWmbNewFormTest = XElement.Parse(dtoNewFormTest.Xml);
 				var eltFormTest = eltWmbNewFormTest.Element("Form");
