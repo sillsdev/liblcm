@@ -9,12 +9,14 @@
 // </remarks>
 
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using Icu;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.Infrastructure;
+
 
 namespace SIL.LCModel.DomainServices
 {
@@ -32,6 +34,10 @@ namespace SIL.LCModel.DomainServices
 		public AnalysisGuessServices(LcmCache cache)
 		{
 			Cache = cache;
+			var wfFactory = Cache.ServiceLocator.GetInstance<IWfiWordformFactory>();
+			var wsVern = Cache.DefaultVernWs;
+			m_emptyWAG = wfFactory.Create(TsStringUtils.MakeString("", wsVern));
+			m_nullWAG = new NullWAG();
 		}
 
 		/// <summary>
@@ -100,17 +106,27 @@ namespace SIL.LCModel.DomainServices
 			set { m_parserApprovedTable = value; }
 		}
 
+		class PriorityCount
+		{
+			public int priority = 0;
+			public int count = 0;
+		}
+
 		private IDictionary<IAnalysis, IAnalysis> m_guessTable;
 		IDictionary<IAnalysis, IAnalysis> GuessTable
 		{
 			get
 			{
 				if (m_guessTable == null)
-					LoadGuessTable();
+					// LoadGuessTable();
+					GuessTable = new Dictionary<IAnalysis, IAnalysis>();
 				return m_guessTable;
 			}
 			set { m_guessTable = value; }
 		}
+
+		private readonly IAnalysis m_emptyWAG;
+		private readonly IAnalysis m_nullWAG;
 
 		/// <summary>
 		/// Informs the guess service that the indicated occurrence is being replaced with the specified new
@@ -138,7 +154,7 @@ namespace SIL.LCModel.DomainServices
 			// if the new analysis is NOT the guess for one of its owners, one more occurrence might
 			// make it the guess, so we need to regenerate.
 			IAnalysis currentDefault;
-			if (!m_guessTable.TryGetValue(newAnalysis.Wordform, out currentDefault))
+			if (!TryGetGuess(newAnalysis.Wordform, out currentDefault))
 			{
 				// We have no guess for this wordform: the new analysis becomes it.
 				m_guessTable[newAnalysis.Wordform] = newAnalysis;
@@ -152,7 +168,7 @@ namespace SIL.LCModel.DomainServices
 			}
 			if (newAnalysis is IWfiAnalysis)
 				return result;
-			if (!m_guessTable.TryGetValue(newAnalysis.Analysis, out currentDefault))
+			if (!TryGetGuess(newAnalysis.Analysis, out currentDefault))
 			{
 				// We have no guess for this analysis: the new analysis becomes it.
 				m_guessTable[newAnalysis.Analysis] = newAnalysis;
@@ -271,6 +287,224 @@ namespace SIL.LCModel.DomainServices
 				   into countedAnalysis
 					   orderby countedAnalysis.Count()
 					   select countedAnalysis.Key;
+		}
+
+		bool TryGetGuess(IAnalysis form, out IAnalysis analysis)
+		{
+			if (!GuessTable.ContainsKey(form))
+			{
+				var default_analysis = GetDefaultAnalysis(form, m_nullWAG);
+				if (default_analysis != null)
+				{
+					if (default_analysis is IWfiAnalysis)
+					{
+						var default_gloss = GetDefaultAnalysis(default_analysis, m_nullWAG);
+						if (default_gloss != null)
+						{
+							default_analysis = default_gloss;
+						}
+					}
+					m_guessTable[form] = default_analysis;
+				}
+			}
+			return GuessTable.TryGetValue(form, out analysis);
+		}
+
+		/// <summary>
+		/// Get the default analysis for the given form conditioned on the previous word form.
+		/// If form is an analysis,then the default analysis is a gloss.
+		/// Use m_emptyWAG as previous word form for the first analysis in a segment.
+		/// Use m_nullWAG as previous word form for backoff.
+		/// </summary>
+		/// <param name="form">the form that you want an analysis for</param>
+		/// <param name="previous">the previous form of form</param>
+		/// <returns>Dictionary<IAnalysis, Dictionary<IAnalysis, int>></returns>
+		private IAnalysis GetDefaultAnalysis(IAnalysis form, IAnalysis previous)
+		{
+			Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts;
+			// Get counts.
+			if (form is IWfiWordform wordform)
+			{
+				counts = GetAnalysisCounts(wordform);
+			} else if (form is IWfiAnalysis analysis)
+			{
+				counts = GetGlossCounts(analysis);
+			} else
+			{
+				return null;
+			}
+			if (counts.ContainsKey(previous))
+			{
+				// Get highest scoring analysis.
+				int max_count = 0;
+				int max_priority = 0;
+				IAnalysis best = null;
+				foreach (IAnalysis analysis in counts[previous].Keys)
+				{
+					int count = counts[previous][analysis].count;
+					int priority = counts[previous][analysis].priority;
+					if (priority > max_priority ||
+						priority == max_priority && count > max_count)
+					{
+						// This is a better analysis.
+						max_priority = priority;
+						max_count = count;
+						best = analysis;
+					}
+				}
+				return best;
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Get analysis counts for the given word form conditioned on the previous word form.
+		/// Use m_emptyWAG as previous word form for the first analysis in a segment.
+		/// Use m_nullWAG as previous word form for backoff.
+		/// </summary>
+		/// <param name="wordform">the form that you want an analysis for</param>
+		/// <returns>Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>></returns>
+		private Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> GetAnalysisCounts(IWfiWordform wordform)
+		{
+			var counts = new Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>>();
+			var segs = new HashSet<ISegment>();
+			foreach (ISegment seg in wordform.OccurrencesInTexts)
+			{
+				if (segs.Contains(seg)) continue;
+				segs.Add(seg);
+				for (int i = 0; i < seg.AnalysesRS.Count; i++)
+				{
+					IAnalysis analysis = seg.AnalysesRS[i];
+					if (analysis.Wordform != wordform) continue;
+					IAnalysis previous = GetPreviousWordform(seg, i);
+					if (analysis is IWfiGloss)
+					{
+						// Get analysis for gloss.
+						analysis = analysis.Analysis;
+					}
+					if (analysis is IWfiAnalysis)
+					{
+						// Add high priority count to analysis.
+						AddAnalysisCount(previous, analysis, 4, counts);
+					}
+					if (analysis is IWfiWordform wordform2)
+					{
+						// Add lower priority counts to the word form's analyses.
+						// (These have not been confirmed.)
+						foreach (IWfiAnalysis analysis2 in wordform2.AnalysesOC)
+						{
+							if (IsNotDisapproved(analysis2))
+							{
+								int priority = IsHumanApproved(analysis2) ? 3 : IsParserApproved(analysis2) ? 2 : 1;
+								AddAnalysisCount(previous, analysis2, priority, counts);
+							}
+						}
+
+					}
+				}
+			}
+			return counts;
+		}
+
+		/// <summary>
+		/// Get gloss counts for the given analysis conditioned on the previous word form.
+		/// If form is an analysis,then the analysis counts are for glosses.
+		/// Use m_emptyWAG as previous word form for the first analysis in a segment.
+		/// Use m_nullWAG as previous word form for backoff.
+		/// </summary>
+		/// <returns>Dictionary<IAnalysis, Dictionary<IAnalysis, int>></returns>
+		private Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> GetGlossCounts(IWfiAnalysis analysis)
+		{
+			var counts = new Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>>();
+			var segs = new HashSet<ISegment>();
+			foreach (ISegment seg in analysis.Wordform.OccurrencesInTexts)
+			{
+				if (segs.Contains(seg)) continue;
+				segs.Add(seg);
+				for (int i = 0; i < seg.AnalysesRS.Count; i++)
+				{
+					// Get gloss for analysis.
+					IAnalysis previous = GetPreviousWordform(seg, i);
+					IAnalysis gloss = seg.AnalysesRS[i];
+					if (gloss is IWfiGloss)
+					{
+						if (gloss.Analysis == analysis)
+						{
+							// Add high priority count to gloss.
+							AddAnalysisCount(previous, gloss, 5, counts);
+						}
+					}
+					else if (gloss is IWfiAnalysis analysis2)
+					{
+						if (analysis2 == analysis)
+						{
+							foreach (IWfiGloss gloss2 in analysis2.MeaningsOC)
+							{
+								// Add lower priority count to gloss.
+								AddAnalysisCount(previous, gloss2, 4, counts);
+							}
+						}
+					}
+					else if (gloss is IWfiWordform wordform)
+					{
+						foreach (IWfiAnalysis analysis3 in wordform.AnalysesOC)
+						{
+							if (analysis3 == analysis && IsNotDisapproved(analysis3))
+							{
+								int priority = IsHumanApproved(analysis3) ? 3 : IsParserApproved(analysis3) ? 2 : 1;
+								foreach (IWfiGloss gloss3 in analysis3.MeaningsOC)
+								{
+									// Add lower priority count to gloss.
+									AddAnalysisCount(previous, gloss3, priority, counts);
+								}
+
+							}
+						}
+					}
+				}
+			}
+			return counts;
+		}
+
+		private IAnalysis GetPreviousWordform(ISegment seg, int i)
+		{
+			if (i == 0)
+				return m_emptyWAG;
+			IAnalysis previous = seg.AnalysesRS[i - 1];
+			if (previous is IWfiAnalysis || previous is IWfiGloss)
+			{
+				previous = previous.Wordform;
+			}
+			return previous;
+		}
+
+		private void AddAnalysisCount(IAnalysis previous, IAnalysis analysis, int priority, Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts)
+		{
+			if (previous != m_nullWAG)
+			{
+				// Record count for backoff.
+				AddAnalysisCount(m_nullWAG, analysis, priority, counts);
+			}
+			if (!counts.ContainsKey(previous))
+			{
+				counts[previous] = new Dictionary<IAnalysis, PriorityCount>();
+			}
+			if (!counts[previous].ContainsKey(analysis))
+			{
+				counts[previous][analysis] = new PriorityCount();
+			}
+			if (counts[previous][analysis].priority > priority)
+			{
+				// Ignore this count because its priority is too low.
+				return;
+			}
+			if (counts[previous][analysis].priority < priority)
+			{
+				// Start a new priority count.
+				counts[previous][analysis].priority = priority;
+				counts[previous][analysis].count = 0;
+			}
+			counts[previous][analysis].count += 1;
 		}
 
 		/// <summary>
@@ -617,12 +851,12 @@ namespace SIL.LCModel.DomainServices
 		public IAnalysis GetBestGuess(IWfiWordform wf, int ws)
 		{
 			IAnalysis wag;
-			if (GuessTable.TryGetValue(wf, out wag))
+			if (TryGetGuess(wf, out wag))
 				return wag;
 			if (wf.AnalysesOC.Count == 0)
 			{
 				GenerateEntryGuesses(wf, ws);
-				if (GuessTable.TryGetValue(wf, out wag))
+				if (TryGetGuess(wf, out wag))
 					return wag;
 			}
 			return new NullWAG();
@@ -636,7 +870,7 @@ namespace SIL.LCModel.DomainServices
 		public IAnalysis GetBestGuess(IWfiAnalysis wa)
 		{
 			IAnalysis wag;
-			if (GuessTable.TryGetValue(wa, out wag))
+			if (TryGetGuess(wa, out wag))
 				return wag;
 			return new NullWAG();
 		}

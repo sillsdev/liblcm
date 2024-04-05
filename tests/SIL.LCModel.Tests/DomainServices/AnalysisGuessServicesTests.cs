@@ -916,7 +916,7 @@ namespace SIL.LCModel.DomainServices
 				setup.Para0.SetAnalysis(0, 3, newWagApproves.WfiAnalysis);
 				setup.UserAgent.SetEvaluation(newWagApproves.WfiAnalysis, Opinions.approves);
 				var guessActual = setup.GuessServices.GetBestGuess(setup.Words_para0[1]);
-				Assert.AreEqual(newWagApproves.WfiAnalysis, guessActual);
+				Assert.AreEqual(newWagApproves.Gloss, guessActual);
 			}
 		}
 
