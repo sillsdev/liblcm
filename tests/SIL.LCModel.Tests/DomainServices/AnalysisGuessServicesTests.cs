@@ -110,6 +110,42 @@ namespace SIL.LCModel.DomainServices
 					" " + Words_para0[4].Form.BestVernacularAlternative.Text + " " +
 					Words_para0[5].Form.BestVernacularAlternative.Text + ".", wsVern));
 				Para0.Contents = bldr.GetString();
+				/* p1 c p1 c p1 c p1 c p2 c p2 c p2 c */
+				IWfiWordform c = wfFactory.Create(TsStringUtils.MakeString("c", wsVern));
+				IWfiWordform p1 = wfFactory.Create(TsStringUtils.MakeString("p1", wsVern));
+				IWfiWordform p2 = wfFactory.Create(TsStringUtils.MakeString("p2", wsVern));
+				Words_para0.Add(p1);
+				Words_para0.Add(c);
+				Words_para0.Add(p2);
+				Words_para0.Add(c);
+				Words_para0.Add(p1);
+				Words_para0.Add(c);
+				Words_para0.Add(p2);
+				Words_para0.Add(c);
+				Words_para0.Add(p1);
+				Words_para0.Add(c);
+				Words_para0.Add(p2);
+				Words_para0.Add(c);
+				Words_para0.Add(p1);
+				Words_para0.Add(c);
+				var bldr2 = Para0.Contents.GetIncBldr();
+				bldr2.AppendTsString(TsStringUtils.MakeString(
+					" " + Words_para0[6].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[7].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[8].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[9].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[10].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[11].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[12].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[13].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[14].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[15].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[16].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[17].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[18].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[19].Form.BestVernacularAlternative.Text +
+					".", wsVern));
+				Para0.Contents = bldr2.GetString();
 				using (ParagraphParser pp = new ParagraphParser(Cache))
 				{
 					foreach (IStTxtPara para in StText.ParagraphsOS)
@@ -376,7 +412,6 @@ namespace SIL.LCModel.DomainServices
 				setup.EntryFactory.Create("a", "aroot", SandboxGenericMSA.Create(MsaType.kRoot, null));
 
 				// expect a guess to be generated
-				setup.GuessServices.GenerateEntryGuesses(setup.StText);
 				var guessActual = setup.GuessServices.GetBestGuess(setup.Words_para0[1]);
 				Assert.AreNotEqual(new NullWAG(), guessActual);
 				Assert.AreEqual(newEntry4_expectedMatch.LexemeFormOA.Form.BestVernacularAlternative.Text, guessActual.Wordform.Form.BestVernacularAlternative.Text);
@@ -911,6 +946,25 @@ namespace SIL.LCModel.DomainServices
 			using (var setup = new AnalysisGuessBaseSetup(Cache))
 			{
 				var newWagApproves = WordAnalysisOrGlossServices.CreateNewAnalysisTreeGloss(setup.Words_para0[1]);
+				var newWagApproves2 = WordAnalysisOrGlossServices.CreateNewAnalysisTreeGloss(setup.Words_para0[1]);
+				setup.Para0.SetAnalysis(0, 1, newWagApproves2.Gloss);
+				setup.Para0.SetAnalysis(0, 2, newWagApproves.WfiAnalysis);
+				setup.Para0.SetAnalysis(0, 3, newWagApproves.WfiAnalysis);
+				setup.UserAgent.SetEvaluation(newWagApproves.WfiAnalysis, Opinions.approves);
+				var guessActual = setup.GuessServices.GetBestGuess(setup.Words_para0[1]);
+				Assert.AreEqual(newWagApproves.Analysis, guessActual);
+			}
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		[Test]
+		public void ExpectedAnalysisGuessForWord_GetMostCommonGlossOfMostCommonAnalysis()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var newWagApproves = WordAnalysisOrGlossServices.CreateNewAnalysisTreeGloss(setup.Words_para0[1]);
 				setup.Para0.SetAnalysis(0, 1, newWagApproves.Gloss);
 				setup.Para0.SetAnalysis(0, 2, newWagApproves.WfiAnalysis);
 				setup.Para0.SetAnalysis(0, 3, newWagApproves.WfiAnalysis);
@@ -1008,6 +1062,39 @@ namespace SIL.LCModel.DomainServices
 				setup.UserAgent.SetEvaluation(newWagHumanApproves.Analysis, Opinions.approves);
 				var guessActual = setup.GuessServices.GetBestGuess(setup.Words_para0[1]);
 				Assert.AreEqual(newWagHumanApproves.Analysis, guessActual);
+			}
+		}
+
+		/// <summary>
+		/// </summary>
+		[Test]
+		public void ExpectedConditionedGuess_PreferConditionedGuessOverUnconditionedGuess()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var newWagConditionedApproves = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[9]);
+				var newWagUnconditionedApproves = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[15]);
+				var nullWAG = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[0]).Analysis;
+				// Analyses must be set in order.
+				setup.Para0.SetAnalysis(0, 0, nullWAG); // "A"
+				setup.Para0.SetAnalysis(0, 1, nullWAG); // "a"
+				setup.Para0.SetAnalysis(0, 2, nullWAG); // "a"
+				setup.Para0.SetAnalysis(0, 3, nullWAG); // "a"
+				setup.Para0.SetAnalysis(0, 4, nullWAG); // "b"
+				setup.Para0.SetAnalysis(0, 5, nullWAG); // "B"
+				setup.Para0.SetAnalysis(0, 6, nullWAG); // "p1"
+				setup.Para0.SetAnalysis(0, 7, newWagConditionedApproves.Analysis); // "c"
+				setup.Para0.SetAnalysis(0, 8, nullWAG); // "p2"
+				setup.Para0.SetAnalysis(0, 9, newWagUnconditionedApproves.Analysis); // "c"
+				setup.Para0.SetAnalysis(0, 10, nullWAG); // "p1"
+				setup.Para0.SetAnalysis(0, 11, newWagUnconditionedApproves.Analysis); // "c"
+				// Verify unconditioned guess.
+				var guessActual = setup.GuessServices.GetBestGuess(setup.Words_para0[7]);
+				Assert.AreEqual(newWagUnconditionedApproves.Analysis, guessActual);
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(setup.Para0.SegmentsOS[2], 7);
+				// Make sure we get a conditioned guess for occurrence instead of an unconditioned guess.
+				guessActual = setup.GuessServices.GetBestGuess(occurrence);
+				Assert.AreEqual(newWagConditionedApproves.Analysis, guessActual);
 			}
 		}
 	}
