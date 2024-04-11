@@ -110,23 +110,20 @@ namespace SIL.LCModel.DomainServices
 					" " + Words_para0[4].Form.BestVernacularAlternative.Text + " " +
 					Words_para0[5].Form.BestVernacularAlternative.Text + ".", wsVern));
 				Para0.Contents = bldr.GetString();
-				/* p1 c p1 c p1 c p1 c p2 c p2 c p2 c */
+				/* c c c c d c d c d c d c. */
 				IWfiWordform c = wfFactory.Create(TsStringUtils.MakeString("c", wsVern));
-				IWfiWordform p1 = wfFactory.Create(TsStringUtils.MakeString("p1", wsVern));
-				IWfiWordform p2 = wfFactory.Create(TsStringUtils.MakeString("p2", wsVern));
-				Words_para0.Add(p1);
+				IWfiWordform d = wfFactory.Create(TsStringUtils.MakeString("d", wsVern));
 				Words_para0.Add(c);
-				Words_para0.Add(p2);
 				Words_para0.Add(c);
-				Words_para0.Add(p1);
 				Words_para0.Add(c);
-				Words_para0.Add(p2);
 				Words_para0.Add(c);
-				Words_para0.Add(p1);
+				Words_para0.Add(d);
 				Words_para0.Add(c);
-				Words_para0.Add(p2);
+				Words_para0.Add(d); 
 				Words_para0.Add(c);
-				Words_para0.Add(p1);
+				Words_para0.Add(d);
+				Words_para0.Add(c);
+				Words_para0.Add(d);
 				Words_para0.Add(c);
 				var bldr2 = Para0.Contents.GetIncBldr();
 				bldr2.AppendTsString(TsStringUtils.MakeString(
@@ -142,8 +139,6 @@ namespace SIL.LCModel.DomainServices
 					" " + Words_para0[15].Form.BestVernacularAlternative.Text +
 					" " + Words_para0[16].Form.BestVernacularAlternative.Text +
 					" " + Words_para0[17].Form.BestVernacularAlternative.Text +
-					" " + Words_para0[18].Form.BestVernacularAlternative.Text +
-					" " + Words_para0[19].Form.BestVernacularAlternative.Text +
 					".", wsVern));
 				Para0.Contents = bldr2.GetString();
 				using (ParagraphParser pp = new ParagraphParser(Cache))
@@ -1068,35 +1063,270 @@ namespace SIL.LCModel.DomainServices
 		/// <summary>
 		/// </summary>
 		[Test]
-		public void ExpectedConditionedGuess_PreferConditionedGuessOverUnconditionedGuess()
+		public void ExpectedConditionedGuess_PreferConditionedOverUnconditioned()
 		{
 			using (var setup = new AnalysisGuessBaseSetup(Cache))
 			{
-				var newWagConditionedApproves = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[9]);
-				var newWagUnconditionedApproves = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[15]);
-				var nullWAG = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[0]).Analysis;
+				var segment = setup.Para0.SegmentsOS[2];
+				var unconditionedApprovedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[1].Wordform).Analysis;
+				var dAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[4].Wordform).Analysis;
+				var conditionedApprovedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[5].Wordform).Analysis;
 				// Analyses must be set in order.
-				setup.Para0.SetAnalysis(0, 0, nullWAG); // "A"
-				setup.Para0.SetAnalysis(0, 1, nullWAG); // "a"
-				setup.Para0.SetAnalysis(0, 2, nullWAG); // "a"
-				setup.Para0.SetAnalysis(0, 3, nullWAG); // "a"
-				setup.Para0.SetAnalysis(0, 4, nullWAG); // "b"
-				setup.Para0.SetAnalysis(0, 5, nullWAG); // "B"
-				setup.Para0.SetAnalysis(0, 6, nullWAG); // "p1"
-				setup.Para0.SetAnalysis(0, 7, newWagConditionedApproves.Analysis); // "c"
-				setup.Para0.SetAnalysis(0, 8, nullWAG); // "p2"
-				setup.Para0.SetAnalysis(0, 9, newWagUnconditionedApproves.Analysis); // "c"
-				setup.Para0.SetAnalysis(0, 10, nullWAG); // "p1"
-				setup.Para0.SetAnalysis(0, 11, newWagUnconditionedApproves.Analysis); // "c"
+				setup.Para0.SetAnalysis(2, 0, unconditionedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 1, unconditionedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 2, unconditionedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 3, unconditionedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 4, dAnalysis); // "d"
+				setup.Para0.SetAnalysis(2, 5, conditionedApprovedAnalysis); // "c"
 				// Verify unconditioned guess.
-				var guessActual = setup.GuessServices.GetBestGuess(setup.Words_para0[7]);
-				Assert.AreEqual(newWagUnconditionedApproves.Analysis, guessActual);
-				AnalysisOccurrence occurrence = new AnalysisOccurrence(setup.Para0.SegmentsOS[2], 7);
+				var wordform = segment.AnalysesRS[7].Wordform;
+				var guessActual = setup.GuessServices.GetBestGuess(wordform);
+				Assert.AreEqual(unconditionedApprovedAnalysis, guessActual);
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(segment, 7);
 				// Make sure we get a conditioned guess for occurrence instead of an unconditioned guess.
 				guessActual = setup.GuessServices.GetBestGuess(occurrence);
-				Assert.AreEqual(newWagConditionedApproves.Analysis, guessActual);
+				Assert.AreEqual(conditionedApprovedAnalysis, guessActual);
+				// Verify unconditioned guess for sort.
+				var sorted_analyses = setup.GuessServices.GetSortedAnalyses(wordform);
+				Assert.AreEqual(2, sorted_analyses.Count);
+				Assert.AreEqual(unconditionedApprovedAnalysis, sorted_analyses[0]);
+				Assert.AreEqual(conditionedApprovedAnalysis, sorted_analyses[1]);
+				// Make sure the conditioned guess is prioritized.
+				sorted_analyses = setup.GuessServices.GetSortedAnalyses(wordform, occurrence);
+				Assert.AreEqual(2, sorted_analyses.Count);
+				Assert.AreEqual(conditionedApprovedAnalysis, sorted_analyses[0]);
+				Assert.AreEqual(unconditionedApprovedAnalysis, sorted_analyses[1]);
+			}
+		}
+
+		/// <summary>
+		/// </summary>
+		[Test]
+		public void ExpectedConditionedGuess_PreferTwoConditionedApprovedOverOneConditionedApproved()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var segment = setup.Para0.SegmentsOS[2];
+				var unconditionedApprovedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[1].Wordform).Analysis;
+				var dAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[4].Wordform).Analysis;
+				var approvedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[5].Wordform).Analysis;
+				var approvedAnalysis2 = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[7].Wordform).Analysis;
+				// Analyses must be set in order.
+				// Add unconditioned analyses as a distractor.
+				setup.Para0.SetAnalysis(2, 0, unconditionedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 1, unconditionedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 2, unconditionedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 3, unconditionedApprovedAnalysis); // "c"
+				// Set up test.
+				setup.Para0.SetAnalysis(2, 4, dAnalysis); // "d"
+				setup.Para0.SetAnalysis(2, 5, approvedAnalysis.Analysis); // "c"
+				setup.Para0.SetAnalysis(2, 7, approvedAnalysis2.Analysis); // "c"
+				setup.Para0.SetAnalysis(2, 9, approvedAnalysis2.Analysis); // "c"
+				// Check guess for occurrence.
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(segment, 11);
+				var guessActual = setup.GuessServices.GetBestGuess(occurrence);
+				Assert.AreEqual(approvedAnalysis2.Analysis, guessActual);
+				// Check sorted analyses.
+				var wordform = segment.AnalysesRS[11].Wordform;
+				var sorted_analyses = setup.GuessServices.GetSortedAnalyses(wordform, occurrence);
+				Assert.AreEqual(3, sorted_analyses.Count);
+				Assert.AreEqual(approvedAnalysis2, sorted_analyses[0]);
+				Assert.AreEqual(approvedAnalysis, sorted_analyses[1]);
+				Assert.AreEqual(unconditionedApprovedAnalysis, sorted_analyses[2]);
+			}
+		}
+
+		/// <summary>
+		/// </summary>
+		[Test]
+		public void ExpectedConditionedGuess_PreferConditionedApprovedOverHumanApproved()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var segment = setup.Para0.SegmentsOS[2];
+				var unconditionedApprovedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[1].Wordform).Analysis;
+				var dAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[4].Wordform).Analysis;
+				var approvedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[5].Wordform).Analysis;
+				var humanApprovedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[7].Wordform).Analysis;
+				// Analyses must be set in order.
+				// Add unconditioned analyses as a distractor.
+				setup.Para0.SetAnalysis(2, 0, unconditionedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 1, unconditionedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 2, unconditionedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 3, unconditionedApprovedAnalysis); // "c"
+				// Set up test.
+				setup.Para0.SetAnalysis(2, 4, dAnalysis); // "d"
+				setup.Para0.SetAnalysis(2, 5, approvedAnalysis.Analysis); // "c"
+				setup.UserAgent.SetEvaluation(humanApprovedAnalysis, Opinions.approves); // "c"
+				// Check guess for occurrence.
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(segment, 11);
+				var guessActual = setup.GuessServices.GetBestGuess(occurrence);
+				Assert.AreEqual(approvedAnalysis.Analysis, guessActual);
+				// Check sorted analyses.
+				var wordform = segment.AnalysesRS[11].Wordform;
+				var sorted_analyses = setup.GuessServices.GetSortedAnalyses(wordform, occurrence);
+				Assert.AreEqual(3, sorted_analyses.Count);
+				Assert.AreEqual(approvedAnalysis, sorted_analyses[0]);
+				Assert.AreEqual(unconditionedApprovedAnalysis, sorted_analyses[1]);
+				Assert.AreEqual(humanApprovedAnalysis, sorted_analyses[2]);
+			}
+		}
+
+		/// <summary>
+		/// </summary>
+		[Test]
+		public void ExpectedConditionedGuess_PreferConditionedApprovedOverParserApproved()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var segment = setup.Para0.SegmentsOS[2];
+				var unconditionedApprovedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[1].Wordform).Analysis;
+				var dAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[4].Wordform).Analysis;
+				var approvedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[5].Wordform).Analysis;
+				var parserApprovedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[7].Wordform).Analysis;
+				// Analyses must be set in order.
+				// Add unconditioned analyses as a distractor.
+				setup.Para0.SetAnalysis(2, 0, unconditionedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 1, unconditionedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 2, unconditionedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 3, unconditionedApprovedAnalysis); // "c"
+				// Set up test.
+				setup.Para0.SetAnalysis(2, 4, dAnalysis); // "d"
+				setup.Para0.SetAnalysis(2, 5, approvedAnalysis.Analysis); // "c"
+				setup.ParserAgent.SetEvaluation(parserApprovedAnalysis, Opinions.approves); // "c"
+				// Check guess for occurrence.
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(segment, 11);
+				var guessActual = setup.GuessServices.GetBestGuess(occurrence);
+				Assert.AreEqual(approvedAnalysis.Analysis, guessActual);
+				// Check sorted analyses.
+				var wordform = segment.AnalysesRS[11].Wordform;
+				var sorted_analyses = setup.GuessServices.GetSortedAnalyses(wordform, occurrence);
+				Assert.AreEqual(3, sorted_analyses.Count);
+				Assert.AreEqual(approvedAnalysis, sorted_analyses[0]);
+				Assert.AreEqual(unconditionedApprovedAnalysis, sorted_analyses[1]);
+				Assert.AreEqual(parserApprovedAnalysis, sorted_analyses[2]);
+			}
+		}
+
+		/// <summary>
+		/// </summary>
+		[Test]
+		public void ExpectedConditionedGuess_PreferConditionedApprovedOverUnapproved()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var segment = setup.Para0.SegmentsOS[2];
+				var unconditionedApprovedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[1].Wordform).Analysis;
+				var dAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[4].Wordform).Analysis;
+				var approvedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[5].Wordform).Analysis;
+				var unapprovedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[7].Wordform).Analysis;
+				// Analyses must be set in order.
+				// Add unconditioned analyses as a distractor.
+				setup.Para0.SetAnalysis(2, 0, unconditionedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 1, unconditionedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 2, unconditionedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 3, unconditionedApprovedAnalysis); // "c"
+																			  // Set up test.
+				setup.Para0.SetAnalysis(2, 4, dAnalysis); // "d"
+				setup.Para0.SetAnalysis(2, 5, approvedAnalysis.Analysis); // "c"
+				// Check guess for occurrence.
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(segment, 11);
+				var guessActual = setup.GuessServices.GetBestGuess(occurrence);
+				Assert.AreEqual(approvedAnalysis.Analysis, guessActual);
+				// Check sorted analyses.
+				var wordform = segment.AnalysesRS[11].Wordform;
+				var sorted_analyses = setup.GuessServices.GetSortedAnalyses(wordform, occurrence);
+				Assert.AreEqual(3, sorted_analyses.Count);
+				Assert.AreEqual(approvedAnalysis, sorted_analyses[0]);
+				Assert.AreEqual(unconditionedApprovedAnalysis, sorted_analyses[1]);
+				Assert.AreEqual(unapprovedAnalysis, sorted_analyses[2]);
+			}
+		}
+
+		/// <summary>
+		/// Prefer gloss based on previous word ("river bank" vs. "financial bank").
+		/// </summary>
+		[Test]
+		public void ExpectedConditionedGloss_PreferConditionedOverUnconditioned()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var segment = setup.Para0.SegmentsOS[2];
+				var servLoc = segment.Cache.ServiceLocator;
+				var glossFactory = servLoc.GetInstance<IWfiGlossFactory>();
+				var analysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[1].Wordform).Analysis;
+				var dAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[4].Wordform).Analysis;
+				var unconditionedApprovedGloss = glossFactory.Create();
+				var conditionedApprovedGloss = glossFactory.Create();
+				analysis.MeaningsOC.Add(unconditionedApprovedGloss);
+				analysis.MeaningsOC.Add(conditionedApprovedGloss);
+				// Analyses must be set in order.
+				setup.Para0.SetAnalysis(2, 0, unconditionedApprovedGloss); // "c"
+				setup.Para0.SetAnalysis(2, 1, unconditionedApprovedGloss); // "c"
+				setup.Para0.SetAnalysis(2, 2, unconditionedApprovedGloss); // "c"
+				setup.Para0.SetAnalysis(2, 3, unconditionedApprovedGloss); // "c"
+				setup.Para0.SetAnalysis(2, 4, dAnalysis); // "d"
+				setup.Para0.SetAnalysis(2, 5, conditionedApprovedGloss); // "c"
+				// Verify unconditioned guess.
+				var wordform = segment.AnalysesRS[11].Wordform;
+				var guessActual = setup.GuessServices.GetBestGuess(wordform);
+				Assert.AreEqual(unconditionedApprovedGloss, guessActual);
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(segment, 11);
+				// Make sure we get a conditioned guess for occurrence instead of an unconditioned guess.
+				guessActual = setup.GuessServices.GetBestGuess(occurrence);
+				Assert.AreEqual(conditionedApprovedGloss, guessActual);
+				// Verify unconditioned guess for sort.
+				var sorted_glosses = setup.GuessServices.GetSortedGlosses(analysis);
+				Assert.AreEqual(2, sorted_glosses.Count);
+				Assert.AreEqual(unconditionedApprovedGloss, sorted_glosses[0]);
+				Assert.AreEqual(conditionedApprovedGloss, sorted_glosses[1]);
+				// Make sure the conditioned guess is prioritized.
+				sorted_glosses = setup.GuessServices.GetSortedGlosses(analysis, occurrence);
+				Assert.AreEqual(2, sorted_glosses.Count);
+				Assert.AreEqual(conditionedApprovedGloss, sorted_glosses[0]);
+				Assert.AreEqual(unconditionedApprovedGloss, sorted_glosses[1]);
+			}
+		}
+
+		/// <summary>
+		/// Prefer gloss based on previous word ("river bank" vs. "financial bank").
+		/// </summary>
+		[Test]
+		public void ExpectedConditionedGloss_PreferTwoConditionedOverOneConditioned()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var segment = setup.Para0.SegmentsOS[2];
+				var servLoc = segment.Cache.ServiceLocator;
+				var glossFactory = servLoc.GetInstance<IWfiGlossFactory>();
+				var analysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[1].Wordform).Analysis;
+				var dAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[4].Wordform).Analysis;
+				var unconditionedApprovedGloss = glossFactory.Create();
+				var conditionedApprovedGloss1 = glossFactory.Create();
+				var conditionedApprovedGloss2 = glossFactory.Create();
+				analysis.MeaningsOC.Add(unconditionedApprovedGloss);
+				analysis.MeaningsOC.Add(conditionedApprovedGloss1);
+				analysis.MeaningsOC.Add(conditionedApprovedGloss2);
+				// Analyses must be set in order.
+				setup.Para0.SetAnalysis(2, 0, unconditionedApprovedGloss); // "c"
+				setup.Para0.SetAnalysis(2, 1, unconditionedApprovedGloss); // "c"
+				setup.Para0.SetAnalysis(2, 2, unconditionedApprovedGloss); // "c"
+				setup.Para0.SetAnalysis(2, 3, unconditionedApprovedGloss); // "c"
+				setup.Para0.SetAnalysis(2, 4, dAnalysis); // "d"
+				setup.Para0.SetAnalysis(2, 5, conditionedApprovedGloss1); // "c"
+				setup.Para0.SetAnalysis(2, 7, conditionedApprovedGloss2); // "c"
+				setup.Para0.SetAnalysis(2, 9, conditionedApprovedGloss2); // "c"
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(segment, 11);
+				// Check guess.
+				var guessActual = setup.GuessServices.GetBestGuess(occurrence);
+				Assert.AreEqual(conditionedApprovedGloss2, guessActual);
+				// Check sorting.
+				var sorted_glosses = setup.GuessServices.GetSortedGlosses(analysis, occurrence);
+				Assert.AreEqual(3, sorted_glosses.Count);
+				Assert.AreEqual(conditionedApprovedGloss2, sorted_glosses[0]);
+				Assert.AreEqual(conditionedApprovedGloss1, sorted_glosses[1]);
+				Assert.AreEqual(unconditionedApprovedGloss, sorted_glosses[2]);
 			}
 		}
 	}
-
 }

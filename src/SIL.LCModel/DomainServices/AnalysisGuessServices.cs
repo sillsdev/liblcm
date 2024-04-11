@@ -109,10 +109,13 @@ namespace SIL.LCModel.DomainServices
 
 		class PriorityCount
 		{
-			public int priority = 0;
+			public int priority = 0; // the priority of the count
 			public int count = 0;
 		}
 
+		// First key of m_guessTable = word form (or analysis).
+		// Second key of m_guessTable = previous word form (including m_nullWAG for backoff).
+		// Final value of m_guessTable = default analysis (or gloss).
 		private IDictionary<IAnalysis, Dictionary<IAnalysis, IAnalysis>> m_guessTable;
 		IDictionary<IAnalysis, Dictionary<IAnalysis, IAnalysis>> GuessTable
 		{
@@ -125,8 +128,8 @@ namespace SIL.LCModel.DomainServices
 			set { m_guessTable = value; }
 		}
 
-		private readonly IAnalysis m_emptyWAG;
-		private readonly IAnalysis m_nullWAG;
+		private readonly IAnalysis m_emptyWAG;  // Represents an empty word form.
+		private readonly IAnalysis m_nullWAG;   // Represents the absence of a word form.
 
 		/// <summary>
 		/// Informs the guess service that the indicated occurrence is being replaced with the specified new
@@ -276,8 +279,8 @@ namespace SIL.LCModel.DomainServices
 		/// Try to get the default analysis for form conditioned on the previous word form.
 		/// If form is an analysis,then the default analysis is a gloss.
 		/// If form is a wordform, then try to get the default gloss of the default analysis if it exists.
-		/// Use m_emptyWAG as previous word form for the first analysis in a segment.
-		/// Use m_nullWAG as previous word form for backoff.
+		/// Use m_emptyWAG as the previous word form for the first analysis in a segment.
+		/// Use m_nullWAG as the previous word form if the previous word form is unknown.
 		/// </summary>
 		/// <param name="form">the form that you want an analysis for</param>
 		/// <param name="previous">the form to be conditioned on</param>
@@ -288,8 +291,7 @@ namespace SIL.LCModel.DomainServices
 			if (!GuessTable.ContainsKey(form))
 			{
 				// Fill in GuessTable.
-				var default_analyses = GetDefaultAnalyses(form);
-				m_guessTable[form] = default_analyses;
+				m_guessTable[form] = GetDefaultAnalyses(form);
 			}
 			if (!GuessTable[form].ContainsKey(previous))
 			{
@@ -303,8 +305,10 @@ namespace SIL.LCModel.DomainServices
 				}
 			}
 			analysis = GuessTable[form][previous];
-			if (analysis != null && analysis is IWfiAnalysis)
-				{
+			if (analysis == null)
+				return false;
+			if (analysis is IWfiAnalysis)
+			{
 				// Get the best gloss for analysis.
 				if (TryGetConditionedGuess(analysis, previous, out IAnalysis gloss))
 				{
@@ -324,6 +328,7 @@ namespace SIL.LCModel.DomainServices
 		/// <returns>Dictionary<IAnalysis, IAnalysis></returns>
 		private Dictionary<IAnalysis, IAnalysis> GetDefaultAnalyses(IAnalysis form)
 		{
+			Dictionary<IAnalysis, IAnalysis> defaults = new Dictionary<IAnalysis, IAnalysis>();
 			Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts;
 			// Get counts.
 			if (form is IWfiWordform wordform)
@@ -334,12 +339,11 @@ namespace SIL.LCModel.DomainServices
 				counts = GetGlossCounts(analysis);
 			} else
 			{
-				return null;
+				return defaults;
 			}
-			Dictionary<IAnalysis, IAnalysis> defaults = new Dictionary<IAnalysis, IAnalysis>();
 			foreach (IAnalysis previous in counts.Keys)
 			{
-				// Get highest scoring analysis.
+				// Get the highest scoring analysis.
 				int max_count = 0;
 				int max_priority = 0;
 				IAnalysis best = null;
@@ -389,22 +393,17 @@ namespace SIL.LCModel.DomainServices
 					if (analysis is IWfiAnalysis)
 					{
 						// Add high priority count to analysis.
-						AddAnalysisCount(previous, analysis, 4, counts);
+						AddAnalysisCount(previous, analysis, 5, counts);
 					}
-					if (analysis is IWfiWordform wordform2)
-					{
-						// Add lower priority counts to the word form's analyses.
-						// (These have not been confirmed.)
-						foreach (IWfiAnalysis analysis2 in wordform2.AnalysesOC)
-						{
-							if (IsNotDisapproved(analysis2))
-							{
-								int priority = IsHumanApproved(analysis2) ? 3 : IsParserApproved(analysis2) ? 2 : 1;
-								AddAnalysisCount(previous, analysis2, priority, counts);
-							}
-						}
-
-					}
+				}
+			}
+			// Include analyses that may not have been selected.
+			foreach (IWfiAnalysis analysis in wordform.AnalysesOC)
+			{
+				if (IsNotDisapproved(analysis))
+				{
+					int priority = IsHumanApproved(analysis) ? 4 : IsParserApproved(analysis) ? 3 : IsComputerApproved(analysis) ? 2 : 1;
+					AddAnalysisCount(m_nullWAG, analysis, priority, counts);
 				}
 			}
 			return counts;
@@ -416,11 +415,14 @@ namespace SIL.LCModel.DomainServices
 		/// Use m_emptyWAG as previous word form for the first analysis in a segment.
 		/// Use m_nullWAG as previous word form for backoff.
 		/// </summary>
+		/// <param name="analysis">the analysis that you want a gloss for</param>
 		/// <returns>Dictionary<IAnalysis, Dictionary<IAnalysis, int>></returns>
 		private Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> GetGlossCounts(IWfiAnalysis analysis)
 		{
 			var counts = new Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>>();
 			var segs = new HashSet<ISegment>();
+			if (!IsNotDisapproved(analysis))
+				return counts;
 			foreach (ISegment seg in analysis.Wordform.OccurrencesInTexts)
 			{
 				if (segs.Contains(seg)) continue;
@@ -435,41 +437,25 @@ namespace SIL.LCModel.DomainServices
 						if (gloss.Analysis == analysis)
 						{
 							// Add high priority count to gloss.
-							AddAnalysisCount(previous, gloss, 5, counts);
-						}
-					}
-					else if (gloss is IWfiAnalysis analysis2)
-					{
-						if (analysis2 == analysis)
-						{
-							foreach (IWfiGloss gloss2 in analysis2.MeaningsOC)
-							{
-								// Add lower priority count to gloss.
-								AddAnalysisCount(previous, gloss2, 4, counts);
-							}
-						}
-					}
-					else if (gloss is IWfiWordform wordform)
-					{
-						foreach (IWfiAnalysis analysis3 in wordform.AnalysesOC)
-						{
-							if (analysis3 == analysis && IsNotDisapproved(analysis3))
-							{
-								int priority = IsHumanApproved(analysis3) ? 3 : IsParserApproved(analysis3) ? 2 : 1;
-								foreach (IWfiGloss gloss3 in analysis3.MeaningsOC)
-								{
-									// Add lower priority count to gloss.
-									AddAnalysisCount(previous, gloss3, priority, counts);
-								}
-
-							}
+							AddAnalysisCount(previous, gloss, 2, counts);
 						}
 					}
 				}
 			}
+			// Include glosses that may not have been selected.
+			foreach (IWfiGloss gloss in analysis.MeaningsOC)
+			{
+				AddAnalysisCount(m_nullWAG, gloss, 1, counts);
+			}
 			return counts;
 		}
 
+		/// <summary>
+		/// Get the previous word form given a location.
+		/// </summary>
+		/// <param name="seg">the segment of the location</param>
+		/// <param name="i">the index of the location</param>
+		/// <returns>IAnalysis</returns>
 		private IAnalysis GetPreviousWordform(ISegment seg, int i)
 		{
 			if (i == 0)
@@ -482,6 +468,14 @@ namespace SIL.LCModel.DomainServices
 			return previous;
 		}
 
+		/// <summary>
+		/// Add a count to counts for analysis with the given previous word form and the given priority.
+		/// </summary>
+		/// <param name="previous">the previous word form</param>
+		/// <param name="analysis">the analysis being counted</param>
+		/// <param name="priority">the priority of the count</param>
+		/// <param name="counts">the dictionary of counts being incremented</param>
+		/// <returns>void</returns>
 		private void AddAnalysisCount(IAnalysis previous, IAnalysis analysis, int priority, Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts)
 		{
 			if (previous != m_nullWAG)
@@ -508,6 +502,7 @@ namespace SIL.LCModel.DomainServices
 				counts[previous][analysis].priority = priority;
 				counts[previous][analysis].count = 0;
 			}
+			// Increment count.
 			counts[previous][analysis].count += 1;
 		}
 
@@ -853,76 +848,62 @@ namespace SIL.LCModel.DomainServices
 		}
 
 		/// <summary>
-		/// Get analyses for the wordform in occurrence sorted by priority.
+		/// Get the analyses for the wordform sorted by priority.
 		/// </summary>
-		public List<IWfiAnalysis> GetSortedAnalyses(AnalysisOccurrence occurrence)
-		{
-			if (occurrence.HasWordform)
-			{
-				IWfiWordform wordform = occurrence.Analysis.Wordform;
-				IAnalysis previous = GetPreviousWordform(occurrence.Segment, occurrence.Index);
-				var counts = GetAnalysisCounts(wordform);
-				List<IWfiAnalysis> analyses = wordform.AnalysesOC.ToList();
-				analyses.Sort((x, y) => ComparePriorityCounts(x, y, previous, counts));
-				return analyses;
-			}
-			return new List<IWfiAnalysis>();
-		}
-
-		/// <summary>
-		/// Get analyses for the wordform sorted by priority.
-		/// </summary>
-		public List<IWfiAnalysis> GetSortedAnalyses(IWfiWordform wordform)
+		public List<IWfiAnalysis> GetSortedAnalyses(IWfiWordform wordform, AnalysisOccurrence occurrence = null)
 		{
 			var counts = GetAnalysisCounts(wordform);
+			var previous = occurrence == null ? m_nullWAG : GetPreviousWordform(occurrence.Segment, occurrence.Index);
 			List<IWfiAnalysis> analyses = wordform.AnalysesOC.ToList();
-			analyses.Sort((x, y) => ComparePriorityCounts(x, y, m_nullWAG, counts));
+			analyses.Sort((x, y) => ComparePriorityCounts(x, y, previous, counts));
 			return analyses;
 		}
 
 		/// <summary>
-		/// Compare the priority counts for a1 and a2
-		/// based on the previous wordform and a dictionary of counts.
+		/// Get glosses for the analysis sorted by priority.
 		/// </summary>
-		private int ComparePriorityCounts(IWfiAnalysis a1, IWfiAnalysis a2, IAnalysis previous,
-			Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts)
+		public List<IWfiGloss> GetSortedGlosses(IWfiAnalysis analysis, AnalysisOccurrence occurrence = null)
 		{
-			// Get priority counts for a1 and a2.
-			PriorityCount pc1 = null;
-			PriorityCount pc2 = null;
-			if (counts.ContainsKey(previous) && counts[previous].ContainsKey(a1))
-				pc1 = counts[previous][a1];
-			if (counts.ContainsKey(previous) && counts[previous].ContainsKey(a2))
-				pc2 = counts[previous][a2];
-			if (pc1 == null && pc2 == null && previous != m_nullWAG)
-			{
-				// Try backoff for both.
-				previous = m_nullWAG;
-				if (counts.ContainsKey(previous) && counts[previous].ContainsKey(a1))
-					pc1 = counts[previous][a1];
-				if (counts.ContainsKey(previous) && counts[previous].ContainsKey(a2))
-					pc2 = counts[previous][a2];
-			}
-			// Compare priority counts.
-			if (pc1 == null)
-			{
-				if (pc2 == null)
-					return 0;
-				return -1;
-			}
-			if (pc2 == null)
-				return 1;
-			if (pc1.priority < pc2.priority)
-				return -1;
-			if (pc1.priority > pc2.priority)
-				return 1;
-			if (pc1.count < pc2.count)
-				return -1;
-			if (pc1.priority > pc2.priority)
-				return 1;
-			return 0;
+			var counts = GetGlossCounts(analysis);
+			var previous = occurrence == null ? m_nullWAG : GetPreviousWordform(occurrence.Segment, occurrence.Index);
+			List<IWfiGloss> glosses = analysis.MeaningsOC.ToList();
+			glosses.Sort((x, y) => ComparePriorityCounts(x, y, previous, counts));
+			return glosses;
 		}
 
+		/// <summary>
+		/// Compare the priority counts for a1 and a2 based on
+		/// the previous wordform and a dictionary of counts.
+		/// Sort in descending order.
+		/// </summary>
+		private int ComparePriorityCounts(IAnalysis a1, IAnalysis a2, IAnalysis previous,
+			Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts)
+		{
+			// Check for existence of previous.
+			if (!counts.ContainsKey(previous))
+			{
+				previous = m_nullWAG;
+				if (!counts.ContainsKey(previous))
+					return 0;
+			}
+			// See if we should back off.
+			if (!counts[previous].ContainsKey(a1) && !counts[previous].ContainsKey(a2))
+				previous = m_nullWAG;
+			// Get priority counts for a1 and a2.
+			int count1 = counts[previous].ContainsKey(a1) ? counts[previous][a1].count : 0;
+			int count2 = counts[previous].ContainsKey(a2) ? counts[previous][a2].count : 0;
+			int priority1 = counts[previous].ContainsKey(a1) ? counts[previous][a1].priority : 0; ;
+			int priority2 = counts[previous].ContainsKey(a2) ? counts[previous][a2].priority : 0;
+			// Compare priority counts.
+			if (priority1 < priority2)
+				return 1;
+			if (priority1 > priority2)
+				return -1;
+			if (count1 < count2)
+				return 1;
+			if (count1 > count2)
+				return -1;
+			return 0;
+		}
 	}
-
 }
