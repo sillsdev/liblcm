@@ -10,6 +10,7 @@
 
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using Icu;
 using SIL.LCModel.Core.KernelInterfaces;
@@ -35,9 +36,7 @@ namespace SIL.LCModel.DomainServices
 		public AnalysisGuessServices(LcmCache cache)
 		{
 			Cache = cache;
-			var wfFactory = Cache.ServiceLocator.GetInstance<IWfiWordformFactory>();
-			var wsVern = Cache.DefaultVernWs;
-			m_emptyWAG = wfFactory.Create(TsStringUtils.MakeString("", wsVern));
+			m_emptyWAG = new EmptyWAG();
 			m_nullWAG = new NullWAG();
 		}
 
@@ -62,51 +61,6 @@ namespace SIL.LCModel.DomainServices
 
 		LcmCache Cache { get; set; }
 
-		private IDictionary<IWfiAnalysis, ICmAgentEvaluation> m_analysisApprovalTable;
-		/// <summary>
-		/// Table that has user opinions about analyses.
-		/// </summary>
-		IDictionary<IWfiAnalysis, ICmAgentEvaluation> AnalysisApprovalTable
-		{
-			get
-			{
-				if (m_analysisApprovalTable == null)
-					LoadAnalysisApprovalTable();
-				return m_analysisApprovalTable;
-			}
-			set { m_analysisApprovalTable = value; }
-		}
-
-		private HashSet<IWfiAnalysis> m_computerApprovedTable;
-		/// <summary>
-		/// Table for which analyses have been approved by a computer (i.e. for matching words to Entries)
-		/// </summary>
-		HashSet<IWfiAnalysis> ComputerApprovedTable
-		{
-			get
-			{
-				if (m_computerApprovedTable == null)
-					LoadComputerApprovedTable();
-				return m_computerApprovedTable;
-			}
-			set { m_computerApprovedTable = value; }
-		}
-
-		private HashSet<IWfiAnalysis> m_parserApprovedTable;
-		/// <summary>
-		/// Table for which analyses have been approved by grammatical parser
-		/// </summary>
-		HashSet<IWfiAnalysis> ParserApprovedTable
-		{
-			get
-			{
-				if (m_parserApprovedTable == null)
-					LoadParserApprovedTable();
-				return m_parserApprovedTable;
-			}
-			set { m_parserApprovedTable = value; }
-		}
-
 		class PriorityCount
 		{
 			public int priority = 0; // the priority of the count
@@ -130,6 +84,50 @@ namespace SIL.LCModel.DomainServices
 
 		private readonly IAnalysis m_emptyWAG;  // Represents an empty word form.
 		private readonly IAnalysis m_nullWAG;   // Represents the absence of a word form.
+
+		/// <summary>
+		/// an empty object for a WAG modelled after NullWAG
+		/// </summary>
+		public class EmptyWAG : NullCmObject, IAnalysis
+		{
+			#region IAnalysis Members
+
+			/// <summary>
+			///
+			/// </summary>
+			public IWfiWordform Wordform
+			{
+				get { return null; }
+			}
+
+			/// <summary>
+			///
+			/// </summary>
+			public bool HasWordform
+			{
+				get { return false; }
+			}
+
+			/// <summary>
+			///
+			/// </summary>
+			public IWfiAnalysis Analysis
+			{
+				get { return null; }
+			}
+
+			/// <summary>
+			///
+			/// </summary>
+			/// <param name="ws"></param>
+			/// <returns></returns>
+			public ITsString GetForm(int ws)
+			{
+				return null;
+			}
+
+			#endregion
+		}
 
 		/// <summary>
 		/// Informs the guess service that the indicated occurrence is being replaced with the specified new
@@ -187,8 +185,11 @@ namespace SIL.LCModel.DomainServices
 
 		bool IsNotDisapproved(IWfiAnalysis wa)
 		{
-			ICmAgentEvaluation cae;
-			if (AnalysisApprovalTable.TryGetValue(wa, out cae))
+			ICmAgentEvaluation cae = null;
+			foreach (var ae in wa.EvaluationsRC)
+				if (((ICmAgent)ae.Owner).Human)
+					cae = ae;
+			if (cae != null)
 				return cae.Approves;
 			return true; // no opinion
 		}
@@ -216,8 +217,11 @@ namespace SIL.LCModel.DomainServices
 		/// <returns></returns>
 		public bool IsHumanApproved(IWfiAnalysis wa)
 		{
-			ICmAgentEvaluation cae;
-			if (AnalysisApprovalTable.TryGetValue(wa, out cae))
+			ICmAgentEvaluation cae = null;
+			foreach (var ae in wa.EvaluationsRC)
+				if (((ICmAgent)ae.Owner).Human)
+					cae = ae;
+			if (cae != null)
 				return cae.Approves;
 			return false; // no opinion
 		}
@@ -229,7 +233,8 @@ namespace SIL.LCModel.DomainServices
 		/// <returns></returns>
 		public bool IsComputerApproved(IWfiAnalysis candidate)
 		{
-			return ComputerApprovedTable.Contains(candidate);
+			var agent = Cache.LangProject.DefaultComputerAgent;
+			return candidate.GetAgentOpinion(agent) == Opinions.approves;
 		}
 
 		/// <summary>
@@ -239,40 +244,9 @@ namespace SIL.LCModel.DomainServices
 		/// <returns></returns>
 		public bool IsParserApproved(IWfiAnalysis candidate)
 		{
-			return ParserApprovedTable.Contains(candidate);
-		}
-
-		void LoadAnalysisApprovalTable()
-		{
-			var dictionary = new Dictionary<IWfiAnalysis, ICmAgentEvaluation>();
-			foreach(var analysis in Cache.ServiceLocator.GetInstance<IWfiAnalysisRepository>().AllInstances())
-				foreach (var ae in analysis.EvaluationsRC)
-					if (((ICmAgent) ae.Owner).Human)
-						dictionary[analysis] = ae;
-			AnalysisApprovalTable = dictionary;
-		}
-
-		void LoadComputerApprovedTable()
-		{
-			IEnumerable<IWfiAnalysis> list = GetAgentApprovedList(Cache.LangProject.DefaultComputerAgent);
-			ComputerApprovedTable = new HashSet<IWfiAnalysis>(list);
-		}
-
-		/// <summary>
-		/// Get all the analyses approved by the specified agent.
-		/// </summary>
-		/// <param name="agent"></param>
-		/// <returns></returns>
-		private IEnumerable<IWfiAnalysis> GetAgentApprovedList(ICmAgent agent)
-		{
-			return Cache.ServiceLocator.GetInstance<IWfiAnalysisRepository>().AllInstances().Where(
-				analysis => analysis.GetAgentOpinion(agent) == Opinions.approves);
-		}
-
-		void LoadParserApprovedTable()
-		{
-			IEnumerable<IWfiAnalysis> list = GetAgentApprovedList(Cache.LangProject.DefaultParserAgent);
-			ParserApprovedTable = new HashSet<IWfiAnalysis>(list);
+			var agent = Cache.LangProject.DefaultParserAgent;
+			return candidate.GetAgentOpinion(agent) == Opinions.approves;
+			// return ParserApprovedTable.Contains(candidate);
 		}
 
 		/// <summary>
@@ -725,9 +699,6 @@ namespace SIL.LCModel.DomainServices
 		public void ClearGuessData()
 		{
 			GuessTable = null;
-			ParserApprovedTable = null;
-			ComputerApprovedTable = null;
-			AnalysisApprovalTable = null;
 		}
 
 		/// <summary>
