@@ -304,37 +304,44 @@ namespace SIL.LCModel.DomainServices
 		{
 			Dictionary<IAnalysis, IAnalysis> defaults = new Dictionary<IAnalysis, IAnalysis>();
 			Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts;
-			// Get counts.
 			if (form is IWfiWordform wordform)
 			{
 				counts = GetAnalysisCounts(wordform);
-			} else if (form is IWfiAnalysis analysis)
-			{
-				counts = GetGlossCounts(analysis);
-			} else
-			{
-				return defaults;
-			}
-			foreach (IAnalysis previous in counts.Keys)
-			{
-				// Get the highest scoring analysis.
-				int max_count = 0;
-				int max_priority = 0;
-				IAnalysis best = null;
-				foreach (IAnalysis analysis in counts[previous].Keys)
+				foreach (IAnalysis previous in counts.Keys)
 				{
-					int count = counts[previous][analysis].count;
-					int priority = counts[previous][analysis].priority;
-					if (priority > max_priority ||
-						priority == max_priority && count > max_count)
+					// Get the best analysis for previous.
+					IAnalysis best = null;
+					// Enumerate  wordform.AnalysesOC rather than counts[previous].Keys
+					// so that you get the same order as GetSortedAnalyses.
+					foreach (IAnalysis analysis in wordform.AnalysesOC)
 					{
-						// This is a better analysis.
-						max_priority = priority;
-						max_count = count;
-						best = analysis;
+						if (best == null || ComparePriorityCounts(analysis, best, previous, counts) < 0)
+						{
+							best = analysis;
+							defaults[previous] = best;
+						}
 					}
 				}
-				defaults[previous] = best;
+
+			}
+			else if (form is IWfiAnalysis analysis)
+			{
+				counts = GetGlossCounts(analysis);
+				foreach (IAnalysis previous in counts.Keys)
+				{
+					// Get the best analysis for previous.
+					IAnalysis best = null;
+					// Enumerate analysis.MeaningsOC rather than counts[previous].Keys
+					// so that you get the same order as GetSortedGlosses.
+					foreach (IAnalysis gloss in analysis.MeaningsOC)
+					{
+						if (best == null || ComparePriorityCounts(gloss, best, previous, counts) < 0)
+						{
+							best = gloss;
+							defaults[previous] = best;
+						}
+					}
+				}
 			}
 			return defaults;
 		}
