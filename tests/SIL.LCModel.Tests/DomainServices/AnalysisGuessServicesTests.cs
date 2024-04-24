@@ -3,10 +3,12 @@
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.DomainImpl;
+using SIL.LCModel.Infrastructure;
 using SIL.ObjectModel;
 
 namespace SIL.LCModel.DomainServices
@@ -110,7 +112,7 @@ namespace SIL.LCModel.DomainServices
 					" " + Words_para0[4].Form.BestVernacularAlternative.Text + " " +
 					Words_para0[5].Form.BestVernacularAlternative.Text + ".", wsVern));
 				Para0.Contents = bldr.GetString();
-				/* c c c c d c d c d c d c. */
+				/* c c c c d c d c d c d c, c. */
 				IWfiWordform c = wfFactory.Create(TsStringUtils.MakeString("c", wsVern));
 				IWfiWordform d = wfFactory.Create(TsStringUtils.MakeString("d", wsVern));
 				Words_para0.Add(c);
@@ -125,6 +127,7 @@ namespace SIL.LCModel.DomainServices
 				Words_para0.Add(c);
 				Words_para0.Add(d);
 				Words_para0.Add(c);
+				Words_para0.Add(c); // after punctuation
 				var bldr2 = Para0.Contents.GetIncBldr();
 				bldr2.AppendTsString(TsStringUtils.MakeString(
 					" " + Words_para0[6].Form.BestVernacularAlternative.Text +
@@ -139,6 +142,7 @@ namespace SIL.LCModel.DomainServices
 					" " + Words_para0[15].Form.BestVernacularAlternative.Text +
 					" " + Words_para0[16].Form.BestVernacularAlternative.Text +
 					" " + Words_para0[17].Form.BestVernacularAlternative.Text +
+					", " + Words_para0[18].Form.BestVernacularAlternative.Text +
 					".", wsVern));
 				Para0.Contents = bldr2.GetString();
 				using (ParagraphParser pp = new ParagraphParser(Cache))
@@ -779,7 +783,7 @@ namespace SIL.LCModel.DomainServices
 
 
 		/// <summary>
-		/// If a wordform is in a sentence initial position (and non-lowercase), prefer a guess for
+		/// If a wordform is in a sentence initial position (and non-lowercase), consider
 		/// the lowercase form.
 		/// </summary>
 		[Test]
@@ -787,10 +791,20 @@ namespace SIL.LCModel.DomainServices
 		{
 			using (var setup = new AnalysisGuessBaseSetup(Cache))
 			{
-				WordAnalysisOrGlossServices.CreateNewAnalysisTreeGloss(setup.Words_para0[0]);
+				var newWagUppercase = WordAnalysisOrGlossServices.CreateNewAnalysisTreeGloss(setup.Words_para0[0]);
 				var newWagLowercase = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[1]);
-				var wagUppercase = new AnalysisOccurrence(setup.Para0.SegmentsOS[0], 0);
-				var guessActual = setup.GuessServices.GetBestGuess(wagUppercase);
+				var uppercaseOccurrence = new AnalysisOccurrence(setup.Para0.SegmentsOS[0], 0);
+				// There should be two possible analyses: one uppercase and one lowercase.
+				var wordform = uppercaseOccurrence.Analysis.Wordform;
+				var analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform, uppercaseOccurrence);
+				Assert.AreEqual(analyses.Count, 2);
+				// All else being equal, prefer the uppercase analysis.
+				var guessActual = setup.GuessServices.GetBestGuess(uppercaseOccurrence);
+				Assert.AreEqual(newWagUppercase.Analysis, guessActual);
+				// If the lowercase has been selected, prefer the lowercase analysis.
+				setup.Para0.SetAnalysis(0, 1, newWagLowercase);
+				setup.GuessServices.ClearGuessData();
+				guessActual = setup.GuessServices.GetBestGuess(uppercaseOccurrence);
 				Assert.AreEqual(newWagLowercase.Analysis, guessActual);
 			}
 
@@ -1087,12 +1101,12 @@ namespace SIL.LCModel.DomainServices
 				guessActual = setup.GuessServices.GetBestGuess(occurrence);
 				Assert.AreEqual(conditionedApprovedAnalysis, guessActual);
 				// Verify unconditioned guess for sort.
-				var sorted_analyses = setup.GuessServices.GetSortedAnalyses(wordform);
+				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform);
 				Assert.AreEqual(2, sorted_analyses.Count);
 				Assert.AreEqual(unconditionedApprovedAnalysis, sorted_analyses[0]);
 				Assert.AreEqual(conditionedApprovedAnalysis, sorted_analyses[1]);
 				// Make sure the conditioned guess is prioritized.
-				sorted_analyses = setup.GuessServices.GetSortedAnalyses(wordform, occurrence);
+				sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform, occurrence);
 				Assert.AreEqual(2, sorted_analyses.Count);
 				Assert.AreEqual(conditionedApprovedAnalysis, sorted_analyses[0]);
 				Assert.AreEqual(unconditionedApprovedAnalysis, sorted_analyses[1]);
@@ -1128,7 +1142,7 @@ namespace SIL.LCModel.DomainServices
 				Assert.AreEqual(approvedAnalysis2.Analysis, guessActual);
 				// Check sorted analyses.
 				var wordform = segment.AnalysesRS[11].Wordform;
-				var sorted_analyses = setup.GuessServices.GetSortedAnalyses(wordform, occurrence);
+				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform, occurrence);
 				Assert.AreEqual(3, sorted_analyses.Count);
 				Assert.AreEqual(approvedAnalysis2, sorted_analyses[0]);
 				Assert.AreEqual(approvedAnalysis, sorted_analyses[1]);
@@ -1164,7 +1178,7 @@ namespace SIL.LCModel.DomainServices
 				Assert.AreEqual(approvedAnalysis.Analysis, guessActual);
 				// Check sorted analyses.
 				var wordform = segment.AnalysesRS[11].Wordform;
-				var sorted_analyses = setup.GuessServices.GetSortedAnalyses(wordform, occurrence);
+				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform, occurrence);
 				Assert.AreEqual(3, sorted_analyses.Count);
 				Assert.AreEqual(approvedAnalysis, sorted_analyses[0]);
 				Assert.AreEqual(unconditionedApprovedAnalysis, sorted_analyses[1]);
@@ -1200,7 +1214,7 @@ namespace SIL.LCModel.DomainServices
 				Assert.AreEqual(approvedAnalysis.Analysis, guessActual);
 				// Check sorted analyses.
 				var wordform = segment.AnalysesRS[11].Wordform;
-				var sorted_analyses = setup.GuessServices.GetSortedAnalyses(wordform, occurrence);
+				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform, occurrence);
 				Assert.AreEqual(3, sorted_analyses.Count);
 				Assert.AreEqual(approvedAnalysis, sorted_analyses[0]);
 				Assert.AreEqual(unconditionedApprovedAnalysis, sorted_analyses[1]);
@@ -1226,7 +1240,7 @@ namespace SIL.LCModel.DomainServices
 				setup.Para0.SetAnalysis(2, 1, unconditionedApprovedAnalysis); // "c"
 				setup.Para0.SetAnalysis(2, 2, unconditionedApprovedAnalysis); // "c"
 				setup.Para0.SetAnalysis(2, 3, unconditionedApprovedAnalysis); // "c"
-																			  // Set up test.
+				// Set up test.
 				setup.Para0.SetAnalysis(2, 4, dAnalysis); // "d"
 				setup.Para0.SetAnalysis(2, 5, approvedAnalysis.Analysis); // "c"
 				// Check guess for occurrence.
@@ -1235,11 +1249,46 @@ namespace SIL.LCModel.DomainServices
 				Assert.AreEqual(approvedAnalysis.Analysis, guessActual);
 				// Check sorted analyses.
 				var wordform = segment.AnalysesRS[11].Wordform;
-				var sorted_analyses = setup.GuessServices.GetSortedAnalyses(wordform, occurrence);
+				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform, occurrence);
 				Assert.AreEqual(3, sorted_analyses.Count);
 				Assert.AreEqual(approvedAnalysis, sorted_analyses[0]);
 				Assert.AreEqual(unconditionedApprovedAnalysis, sorted_analyses[1]);
 				Assert.AreEqual(unapprovedAnalysis, sorted_analyses[2]);
+			}
+		}
+
+		/// <summary>
+		/// GetBestGuess should equal GetSortedAnalyses[0].
+		/// </summary>
+		[Test]
+		public void ExpectedConditionedGuess_CheckGuessWithSorted()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var segment = setup.Para0.SegmentsOS[2];
+				var dAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[4].Wordform).Analysis;
+				var approvedAnalysis1 = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[0].Wordform).Analysis;
+				var approvedAnalysis2 = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[1].Wordform).Analysis;
+				var approvedAnalysis3 = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[2].Wordform).Analysis;
+				var approvedAnalysis4 = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[3].Wordform).Analysis;
+				var approvedAnalysis5 = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[5].Wordform).Analysis;
+				var approvedAnalysis6 = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[7].Wordform).Analysis;
+				var approvedAnalysis7 = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[9].Wordform).Analysis;
+				// Analyses must be set in order.
+				// Create analyses with equal priority.
+				setup.Para0.SetAnalysis(2, 0, approvedAnalysis7.Analysis); // "c"
+				setup.Para0.SetAnalysis(2, 1, approvedAnalysis6.Analysis); // "c"
+				setup.Para0.SetAnalysis(2, 2, approvedAnalysis5.Analysis); // "c"
+				setup.Para0.SetAnalysis(2, 3, approvedAnalysis4.Analysis); // "c"
+				setup.Para0.SetAnalysis(2, 4, dAnalysis); // "d"
+				setup.Para0.SetAnalysis(2, 5, approvedAnalysis3.Analysis); // "c"
+				setup.Para0.SetAnalysis(2, 7, approvedAnalysis2.Analysis); // "c"
+				setup.Para0.SetAnalysis(2, 9, approvedAnalysis1.Analysis); // "c"
+				// Check guess with sorted.
+				var wordform = segment.AnalysesRS[11].Wordform;
+				var guessActual = setup.GuessServices.GetBestGuess(wordform);
+				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform);
+				Assert.AreEqual(guessActual, sorted_analyses[0]);
 			}
 		}
 
@@ -1276,12 +1325,12 @@ namespace SIL.LCModel.DomainServices
 				guessActual = setup.GuessServices.GetBestGuess(occurrence);
 				Assert.AreEqual(conditionedApprovedGloss, guessActual);
 				// Verify unconditioned guess for sort.
-				var sorted_glosses = setup.GuessServices.GetSortedGlosses(analysis);
+				var sorted_glosses = setup.GuessServices.GetSortedGlossGuesses(analysis);
 				Assert.AreEqual(2, sorted_glosses.Count);
 				Assert.AreEqual(unconditionedApprovedGloss, sorted_glosses[0]);
 				Assert.AreEqual(conditionedApprovedGloss, sorted_glosses[1]);
 				// Make sure the conditioned guess is prioritized.
-				sorted_glosses = setup.GuessServices.GetSortedGlosses(analysis, occurrence);
+				sorted_glosses = setup.GuessServices.GetSortedGlossGuesses(analysis, occurrence);
 				Assert.AreEqual(2, sorted_glosses.Count);
 				Assert.AreEqual(conditionedApprovedGloss, sorted_glosses[0]);
 				Assert.AreEqual(unconditionedApprovedGloss, sorted_glosses[1]);
@@ -1321,7 +1370,7 @@ namespace SIL.LCModel.DomainServices
 				var guessActual = setup.GuessServices.GetBestGuess(occurrence);
 				Assert.AreEqual(conditionedApprovedGloss2, guessActual);
 				// Check sorting.
-				var sorted_glosses = setup.GuessServices.GetSortedGlosses(analysis, occurrence);
+				var sorted_glosses = setup.GuessServices.GetSortedGlossGuesses(analysis, occurrence);
 				Assert.AreEqual(3, sorted_glosses.Count);
 				Assert.AreEqual(conditionedApprovedGloss2, sorted_glosses[0]);
 				Assert.AreEqual(conditionedApprovedGloss1, sorted_glosses[1]);
