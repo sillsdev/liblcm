@@ -1101,7 +1101,7 @@ namespace SIL.LCModel.DomainServices
 				guessActual = setup.GuessServices.GetBestGuess(occurrence);
 				Assert.AreEqual(conditionedApprovedAnalysis, guessActual);
 				// Verify unconditioned guess for sort.
-				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform);
+				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform, wordform.Cache.DefaultVernWs);
 				Assert.AreEqual(2, sorted_analyses.Count);
 				Assert.AreEqual(unconditionedApprovedAnalysis, sorted_analyses[0]);
 				Assert.AreEqual(conditionedApprovedAnalysis, sorted_analyses[1]);
@@ -1287,7 +1287,7 @@ namespace SIL.LCModel.DomainServices
 				// Check guess with sorted.
 				var wordform = segment.AnalysesRS[11].Wordform;
 				var guessActual = setup.GuessServices.GetBestGuess(wordform);
-				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform);
+				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform, wordform.Cache.DefaultVernWs);
 				Assert.AreEqual(guessActual, sorted_analyses[0]);
 			}
 		}
