@@ -671,9 +671,7 @@ namespace SIL.LCModel.DomainServices
 			if (sLower != tssWfBaseline.Text)
 			{
 				ITsString tssLower = TsStringUtils.MakeString(sLower, TsStringUtils.GetWsAtOffset(tssWfBaseline, 0));
-				IWfiWordform lowercaseWf;
-				if (Cache.ServiceLocator.GetInstance<IWfiWordformRepository>().TryGetObject(tssLower, out lowercaseWf))
-					return lowercaseWf;
+				return WfiWordformServices.FindOrCreateWordform(Cache, tssLower);
 			}
 			return null;
 		}
