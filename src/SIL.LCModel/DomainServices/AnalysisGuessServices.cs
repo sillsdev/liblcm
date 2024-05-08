@@ -671,7 +671,22 @@ namespace SIL.LCModel.DomainServices
 			if (sLower != tssWfBaseline.Text)
 			{
 				ITsString tssLower = TsStringUtils.MakeString(sLower, TsStringUtils.GetWsAtOffset(tssWfBaseline, 0));
-				return WfiWordformServices.FindOrCreateWordform(Cache, tssLower);
+				IWfiWordform wf;
+				// Look for an existing lowercase wordform.
+				if (Cache.ServiceLocator.GetInstance<IWfiWordformRepository>().TryGetObject(tssLower, out wf))
+					return wf;
+				// Only create a lowercase wordform if there is an entry for it in the lexicon.
+				var morphs = MorphServices.GetMatchingMonomorphemicMorphs(Cache, tssLower);
+				if (morphs.Count() > 0)
+				{
+					NonUndoableUnitOfWorkHelper.DoUsingNewOrCurrentUowOrSkip(Cache.ActionHandlerAccessor,
+						"Trying to generate wordforms during PropChanged when we can't save them.",
+						() =>
+						{
+							wf = Cache.ServiceLocator.GetInstance<IWfiWordformFactory>().Create(tssLower);
+						});
+					return wf;
+				}
 			}
 			return null;
 		}
