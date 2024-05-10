@@ -545,9 +545,19 @@ namespace SIL.LCModel.DomainServices
 				AnalysisOccurrence occurrence = new AnalysisOccurrence(setup.Para0.SegmentsOS[0], 0);
 				// GenerateEntryGuesses implicitly gets called.
 				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(occurrence.Analysis.Wordform, occurrence);
+				// The uppercase wordform is preferred because it hasn't been lowercased.
 				Assert.AreEqual(2, sorted_analyses.Count);
 				Assert.AreEqual("A", sorted_analyses[0].Analysis.Wordform.ShortName);
 				Assert.AreEqual("a", sorted_analyses[1].Analysis.Wordform.ShortName);
+				// Test GetOriginalCaseWordform.
+				// Set the analysis to the lowercase wordform.
+				setup.Para0.SetAnalysis(0, 0, sorted_analyses[1]);
+				sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(occurrence.Analysis.Wordform, occurrence);
+				// We should still get the uppercase wordform as a guess.
+				// The lowercase wordform is preferred because it is human-approved.
+				Assert.AreEqual(2, sorted_analyses.Count);
+				Assert.AreEqual("a", sorted_analyses[0].Analysis.Wordform.ShortName);
+				Assert.AreEqual("A", sorted_analyses[1].Analysis.Wordform.ShortName);
 			}
 		}
 
