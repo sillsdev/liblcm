@@ -704,7 +704,7 @@ namespace SIL.LCModel.DomainServices
 			// Look for an existing wordform.
 			if (Cache.ServiceLocator.GetInstance<IWfiWordformRepository>().TryGetObject(tssWord, out wf))
 				return wf;
-			// Only create a lowercase wordform if there is an entry for it in the lexicon.
+			// Only create a wordform if there is an entry for it in the lexicon.
 			var morphs = MorphServices.GetMatchingMonomorphemicMorphs(Cache, tssWord);
 			if (morphs.Count() > 0)
 			{
