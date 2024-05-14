@@ -636,21 +636,22 @@ namespace SIL.LCModel.DomainServices
 			// first see if there is a relevant lowercase form of a sentence initial (non-lowercase) wordform
 			// TODO: make it look for the first word in the sentence...may not be at Index 0!
 			IWfiWordform lowercaseWf = null;
+			int ws = occurrence.BaselineWs;
 			if (occurrence.Analysis is IWfiWordform wordform)
 				{
 					if (!EntryGenerated(wordform))
-						GenerateEntryGuesses(wordform, occurrence.BaselineWs);
+						GenerateEntryGuesses(wordform, ws);
 					if (!onlyIndexZeroLowercaseMatching || occurrence.Index == 0)
 					{
-						lowercaseWf = GetLowercaseWordform(occurrence);
-						if (lowercaseWf != null)
+						lowercaseWf = GetLowercaseWordform(occurrence, ws);
+						if (lowercaseWf != null && lowercaseWf != wordform)
 						{
 							if (!EntryGenerated(lowercaseWf))
-								GenerateEntryGuesses(lowercaseWf, occurrence.BaselineWs);
+								GenerateEntryGuesses(lowercaseWf, ws);
 						}
 					}
 			}
-			if (occurrence.BaselineWs == -1)
+			if (ws == -1)
 				return new NullWAG(); // happens with empty translation lines
 			IAnalysis bestGuess;
 			IAnalysis previous = GetPreviousWordform(occurrence.Segment, occurrence.Index);
@@ -662,23 +663,63 @@ namespace SIL.LCModel.DomainServices
 		/// <summary>
 		/// Get the lowercase word form if the occurrence is uppercase.
 		/// </summary>
-		private IWfiWordform GetLowercaseWordform(AnalysisOccurrence occurrence)
+		private IWfiWordform GetLowercaseWordform(AnalysisOccurrence occurrence, int ws)
 		{
 			ITsString tssWfBaseline = occurrence.BaselineText;
-			var cf = new CaseFunctions(Cache.ServiceLocator.WritingSystemManager.Get(tssWfBaseline.get_WritingSystemAt(0)));
+			var cf = new CaseFunctions(Cache.ServiceLocator.WritingSystemManager.Get(ws));
 			string sLower = cf.ToLower(tssWfBaseline.Text);
 			// don't bother looking up the lowercased wordform if the instanceOf is already in lowercase form.
 			if (sLower != tssWfBaseline.Text)
 			{
-				ITsString tssLower = TsStringUtils.MakeString(sLower, TsStringUtils.GetWsAtOffset(tssWfBaseline, 0));
-				IWfiWordform lowercaseWf;
-				if (Cache.ServiceLocator.GetInstance<IWfiWordformRepository>().TryGetObject(tssLower, out lowercaseWf))
-					return lowercaseWf;
+				return GetWordformIfNeeded(sLower, ws);
 			}
 			return null;
 		}
 
-			private IAnalysis GetBestGuess(IAnalysis wag, int ws)
+		// <summary>
+		// Get a wordform with the original case of occurrence's text
+		// if it lowercases to the given wordform.
+		// Otherwise, return null.
+		// </summary>
+		private IWfiWordform GetOriginalCaseWordform(AnalysisOccurrence occurrence, IWfiWordform wordform, int ws)
+		{
+			ITsString tssWfBaseline = occurrence.BaselineText;
+			var cf = new CaseFunctions(Cache.ServiceLocator.WritingSystemManager.Get(ws));
+			string sLower = cf.ToLower(tssWfBaseline.Text);
+			if (sLower == wordform.GetForm(ws).Text)
+			{
+				return GetWordformIfNeeded(tssWfBaseline.Text, ws);
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Get a wordform for word if it already exists or
+		/// if it has an entry in the lexicon.
+		/// </summary>
+		private IWfiWordform GetWordformIfNeeded(string word, int ws)
+		{
+			ITsString tssWord = TsStringUtils.MakeString(word, ws);
+			IWfiWordform wf;
+			// Look for an existing wordform.
+			if (Cache.ServiceLocator.GetInstance<IWfiWordformRepository>().TryGetObject(tssWord, out wf))
+				return wf;
+			// Only create a wordform if there is an entry for it in the lexicon.
+			var morphs = MorphServices.GetMatchingMonomorphemicMorphs(Cache, tssWord);
+			if (morphs.Count() > 0)
+			{
+				NonUndoableUnitOfWorkHelper.DoUsingNewOrCurrentUowOrSkip(Cache.ActionHandlerAccessor,
+					"Trying to generate wordforms during PropChanged when we can't save them.",
+					() =>
+					{
+						wf = Cache.ServiceLocator.GetInstance<IWfiWordformFactory>().Create(tssWord);
+					});
+				return wf;
+			}
+			return null;
+		}
+
+		private IAnalysis GetBestGuess(IAnalysis wag, int ws)
 		{
 			if (wag is IWfiWordform)
 				return GetBestGuess(wag.Wordform, ws);
@@ -746,6 +787,15 @@ namespace SIL.LCModel.DomainServices
 		/// </summary>
 		private List<IWfiAnalysis> GetSortedAnalysisGuesses(IWfiWordform wordform, int ws, AnalysisOccurrence occurrence, bool onlyIndexZeroLowercaseMatching = true)
 		{
+			if (occurrence != null && (!onlyIndexZeroLowercaseMatching || occurrence.Index == 0))
+			{
+				// Sometimes the user selects a lowercase wordform for an uppercase word.
+				// Get the original case so that we can include uppercase analyses.
+				var originalCaseWf = GetOriginalCaseWordform(occurrence, wordform, ws);
+				if (originalCaseWf != null)
+					wordform = originalCaseWf;
+			}
+
 			if (!EntryGenerated(wordform))
 				GenerateEntryGuesses(wordform, ws);
 
@@ -753,8 +803,8 @@ namespace SIL.LCModel.DomainServices
 			List<IWfiAnalysis> analyses = wordform.AnalysesOC.ToList();
 			if (occurrence != null && (!onlyIndexZeroLowercaseMatching || occurrence.Index == 0))
 			{
-				IWfiWordform lowercaseWf = GetLowercaseWordform(occurrence);
-				if (lowercaseWf != null)
+				IWfiWordform lowercaseWf = GetLowercaseWordform(occurrence, ws);
+				if (lowercaseWf != null && lowercaseWf != wordform)
 				{
 					// Add lowercase analyses.
 					if (!EntryGenerated(lowercaseWf))

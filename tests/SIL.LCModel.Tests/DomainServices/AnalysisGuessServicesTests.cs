@@ -145,6 +145,13 @@ namespace SIL.LCModel.DomainServices
 					", " + Words_para0[18].Form.BestVernacularAlternative.Text +
 					".", wsVern));
 				Para0.Contents = bldr2.GetString();
+				/* E. */
+				IWfiWordform E = wfFactory.Create(TsStringUtils.MakeString("E", wsVern));
+				Words_para0.Add(E);
+				var bldr3 = Para0.Contents.GetIncBldr();
+				bldr3.AppendTsString(TsStringUtils.MakeString(
+					" " + Words_para0[19].Form.BestVernacularAlternative.Text + ".", wsVern));
+				Para0.Contents = bldr3.GetString();
 				using (ParagraphParser pp = new ParagraphParser(Cache))
 				{
 					foreach (IStTxtPara para in StText.ParagraphsOS)
@@ -538,9 +545,40 @@ namespace SIL.LCModel.DomainServices
 				AnalysisOccurrence occurrence = new AnalysisOccurrence(setup.Para0.SegmentsOS[0], 0);
 				// GenerateEntryGuesses implicitly gets called.
 				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(occurrence.Analysis.Wordform, occurrence);
+				// The uppercase wordform is preferred because it hasn't been lowercased.
 				Assert.AreEqual(2, sorted_analyses.Count);
 				Assert.AreEqual("A", sorted_analyses[0].Analysis.Wordform.ShortName);
 				Assert.AreEqual("a", sorted_analyses[1].Analysis.Wordform.ShortName);
+				// Test GetOriginalCaseWordform.
+				// Set the analysis to the lowercase wordform.
+				setup.Para0.SetAnalysis(0, 0, sorted_analyses[1]);
+				sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(occurrence.Analysis.Wordform, occurrence);
+				// We should still get the uppercase wordform as a guess.
+				// The lowercase wordform is preferred because it is human-approved.
+				Assert.AreEqual(2, sorted_analyses.Count);
+				Assert.AreEqual("a", sorted_analyses[0].Analysis.Wordform.ShortName);
+				Assert.AreEqual("A", sorted_analyses[1].Analysis.Wordform.ShortName);
+			}
+		}
+
+		/// <summary>
+		/// make generated entries for upper and lower case when only upper case is in corpus.
+		/// </summary>
+		[Test]
+		public void ExpectedGuessForWord_GuessUpperAndLowerGenerated2()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache,
+				AnalysisGuessBaseSetup.Flags.PartsOfSpeech, AnalysisGuessBaseSetup.Flags.VariantEntryTypes))
+			{
+				// create an affix entry
+				setup.EntryFactory.Create("e", "astem", SandboxGenericMSA.Create(MsaType.kStem, setup.Pos_noun));
+				setup.EntryFactory.Create("E", "Astem", SandboxGenericMSA.Create(MsaType.kStem, setup.Pos_noun));
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(setup.Para0.SegmentsOS[3], 0);
+				// GenerateEntryGuesses implicitly gets called.
+				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(occurrence.Analysis.Wordform, occurrence);
+				Assert.AreEqual(2, sorted_analyses.Count);
+				Assert.AreEqual("E", sorted_analyses[0].Analysis.Wordform.ShortName);
+				Assert.AreEqual("e", sorted_analyses[1].Analysis.Wordform.ShortName);
 			}
 		}
 
