@@ -9,12 +9,16 @@
 // </remarks>
 
 using System.Collections.Generic;
+using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using Icu;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Core.WritingSystems;
+using SIL.LCModel.DomainImpl;
 using SIL.LCModel.Infrastructure;
+
 
 namespace SIL.LCModel.DomainServices
 {
@@ -32,6 +36,8 @@ namespace SIL.LCModel.DomainServices
 		public AnalysisGuessServices(LcmCache cache)
 		{
 			Cache = cache;
+			m_emptyWAG = new EmptyWAG();
+			m_nullWAG = new NullWAG();
 		}
 
 		/// <summary>
@@ -55,71 +61,100 @@ namespace SIL.LCModel.DomainServices
 
 		LcmCache Cache { get; set; }
 
-		private IDictionary<IWfiAnalysis, ICmAgentEvaluation> m_analysisApprovalTable;
-		/// <summary>
-		/// Table that has user opinions about analyses.
-		/// </summary>
-		IDictionary<IWfiAnalysis, ICmAgentEvaluation> AnalysisApprovalTable
+		// PriorityCount provides a count of the number of times an analysis
+		// appears with the given priority (= human approved, parser approved, etc.).
+		// It is used to determine which analysis has higher priority.
+		class PriorityCount
 		{
-			get
-			{
-				if (m_analysisApprovalTable == null)
-					LoadAnalysisApprovalTable();
-				return m_analysisApprovalTable;
-			}
-			set { m_analysisApprovalTable = value; }
+			public bool lowercased = false; // whether the word form of the analysis was lowercased
+			public int priority = 0; // the priority of the count
+			public int count = 0;
 		}
 
-		private HashSet<IWfiAnalysis> m_computerApprovedTable;
-		/// <summary>
-		/// Table for which analyses have been approved by a computer (i.e. for matching words to Entries)
-		/// </summary>
-		HashSet<IWfiAnalysis> ComputerApprovedTable
-		{
-			get
-			{
-				if (m_computerApprovedTable == null)
-					LoadComputerApprovedTable();
-				return m_computerApprovedTable;
-			}
-			set { m_computerApprovedTable = value; }
-		}
-
-		private HashSet<IWfiAnalysis> m_parserApprovedTable;
-		/// <summary>
-		/// Table for which analyses have been approved by grammatical parser
-		/// </summary>
-		HashSet<IWfiAnalysis> ParserApprovedTable
-		{
-			get
-			{
-				if (m_parserApprovedTable == null)
-					LoadParserApprovedTable();
-				return m_parserApprovedTable;
-			}
-			set { m_parserApprovedTable = value; }
-		}
-
-		private IDictionary<IAnalysis, IAnalysis> m_guessTable;
-		IDictionary<IAnalysis, IAnalysis> GuessTable
+		// First key of m_guessTable = word form (or analysis).
+		// Second key of m_guessTable = previous word form (including m_nullWAG for unknown).
+		// Final value of m_guessTable = default analysis (or gloss).
+		private IDictionary<IAnalysis, Dictionary<IAnalysis, IAnalysis>> m_guessTable;
+		IDictionary<IAnalysis, Dictionary<IAnalysis, IAnalysis>> GuessTable
 		{
 			get
 			{
 				if (m_guessTable == null)
-					LoadGuessTable();
+					GuessTable = new Dictionary<IAnalysis, Dictionary<IAnalysis, IAnalysis>>();
 				return m_guessTable;
 			}
 			set { m_guessTable = value; }
 		}
 
+		// CaselessGuessTable is like GuessTable, but for uppercase word forms that can have lowercase analyses.
+		private IDictionary<IAnalysis, Dictionary<IAnalysis, IAnalysis>> m_caselessGuessTable;
+		IDictionary<IAnalysis, Dictionary<IAnalysis, IAnalysis>> CaselessGuessTable
+		{
+			get
+			{
+				if (m_caselessGuessTable == null)
+					CaselessGuessTable = new Dictionary<IAnalysis, Dictionary<IAnalysis, IAnalysis>>();
+				return m_caselessGuessTable;
+			}
+			set { m_caselessGuessTable = value; }
+		}
+
+		private readonly IAnalysis m_emptyWAG;  // Represents an empty word form.
+		private readonly IAnalysis m_nullWAG;   // Represents an unknown word form.
+
+		/// <summary>
+		/// an empty object for a WAG modelled after NullWAG
+		/// EmptyWAG represents the previous word form of the first word of a sentence.
+		/// </summary>
+		public class EmptyWAG : NullCmObject, IAnalysis
+		{
+			#region IAnalysis Members
+
+			/// <summary>
+			///
+			/// </summary>
+			public IWfiWordform Wordform
+			{
+				get { return null; }
+			}
+
+			/// <summary>
+			///
+			/// </summary>
+			public bool HasWordform
+			{
+				get { return false; }
+			}
+
+			/// <summary>
+			///
+			/// </summary>
+			public IWfiAnalysis Analysis
+			{
+				get { return null; }
+			}
+
+			/// <summary>
+			///
+			/// </summary>
+			/// <param name="ws"></param>
+			/// <returns></returns>
+			public ITsString GetForm(int ws)
+			{
+				return null;
+			}
+
+			#endregion
+		}
+
 		/// <summary>
 		/// Informs the guess service that the indicated occurrence is being replaced with the specified new
-		/// analysis. If necessary clear the GuessTable. If possible update it. The most common and
-		/// performance-critical case is confirming a guess. Return true if the cache was changed.
+		/// analysis. If necessary clear the GuessTable. If possible update it.
+		/// Return true if the cache was changed.
 		/// </summary>
 		public bool UpdatingOccurrence(IAnalysis oldAnalysis, IAnalysis newAnalysis)
 		{
-			if (m_guessTable == null)
+			if (m_guessTable == null && m_caselessGuessTable == null)
 				return false; // already cleared, forget it.
 			if (oldAnalysis == newAnalysis)
 				return false; // nothing changed, no problem.
@@ -134,44 +169,35 @@ namespace SIL.LCModel.DomainServices
 			}
 			if (newAnalysis is IWfiWordform || newAnalysis.Wordform == null)
 				return false; // unlikely but doesn't mess up our guesses.
+			if (newAnalysis.Wordform != oldAnalysis)
+			{
+				// The wordform changed, probably because a lowercase analysis was used.
+				// This changes the previous word form of the next word, which is unknown to us.
+				ClearGuessData();
+				return true;
+			}
 			var result = false;
-			// if the new analysis is NOT the guess for one of its owners, one more occurrence might
-			// make it the guess, so we need to regenerate.
-			IAnalysis currentDefault;
-			if (!m_guessTable.TryGetValue(newAnalysis.Wordform, out currentDefault))
+			// Remove the word form from the guess tables.
+			if (GuessTable.ContainsKey(oldAnalysis))
 			{
-				// We have no guess for this wordform: the new analysis becomes it.
-				m_guessTable[newAnalysis.Wordform] = newAnalysis;
-				result = true; // we didn't clear the cache but did change it.
+				GuessTable.Remove(oldAnalysis);
+				result = true;
 			}
-			else if (currentDefault != newAnalysis)
+			if (CaselessGuessTable.ContainsKey(oldAnalysis))
 			{
-				// Some other analysis just became more common...maybe now the default?
-				ClearGuessData();
-				return true;
+				CaselessGuessTable.Remove(oldAnalysis);
+				result = true;
 			}
-			if (newAnalysis is IWfiAnalysis)
-				return result;
-			if (!m_guessTable.TryGetValue(newAnalysis.Analysis, out currentDefault))
-			{
-				// We have no guess for this analysis: the new analysis becomes it.
-				m_guessTable[newAnalysis.Analysis] = newAnalysis;
-				result = true; // we didn't clear the cache but did change it.
-			}
-			else if (currentDefault != newAnalysis)
-			{
-				// Some other analysis just became more common...maybe now the default?
-				ClearGuessData();
-				return true;
-			}
-			// We haven't messed up any guesses so the guess table can survive.
-			return result; // but we may have filled in some guesses.
+			return result;
 		}
 
 		bool IsNotDisapproved(IWfiAnalysis wa)
 		{
-			ICmAgentEvaluation cae;
-			if (AnalysisApprovalTable.TryGetValue(wa, out cae))
+			ICmAgentEvaluation cae = null;
+			foreach (var ae in wa.EvaluationsRC)
+				if (((ICmAgent)ae.Owner).Human)
+					cae = ae;
+			if (cae != null)
 				return cae.Approves;
 			return true; // no opinion
 		}
@@ -192,6 +218,7 @@ namespace SIL.LCModel.DomainServices
 			return OpinionAgent.Human;
 
 		}
+
 		/// <summary>
 		///
 		/// </summary>
@@ -199,9 +226,28 @@ namespace SIL.LCModel.DomainServices
 		/// <returns></returns>
 		public bool IsHumanApproved(IWfiAnalysis wa)
 		{
-			ICmAgentEvaluation cae;
-			if (AnalysisApprovalTable.TryGetValue(wa, out cae))
+			ICmAgentEvaluation cae = null;
+			foreach (var ae in wa.EvaluationsRC)
+				if (((ICmAgent)ae.Owner).Human)
+					cae = ae;
+			if (cae != null)
 				return cae.Approves;
+			return false; // no opinion
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="wa"></param>
+		/// <returns></returns>
+		public bool IsHumanDisapproved(IWfiAnalysis wa)
+		{
+			ICmAgentEvaluation cae = null;
+			foreach (var ae in wa.EvaluationsRC)
+				if (((ICmAgent)ae.Owner).Human)
+					cae = ae;
+			if (cae != null)
+				return !cae.Approves;
 			return false; // no opinion
 		}
 
@@ -212,7 +258,8 @@ namespace SIL.LCModel.DomainServices
 		/// <returns></returns>
 		public bool IsComputerApproved(IWfiAnalysis candidate)
 		{
-			return ComputerApprovedTable.Contains(candidate);
+			var agent = Cache.LangProject.DefaultComputerAgent;
+			return candidate.GetAgentOpinion(agent) == Opinions.approves;
 		}
 
 		/// <summary>
@@ -222,57 +269,517 @@ namespace SIL.LCModel.DomainServices
 		/// <returns></returns>
 		public bool IsParserApproved(IWfiAnalysis candidate)
 		{
-			return ParserApprovedTable.Contains(candidate);
-		}
-
-		void LoadAnalysisApprovalTable()
-		{
-			var dictionary = new Dictionary<IWfiAnalysis, ICmAgentEvaluation>();
-			foreach(var analysis in Cache.ServiceLocator.GetInstance<IWfiAnalysisRepository>().AllInstances())
-				foreach (var ae in analysis.EvaluationsRC)
-					if (((ICmAgent) ae.Owner).Human)
-						dictionary[analysis] = ae;
-			AnalysisApprovalTable = dictionary;
-		}
-
-		void LoadComputerApprovedTable()
-		{
-			IEnumerable<IWfiAnalysis> list = GetAgentApprovedList(Cache.LangProject.DefaultComputerAgent);
-			ComputerApprovedTable = new HashSet<IWfiAnalysis>(list);
+			var agent = Cache.LangProject.DefaultParserAgent;
+			return candidate.GetAgentOpinion(agent) == Opinions.approves;
 		}
 
 		/// <summary>
-		/// Get all the analyses approved by the specified agent.
+		///
 		/// </summary>
-		/// <param name="agent"></param>
+		/// <param name="candidate"></param>
 		/// <returns></returns>
-		private IEnumerable<IWfiAnalysis> GetAgentApprovedList(ICmAgent agent)
+		public bool IsParserDisapproved(IWfiAnalysis candidate)
 		{
-			return Cache.ServiceLocator.GetInstance<IWfiAnalysisRepository>().AllInstances().Where(
-				analysis => analysis.GetAgentOpinion(agent) == Opinions.approves);
-		}
-
-		void LoadParserApprovedTable()
-		{
-			IEnumerable<IWfiAnalysis> list = GetAgentApprovedList(Cache.LangProject.DefaultParserAgent);
-			ParserApprovedTable = new HashSet<IWfiAnalysis>(list);
+			var agent = Cache.LangProject.DefaultParserAgent;
+			return candidate.GetAgentOpinion(agent) == Opinions.disapproves;
 		}
 
 		/// <summary>
-		/// NOTE: this only gets analyses and glosses that are referred to by Segment.AnalysesRS
+		/// Try to get the default analysis for form in the context of its previous word form.
+		/// If form is an analysis,then the result is a gloss.
+		/// If form is a wordform, then try to get the default gloss of the default analysis if it exists.
+		/// Use m_emptyWAG as the previous word form for the first analysis in a segment.
+		/// Use m_nullWAG as the previous word form if the previous word form is unknown.
 		/// </summary>
-		/// <returns></returns>
-		IEnumerable<IAnalysis> GetAllAnalysesAndGlossesOrderedByFrequencyOfUseInText()
+		/// <param name="form">the form that you want an analysis for</param>
+		/// <param name="lowercaseForm">the lowercase version of form if its analyses should be included</param>
+		/// <param name="previous">the context of the form</param>
+		/// <param name="analysis">the resulting analysis</param>
+		/// <returns>bool</returns>
+		private bool TryGetContextAwareGuess(IAnalysis form, IWfiWordform lowercaseForm, IAnalysis previous, out IAnalysis analysis)
 		{
-			return from seg in Cache.ServiceLocator.GetInstance<ISegmentRepository>().AllInstances()
-				   from analysis in seg.AnalysesRS
-				   where (analysis is IWfiAnalysis || analysis is IWfiGloss)
-				   group analysis by analysis
-				   into countedAnalysis
-					   orderby countedAnalysis.Count()
-					   select countedAnalysis.Key;
+			IDictionary<IAnalysis, Dictionary<IAnalysis, IAnalysis>> guessTable = lowercaseForm != null ? CaselessGuessTable : GuessTable;
+
+			if (!guessTable.ContainsKey(form))
+			{
+				// Fill in GuessTable.
+				guessTable[form] = GetDefaultAnalyses(form, lowercaseForm);
+			}
+			if (!guessTable[form].ContainsKey(previous))
+			{
+				// back off to all forms.
+				previous = m_nullWAG;
+				if (!guessTable[form].ContainsKey(previous))
+				{
+					// form doesn't occur in the interlinear texts.
+					analysis = m_nullWAG;
+					return false;
+				}
+			}
+			analysis = guessTable[form][previous];
+			if (analysis == null)
+				return false;
+			if (analysis is IWfiAnalysis)
+			{
+				// Get the best gloss for analysis.
+				if (TryGetContextAwareGuess(analysis, null, previous, out IAnalysis gloss))
+				{
+					analysis = gloss;
+				}
+			}
+			return true;
 		}
 
+		/// <summary>
+		/// Get the default analyses for the given form in the context of the previous word form.
+		/// If lowercaseForm is given, then include its analyses, too.
+		/// If form is an analysis,then the default analyses are glosses.
+		/// Uses m_emptyWAG as previous word form for the first analysis in a segment.
+		/// Uses m_nullWAG as previous word form when unknown.
+		/// </summary>
+		/// <param name="form">the form that you want analyses for</param>
+		/// <param name="lowercaseForm">lowercase version of form</param>
+		/// <returns>Dictionary<IAnalysis, IAnalysis></returns>
+		private Dictionary<IAnalysis, IAnalysis> GetDefaultAnalyses(IAnalysis form, IWfiWordform lowercaseForm)
+		{
+			Dictionary<IAnalysis, IAnalysis> defaults = new Dictionary<IAnalysis, IAnalysis>();
+			Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts = null;
+			if (form is IWfiWordform wordform)
+			{
+				// Get default analyses.
+				counts = GetAnalysisCounts(wordform);
+				if (lowercaseForm != null)
+					// Add lowercase analyses to counts.
+					GetAnalysisCounts(lowercaseForm, true, counts);
+			}
+			else if (form is IWfiAnalysis analysis)
+			{
+				// Get default glosses.
+				counts = GetGlossCounts(analysis);
+			}
+			if (counts != null)
+			{
+				// Get the best analysis for each key in counts.
+				foreach (IAnalysis previous in counts.Keys)
+				{
+					IAnalysis best = null;
+					// Use counts[previous].Keys instead of wordform.AnalysesOC 
+					// because counts[previous].Keys may include lowercase analyses.
+					foreach (IAnalysis key in counts[previous].Keys)
+					{
+						if (best == null || ComparePriorityCounts(key, best, previous, counts) < 0)
+						{
+							best = key;
+							defaults[previous] = best;
+						}
+					}
+				}
+			}
+			return defaults;
+		}
+
+		/// <summary>
+		/// Get analysis counts for the given word form in the context of the previous word form.
+		/// Uses m_emptyWAG as previous word form for the first analysis in a segment.
+		/// Uses m_nullWAG as previous word form when unknown.
+		/// This is used by GetBestGuess for word forms and GetSortedAnalysisGuesses.
+		/// </summary>
+		/// <param name="wordform">the form that you want an analysis for</param>
+		/// <returns>Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>></returns>
+		private Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> GetAnalysisCounts(IWfiWordform wordform, bool lowercased = false,
+			Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts = null)
+		{
+			if (counts == null)
+				counts = new Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>>();
+			var segs = new HashSet<ISegment>();
+			foreach (ISegment seg in wordform.OccurrencesInTexts)
+			{
+				if (segs.Contains(seg)) continue;
+				segs.Add(seg);
+				for (int i = 0; i < seg.AnalysesRS.Count; i++)
+				{
+					IAnalysis analysis = seg.AnalysesRS[i];
+					if (analysis.Wordform != wordform) continue;
+					IAnalysis previous = GetPreviousWordform(seg, i);
+					if (analysis is IWfiGloss)
+					{
+						// Get analysis for gloss.
+						analysis = analysis.Analysis;
+					}
+					if (analysis is IWfiAnalysis)
+					{
+						// Add high priority count to analysis.
+						AddAnalysisCount(previous, analysis, 7, lowercased, counts);
+					}
+				}
+			}
+			// Include analyses that may not have been selected.
+			foreach (IWfiAnalysis analysis in wordform.AnalysesOC)
+			{
+				if (IsNotDisapproved(analysis))
+				{
+					// Human takes priority over parser which takes priority over computer.
+					// Approved takes priority over disapproved.
+					// More counts take priority over fewer counts within a priority.
+					int priority = IsHumanApproved(analysis) ? 6 : IsHumanDisapproved(analysis) ? 1 :
+						IsParserApproved(analysis) ? 5 : IsParserDisapproved(analysis) ? 2 :
+						IsComputerApproved(analysis) ? 4 : 3;
+					AddAnalysisCount(m_nullWAG, analysis, priority, lowercased, counts);
+				}
+			}
+			return counts;
+		}
+
+		/// <summary>
+		/// Get gloss counts for the given analysis in the context of the previous word form.
+		/// If form is an analysis,then the analysis counts are for glosses.
+		/// Uses m_emptyWAG as previous word form for the first analysis in a segment.
+		/// Uses m_nullWAG as previous word form when unknown.
+		/// This is used by GetBestGuess for analyses and GetSortedGlossGuesses.
+		/// </summary>
+		/// <param name="analysis">the analysis that you want a gloss for</param>
+		/// <returns>Dictionary<IAnalysis, Dictionary<IAnalysis, int>></returns>
+		private Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> GetGlossCounts(IWfiAnalysis analysis)
+		{
+			var counts = new Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>>();
+			var segs = new HashSet<ISegment>();
+			if (!IsNotDisapproved(analysis))
+				return counts;
+			foreach (ISegment seg in analysis.Wordform.OccurrencesInTexts)
+			{
+				if (segs.Contains(seg)) continue;
+				segs.Add(seg);
+				for (int i = 0; i < seg.AnalysesRS.Count; i++)
+				{
+					// Get gloss for analysis.
+					IAnalysis previous = GetPreviousWordform(seg, i);
+					IAnalysis gloss = seg.AnalysesRS[i];
+					if (gloss is IWfiGloss)
+					{
+						if (gloss.Analysis == analysis)
+						{
+							// Add high priority count to gloss.
+							AddAnalysisCount(previous, gloss, 2, false, counts);
+						}
+					}
+				}
+			}
+			// Include glosses that may not have been selected.
+			foreach (IWfiGloss gloss in analysis.MeaningsOC)
+			{
+				AddAnalysisCount(m_nullWAG, gloss, 1, false, counts);
+			}
+			return counts;
+		}
+
+		/// <summary>
+		/// Get the previous word form given a location.
+		/// </summary>
+		/// <param name="seg">the segment of the location</param>
+		/// <param name="i">the index of the location</param>
+		/// <returns>IAnalysis</returns>
+		private IAnalysis GetPreviousWordform(ISegment seg, int i)
+		{
+			if (i == 0)
+				return m_emptyWAG;
+			IAnalysis previous = seg.AnalysesRS[i - 1];
+			if (previous is IWfiAnalysis || previous is IWfiGloss)
+			{
+				previous = previous.Wordform;
+			}
+			// Should be IWfiWordform or IPunctuationForm.
+			return previous;
+		}
+
+		/// <summary>
+		/// Add a count to counts for analysis with the given previous word form and the given priority.
+		/// </summary>
+		/// <param name="previous">the previous word form</param>
+		/// <param name="analysis">the analysis being counted</param>
+		/// <param name="priority">the priority of the count</param>
+		/// <param name="lowercased">whether the word form of the analysis was lowercased</param>
+		/// <param name="counts">the dictionary of counts being incremented</param>
+		/// <returns>void</returns>
+		private void AddAnalysisCount(IAnalysis previous, IAnalysis analysis, int priority, bool lowercased,
+			Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts)
+		{
+			if (previous != m_nullWAG)
+			{
+				// Record count for unknown/backoff.
+				AddAnalysisCount(m_nullWAG, analysis, priority, lowercased, counts);
+			}
+			if (!counts.ContainsKey(previous))
+			{
+				counts[previous] = new Dictionary<IAnalysis, PriorityCount>();
+			}
+			if (!counts[previous].ContainsKey(analysis))
+			{
+				counts[previous][analysis] = new PriorityCount();
+			}
+			if (counts[previous][analysis].priority > priority)
+			{
+				// Ignore this count because its priority is too low.
+				return;
+			}
+			if (counts[previous][analysis].priority < priority)
+			{
+				// Start a new priority count.
+				counts[previous][analysis].priority = priority;
+				counts[previous][analysis].lowercased = lowercased;
+				counts[previous][analysis].count = 0;
+			}
+			// Increment count.
+			counts[previous][analysis].count += 1;
+		}
+
+		/// <summary>
+		/// Compare the priority counts for a1 and a2 based on
+		/// the previous wordform and a dictionary of counts.
+		/// Sort in descending order.
+		/// </summary>
+		private int ComparePriorityCounts(IAnalysis a1, IAnalysis a2, IAnalysis previous,
+			Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts)
+		{
+			// Check for existence of previous.
+			if (!counts.ContainsKey(previous))
+			{
+				previous = m_nullWAG;
+				if (!counts.ContainsKey(previous))
+					return 0;
+			}
+			// See if we should back off.
+			if (!counts[previous].ContainsKey(a1) && !counts[previous].ContainsKey(a2))
+				previous = m_nullWAG;
+			// Prefer higher priority counts.
+			int priority1 = counts[previous].ContainsKey(a1) ? counts[previous][a1].priority : 0;
+			int priority2 = counts[previous].ContainsKey(a2) ? counts[previous][a2].priority : 0;
+			if (priority1 < priority2)
+				return 1;
+			if (priority1 > priority2)
+				return -1;
+			// Prefer higher counts.
+			int count1 = counts[previous].ContainsKey(a1) ? counts[previous][a1].count : 0;
+			int count2 = counts[previous].ContainsKey(a2) ? counts[previous][a2].count : 0;
+			if (count1 < count2)
+				return 1;
+			if (count1 > count2)
+				return -1;
+			// Prefer analyses that haven't been lowercased.
+			bool lowercased1 = counts[previous].ContainsKey(a1) && counts[previous][a1].lowercased;
+			bool lowercased2 = counts[previous].ContainsKey(a2) && counts[previous][a2].lowercased;
+			if (lowercased1 && !lowercased2)
+				return 1;
+			if (lowercased2 && !lowercased1)
+				return -1;
+			// Maintain a complete order to avoid non-determinism.
+			// This means that GetBestGuess and GetSortedAnalyses[0] should have the same analysis.
+			return a1.Guid.CompareTo(a2.Guid);
+		}
+
+		/// <summary>
+		/// Whenever the data we depend upon changes, use this to make sure we load the latest Guess data.
+		/// </summary>
+		public void ClearGuessData()
+		{
+			GuessTable = null;
+			CaselessGuessTable = null;
+		}
+
+		/// <summary>
+		/// Given a wordform, provide the best analysis guess for it (using the default vernacular WS).
+		/// </summary>
+		/// <param name="wf"></param>
+		/// <returns></returns>
+		public IAnalysis GetBestGuess(IWfiWordform wf)
+		{
+			return GetBestGuess(wf, wf.Cache.DefaultVernWs);
+		}
+
+		/// <summary>
+		/// Given a wf provide the best guess based on the user-approved analyses (in or outside of texts).
+		/// If we don't already have a guess, this will try to create one from the lexicon, based on the
+		/// form in the specified WS.
+		/// </summary>
+		public IAnalysis GetBestGuess(IWfiWordform wf, int ws)
+		{
+			if (!EntryGenerated(wf))
+				GenerateEntryGuesses(wf, ws);
+			IAnalysis wag;
+			if (TryGetContextAwareGuess(wf, null, m_nullWAG, out wag))
+				return wag;
+			return new NullWAG();
+		}
+
+		/// <summary>
+		/// Given a wa provide the best guess based on glosses for that analysis (made in or outside of texts).
+		/// </summary>
+		/// <param name="wa"></param>
+		/// <returns></returns>
+		public IAnalysis GetBestGuess(IWfiAnalysis wa)
+		{
+			IAnalysis wag;
+			if (TryGetContextAwareGuess(wa, null, m_nullWAG, out wag))
+				return wag;
+			return new NullWAG();
+		}
+
+		/// <summary>
+		/// This guess factors in the placement of an occurrence in its segment for making other
+		/// decisions like matching lowercase alternatives for sentence initial occurrences.
+		/// </summary>
+		/// <param name="onlyIndexZeroLowercaseMatching">
+		/// True: Do lowercase matching only if the occurrence index is zero.
+		/// False: Do lowercase matching regardless of the occurrence index.
+		/// </param>
+		public IAnalysis GetBestGuess(AnalysisOccurrence occurrence, bool onlyIndexZeroLowercaseMatching = true)
+		{
+			// first see if there is a relevant lowercase form of a sentence initial (non-lowercase) wordform
+			// TODO: make it look for the first word in the sentence...may not be at Index 0!
+			IWfiWordform lowercaseWf = null;
+			if (occurrence.Analysis is IWfiWordform wordform)
+				{
+					if (!EntryGenerated(wordform))
+						GenerateEntryGuesses(wordform, occurrence.BaselineWs);
+					if (!onlyIndexZeroLowercaseMatching || occurrence.Index == 0)
+					{
+						lowercaseWf = GetLowercaseWordform(occurrence);
+						if (lowercaseWf != null)
+						{
+							if (!EntryGenerated(lowercaseWf))
+								GenerateEntryGuesses(lowercaseWf, occurrence.BaselineWs);
+						}
+					}
+			}
+			if (occurrence.BaselineWs == -1)
+				return new NullWAG(); // happens with empty translation lines
+			IAnalysis bestGuess;
+			IAnalysis previous = GetPreviousWordform(occurrence.Segment, occurrence.Index);
+			if (TryGetContextAwareGuess(occurrence.Analysis, lowercaseWf, previous, out bestGuess))
+				return bestGuess;
+			return new NullWAG();
+		}
+
+		/// <summary>
+		/// Get the lowercase word form if the occurrence is uppercase.
+		/// </summary>
+		private IWfiWordform GetLowercaseWordform(AnalysisOccurrence occurrence)
+		{
+			ITsString tssWfBaseline = occurrence.BaselineText;
+			var cf = new CaseFunctions(Cache.ServiceLocator.WritingSystemManager.Get(tssWfBaseline.get_WritingSystemAt(0)));
+			string sLower = cf.ToLower(tssWfBaseline.Text);
+			// don't bother looking up the lowercased wordform if the instanceOf is already in lowercase form.
+			if (sLower != tssWfBaseline.Text)
+			{
+				ITsString tssLower = TsStringUtils.MakeString(sLower, TsStringUtils.GetWsAtOffset(tssWfBaseline, 0));
+				IWfiWordform lowercaseWf;
+				if (Cache.ServiceLocator.GetInstance<IWfiWordformRepository>().TryGetObject(tssLower, out lowercaseWf))
+					return lowercaseWf;
+			}
+			return null;
+		}
+
+			private IAnalysis GetBestGuess(IAnalysis wag, int ws)
+		{
+			if (wag is IWfiWordform)
+				return GetBestGuess(wag.Wordform, ws);
+			if (wag is IWfiAnalysis)
+				return GetBestGuess(wag.Analysis);
+			return new NullWAG();
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public bool TryGetBestGuess(IAnalysis wag, int ws, out IAnalysis bestGuess)
+		{
+			bestGuess = GetBestGuess(wag, ws);
+			return !(bestGuess is NullWAG);
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="onlyIndexZeroLowercaseMatching">
+		/// True: Do lowercase matching only if the occurrence index is zero.
+		/// False: Do lowercase matching regardless of the occurrence index.
+		/// </param>
+		public bool TryGetBestGuess(AnalysisOccurrence occurrence, out IAnalysis bestGuess, bool onlyIndexZeroLowercaseMatching = true)
+		{
+			bestGuess = GetBestGuess(occurrence, onlyIndexZeroLowercaseMatching);
+			return !(bestGuess is NullWAG);
+		}
+
+		/// <summary>
+		/// Get possible analyses for the wordform sorted by priority.
+		/// <param name="wordform">wordform to get analyses for</param>
+		/// <param name="occurrence">the location of the wordform</param>
+		/// <param name="onlyIndexZeroLowercaseMatching">
+		/// True: Do lowercase matching only if the occurrence index is zero.
+		/// False: Do lowercase matching regardless of the occurrence index.
+		/// </param>
+		/// </summary>
+		public List<IWfiAnalysis> GetSortedAnalysisGuesses(IWfiWordform wordform, AnalysisOccurrence occurrence, bool onlyIndexZeroLowercaseMatching = true)
+		{
+			int ws = occurrence != null ? occurrence.BaselineWs : wordform.Cache.DefaultVernWs;
+			return GetSortedAnalysisGuesses(wordform, ws, occurrence, onlyIndexZeroLowercaseMatching);
+		}
+
+		/// <summary>
+		/// Get possible analyses for the wordform sorted by priority.
+		/// <param name="wordform">wordform to get analyses for</param>
+		/// <param name="ws">the writing system for wordform</param>
+		/// </summary>
+		public List<IWfiAnalysis> GetSortedAnalysisGuesses(IWfiWordform wordform, int ws)
+		{
+			return GetSortedAnalysisGuesses(wordform, ws, null);
+		}
+
+		/// <summary>
+		/// Get possible analyses for the wordform sorted by priority.
+		/// <param name="wordform">wordform to get analyses for</param>
+		/// <param name="ws">the writing system for wordform</param>
+		/// <param name="occurrence">the location of wordform</param>
+		/// <param name="onlyIndexZeroLowercaseMatching">
+		/// True: Do lowercase matching only if the occurrence index is zero.
+		/// False: Do lowercase matching regardless of the occurrence index.
+		/// </param>
+		/// </summary>
+		private List<IWfiAnalysis> GetSortedAnalysisGuesses(IWfiWordform wordform, int ws, AnalysisOccurrence occurrence, bool onlyIndexZeroLowercaseMatching = true)
+		{
+			if (!EntryGenerated(wordform))
+				GenerateEntryGuesses(wordform, ws);
+
+			var counts = GetAnalysisCounts(wordform);
+			List<IWfiAnalysis> analyses = wordform.AnalysesOC.ToList();
+			if (occurrence != null && (!onlyIndexZeroLowercaseMatching || occurrence.Index == 0))
+			{
+				IWfiWordform lowercaseWf = GetLowercaseWordform(occurrence);
+				if (lowercaseWf != null)
+				{
+					// Add lowercase analyses.
+					if (!EntryGenerated(lowercaseWf))
+						GenerateEntryGuesses(lowercaseWf, ws);
+					GetAnalysisCounts(lowercaseWf, true, counts);
+					analyses.AddRange(lowercaseWf.AnalysesOC);
+				}
+			}
+			var previous = occurrence == null ? m_nullWAG : GetPreviousWordform(occurrence.Segment, occurrence.Index);
+			analyses.Sort((x, y) => ComparePriorityCounts(x, y, previous, counts));
+			return analyses;
+		}
+
+		/// <summary>
+		/// Get possible glosses for the analysis sorted by priority.
+		/// </summary>
+		public List<IWfiGloss> GetSortedGlossGuesses(IWfiAnalysis analysis, AnalysisOccurrence occurrence = null)
+		{
+			var counts = GetGlossCounts(analysis);
+			var previous = occurrence == null ? m_nullWAG : GetPreviousWordform(occurrence.Segment, occurrence.Index);
+			List<IWfiGloss> glosses = analysis.MeaningsOC.ToList();
+			glosses.Sort((x, y) => ComparePriorityCounts(x, y, previous, counts));
+			return glosses;
+		}
+		#region GenerateEntryGuesses
 		/// <summary>
 		/// This class stores the relevant database ids for information which can generate a
 		/// default analysis for a WfiWordform that has no analyses, but whose form exactly
@@ -303,7 +810,7 @@ namespace SIL.LCModel.DomainServices
 
 			public int GetHashCode(ITsString obj)
 			{
-				return(obj.Text ?? "").GetHashCode() ^ obj.get_WritingSystem(0);
+				return (obj.Text ?? "").GetHashCode() ^ obj.get_WritingSystem(0);
 			}
 		}
 
@@ -379,7 +886,7 @@ namespace SIL.LCModel.DomainServices
 					IPartOfSpeech pos = null;
 					if (sense != null)
 					{
-						msa = (IMoStemMsa) sense.MorphoSyntaxAnalysisRA;
+						msa = (IMoStemMsa)sense.MorphoSyntaxAnalysisRA;
 						pos = msa.PartOfSpeechRA;
 					}
 					// map the word to its best entry.
@@ -423,6 +930,16 @@ namespace SIL.LCModel.DomainServices
 		}
 
 		/// <summary>
+		/// Has GenerateEntryGuesses already been called for wordform?
+		/// </summary>
+		/// <param name="wordform"></param>
+		private bool EntryGenerated(IWfiWordform wordform)
+		{
+			// NB: This is a hack.  It assumes that analyses
+			// aren't created before GenerateEntryGuesses is called.
+			return wordform.AnalysesOC.Count > 0;
+		}
+		/// <summary>
 		/// For the given text, find words for which we can generate analyses that match lexical entries.
 		/// </summary>
 		/// <param name="stText"></param>
@@ -457,254 +974,36 @@ namespace SIL.LCModel.DomainServices
 					NonUndoableUnitOfWorkHelper.DoUsingNewOrCurrentUowOrSkip(Cache.ActionHandlerAccessor,
 						"Trying to generate guesses during PropChanged when we can't save them.",
 						() =>
+						{
+							var newAnalysis = waFactory.Create(ww, wgFactory);
+							newAnalysis.CategoryRA = info.Pos;
+							// Not all entries have senses.
+							if (info.Sense != null)
 							{
-								var newAnalysis = waFactory.Create(ww, wgFactory);
-								newAnalysis.CategoryRA = info.Pos;
-								// Not all entries have senses.
-								if (info.Sense != null)
-								{
-									// copy all the gloss alternatives from the sense into the word gloss.
-									IWfiGloss wg = newAnalysis.MeaningsOC.First();
-									wg.Form.MergeAlternatives(info.Sense.Gloss);
-								}
-								var wmb = wmbFactory.Create();
-								newAnalysis.MorphBundlesOS.Add(wmb);
-								if (info.Form != null)
-									wmb.MorphRA = info.Form;
-								if (info.Msa != null)
-									wmb.MsaRA = info.Msa;
-								if (info.Sense != null)
-									wmb.SenseRA = info.Sense;
+								// copy all the gloss alternatives from the sense into the word gloss.
+								IWfiGloss wg = newAnalysis.MeaningsOC.First();
+								wg.Form.MergeAlternatives(info.Sense.Gloss);
+							}
+							var wmb = wmbFactory.Create();
+							newAnalysis.MorphBundlesOS.Add(wmb);
+							if (info.Form != null)
+								wmb.MorphRA = info.Form;
+							if (info.Msa != null)
+								wmb.MsaRA = info.Msa;
+							if (info.Sense != null)
+								wmb.SenseRA = info.Sense;
 
-								// Now, set up an approved "Computer" evaluation of this generated analysis
-								computerAgent.SetEvaluation(newAnalysis, Opinions.approves);
-							});
+							// Now, set up an approved "Computer" evaluation of this generated analysis
+							computerAgent.SetEvaluation(newAnalysis, Opinions.approves);
+							// Clear GuessTable entries.
+							if (GuessTable.ContainsKey(ww))
+								GuessTable.Remove(ww);
+							if (CaselessGuessTable.ContainsKey(ww))
+								CaselessGuessTable.Remove(ww);
+						});
 				}
 			}
 		}
-
-		void LoadGuessTable()
-		{
-			GuessTable = new Dictionary<IAnalysis, IAnalysis>();
-
-			HashSet<IWfiAnalysis> analysesRemaining;
-			HashSet<IWfiGloss> glossesRemaining;
-			AddOccurrenceApprovedAnalysesAndGlossesToGuessTable(out analysesRemaining, out glossesRemaining);
-
-			// add any remaining Human approved analyses.
-			AddRemainingNonDisapprovedGlossesAndAnalysesToGuessTable(glossesRemaining, analysesRemaining,
-				IsHumanApproved);
-
-			// next go through any (Parser) generated analyses and glosses.
-			AddRemainingNonDisapprovedGlossesAndAnalysesToGuessTable(glossesRemaining, analysesRemaining,
-				IsParserApprovedAndNotDisapproved);
-
-			// lastly, add any remaining approved analyses/glosses (e.g. Computer guesses)
-			AddRemainingNonDisapprovedGlossesAndAnalysesToGuessTable(glossesRemaining, analysesRemaining,
-				IsNotDisapproved);
-
-		}
-
-		/// <summary>
-		/// Whenever the data we depend upon changes, use this to make sure we load the latest Guess data.
-		/// </summary>
-		public void ClearGuessData()
-		{
-			GuessTable = null;
-			ParserApprovedTable = null;
-			ComputerApprovedTable = null;
-			AnalysisApprovalTable = null;
-		}
-
-		/// <summary>
-		/// adds analyses/glosses that have been approved in a text.
-		/// </summary>
-		/// <param name="analysesRemaining">analyses that were not processed by this routine</param>
-		/// <param name="glossesRemaining">glosses that were not processed by this routine</param>
-		private void AddOccurrenceApprovedAnalysesAndGlossesToGuessTable(
-			out HashSet<IWfiAnalysis> analysesRemaining,
-			out HashSet<IWfiGloss> glossesRemaining)
-		{
-			// keep track of the analyses we've made a decision about whether to load into the GuessTable.
-			analysesRemaining = new HashSet<IWfiAnalysis>(Cache.ServiceLocator.GetInstance<IWfiAnalysisRepository>().AllInstances());
-			glossesRemaining = new HashSet<IWfiGloss>(Cache.ServiceLocator.GetInstance<IWfiGlossRepository>().AllInstances());
-			foreach (var wag in GetAllAnalysesAndGlossesOrderedByFrequencyOfUseInText())
-			{
-				if (wag is IWfiAnalysis)
-				{
-					// since an occurrence has an instanceOf this analysis
-					GuessTable[wag.Wordform] = wag;
-					analysesRemaining.Remove(wag.Analysis);
-				}
-				if (wag is IWfiGloss)
-				{
-					GuessTable[wag.Wordform] = wag;
-					GuessTable[wag.Analysis] = wag;
-					glossesRemaining.Remove(wag as IWfiGloss);
-					analysesRemaining.Remove(wag.Analysis);
-				}
-			}
-		}
-
-		private delegate bool AddToGuessTableCondition(
-			IDictionary<IAnalysis, IAnalysis> guessMap, IAnalysis candidate);
-
-
-		bool IsHumanApproved(IDictionary<IAnalysis, IAnalysis> guessMap, IAnalysis candidate)
-		{
-			return !guessMap.Keys.Contains(candidate.Wordform) && IsHumanApproved(candidate.Analysis);
-		}
-
-		bool IsParserApprovedAndNotDisapproved(IDictionary<IAnalysis, IAnalysis> guessMap, IAnalysis candidate)
-		{
-			return !guessMap.Keys.Contains(candidate.Wordform) && IsNotDisapproved(candidate.Analysis) && IsParserApproved(candidate.Analysis);
-		}
-
-		bool IsNotDisapproved(IDictionary<IAnalysis, IAnalysis> guessMap, IAnalysis candidate)
-		{
-			return !guessMap.Keys.Contains(candidate.Wordform) && IsNotDisapproved(candidate.Analysis);
-		}
-
-		private void AddRemainingNonDisapprovedGlossesAndAnalysesToGuessTable(
-			HashSet<IWfiGloss> glossesRemaining,
-			HashSet<IWfiAnalysis> analysesRemaining,
-			AddToGuessTableCondition accept)
-		{
-			IDictionary<IAnalysis, IAnalysis> tmpGuesses = new Dictionary<IAnalysis, IAnalysis>();
-			foreach (var wg in glossesRemaining)
-			{
-				// approved analyses have precendence over "no opinion".
-				if (accept(tmpGuesses, wg))
-				{
-					tmpGuesses[wg.Wordform] = wg;
-					tmpGuesses[wg.Analysis] = wg;
-				}
-			}
-			foreach (var wa in analysesRemaining)
-			{
-				// approved analyses have precendence over "no opinion".
-				if (accept(tmpGuesses, wa))
-				{
-					tmpGuesses[wa.Wordform] = wa;
-				}
-			}
-			foreach (var pair in tmpGuesses)
-			{
-				// don't overwrite any existing mapping from texts
-				if (!GuessTable.Keys.Contains<IAnalysis>(pair.Key))
-					GuessTable.Add(pair);
-				if (pair.Value is IWfiGloss)
-					glossesRemaining.Remove(pair.Value as IWfiGloss);
-				analysesRemaining.Remove(pair.Value.Analysis);
-			}
-		}
-
-		/// <summary>
-		/// Given a wordform, provide the best analysis guess for it (using the default vernacular WS).
-		/// </summary>
-		/// <param name="wf"></param>
-		/// <returns></returns>
-		public IAnalysis GetBestGuess(IWfiWordform wf)
-		{
-			return GetBestGuess(wf, wf.Cache.DefaultVernWs);
-		}
-
-		/// <summary>
-		/// Given a wf provide the best guess based on the user-approved analyses (in or outside of texts).
-		/// If we don't already have a guess, this will try to create one from the lexicon, based on the
-		/// form in the specified WS.
-		/// </summary>
-		public IAnalysis GetBestGuess(IWfiWordform wf, int ws)
-		{
-			IAnalysis wag;
-			if (GuessTable.TryGetValue(wf, out wag))
-				return wag;
-			if (wf.AnalysesOC.Count == 0)
-			{
-				GenerateEntryGuesses(wf, ws);
-				if (GuessTable.TryGetValue(wf, out wag))
-					return wag;
-			}
-			return new NullWAG();
-		}
-
-		/// <summary>
-		/// Given a wa provide the best guess based on glosses for that analysis (made in or outside of texts).
-		/// </summary>
-		/// <param name="wa"></param>
-		/// <returns></returns>
-		public IAnalysis GetBestGuess(IWfiAnalysis wa)
-		{
-			IAnalysis wag;
-			if (GuessTable.TryGetValue(wa, out wag))
-				return wag;
-			return new NullWAG();
-		}
-
-		/// <summary>
-		/// This guess factors in the placement of an occurrence in its segment for making other
-		/// decisions like matching lowercase alternatives for sentence initial occurrences.
-		/// </summary>
-		/// <param name="onlyIndexZeroLowercaseMatching">
-		/// True: Do lowercase matching only if the occurrence index is zero.
-		/// False: Do lowercase matching regardless of the occurrence index.
-		/// </param>
-		public IAnalysis GetBestGuess(AnalysisOccurrence occurrence, bool onlyIndexZeroLowercaseMatching = true)
-		{
-			// first see if we can make a guess based on the lowercase form of a sentence initial (non-lowercase) wordform
-			// TODO: make it look for the first word in the sentence...may not be at Index 0!
-			if (occurrence.Analysis is IWfiWordform && (!onlyIndexZeroLowercaseMatching || occurrence.Index == 0))
-			{
-				ITsString tssWfBaseline = occurrence.BaselineText;
-				var cf = new CaseFunctions(Cache.ServiceLocator.WritingSystemManager.Get(tssWfBaseline.get_WritingSystemAt(0)));
-				string sLower = cf.ToLower(tssWfBaseline.Text);
-				// don't bother looking up the lowercased wordform if the instanceOf is already in lowercase form.
-				if (sLower != tssWfBaseline.Text)
-				{
-					ITsString tssLower = TsStringUtils.MakeString(sLower, TsStringUtils.GetWsAtOffset(tssWfBaseline, 0));
-					IWfiWordform lowercaseWf;
-					if (Cache.ServiceLocator.GetInstance<IWfiWordformRepository>().TryGetObject(tssLower, out lowercaseWf))
-					{
-						IAnalysis bestGuess;
-						if (TryGetBestGuess(lowercaseWf, occurrence.BaselineWs, out bestGuess))
-							return bestGuess;
-					}
-				}
-			}
-			if (occurrence.BaselineWs == -1)
-				return null; // happens with empty translation lines
-			return GetBestGuess(occurrence.Analysis, occurrence.BaselineWs);
-		}
-
-		private IAnalysis GetBestGuess(IAnalysis wag, int ws)
-		{
-			if (wag is IWfiWordform)
-				return GetBestGuess(wag.Wordform, ws);
-			if (wag is IWfiAnalysis)
-				return GetBestGuess(wag.Analysis);
-			return new NullWAG();
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		public bool TryGetBestGuess(IAnalysis wag, int ws, out IAnalysis bestGuess)
-		{
-			bestGuess = GetBestGuess(wag, ws);
-			return !(bestGuess is NullWAG);
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="onlyIndexZeroLowercaseMatching">
-		/// True: Do lowercase matching only if the occurrence index is zero.
-		/// False: Do lowercase matching regardless of the occurrence index.
-		/// </param>
-		public bool TryGetBestGuess(AnalysisOccurrence occurrence, out IAnalysis bestGuess, bool onlyIndexZeroLowercaseMatching = true)
-		{
-			bestGuess = GetBestGuess(occurrence, onlyIndexZeroLowercaseMatching);
-			return !(bestGuess is NullWAG);
-		}
+		#endregion GenerateEntryGuesses
 	}
 }
