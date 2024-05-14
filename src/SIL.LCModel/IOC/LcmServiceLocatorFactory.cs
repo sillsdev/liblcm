@@ -108,12 +108,6 @@ namespace SIL.LCModel.IOC
 				.For<IdentityMap>()
 				.LifecycleIs(new SingletonLifecycle())
 				.Use<IdentityMap>();
-			// No. This makes a second instance of IdentityMap,
-			// which is probably not desirable.
-			//registry
-			//	.For<ICmObjectIdFactory>()
-			//	.LifecycleIs(new SingletonLifecycle())
-			//	.Use<IdentityMap>();
 			// Register IdentityMap's other interface.
 			registry
 				.For<ICmObjectIdFactory>()
@@ -121,12 +115,6 @@ namespace SIL.LCModel.IOC
 			registry
 				.For<ICmObjectRepositoryInternal>()
 				.Use(c => (ICmObjectRepositoryInternal)c.GetInstance<ICmObjectRepository>());
-
-			// Add surrogate factory (internal);
-			registry
-				.For<ICmObjectSurrogateFactory>()
-				.LifecycleIs(new SingletonLifecycle())
-				.Use<CmObjectSurrogateFactory>();
 
 			// Add surrogate repository (internal);
 			registry

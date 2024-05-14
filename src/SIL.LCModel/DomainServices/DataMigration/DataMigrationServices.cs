@@ -59,7 +59,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// or an emty string.
 		/// </remarks>
 		internal static void UpdateDTO(IDomainObjectDTORepository dtoRepos,
-			DomainObjectDTO dirtball, string newXmlValue)
+			DomainObjectXMLDTO dirtball, string newXmlValue)
 		{
 			if (dtoRepos == null) throw new ArgumentNullException("dtoRepos");
 			if (dirtball == null) throw new ArgumentNullException("dirtball");
@@ -78,7 +78,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// or an emty string.
 		/// </remarks>
 		internal static void UpdateDTO(IDomainObjectDTORepository dtoRepos,
-			DomainObjectDTO dirtball, byte[] newXmlBytes)
+			DomainObjectXMLDTO dirtball, byte[] newXmlBytes)
 		{
 			if (dtoRepos == null) throw new ArgumentNullException("dtoRepos");
 			if (dirtball == null) throw new ArgumentNullException("dirtball");
@@ -97,7 +97,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// or an emty string.
 		/// </remarks>
 		internal static void UpdateDTO(IDomainObjectDTORepository dtoRepos,
-			DomainObjectDTO dirtball, string newXmlValue, string oldClassName)
+			DomainObjectXMLDTO dirtball, string newXmlValue, string oldClassName)
 		{
 			dtoRepos.ChangeClass(dirtball, oldClassName);
 			UpdateDTO(dtoRepos, dirtball, newXmlValue);
@@ -107,9 +107,9 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// Remove <paramref name="goner"/> and everything it owns.
 		/// Be sure to include removing goner from its optional owning property.
 		/// </summary>
-		internal static void RemoveIncludingOwnedObjects(IDomainObjectDTORepository dtoRepos, DomainObjectDTO goner, bool removeFromOwner)
+		internal static void RemoveIncludingOwnedObjects(IDomainObjectDTORepository dtoRepos, DomainObjectXMLDTO goner, bool removeFromOwner)
 		{
-			DomainObjectDTO gonerActual;
+			DomainObjectXMLDTO gonerActual;
 			if (!dtoRepos.TryGetValue(goner.Guid, out gonerActual))
 				return; // Not in repos.
 
@@ -143,7 +143,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// Remove a number of objects with a common owner, and everything they own.
 		/// </summary>
 		internal static void RemoveMultipleIncludingOwnedObjects(IDomainObjectDTORepository dtoRepos,
-			List<DomainObjectDTO> goners, DomainObjectDTO ownerDto)
+			List<DomainObjectXMLDTO> goners, DomainObjectXMLDTO ownerDto)
 		{
 			if (ownerDto != null)
 			{
@@ -198,7 +198,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 		private static void RemoveZombies(
 			IDomainObjectDTORepository dtoRepos,
-			IList<DomainObjectDTO> allDtos)
+			IList<DomainObjectXMLDTO> allDtos)
 		{
 			var count = allDtos.Count;
 			var legalOwnerlessClasses = new HashSet<string>
@@ -226,15 +226,15 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				legalOwnerlessClasses.Add("Text");
 
 
-			var goners = new List<DomainObjectDTO>(count);
+			var goners = new List<DomainObjectXMLDTO>(count);
 			// Key is guid of owner. Value is set of guids it owns.
 			// In one very large project that ran out of memory, it had 1281871 dtos, and
 			// 115694 of them owned more than one other dto.  So we'll guess that 1/10th
 			// of the total count is a reasonable estimate for the capacity of ownerMap.
-			var ownerMap = new Dictionary<DomainObjectDTO, HashSet<string>>(count/10);
+			var ownerMap = new Dictionary<DomainObjectXMLDTO, HashSet<string>>(count/10);
 			foreach (var currentDto in allDtos)
 			{
-				DomainObjectDTO owningDto;
+				DomainObjectXMLDTO owningDto;
 				if (dtoRepos.TryGetOwner(currentDto.Guid, out owningDto))
 				{
 					if (owningDto == null)
@@ -295,7 +295,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 		private static void RemoveDanglingReferences(
 			IDomainObjectDTORepository dtoRepos,
-			IEnumerable<DomainObjectDTO> allDtos)
+			IEnumerable<DomainObjectXMLDTO> allDtos)
 		{
 			foreach (var currentDto in allDtos)
 			{
@@ -305,7 +305,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				// See if it is a dangling ref, where target object has been deleted.
 				foreach (var targetGuid in referredToGuids)
 				{
-					DomainObjectDTO referencedDto;
+					DomainObjectXMLDTO referencedDto;
 					if (dtoRepos.TryGetValue(targetGuid, out referencedDto))
 						continue;
 
@@ -336,7 +336,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 		private static void RemoveEmptyPropertyElements(
 			IDomainObjectDTORepository dtoRepos,
-			IEnumerable<DomainObjectDTO> allInstancesWithValidClasses)
+			IEnumerable<DomainObjectXMLDTO> allInstancesWithValidClasses)
 		{
 			foreach (var currentDto in allInstancesWithValidClasses)
 			{
@@ -344,7 +344,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 		}
 
-		private static bool RemoveEmptyPropertyElements(IDomainObjectDTORepository dtoRepos, DomainObjectDTO currentDto, XContainer rtElement)
+		private static bool RemoveEmptyPropertyElements(IDomainObjectDTORepository dtoRepos, DomainObjectXMLDTO currentDto, XContainer rtElement)
 		{
 			var propertyElements = (rtElement.Element("CmObject") != null)
 											? rtElement.Elements().Elements() // Two levels for old stuff before DM15
@@ -374,7 +374,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// <param name="target"></param>
 		/// <param name="oldClass"></param>
 		/// <param name="newClass"></param>
-		private static void ChangeClass(DomainObjectDTO target, string oldClass, string newClass)
+		private static void ChangeClass(DomainObjectXMLDTO target, string oldClass, string newClass)
 		{
 			// If there's no unexpected white space we can do this efficiently.
 			// This depends (like various other code) on NOT having unexpected white space around the '='.
@@ -391,7 +391,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// Change class of object to a new subclass of the original class.
 		/// Caller still needs to move it from one collection to another in the repository.
 		/// </summary>
-		internal static void ChangeToSubClass(DomainObjectDTO target, string oldClass, string newClass)
+		internal static void ChangeToSubClass(DomainObjectXMLDTO target, string oldClass, string newClass)
 		{
 			ChangeClass(target, oldClass, newClass);
 			// Need to fill in the new empty element. It will be right before the closing <\rt>.
@@ -406,7 +406,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			target.XmlBytes = input.ReplaceSubArray(index, 0, insertBytes);
 		}
 
-		private static string[] ExtractReferencedObjects(DomainObjectDTO dto)
+		private static string[] ExtractReferencedObjects(DomainObjectXMLDTO dto)
 		{
 			var rootElement = XElement.Parse(dto.Xml);
 
@@ -487,8 +487,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// <param name="dto">The dto.</param>
 		/// <param name="newGuid">The new GUID.</param>
 		/// <param name="possibleReferrers">The possible referrers.</param>
-		internal static void ChangeGuid(IDomainObjectDTORepository dtoRepos, DomainObjectDTO dto, string newGuid,
-			IEnumerable<DomainObjectDTO> possibleReferrers)
+		internal static void ChangeGuid(IDomainObjectDTORepository dtoRepos, DomainObjectXMLDTO dto, string newGuid,
+			IEnumerable<DomainObjectXMLDTO> possibleReferrers)
 		{
 			// if the DTO already has the new GUID, don't do anything
 			if (dto.Guid.ToLowerInvariant() == newGuid.ToLowerInvariant())
@@ -496,8 +496,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 			XElement rtElem = XElement.Parse(dto.Xml);
 			rtElem.Attribute("guid").Value = newGuid;
-			dtoRepos.Add(new DomainObjectDTO(newGuid, dto.Classname, rtElem.ToString()));
-			foreach (DomainObjectDTO ownedDto in dtoRepos.GetDirectlyOwnedDTOs(dto.Guid))
+			dtoRepos.Add(new DomainObjectXMLDTO(newGuid, dto.Classname, rtElem.ToString()));
+			foreach (DomainObjectXMLDTO ownedDto in dtoRepos.GetDirectlyOwnedDTOs(dto.Guid))
 			{
 				XElement ownedElem = XElement.Parse(ownedDto.Xml);
 				ownedElem.Attribute("ownerguid").Value = newGuid;
@@ -510,13 +510,13 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 			if (possibleReferrers != null)
 			{
-				foreach (DomainObjectDTO referrer in possibleReferrers)
+				foreach (DomainObjectXMLDTO referrer in possibleReferrers)
 					UpdateObjSurElement(dtoRepos, referrer, dto.Guid, newGuid);
 			}
 			dtoRepos.Remove(dto);
 		}
 
-		private static void UpdateObjSurElement(IDomainObjectDTORepository dtoRepos, DomainObjectDTO dto, string oldGuid, string newGuid)
+		private static void UpdateObjSurElement(IDomainObjectDTORepository dtoRepos, DomainObjectXMLDTO dto, string oldGuid, string newGuid)
 		{
 			var rtElem = XElement.Parse(dto.Xml);
 			var ownObjSurGuidAttr = (from objSurNode in rtElem.Descendants("objsur")
@@ -593,11 +593,11 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append($"<WsSelector val=\"{wsSelector}\" />");
 			sb.Append("</rt>");
 
-			var newList = new DomainObjectDTO(listGuid, "CmPossibilityList", sb.ToString());
+			var newList = new DomainObjectXMLDTO(listGuid, "CmPossibilityList", sb.ToString());
 			dtoRepo.Add(newList);
 		}
 
-		private static DomainObjectDTO FindMatchingCustomList(IEnumerable<DomainObjectDTO> allCmPossibilityLists,
+		private static DomainObjectXMLDTO FindMatchingCustomList(IEnumerable<DomainObjectXMLDTO> allCmPossibilityLists,
 			Tuple<string, string, string>[] languageAbbrAndNames)
 		{
 			var englishTitle = languageAbbrAndNames.First(t => t.Item1 == "en").Item3;
@@ -620,7 +620,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// <summary>
 		/// Creates a CmPossibility with all the basic properties filled in for the xml (necessary for S/R) and adds it to the dto
 		/// </summary>
-		public static DomainObjectDTO CreatePossibility(IDomainObjectDTORepository repoDto, string listGuid, string possibilityGuid, string name,
+		public static DomainObjectXMLDTO CreatePossibility(IDomainObjectDTORepository repoDto, string listGuid, string possibilityGuid, string name,
 			string abbr, DateTime createTime, string className = "CmPossibility")
 		{
 			var sb = new StringBuilder();
@@ -641,7 +641,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("<UnderColor val=\"-1073741824\" />");
 			sb.Append("<UnderStyle val=\"-1073741824\" />");
 			sb.Append("</rt>");
-			var dtoCmPossibility = new DomainObjectDTO(possibilityGuid, className, sb.ToString());
+			var dtoCmPossibility = new DomainObjectXMLDTO(possibilityGuid, className, sb.ToString());
 			repoDto.Add(dtoCmPossibility);
 			return dtoCmPossibility;
 		}

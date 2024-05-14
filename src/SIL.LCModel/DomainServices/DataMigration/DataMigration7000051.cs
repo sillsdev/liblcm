@@ -36,7 +36,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 			var lpElement = XElement.Parse(data);
 			lpElement.Attribute("guid").Value = newGuidValue;
-			var newLpDto = new DomainObjectDTO(newGuidValue, className, lpElement.ToString());
+			var newLpDto = new DomainObjectXMLDTO(newGuidValue, className, lpElement.ToString());
 			domainObjectDtoRepository.Add(newLpDto);
 
 			// Change ownerguid attr for each owned item to new guid.

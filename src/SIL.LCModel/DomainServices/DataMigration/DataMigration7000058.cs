@@ -26,7 +26,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			DataMigrationServices.CheckVersionNumber(domainObjectDtoRepository, 7000057);
 			{
 				// LT-13312 Note some projects may not have these guids.
-				DomainObjectDTO dtoVariantType;
+				DomainObjectXMLDTO dtoVariantType;
 				if (domainObjectDtoRepository.TryGetValue(LexEntryTypeTags.kguidLexTypPluralVar.ToString(), out dtoVariantType))
 					AddGlossAppendIfEmpty(domainObjectDtoRepository, dtoVariantType, ".pl");
 				if (domainObjectDtoRepository.TryGetValue(LexEntryTypeTags.kguidLexTypPastVar.ToString(), out dtoVariantType))
@@ -35,7 +35,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			DataMigrationServices.IncrementVersionNumber(domainObjectDtoRepository);
 		}
 
-		static private void AddGlossAppendIfEmpty(IDomainObjectDTORepository dtoRepo, DomainObjectDTO dtoToChange, string glossAppend)
+		static private void AddGlossAppendIfEmpty(IDomainObjectDTORepository dtoRepo, DomainObjectXMLDTO dtoToChange, string glossAppend)
 		{
 			XElement dtoToChangeElt = XElement.Parse(dtoToChange.Xml);
 			XElement glossAppendElt = dtoToChangeElt.XPathSelectElement("GlossAppend");

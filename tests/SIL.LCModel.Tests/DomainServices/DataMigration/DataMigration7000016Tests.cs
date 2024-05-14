@@ -53,8 +53,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			// Verification Phase
 			Assert.AreEqual(7000016, repoDTO.CurrentModelVersion, "Wrong updated version.");
 
-			DomainObjectDTO nbkDto = null;
-			foreach (DomainObjectDTO dot in repoDTO.AllInstancesSansSubclasses("RnResearchNbk"))
+			DomainObjectXMLDTO nbkDto = null;
+			foreach (DomainObjectXMLDTO dot in repoDTO.AllInstancesSansSubclasses("RnResearchNbk"))
 			{
 				nbkDto = dot;
 				break;
@@ -69,7 +69,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			bool fFoundEvent = false;
 			bool fFoundMethod = false;
 			bool fFoundWeather = false;
-			foreach (DomainObjectDTO dto in repoDTO.GetDirectlyOwnedDTOs(ksguidRecTypesList))
+			foreach (DomainObjectXMLDTO dto in repoDTO.GetDirectlyOwnedDTOs(ksguidRecTypesList))
 			{
 				string sguid = dto.Guid.ToLowerInvariant();
 				Assert.AreNotEqual(sguid, ksguidObservation);
@@ -99,9 +99,9 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void CheckOnNoPossibilitiesInListAtStart()
 		{
-			var dtos = new HashSet<DomainObjectDTO>
+			var dtos = new HashSet<DomainObjectXMLDTO>
 			{
-				new DomainObjectDTO("D9D55B12-EA5E-11DE-95EF-0013722F8DEC".ToLowerInvariant(), "CmPossibilityList",
+				new DomainObjectXMLDTO("D9D55B12-EA5E-11DE-95EF-0013722F8DEC".ToLowerInvariant(), "CmPossibilityList",
 					@"<rt class='CmPossibilityList' guid='D9D55B12-EA5E-11DE-95EF-0013722F8DEC' ownerguid='D739CBEA-EA5E-11DE-85BE-0013722F8DEC'></rt>")
 			};
 			var mockMdc = SetupMdc();
@@ -117,24 +117,24 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 		private void CheckEventSubTypes(IDomainObjectDTORepository repoDTO)
 		{
-			DomainObjectDTO dtoObs = GetDTOIfItExists(repoDTO, ksguidObservation);
+			DomainObjectXMLDTO dtoObs = GetDTOIfItExists(repoDTO, ksguidObservation);
 			if (dtoObs != null)
 				VerifyOwner(repoDTO, dtoObs, ksguidEvent);
-			DomainObjectDTO dtoCon = GetDTOIfItExists(repoDTO, ksguidConversation);
+			DomainObjectXMLDTO dtoCon = GetDTOIfItExists(repoDTO, ksguidConversation);
 			if (dtoCon != null)
 				VerifyOwner(repoDTO, dtoCon, ksguidEvent);
-			DomainObjectDTO dtoInt = GetDTOIfItExists(repoDTO, ksguidInterview);
+			DomainObjectXMLDTO dtoInt = GetDTOIfItExists(repoDTO, ksguidInterview);
 			if (dtoInt != null)
 				VerifyOwner(repoDTO, dtoInt, ksguidEvent);
-			DomainObjectDTO dtoPer = GetDTOIfItExists(repoDTO, ksguidPerformance);
+			DomainObjectXMLDTO dtoPer = GetDTOIfItExists(repoDTO, ksguidPerformance);
 			if (dtoPer != null)
 				VerifyOwner(repoDTO, dtoPer, ksguidEvent);
 		}
 
-		private void VerifyOwner(IDomainObjectDTORepository repoDTO, DomainObjectDTO dtoTest, string sguidOwner)
+		private void VerifyOwner(IDomainObjectDTORepository repoDTO, DomainObjectXMLDTO dtoTest, string sguidOwner)
 		{
 			bool fFound = false;
-			foreach (DomainObjectDTO dto in repoDTO.GetDirectlyOwnedDTOs(sguidOwner))
+			foreach (DomainObjectXMLDTO dto in repoDTO.GetDirectlyOwnedDTOs(sguidOwner))
 			{
 				if (dto.Guid == dtoTest.Guid && dto.Xml == dtoTest.Xml)
 				{
@@ -145,7 +145,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.IsTrue(fFound);
 		}
 
-		private static DomainObjectDTO GetDTOIfItExists(IDomainObjectDTORepository dtoRepository, string sGuid)
+		private static DomainObjectXMLDTO GetDTOIfItExists(IDomainObjectDTORepository dtoRepository, string sGuid)
 		{
 			try
 			{

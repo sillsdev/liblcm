@@ -74,7 +74,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// Given that the element has been changed to represent the desired new state of the DTO,
 		/// save the change.
 		/// </summary>
-		private void UpdateDto(IDomainObjectDTORepository domainObjectDtoRepository, DomainObjectDTO dto, XElement element)
+		private void UpdateDto(IDomainObjectDTORepository domainObjectDtoRepository, DomainObjectXMLDTO dto, XElement element)
 		{
 			dto.Xml = element.ToString();
 			domainObjectDtoRepository.Update(dto);

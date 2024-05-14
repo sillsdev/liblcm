@@ -196,7 +196,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// Given that the element has been changed to represent the desired new state of the DTO,
 		/// save the change.
 		/// </summary>
-		private void UpdateDto(IDomainObjectDTORepository domainObjectDtoRepository, DomainObjectDTO dto, XElement element)
+		private void UpdateDto(IDomainObjectDTORepository domainObjectDtoRepository, DomainObjectXMLDTO dto, XElement element)
 		{
 			dto.Xml = element.ToString();
 			domainObjectDtoRepository.Update(dto);
@@ -207,7 +207,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		private void UpdateDto(IDomainObjectDTORepository domainObjectDtoRepository, XElement element)
 		{
-			DomainObjectDTO dto = domainObjectDtoRepository.GetDTO(element.Attribute("guid").Value);
+			DomainObjectXMLDTO dto = domainObjectDtoRepository.GetDTO(element.Attribute("guid").Value);
 			dto.Xml = element.ToString();
 			domainObjectDtoRepository.Update(dto);
 		}
@@ -232,7 +232,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 										 new XAttribute("ownerguid", langPossListGuid),
 										 MakeMultiUnicode("Name", name),
 										 MakeMultiUnicode("Abbreviation", abbr));
-			var dtoConfirmed = new DomainObjectDTO(statusConfirmedGuid, "CmPossibility", confirmed.ToString());
+			var dtoConfirmed = new DomainObjectXMLDTO(statusConfirmedGuid, "CmPossibility", confirmed.ToString());
 			domainObjectDtoRepository.Add(dtoConfirmed);
 			langPossListElement.Element("Possibilities").Add(MakeOwningSurrogate(statusConfirmedGuid));
 			return statusConfirmedGuid;
