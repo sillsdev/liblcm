@@ -1,5 +1,5 @@
 # LCModel Library
-aaaa
+
 ## Description
 
 The library for the SIL Language and Culture Model.

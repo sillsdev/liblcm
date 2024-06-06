@@ -25,13 +25,8 @@ namespace SIL.LCModel.DomainServices
 		/// <param name="filename"></param>
 		public void ExportXml(string filename)
 		{
-			IPhPhonData phonology = Cache.LanguageProject.PhonologicalDataOA;
-			string xml = ((ICmObjectInternal)phonology).ToXmlString();
-			using (StreamWriter outputFile = new StreamWriter(filename))
-			{
-				outputFile.WriteLine(xml);
-			}
-
+			var xml = M3ModelExportServices.ExportPhonology(Cache.LanguageProject);
+			xml.Save(filename);
 		}
 
 		/// <summary>

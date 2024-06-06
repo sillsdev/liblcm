@@ -82,6 +82,27 @@ namespace SIL.LCModel.DomainServices
 			return doc;
 		}
 
+		/// <summary>
+		/// Export the phonology of languageProject.
+		/// </summary>
+		/// <param name="languageProject"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		public static XDocument ExportPhonology(ILangProject languageProject)
+		{
+			if (languageProject == null) throw new ArgumentNullException("languageProject");
+
+			const Normalizer.UNormalizationMode mode = Normalizer.UNormalizationMode.UNORM_NFD;
+			var doc = new XDocument(
+				new XDeclaration("1.0", "utf-8", "yes"),
+				new XElement("M3Dump",
+					ExportPhonologicalData(languageProject.PhonologicalDataOA, mode),
+					ExportFeatureSystem(languageProject.PhFeatureSystemOA, "PhFeatureSystem", mode)
+				)
+			);
+			return doc;
+		}
+
 		private static XElement ExportLanguageProject(ILangProject languageProject, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("LangProject",
