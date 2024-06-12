@@ -1388,6 +1388,8 @@ namespace SIL.LCModel.DomainServices
 				// Make sure we get a contexted guess for occurrence instead of an uncontexted guess.
 				guessActual = setup.GuessServices.GetBestGuess(occurrence);
 				Assert.AreEqual(contextedApprovedGloss, guessActual);
+				guessActual = setup.GuessServices.GetBestGuess(occurrence, includeContext: false);
+				Assert.AreEqual(uncontextedApprovedGloss, guessActual);
 				// Verify uncontexted guess for sort.
 				var sorted_glosses = setup.GuessServices.GetSortedGlossGuesses(analysis);
 				Assert.AreEqual(2, sorted_glosses.Count);
