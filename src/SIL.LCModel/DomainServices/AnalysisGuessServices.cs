@@ -631,7 +631,11 @@ namespace SIL.LCModel.DomainServices
 		/// True: Do lowercase matching only if the occurrence index is zero.
 		/// False: Do lowercase matching regardless of the occurrence index.
 		/// </param>
-		public IAnalysis GetBestGuess(AnalysisOccurrence occurrence, bool onlyIndexZeroLowercaseMatching = true)
+		/// <param name="includeContext">
+		/// True: Consider previous word when getting best guess.
+		/// False: Ignore previous word when getting best guess.
+		/// </param>
+		public IAnalysis GetBestGuess(AnalysisOccurrence occurrence, bool onlyIndexZeroLowercaseMatching = true, bool includeContext = true)
 		{
 			// first see if there is a relevant lowercase form of a sentence initial (non-lowercase) wordform
 			// TODO: make it look for the first word in the sentence...may not be at Index 0!
@@ -654,7 +658,7 @@ namespace SIL.LCModel.DomainServices
 			if (ws == -1)
 				return new NullWAG(); // happens with empty translation lines
 			IAnalysis bestGuess;
-			IAnalysis previous = GetPreviousWordform(occurrence.Segment, occurrence.Index);
+			IAnalysis previous = includeContext ? GetPreviousWordform(occurrence.Segment, occurrence.Index) : m_nullWAG;
 			if (TryGetContextAwareGuess(occurrence.Analysis, lowercaseWf, previous, out bestGuess))
 				return bestGuess;
 			return new NullWAG();
