@@ -863,6 +863,51 @@ namespace SIL.LCModel.FixData.Tests
 		}
 
 		/// <summary>
+		/// LT-21760 Find and Fix errors is losing homograph number
+		/// </summary>
+		[Test]
+		public void HomographNumberDrops()
+		{
+			var testPath = Path.Combine(_basePath, "HomographDrops");
+			const string lexEntry_ric1Guid = "5c7a2684-97dc-4cac-8b31-4e0db5855b27";
+			const string lexEntry_ric2Guid = "7dcf9363-29e6-47fb-aa1e-eb8dd1f7afe5";
+			const string lexEntry_ric3Guid = "74ce3bd5-455b-48ca-986f-e325f8cf96d5";
+
+			var testFile = Path.Combine(testPath, "Test.fwdata");
+
+			AssertThatXmlIn.File(testFile).HasSpecifiedNumberOfMatchesForXpath(
+				"//rt[@class=\"LexEntry\" and @guid=\"" + lexEntry_ric1Guid + "\"]", 1);
+			AssertThatXmlIn.File(testFile).HasSpecifiedNumberOfMatchesForXpath(
+				"//rt[@class=\"LexEntry\" and @guid=\"" + lexEntry_ric2Guid + "\"]", 1);
+			AssertThatXmlIn.File(testFile).HasSpecifiedNumberOfMatchesForXpath(
+				"//rt[@class=\"LexEntry\" and @guid=\"" + lexEntry_ric3Guid + "\"]", 1);
+
+			AssertThatXmlIn.File(testFile).HasSpecifiedNumberOfMatchesForXpath(
+				"//HomographNumber[@val='1']", 1);
+			AssertThatXmlIn.File(testFile).HasSpecifiedNumberOfMatchesForXpath(
+				"//HomographNumber[@val='2']", 1);
+			AssertThatXmlIn.File(testFile).HasSpecifiedNumberOfMatchesForXpath(
+				"//HomographNumber[@val='3']", 1);
+
+			_errors.Clear();
+			Assert.DoesNotThrow(() =>
+			{
+				var data = new FwDataFixer(testFile, new DummyProgressDlg(),
+										   LogErrors, ErrorCount);
+
+				// SUT
+				data.FixErrorsAndSave();
+			}, "Exception running the data fixer on the sequence test data.");
+
+			AssertThatXmlIn.File(testFile).HasSpecifiedNumberOfMatchesForXpath(
+				"//HomographNumber[@val='1']", 1);
+			AssertThatXmlIn.File(testFile).HasSpecifiedNumberOfMatchesForXpath(
+				"//HomographNumber[@val='2']", 1);
+			AssertThatXmlIn.File(testFile).HasSpecifiedNumberOfMatchesForXpath(
+				"//HomographNumber[@val='3']", 1);
+		}
+
+		/// <summary>
 		/// LT-13509 Identical entries homograph numbering inconsistency.
 		/// </summary>
 		[Test]

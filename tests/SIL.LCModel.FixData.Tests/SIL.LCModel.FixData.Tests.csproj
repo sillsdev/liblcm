@@ -20,4 +20,8 @@
     <ProjectReference Include="..\SIL.LCModel.Tests\SIL.LCModel.Tests.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="TestData\HomographDrops\" />
+  </ItemGroup>
+
 </Project>
