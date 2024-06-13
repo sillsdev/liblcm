@@ -866,7 +866,7 @@ namespace SIL.LCModel.FixData.Tests
 		/// LT-21760 Find and Fix errors is losing homograph number
 		/// </summary>
 		[Test]
-		public void HomographNumberDrops()
+		public void HomographFixerIgnoresAlternativeCitationForms()
 		{
 			var testPath = Path.Combine(_basePath, "HomographDrops");
 			const string lexEntry_ric1Guid = "5c7a2684-97dc-4cac-8b31-4e0db5855b27";
