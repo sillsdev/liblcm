@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 SIL International
+// Copyright (c) 2012-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -78,7 +78,10 @@ namespace SIL.LCModel.FixData
 					var citationForm = rt.Element("CitationForm");
 					if (citationForm != null)
 					{
-						entriesWithCitationForm.Add(guid, citationForm);
+						if (citationForm.Elements("AUni").Any(e => e.Attribute("ws")?.Value == m_homographWs))
+						{
+							entriesWithCitationForm.Add(guid, citationForm);
+						}
 					}
 					break;
 				case "LangProject":
@@ -127,6 +130,7 @@ namespace SIL.LCModel.FixData
 					var rtForm = rtElem.Element("Form");
 					if (rtForm == null)
 						continue;
+
 					rtFormText = GetStringInHomographWritingSystem(rtForm);
 					if (string.IsNullOrWhiteSpace(rtFormText))
 						continue; // entries with no lexeme form are not considered homographs.
@@ -142,17 +146,20 @@ namespace SIL.LCModel.FixData
 
 				// if there was a citation form which matches the form of this MoStemAllomorph the MorphType
 				// is not important to the homograph determination.
-				var key = m_Homographs.ContainsKey(rtFormText) ? rtFormText : rtFormText + m_MorphTypeSort[new Guid(guid)];
+				if (m_Homographs.ContainsKey(rtFormText) || m_MorphTypeSort.Any())
+				{
+					var key = m_Homographs.ContainsKey(rtFormText) ? rtFormText : rtFormText + m_MorphTypeSort[new Guid(guid)];
 
-				var ownerguid = new Guid(rtElem.Attribute("ownerguid").Value);
-				if (m_Homographs.TryGetValue(key, out guidsForHomograph))
-				{
-					guidsForHomograph.Add(ownerguid);
-				}
-				else
-				{
-					guidsForHomograph = new List<Guid> { ownerguid };
-					m_Homographs.Add(key, guidsForHomograph);
+					var ownerguid = new Guid(rtElem.Attribute("ownerguid").Value);
+					if (m_Homographs.TryGetValue(key, out guidsForHomograph))
+					{
+						guidsForHomograph.Add(ownerguid);
+					}
+					else
+					{
+						guidsForHomograph = new List<Guid> { ownerguid };
+						m_Homographs.Add(key, guidsForHomograph);
+					}
 				}
 			}
 
