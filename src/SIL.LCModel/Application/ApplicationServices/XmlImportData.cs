@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Xml.Linq;
 using Icu;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
@@ -154,6 +155,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 		private ReferenceTracker m_rglinks = new ReferenceTracker();
 		private TextWriter m_wrtrLog;
 		private bool m_createLinks;
+		private bool m_m3Dump;
 
 
 		/// ------------------------------------------------------------------------------------
@@ -270,6 +272,12 @@ namespace SIL.LCModel.Application.ApplicationServices
 				xrdr.MoveToContent();
 				if (xrdr.Name == "FwDatabase")
 				{
+					xrdr.Read();
+					xrdr.MoveToContent();
+				}
+				if (xrdr.Name == "M3Dump")
+				{
+					m_m3Dump = true;
 					xrdr.Read();
 					xrdr.MoveToContent();
 				}
@@ -946,7 +954,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			int nDepth = xrdr.Depth;
 #endif
 			string sClass = xrdr.Name;
-			string sId = xrdr.GetAttribute("id");
+			string sId = m_m3Dump ? xrdr.GetAttribute("Id") : xrdr.GetAttribute("id");
 			ICmObject cmo = null;
 			// Check for singleton classes that should already exist before creating new
 			// objects.
@@ -959,6 +967,14 @@ namespace SIL.LCModel.Application.ApplicationServices
 					break;
 				case "LexDb":
 					cmo = m_cache.LangProject.LexDbOA;
+					Debug.Assert(cmo != null);
+					break;
+				case "PhPhonData":
+					cmo = m_cache.LangProject.PhonologicalDataOA;
+					Debug.Assert(cmo != null);
+					break;
+				case "PhFeatureSystem":
+					cmo = m_cache.LangProject.PhFeatureSystemOA;
 					Debug.Assert(cmo != null);
 					break;
 				default:
@@ -1050,6 +1066,20 @@ namespace SIL.LCModel.Application.ApplicationServices
 			{
 				m_mapIdGuid.Add(sId, cmo.Guid);
 				m_mapGuidId.Add(cmo.Guid, sId);
+			}
+			if (sClass == "PhEnvironment")
+			{
+				var attributes = new List<string>() { "StringRepresentation" };
+				foreach (string name in attributes)
+				{
+					string value = xrdr.GetAttribute(name);
+					int ws = m_cache.DefaultAnalWs;
+					ITsString tss = TsStringUtils.MakeString(value, ws);
+					int flid = m_mdc.GetFieldId2(cmo.ClassID, name, true);
+					CellarPropertyType cpt2 = (CellarPropertyType)m_mdc.GetFieldType(flid);
+					FieldInfo fi2 = new FieldInfo(cmo, flid, cpt2, fNewObject, fi);
+					m_sda.SetString(fi2.Owner.Hvo, fi2.FieldId, tss);
+				}
 			}
 			if (!xrdr.IsEmptyElement)
 			{
@@ -1578,6 +1608,14 @@ namespace SIL.LCModel.Application.ApplicationServices
 		{
 			if (xrdr.Name != "AUni")
 			{
+				if (m_m3Dump)
+				{
+					int m3ws = m_cache.DefaultAnalWs;
+					string m3Data = xrdr.ReadString();
+					m_sda.SetMultiStringAlt(fi.Owner.Hvo, fi.FieldId, m3ws, TsStringUtils.MakeString(m3Data, m3ws));
+					xrdr.MoveToContent();
+					return;
+				}
 				string sMsg = AppStrings.ksExpectedAUni;
 				LogMessage(sMsg, LineNumber(xrdr));
 				throw new Exception(sMsg);
@@ -1601,6 +1639,15 @@ namespace SIL.LCModel.Application.ApplicationServices
 		{
 			if (xrdr.Name != "Str")
 			{
+				if (m_m3Dump)
+				{
+					string m3Data = xrdr.ReadString();
+					int m3ws = m_cache.DefaultAnalWs;
+					ITsString m3tss = TsStringUtils.MakeString(m3Data, m3ws);
+					m_sda.SetString(fi.Owner.Hvo, fi.FieldId, m3tss);
+					xrdr.MoveToContent();
+					return;
+				}
 				string sMsg = AppStrings.ksExpectedStr;
 				LogMessage(sMsg, LineNumber(xrdr));
 				throw new Exception(sMsg);
@@ -1629,6 +1676,14 @@ namespace SIL.LCModel.Application.ApplicationServices
 		{
 			if (xrdr.Name != "AStr")
 			{
+				if (m_m3Dump)
+				{
+					int m3ws = m_cache.DefaultAnalWs;
+					string m3Data = xrdr.ReadString();
+					m_sda.SetMultiStringAlt(fi.Owner.Hvo, fi.FieldId, m3ws, TsStringUtils.MakeString(m3Data, m3ws));
+					xrdr.MoveToContent();
+					return;
+				}
 				string sMsg = AppStrings.ksExpectedAStr;
 				LogMessage(sMsg, LineNumber(xrdr));
 				throw new Exception(sMsg);
