@@ -954,7 +954,10 @@ namespace SIL.LCModel.Application.ApplicationServices
 			int nDepth = xrdr.Depth;
 #endif
 			string sClass = xrdr.Name;
-			string sId = m_m3Dump ? xrdr.GetAttribute("Id") : xrdr.GetAttribute("id");
+			string sId = xrdr.GetAttribute("id");
+			if (sId == null)
+				// M3ModelExportServices uses "Id".
+				sId = xrdr.GetAttribute("Id");
 			ICmObject cmo = null;
 			// Check for singleton classes that should already exist before creating new
 			// objects.

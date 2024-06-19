@@ -9,7 +9,10 @@ using System.Xml.Linq;
 using Icu;
 using Microsoft.Practices.ServiceLocation;
 using SIL.LCModel.Core.KernelInterfaces;
+using SIL.LCModel.Core.Text;
 using SIL.LCModel.Core.WritingSystems;
+using SIL.LCModel.DomainImpl;
+using static SIL.LCModel.Application.ApplicationServices.XmlImportData;
 
 namespace SIL.LCModel.DomainServices
 {
@@ -95,8 +98,8 @@ namespace SIL.LCModel.DomainServices
 			const Normalizer.UNormalizationMode mode = Normalizer.UNormalizationMode.UNORM_NFD;
 			var doc = new XDocument(
 				new XDeclaration("1.0", "utf-8", "yes"),
-				new XElement("M3Dump",
-					ExportPhonologicalData(languageProject.PhonologicalDataOA, mode),
+				new XElement("FwDatabase",
+					ExportPhonologicalData(languageProject.PhonologicalDataOA, mode, true),
 					ExportFeatureSystem(languageProject.PhFeatureSystemOA, "PhFeatureSystem", mode)
 				)
 			);
@@ -475,26 +478,19 @@ namespace SIL.LCModel.DomainServices
 
 		// ExportMorphTypes rules go above this line.
 
-		private static XElement ExportPhonologicalData(IPhPhonData phonologicalData, Normalizer.UNormalizationMode mode)
+		private static XElement ExportPhonologicalData(IPhPhonData phonologicalData, Normalizer.UNormalizationMode mode, bool fwDatabase = false)
 		{
 			return new XElement("PhPhonData",
 								new XAttribute("Id", phonologicalData.Hvo),
 								new XElement("Environments",
-									from goodEnvironment in phonologicalData.Services.GetInstance<IPhEnvironmentRepository>().AllValidInstances()
-									select new XElement("PhEnvironment",
-										new XAttribute("Id", goodEnvironment.Hvo),
-										new XAttribute("StringRepresentation",
-											Normalize(goodEnvironment.StringRepresentation, mode)),
-										CreateAttribute("LeftContext", goodEnvironment.LeftContextRA),
-										CreateAttribute("RightContext", goodEnvironment.RightContextRA),
-										ExportBestAnalysis(goodEnvironment.Name, "Name", mode),
-										ExportBestAnalysis(goodEnvironment.Description, "Description", mode))),
+									from goodEnvironment in GetPhEnvironments(phonologicalData)
+									select ExportPhEnvironment(goodEnvironment, mode, fwDatabase)),
 								new XElement("NaturalClasses", from naturalClass in phonologicalData.NaturalClassesOS
-																select ExportNaturalClass(naturalClass, mode)),
+																select ExportNaturalClass(naturalClass, mode, fwDatabase)),
 								new XElement("Contexts", from context in phonologicalData.ContextsOS
 														  select ExportContext(context)),
 								new XElement("PhonemeSets", from phonemeSet in phonologicalData.PhonemeSetsOS
-															 select ExportPhonemeSet(phonemeSet, mode)),
+															 select ExportPhonemeSet(phonemeSet, mode, fwDatabase)),
 								new XElement("FeatureConstraints", from featureConstraint in phonologicalData.FeatConstraintsOS
 																 select ExportFeatureConstraint(featureConstraint)),
 								new XElement("PhonRules", from phonRule in phonologicalData.PhonRulesOS
@@ -507,6 +503,33 @@ namespace SIL.LCModel.DomainServices
 							   new XElement("PhIters"),
 							   new XElement("PhIters"),
 							   new XElement("PhIters"));
+		}
+
+		private static IEnumerable<IPhEnvironment> GetPhEnvironments(IPhPhonData phonologicalData)
+		{
+			return phonologicalData.Services.GetInstance<IPhEnvironmentRepository>().AllValidInstances();
+		}
+
+		private static XElement ExportPhEnvironment(IPhEnvironment goodEnvironment, Normalizer.UNormalizationMode mode, bool fwDatabase = false)
+		{
+			if (fwDatabase)
+			{
+				return new XElement("PhEnvironment",
+					new XAttribute("Id", goodEnvironment.Hvo),
+					CreateAttribute("LeftContext", goodEnvironment.LeftContextRA),
+					CreateAttribute("RightContext", goodEnvironment.RightContextRA),
+					ExportMultiString(goodEnvironment.Name, "Name", goodEnvironment),
+					ExportMultiString(goodEnvironment.Description, "Description", goodEnvironment),
+					ExportTsString(goodEnvironment.StringRepresentation, "StringRepresentation", goodEnvironment));
+			}
+			return new XElement("PhEnvironment",
+				new XAttribute("Id", goodEnvironment.Hvo),
+				new XAttribute("StringRepresentation",
+					Normalize(goodEnvironment.StringRepresentation, mode)),
+				CreateAttribute("LeftContext", goodEnvironment.LeftContextRA),
+				CreateAttribute("RightContext", goodEnvironment.RightContextRA),
+				ExportBestAnalysis(goodEnvironment.Name, "Name", mode),
+				ExportBestAnalysis(goodEnvironment.Description, "Description", mode));
 		}
 
 		private static XElement ExportPhonRuleFeats(IPhPhonData phonData, Normalizer.UNormalizationMode mode)
@@ -596,46 +619,48 @@ namespace SIL.LCModel.DomainServices
 				ExportItemAsReference(featureConstraint.FeatureRA, "Feature"));
 		}
 
-		private static XElement ExportPhonemeSet(IPhPhonemeSet phonemeSet, Normalizer.UNormalizationMode mode)
+		private static XElement ExportPhonemeSet(IPhPhonemeSet phonemeSet, Normalizer.UNormalizationMode mode, bool fwDatabase = false)
 		{
 			return new XElement("PhPhonemeSet",
 								new XAttribute("Id", phonemeSet.Hvo),
-								ExportBestAnalysis(phonemeSet.Name, "Name", mode),
-								ExportBestAnalysis(phonemeSet.Description, "Description", mode),
+								ExportBestAnalysis(phonemeSet.Name, "Name", mode, fwDatabase, phonemeSet),
+								ExportBestAnalysis(phonemeSet.Description, "Description", mode, fwDatabase, phonemeSet),
 								new XElement("Phonemes", from phoneme in phonemeSet.PhonemesOC
-														  select ExportPhoneme(phoneme, mode)),
+														  select ExportPhoneme(phoneme, mode, fwDatabase)),
 								new XElement("BoundaryMarkers", from marker in phonemeSet.BoundaryMarkersOC
-																 select ExportBoundaryMarker(marker, mode)));
+																 select ExportBoundaryMarker(marker, mode, fwDatabase)));
 		}
 
-		private static XElement ExportBoundaryMarker(IPhBdryMarker bdryMarker, Normalizer.UNormalizationMode mode)
+		private static XElement ExportBoundaryMarker(IPhBdryMarker bdryMarker, Normalizer.UNormalizationMode mode, bool fwDatabase = false)
 		{
 			return new XElement("PhBdryMarker",
 								new XAttribute("Id", bdryMarker.Hvo),
 								new XAttribute("Guid", bdryMarker.Guid.ToString()),
-								ExportBestAnalysis(bdryMarker.Name, "Name", mode),
-								ExportCodes(bdryMarker.CodesOS, mode));
+								ExportBestAnalysis(bdryMarker.Name, "Name", mode, fwDatabase, bdryMarker),
+								ExportCodes(bdryMarker.CodesOS, mode, fwDatabase));
 		}
 
-		private static XElement ExportPhoneme(IPhPhoneme phoneme, Normalizer.UNormalizationMode mode)
+		private static XElement ExportPhoneme(IPhPhoneme phoneme, Normalizer.UNormalizationMode mode, bool fwDatabase = false)
 		{
 			return new XElement("PhPhoneme",
 								new XAttribute("Id", phoneme.Hvo),
-								ExportBestVernacular(phoneme.Name, "Name", mode),
-								ExportBestAnalysis(phoneme.Description, "Description", mode),
-								ExportCodes(phoneme.CodesOS, mode),
-								new XElement("BasicIPASymbol", phoneme.BasicIPASymbol.Text),
+								ExportBestVernacular(phoneme.Name, "Name", mode, fwDatabase, phoneme),
+								ExportBestAnalysis(phoneme.Description, "Description", mode, fwDatabase, phoneme),
+								ExportCodes(phoneme.CodesOS, mode, fwDatabase),
+								fwDatabase ?
+									ExportTsString(phoneme.BasicIPASymbol, "BasicIPASymbol", phoneme) :
+									new XElement("BasicIPASymbol", phoneme.BasicIPASymbol.Text),
 								new XElement("PhonologicalFeatures", ExportFeatureStructure(phoneme.FeaturesOA)));
 		}
 
-		private static XElement ExportCodes(IEnumerable<IPhCode> codes, Normalizer.UNormalizationMode mode)
+		private static XElement ExportCodes(IEnumerable<IPhCode> codes, Normalizer.UNormalizationMode mode, bool fwDatabase = false)
 		{
 			return new XElement("Codes", from phone in codes.Where(phone =>
 					!string.IsNullOrEmpty(phone.Representation.BestVernacularAnalysisAlternative.Text))
 				select new XElement("PhCode",
 					new XAttribute("Id", phone.Hvo),
 					ExportBestVernacularOrAnalysis(phone.Representation,
-					"Representation", mode)));
+					"Representation", mode, fwDatabase, phone)));
 		}
 
 		private static XElement ExportContext(IPhContextOrVar context)
@@ -693,13 +718,13 @@ namespace SIL.LCModel.DomainServices
 			return retVal;
 		}
 
-		private static XElement ExportNaturalClass(IPhNaturalClass naturalClass, Normalizer.UNormalizationMode mode)
+		private static XElement ExportNaturalClass(IPhNaturalClass naturalClass, Normalizer.UNormalizationMode mode, bool fwDatabase = false)
 		{
 			return new XElement(naturalClass.ClassName,
 								new XAttribute("Id", naturalClass.Hvo),
-								ExportBestAnalysis(naturalClass.Name, "Name", mode),
-								ExportBestAnalysis(naturalClass.Description, "Description", mode),
-								ExportBestAnalysis(naturalClass.Abbreviation, "Abbreviation", mode),
+								ExportBestAnalysis(naturalClass.Name, "Name", mode, fwDatabase, naturalClass),
+								ExportBestAnalysis(naturalClass.Description, "Description", mode, fwDatabase, naturalClass),
+								ExportBestAnalysis(naturalClass.Abbreviation, "Abbreviation", mode, fwDatabase, naturalClass),
 								(naturalClass is IPhNCFeatures)
 									? ExportNaturalClassContents(naturalClass as IPhNCFeatures)
 									: ExportNaturalClassContents(naturalClass as IPhNCSegments));
@@ -831,7 +856,7 @@ namespace SIL.LCModel.DomainServices
 			}
 		}
 
-		private static XElement ExportFeatureSpecification(IFsFeatureSpecification featureSpec)
+		private static XElement ExportFeatureSpecification(IFsFeatureSpecification featureSpec, bool fwDatabase = false)
 		{
 			switch (featureSpec.ClassName)
 			{
@@ -888,28 +913,64 @@ namespace SIL.LCModel.DomainServices
 								   select ExportItemAsReference(sfxslot, template.PrefixSlotsRS.IndexOf(sfxslot), "SuffixSlots"));
 		}
 
-		private static XElement ExportBestAnalysis(IMultiAccessorBase multiString, string elementName, Normalizer.UNormalizationMode mode)
+		private static XElement ExportTsString(ITsString tsString, string elementName, ICmObject obj)
 		{
-			if (multiString == null) throw new ArgumentNullException("multiString");
+			if (tsString == null) throw new ArgumentNullException("tsString");
 			if (String.IsNullOrEmpty(elementName)) throw new ArgumentNullException("elementName");
-
-			return new XElement(elementName, Normalize(multiString.BestAnalysisAlternative, mode));
+			if (obj == null) throw new ArgumentNullException("obj");
+			if (tsString.RunCount != 1) throw new ArgumentException("Too many runs in " + elementName);
+			int ws = tsString.get_WritingSystemAt(0);
+			var wsName = obj.Cache.WritingSystemFactory.GetStrFromWs(ws);
+			return new XElement(elementName, new XElement("Str", new XAttribute("ws", wsName), tsString.Text));
 		}
 
-		private static XElement ExportBestVernacular(IMultiAccessorBase multiString, string elementName, Normalizer.UNormalizationMode mode)
+		private static IEnumerable<XElement> ExportMultiString(IMultiAccessorBase multiString, string elementName, ICmObject obj)
 		{
 			if (multiString == null) throw new ArgumentNullException("multiString");
 			if (String.IsNullOrEmpty(elementName)) throw new ArgumentNullException("elementName");
-
-			return new XElement(elementName, Normalize(multiString.BestVernacularAlternative, mode));
+			if (obj == null) throw new ArgumentNullException("obj");
+			List<XElement> alternatives = new List<XElement>();
+			string type = multiString is IMultiUnicode ? "AUni" : "AStr";
+			foreach (int ws in multiString.AvailableWritingSystemIds)
+			{
+				var wsName = obj.Cache.WritingSystemFactory.GetStrFromWs(ws);
+				ITsString value = multiString.get_String(ws);
+				if (value.RunCount != 1) throw new ArgumentException("Too many runs in " + elementName);
+				alternatives.Add(new XElement(elementName, new XElement(type, new XAttribute("ws", wsName), value.Text)));
+			}
+			return alternatives;
 		}
 
-		private static XElement ExportBestVernacularOrAnalysis(IMultiAccessorBase multiString, string elementName, Normalizer.UNormalizationMode mode)
+		private static IEnumerable<XElement> ExportBestAnalysis(IMultiAccessorBase multiString, string elementName, Normalizer.UNormalizationMode mode,
+			bool fwDatabase = false, ICmObject obj = null)
 		{
+			if (fwDatabase)
+				return ExportMultiString(multiString, elementName, obj);
+			if (multiString == null) throw new ArgumentNullException("multiString");
+			if (String.IsNullOrEmpty(elementName)) throw new ArgumentNullException("elementName");
+			return new List<XElement> { new XElement(elementName, Normalize(multiString.BestAnalysisAlternative, mode)) };
+		}
+
+		private static IEnumerable<XElement> ExportBestVernacular(IMultiAccessorBase multiString, string elementName, Normalizer.UNormalizationMode mode,
+			bool fwDatabase = false, ICmObject obj = null)
+		{
+			if (fwDatabase)
+				return ExportMultiString(multiString, elementName, obj);
 			if (multiString == null) throw new ArgumentNullException("multiString");
 			if (String.IsNullOrEmpty(elementName)) throw new ArgumentNullException("elementName");
 
-			return new XElement(elementName, Normalize(multiString.BestVernacularAnalysisAlternative, mode));
+			return new List<XElement> { new XElement(elementName, Normalize(multiString.BestVernacularAlternative, mode)) };
+		}
+
+		private static IEnumerable<XElement> ExportBestVernacularOrAnalysis(IMultiAccessorBase multiString, string elementName, Normalizer.UNormalizationMode mode,
+			bool fwDatabase = false, ICmObject obj = null)
+		{
+			if (fwDatabase)
+				return ExportMultiString(multiString, elementName, obj);
+			if (multiString == null) throw new ArgumentNullException("multiString");
+			if (String.IsNullOrEmpty(elementName)) throw new ArgumentNullException("elementName");
+
+			return new List<XElement> { new XElement(elementName, Normalize(multiString.BestVernacularAnalysisAlternative, mode)) };
 		}
 
 		private static string Normalize(ITsString text, Normalizer.UNormalizationMode mode)
