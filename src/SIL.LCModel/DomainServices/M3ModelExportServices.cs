@@ -918,10 +918,9 @@ namespace SIL.LCModel.DomainServices
 			if (tsString == null) throw new ArgumentNullException("tsString");
 			if (String.IsNullOrEmpty(elementName)) throw new ArgumentNullException("elementName");
 			if (obj == null) throw new ArgumentNullException("obj");
-			if (tsString.RunCount != 1) throw new ArgumentException("Too many runs in " + elementName);
-			int ws = tsString.get_WritingSystemAt(0);
-			var wsName = obj.Cache.WritingSystemFactory.GetStrFromWs(ws);
-			return new XElement(elementName, new XElement("Str", new XAttribute("ws", wsName), tsString.Text));
+			var writingSystemManager = obj.Cache.WritingSystemFactory;
+			string xml = TsStringSerializer.SerializeTsStringToXml(tsString, writingSystemManager);
+			return new XElement(elementName, XElement.Parse(xml));
 		}
 
 		private static IEnumerable<XElement> ExportMultiString(IMultiAccessorBase multiString, string elementName, ICmObject obj)

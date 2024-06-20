@@ -5,6 +5,9 @@ using System.Linq;
 using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.Infrastructure;
 using System.IO;
+using SIL.LCModel.Core.KernelInterfaces;
+using StructureMap.Diagnostics.TreeView;
+using SIL.LCModel.Core.Text;
 
 namespace SIL.LCModel.DomainServices
 {
@@ -65,6 +68,73 @@ namespace SIL.LCModel.DomainServices
 				m_cache.Dispose();
 				m_cache = null;
 			}
+		}
+
+		private void TestProject(string projectsDirectory, string dbFileName)
+		{
+			var projectId = new TestProjectId(BackendProviderType.kXML, dbFileName);
+			var m_ui = new DummyLcmUI();
+			var m_lcmDirectories = new TestLcmDirectories(projectsDirectory);
+			using (var cache = LcmCache.CreateCacheFromExistingData(projectId, "en", m_ui, m_lcmDirectories, new LcmSettings(),
+					new DummyProgressDlg()))
+			{
+				var services = new PhonologyServices(cache);
+				var xdoc = services.ExportPhonologyAsXml();
+				var xml = xdoc.ToString();
+				using (var rdr = new StringReader(xml))
+				{
+					var services2 = new PhonologyServices(m_cache);
+					services2.ImportPhonologyFromXml(rdr);
+				}
+				TestEqual(cache.LanguageProject.PhonologicalDataOA, m_cache.LanguageProject.PhonologicalDataOA);
+			}
+		}
+
+		private void TestEqual(IPhPhonData phonologicalData, IPhPhonData phonologicalData2)
+		{
+			TestEqual(
+				phonologicalData.Services.GetInstance<IPhEnvironmentRepository>().AllValidInstances(),
+				phonologicalData2.Services.GetInstance<IPhEnvironmentRepository>().AllValidInstances());
+		}
+
+		private void TestEqual(IEnumerable<IPhEnvironment> environments, IEnumerable<IPhEnvironment> environments2)
+		{
+			Assert.AreEqual(environments.Count(), environments2.Count());
+			foreach (var pair in environments.Zip(environments2, Tuple.Create))
+			{
+				TestEqual(pair.Item1, pair.Item2);
+			}
+		}
+
+		private void TestEqual(IPhEnvironment environment, IPhEnvironment environment2)
+		{
+			TestEqual(environment.Name, environment2.Name);
+		}
+
+		private void TestEqual(IMultiUnicode tsString, IMultiUnicode tsString2)
+		{
+			TestEqual(tsString.BestAnalysisAlternative, tsString2.BestAnalysisAlternative);
+		}
+
+		private void TestEqual(ITsString tsString, ITsString tsString2)
+		{
+			Assert.IsTrue(tsString.Equals(tsString2));
+		}
+
+		[Test]
+		public void TestQuechua()
+		{
+			TestProject(
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\QuechuaMark",
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\QuechuaMark\\QuechuaMark.fwdata");
+		}
+
+		[Test]
+		public void TestSpanish2()
+		{
+			TestProject(
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Spanish-GenerateWords-Experiment",
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Spanish-GenerateWords-Experiment\\Spanish-GenerateWords-Experiment.fwdata");
 		}
 
 		[Test]

@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using SIL.LCModel.Application.ApplicationServices;
+using SIL.LCModel.Core.Text;
+using SIL.LCModel.Infrastructure.Impl;
 
 namespace SIL.LCModel.DomainServices
 {
@@ -57,6 +59,38 @@ namespace SIL.LCModel.DomainServices
 		{
 			XmlImportData xid = new XmlImportData(Cache, true);
 			xid.ImportData(rdr, null, null);
+			NonUndoableUnitOfWorkHelper.DoUsingNewOrCurrentUOW(Cache.ActionHandlerAccessor,
+				() => AssignVernacularWritingSystemToDefaultPhPhonemes(Cache));
 		}
+
+		private void AssignVernacularWritingSystemToDefaultPhPhonemes(LcmCache cache)
+		{
+			// For all PhCodes in the default phoneme set, change the writing system from "en" to icuLocale
+			var phSet = cache.LanguageProject.PhonologicalDataOA.PhonemeSetsOS[0];
+			int wsVern = cache.DefaultVernWs;
+			foreach (var phone in phSet.PhonemesOC)
+			{
+				foreach (var code in phone.CodesOS)
+				{
+
+					code.Representation.VernacularDefaultWritingSystem =
+						TsStringUtils.MakeString(code.Representation.UserDefaultWritingSystem.Text, wsVern);
+				}
+				phone.Name.VernacularDefaultWritingSystem =
+					TsStringUtils.MakeString(phone.Name.UserDefaultWritingSystem.Text, wsVern);
+			}
+			foreach (var mrkr in phSet.BoundaryMarkersOC)
+			{
+				foreach (var code in mrkr.CodesOS)
+				{
+					code.Representation.VernacularDefaultWritingSystem =
+						TsStringUtils.MakeString(code.Representation.UserDefaultWritingSystem.Text, wsVern);
+				}
+				mrkr.Name.VernacularDefaultWritingSystem =
+					TsStringUtils.MakeString(mrkr.Name.UserDefaultWritingSystem.Text, wsVern);
+			}
+		}
+
+
 	}
 }

@@ -19,6 +19,7 @@ using SIL.LCModel.DomainImpl;
 using SIL.LCModel.DomainServices;
 using SIL.LCModel.Infrastructure;
 using SIL.LCModel.Utils;
+using static SIL.LCModel.Application.ApplicationServices.XmlImportData;
 
 namespace SIL.LCModel.Application.ApplicationServices
 {
@@ -151,6 +152,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 
 		private Dictionary<string, Guid> m_mapIdGuid = new Dictionary<string, Guid>();
 		private Dictionary<Guid, string> m_mapGuidId = new Dictionary<Guid, string>();
+		private Dictionary<ICmObject, List<string>> m_ncSegments = new Dictionary<ICmObject, List<string>>();
 
 		private ReferenceTracker m_rglinks = new ReferenceTracker();
 		private TextWriter m_wrtrLog;
@@ -288,6 +290,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 					ReadXmlObject(xrdr, null, null);
 					xrdr.MoveToContent();
 				}
+				UpdateNCSegments();
 				FixPendingLinks();
 				CreateMissingSenses();
 				CreateMissingMsas();
@@ -1070,20 +1073,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 				m_mapIdGuid.Add(sId, cmo.Guid);
 				m_mapGuidId.Add(cmo.Guid, sId);
 			}
-			if (sClass == "PhEnvironment")
-			{
-				var attributes = new List<string>() { "StringRepresentation" };
-				foreach (string name in attributes)
-				{
-					string value = xrdr.GetAttribute(name);
-					int ws = m_cache.DefaultAnalWs;
-					ITsString tss = TsStringUtils.MakeString(value, ws);
-					int flid = m_mdc.GetFieldId2(cmo.ClassID, name, true);
-					CellarPropertyType cpt2 = (CellarPropertyType)m_mdc.GetFieldType(flid);
-					FieldInfo fi2 = new FieldInfo(cmo, flid, cpt2, fNewObject, fi);
-					m_sda.SetString(fi2.Owner.Hvo, fi2.FieldId, tss);
-				}
-			}
 			if (!xrdr.IsEmptyElement)
 			{
 				ReadXmlFields(xrdr, cmo, fNewObject, fi);
@@ -1152,6 +1141,10 @@ namespace SIL.LCModel.Application.ApplicationServices
 			{
 				while (xrdr.IsEmptyElement)
 				{
+					if (xrdr.Name == "Segments")
+					{
+						RecordNCSegment(cmoOwner, xrdr.GetAttribute("dst"));
+					}
 					xrdr.Read();
 					xrdr.MoveToContent();
 				}
@@ -1350,6 +1343,36 @@ namespace SIL.LCModel.Application.ApplicationServices
 					}
 					xrdr.ReadEndElement();
 					xrdr.MoveToContent();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Record the forward reference to a segment in a natural class.
+		/// </summary>
+		/// <param name="naturalClass"></param>
+		/// <param name="reference"></param>
+		private void RecordNCSegment(ICmObject naturalClass, string reference)
+		{
+			if (reference == null) throw new ArgumentNullException("reference");
+			if (!m_ncSegments.ContainsKey(naturalClass))
+				m_ncSegments[naturalClass] = new List<string>();
+			m_ncSegments[naturalClass].Add(reference);
+		}
+
+		/// <summary>
+		/// Update the the segments in the natural classes
+		/// after the forward references have been resolved.
+		/// </summary>
+		private void UpdateNCSegments()
+		{
+			foreach (PhNCSegments nc in m_ncSegments.Keys)
+			{
+				foreach (var dest in m_ncSegments[nc])
+				{
+					Guid guid = m_mapIdGuid[dest];
+					ICmObject cmo = m_repoCmObject.GetObject(guid);
+					nc.SegmentsRC.Add(cmo as IPhPhoneme);
 				}
 			}
 		}
