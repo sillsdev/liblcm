@@ -66,6 +66,8 @@ namespace SIL.LCModel.DomainServices
 		private void AssignVernacularWritingSystemToDefaultPhPhonemes(LcmCache cache)
 		{
 			// For all PhCodes in the default phoneme set, change the writing system from "en" to icuLocale
+			if (cache.LanguageProject.PhonologicalDataOA.PhonemeSetsOS.Count == 0)
+				return;
 			var phSet = cache.LanguageProject.PhonologicalDataOA.PhonemeSetsOS[0];
 			int wsVern = cache.DefaultVernWs;
 			foreach (var phone in phSet.PhonemesOC)

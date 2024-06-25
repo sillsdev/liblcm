@@ -4,7 +4,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 using Icu;
 using Microsoft.Practices.ServiceLocation;
@@ -12,6 +14,7 @@ using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.DomainImpl;
+using SIL.LCModel.Infrastructure;
 using static SIL.LCModel.Application.ApplicationServices.XmlImportData;
 
 namespace SIL.LCModel.DomainServices
@@ -928,16 +931,19 @@ namespace SIL.LCModel.DomainServices
 			if (multiString == null) throw new ArgumentNullException("multiString");
 			if (String.IsNullOrEmpty(elementName)) throw new ArgumentNullException("elementName");
 			if (obj == null) throw new ArgumentNullException("obj");
-			List<XElement> alternatives = new List<XElement>();
-			string type = multiString is IMultiUnicode ? "AUni" : "AStr";
-			foreach (int ws in multiString.AvailableWritingSystemIds)
+			if (multiString.StringCount == 0)
+				return null;
+			using (var memoryStream = new MemoryStream())
 			{
-				var wsName = obj.Cache.WritingSystemFactory.GetStrFromWs(ws);
-				ITsString value = multiString.get_String(ws);
-				if (value.RunCount != 1) throw new ArgumentException("Too many runs in " + elementName);
-				alternatives.Add(new XElement(elementName, new XElement(type, new XAttribute("ws", wsName), value.Text)));
+				using (var writer = XmlServices.CreateWriter(memoryStream))
+				{
+					ReadWriteServices.WriteMultiFoo(writer, elementName, (MultiAccessor)multiString);
+					writer.Flush();
+				}
+				var bytes = memoryStream.ToArray();
+				string xml = Encoding.UTF8.GetString(bytes);
+				return new List<XElement> { XElement.Parse(xml) };
 			}
-			return alternatives;
 		}
 
 		private static IEnumerable<XElement> ExportBestAnalysis(IMultiAccessorBase multiString, string elementName, Normalizer.UNormalizationMode mode,

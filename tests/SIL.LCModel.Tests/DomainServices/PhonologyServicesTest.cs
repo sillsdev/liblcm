@@ -8,6 +8,9 @@ using System.IO;
 using SIL.LCModel.Core.KernelInterfaces;
 using StructureMap.Diagnostics.TreeView;
 using SIL.LCModel.Core.Text;
+using System.Xml.Linq;
+using System.Security.Cryptography;
+using SIL.Xml;
 
 namespace SIL.LCModel.DomainServices
 {
@@ -27,7 +30,7 @@ namespace SIL.LCModel.DomainServices
 		{
 			m_now = DateTime.Now;
 			m_cache = LcmCache.CreateCacheWithNewBlankLangProj(new TestProjectId(BackendProviderType.kMemoryOnly, "MemoryOnly.mem"),
-				"en", "fr", "en", new DummyLcmUI(), TestDirectoryFinder.LcmDirectories, new LcmSettings());
+				"en", "es", "en", new DummyLcmUI(), TestDirectoryFinder.LcmDirectories, new LcmSettings());
 			IDataSetup dataSetup = m_cache.ServiceLocator.GetInstance<IDataSetup>();
 			dataSetup.LoadDomain(BackendBulkLoadDomain.All);
 			if (m_cache.LangProject != null)
@@ -79,22 +82,214 @@ namespace SIL.LCModel.DomainServices
 					new DummyProgressDlg()))
 			{
 				var services = new PhonologyServices(cache);
-				var xdoc = services.ExportPhonologyAsXml();
+				XDocument xdoc = services.ExportPhonologyAsXml();
+				XDocument xdoc2 = null;
 				var xml = xdoc.ToString();
 				using (var rdr = new StringReader(xml))
 				{
 					var services2 = new PhonologyServices(m_cache);
 					services2.ImportPhonologyFromXml(rdr);
+					// xdoc2 = services2.ExportPhonologyAsXml();
 				}
+				// var xml2 = xdoc2.ToString();
 				TestEqual(cache.LanguageProject.PhonologicalDataOA, m_cache.LanguageProject.PhonologicalDataOA);
+				// TestEqual(xdoc, xdoc2);
 			}
+		}
+
+		private void TestEqual(XDocument xdoc, XDocument xdoc2)
+		{
+			TestEqual(xdoc.Elements(), xdoc2.Elements());
+		}
+
+		private void TestEqual(IEnumerable<XElement> elements,  IEnumerable<XElement> elements2)
+		{
+			foreach (var pair in elements.Zip(elements2, Tuple.Create))
+			{
+				TestEqual(pair.Item1, pair.Item2);
+			}
+		}
+
+		private void TestEqual(XElement element, XElement element2)
+		{
+			Assert.AreEqual(element.Attributes().Count(), element2.Attributes().Count());
+			foreach (var attr in element.Attributes())
+			{
+				if (attr.Name == "Id")
+					continue;
+				bool found = false;
+				foreach (var attr2 in element2.Attributes())
+				{
+					if (attr.Name == attr2.Name)
+					{
+						Assert.AreEqual(attr.Value, attr2.Value);
+						found = true;
+					}
+				}
+				Assert.IsTrue(found);
+			}
+			TestEqual(element.Elements(), element2.Elements());
 		}
 
 		private void TestEqual(IPhPhonData phonologicalData, IPhPhonData phonologicalData2)
 		{
+			TestEqual(phonologicalData.PhonemeSetsOS, phonologicalData2.PhonemeSetsOS);
+			TestEqual(phonologicalData.NaturalClassesOS, phonologicalData2.NaturalClassesOS);
 			TestEqual(
 				phonologicalData.Services.GetInstance<IPhEnvironmentRepository>().AllValidInstances(),
 				phonologicalData2.Services.GetInstance<IPhEnvironmentRepository>().AllValidInstances());
+		}
+
+		private void TestEqual(IEnumerable<IPhPhonemeSet> phonemeSets, IEnumerable<IPhPhonemeSet> phonemeSets2)
+		{
+			Assert.AreEqual(phonemeSets.Count(),phonemeSets2.Count());
+			foreach (var pair in phonemeSets.Zip(phonemeSets2, Tuple.Create))
+			{
+				TestEqual(pair.Item1, pair.Item2);
+			}
+		}
+
+		private void TestEqual(IPhPhonemeSet phonemeSet, IPhPhonemeSet phonemeSet2)
+		{
+			TestEqual(phonemeSet.Name, phonemeSet2.Name);
+			TestEqual(phonemeSet.PhonemesOC, phonemeSet2.PhonemesOC);
+		}
+
+		private void TestEqual(IEnumerable<IPhNaturalClass> naturalClasses, IEnumerable<IPhNaturalClass> naturalClasses2)
+		{
+			Assert.AreEqual(naturalClasses.Count(), naturalClasses2.Count());
+			foreach (var pair in naturalClasses.Zip(naturalClasses2, Tuple.Create))
+			{
+				TestEqual(pair.Item1, pair.Item2);
+			}
+		}
+
+		private void TestEqual(IPhNaturalClass naturalClass, IPhNaturalClass naturalClass2)
+		{
+			TestEqual(naturalClass.Name, naturalClass2.Name);
+			TestEqual(naturalClass.Description, naturalClass2.Description);
+			TestEqual(naturalClass.Abbreviation, naturalClass2.Abbreviation);
+			if (naturalClass is IPhNCFeatures)
+				TestEqual(naturalClass as IPhNCFeatures, naturalClass2 as IPhNCFeatures);
+			else
+				TestEqual(naturalClass as IPhNCSegments, naturalClass2 as IPhNCSegments);
+		}
+
+		private void TestEqual(IPhNCFeatures naturalClass, IPhNCFeatures naturalClass2)
+		{
+			TestEqual(naturalClass.FeaturesOA, naturalClass2.FeaturesOA);
+		}
+
+		private void TestEqual(IFsAbstractStructure absFeatStruc, IFsAbstractStructure absFeatStruc2)
+		{
+			if (absFeatStruc == absFeatStruc2)
+				return;
+			switch (absFeatStruc.ClassName)
+			{
+				case "FsFeatStruc":
+					var featStruc = (IFsFeatStruc)absFeatStruc;
+					var featStruc2 = (IFsFeatStruc)absFeatStruc;
+					TestEqual(featStruc.TypeRA, featStruc2.TypeRA);
+					TestEqual(featStruc.FeatureSpecsOC, featStruc2.FeatureSpecsOC);
+					break;
+				default:
+					// As of 14 November 2009, FsFeatStrucDisj is not supported.
+					throw new ArgumentException("Unrecognized subclass.");
+			}
+		}
+
+		private void TestEqual(IFsFeatStrucType type, IFsFeatStrucType type2)
+		{
+			Assert.True(type.Equals(type2));
+		}
+
+		private void TestEqual(IEnumerable<IFsFeatureSpecification> featureSpecs, IEnumerable<IFsFeatureSpecification> featureSpecs2)
+		{
+			Assert.AreEqual(featureSpecs.Count(), featureSpecs2.Count());
+			foreach (var pair in featureSpecs.Zip(featureSpecs2, Tuple.Create))
+			{
+				TestEqual(pair.Item1, pair.Item2);
+			}
+
+		}
+
+		private void TestEqual(IFsFeatureSpecification featureSpec, IFsFeatureSpecification featureSpec2)
+		{
+			switch (featureSpec.ClassName)
+			{
+				default:
+					// These are not supported as of 14 November 2009.
+					// FsOpenValue
+					// FsDisjunctiveValue
+					// FsSharedValue
+					throw new ArgumentException("Unrecognized feature specification");
+				case "FsClosedValue":
+					var closedValue = (IFsClosedValue)featureSpec;
+					var closedValue2 = (IFsClosedValue)featureSpec2;
+					TestEqual(closedValue.FeatureRA, closedValue2.FeatureRA);
+					TestEqual(closedValue.ValueRA, closedValue2.ValueRA);
+					break;
+				case "FsComplexValue":
+					var complexValue = (IFsComplexValue)featureSpec;
+					var complexValue2 = (IFsComplexValue)featureSpec2;
+					TestEqual(complexValue.FeatureRA, complexValue2.FeatureRA);
+					TestEqual(complexValue.ValueOA, complexValue2.ValueOA);
+					break;
+				case "FsNegatedValue":
+					var negatedValue = (IFsNegatedValue)featureSpec;
+					var negatedValue2 = (IFsNegatedValue)featureSpec2;
+					TestEqual(negatedValue.FeatureRA, negatedValue2.FeatureRA);
+					TestEqual(negatedValue.ValueRA, negatedValue2.ValueRA);
+					break;
+			}
+
+		}
+
+		private void TestEqual(IFsFeatDefn def, IFsFeatDefn def2)
+		{
+			Assert.AreEqual(def, def2);
+		}
+
+		private void TestEqual(IFsSymFeatVal value, IFsSymFeatVal value2)
+		{
+			Assert.AreEqual(value, value2);
+		}
+
+		private void TestEqual(IPhNCSegments naturalClass, IPhNCSegments naturalClass2)
+		{
+			TestEqual(naturalClass.SegmentsRC, naturalClass2.SegmentsRC);
+		}
+
+		private void TestEqual(IEnumerable<IPhPhoneme> phonemes, IEnumerable<IPhPhoneme> phonemes2)
+		{
+			Assert.AreEqual(phonemes.Count(), phonemes2.Count());
+			foreach (var pair in phonemes.Zip(phonemes2, Tuple.Create))
+			{
+				TestEqual(pair.Item1, pair.Item2);
+			}
+		}
+
+		private void TestEqual(IPhPhoneme phoneme,  IPhPhoneme phoneme2)
+		{
+			TestEqual(phoneme.Name, phoneme2.Name);
+			TestEqual(phoneme.Description, phoneme2.Description);
+			TestEqual(phoneme.CodesOS, phoneme2.CodesOS);
+			TestEqual(phoneme.BasicIPASymbol, phoneme2.BasicIPASymbol);
+			TestEqual(phoneme.FeaturesOA, phoneme2.FeaturesOA);
+		}
+
+		private void TestEqual(IEnumerable<IPhCode> codes, IEnumerable<IPhCode> codes2)
+		{
+			Assert.AreEqual(codes.Count(), codes2.Count());
+			foreach (var pair in codes.Zip(codes2, Tuple.Create))
+			{
+				TestEqual(pair.Item1, pair.Item2);
+			}
+		}
+
+		private void TestEqual(IPhCode code, IPhCode code2)
+		{
+			TestEqual(code.Representation, code2.Representation);
 		}
 
 		private void TestEqual(IEnumerable<IPhEnvironment> environments, IEnumerable<IPhEnvironment> environments2)
@@ -111,14 +306,22 @@ namespace SIL.LCModel.DomainServices
 			TestEqual(environment.Name, environment2.Name);
 		}
 
-		private void TestEqual(IMultiUnicode tsString, IMultiUnicode tsString2)
+		private void TestEqual(IMultiAccessorBase multiString, IMultiAccessorBase multiString2)
 		{
-			TestEqual(tsString.BestAnalysisAlternative, tsString2.BestAnalysisAlternative);
+			Assert.AreEqual(multiString.AvailableWritingSystemIds.Length, multiString2.AvailableWritingSystemIds.Length);
+			for (int i = 0; i < multiString.AvailableWritingSystemIds.Length; i++)
+			{
+				int ws = multiString.AvailableWritingSystemIds[i];
+				int ws2 = multiString2.AvailableWritingSystemIds[i];
+				TestEqual(multiString.get_String(ws), multiString2.get_String(ws2));
+			}
 		}
 
 		private void TestEqual(ITsString tsString, ITsString tsString2)
 		{
-			Assert.IsTrue(tsString.Equals(tsString2));
+			// We can't use tsString.Equals(tsString2) because
+			// the writing system ids are incompatible.
+			Assert.AreEqual(tsString.ToString(), tsString2.ToString());
 		}
 
 		[Test]
