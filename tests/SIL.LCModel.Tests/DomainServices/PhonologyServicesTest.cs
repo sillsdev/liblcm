@@ -30,7 +30,7 @@ namespace SIL.LCModel.DomainServices
 		{
 			m_now = DateTime.Now;
 			m_cache = LcmCache.CreateCacheWithNewBlankLangProj(new TestProjectId(BackendProviderType.kMemoryOnly, "MemoryOnly.mem"),
-				"en", "es", "en", new DummyLcmUI(), TestDirectoryFinder.LcmDirectories, new LcmSettings());
+				"en", "fr", "en", new DummyLcmUI(), TestDirectoryFinder.LcmDirectories, new LcmSettings());
 			IDataSetup dataSetup = m_cache.ServiceLocator.GetInstance<IDataSetup>();
 			dataSetup.LoadDomain(BackendBulkLoadDomain.All);
 			if (m_cache.LangProject != null)
@@ -73,6 +73,20 @@ namespace SIL.LCModel.DomainServices
 			}
 		}
 
+		private void SetDefaultVernacularWritingSystem(LcmCache cache, CoreWritingSystemDefinition vernWritingSystem)
+		{
+			var vernWsName = vernWritingSystem.Id;
+			var wsManager = cache.ServiceLocator.WritingSystemManager;
+			if (wsManager.Exists(vernWsName))
+				vernWritingSystem = wsManager.Get(vernWsName);
+			else
+			{
+				vernWritingSystem = wsManager.Set(vernWsName);
+			}
+			NonUndoableUnitOfWorkHelper.Do(m_cache.ActionHandlerAccessor, () =>
+				m_cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem = vernWritingSystem);
+		}
+
 		private void TestProject(string projectsDirectory, string dbFileName)
 		{
 			var projectId = new TestProjectId(BackendProviderType.kXML, dbFileName);
@@ -87,13 +101,15 @@ namespace SIL.LCModel.DomainServices
 				var xml = xdoc.ToString();
 				using (var rdr = new StringReader(xml))
 				{
-					var services2 = new PhonologyServices(m_cache);
+					var vernWs = cache.ServiceLocator.WritingSystemManager.Get(cache.DefaultVernWs);
+					SetDefaultVernacularWritingSystem(m_cache, vernWs);
+					var services2 = new PhonologyServices(m_cache, vernWs.Id);
 					services2.ImportPhonologyFromXml(rdr);
-					// xdoc2 = services2.ExportPhonologyAsXml();
+					xdoc2 = services2.ExportPhonologyAsXml();
 				}
-				// var xml2 = xdoc2.ToString();
+				var xml2 = xdoc2.ToString();
 				TestEqual(cache.LanguageProject.PhonologicalDataOA, m_cache.LanguageProject.PhonologicalDataOA);
-				// TestEqual(xdoc, xdoc2);
+				TestEqual(xdoc, xdoc2);
 			}
 		}
 
@@ -115,12 +131,13 @@ namespace SIL.LCModel.DomainServices
 			Assert.AreEqual(element.Attributes().Count(), element2.Attributes().Count());
 			foreach (var attr in element.Attributes())
 			{
-				if (attr.Name == "Id")
+				XName name = attr.Name;
+				if (name == "Id" || name == "dst" || name == "Guid")
 					continue;
 				bool found = false;
 				foreach (var attr2 in element2.Attributes())
 				{
-					if (attr.Name == attr2.Name)
+					if (attr2.Name == name)
 					{
 						Assert.AreEqual(attr.Value, attr2.Value);
 						found = true;

@@ -10,17 +10,21 @@ using System.Xml.Linq;
 using SIL.LCModel.Application.ApplicationServices;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Infrastructure.Impl;
+using static Icu.Normalization.Normalizer2;
 
 namespace SIL.LCModel.DomainServices
 {
 	public class PhonologyServices
 	{
-		public PhonologyServices(LcmCache cache)
+		public PhonologyServices(LcmCache cache, string wsVernId = null)
 		{
 			Cache = cache;
+			m_wsVernId = wsVernId;
 		}
 
 		LcmCache Cache { get; set; }
+
+		private readonly string m_wsVernId;
 
 		/// <summary>
 		/// Export the phonology to a file.
@@ -59,8 +63,8 @@ namespace SIL.LCModel.DomainServices
 		{
 			XmlImportData xid = new XmlImportData(Cache, true);
 			xid.ImportData(rdr, null, null);
-			NonUndoableUnitOfWorkHelper.DoUsingNewOrCurrentUOW(Cache.ActionHandlerAccessor,
-				() => AssignVernacularWritingSystemToDefaultPhPhonemes(Cache));
+			// NonUndoableUnitOfWorkHelper.DoUsingNewOrCurrentUOW(Cache.ActionHandlerAccessor,
+				// () => AssignVernacularWritingSystemToDefaultPhPhonemes(Cache));
 		}
 
 		private void AssignVernacularWritingSystemToDefaultPhPhonemes(LcmCache cache)
@@ -69,27 +73,33 @@ namespace SIL.LCModel.DomainServices
 			if (cache.LanguageProject.PhonologicalDataOA.PhonemeSetsOS.Count == 0)
 				return;
 			var phSet = cache.LanguageProject.PhonologicalDataOA.PhonemeSetsOS[0];
-			int wsVern = cache.DefaultVernWs;
+			int wsVern = m_wsVernId == null
+				? cache.DefaultVernWs
+				: cache.ServiceLocator.WritingSystemManager.Get(m_wsVernId).Handle;
 			foreach (var phone in phSet.PhonemesOC)
 			{
 				foreach (var code in phone.CodesOS)
 				{
 
-					code.Representation.VernacularDefaultWritingSystem =
-						TsStringUtils.MakeString(code.Representation.UserDefaultWritingSystem.Text, wsVern);
+					if (code.Representation.VernacularDefaultWritingSystem.Length == 0)
+						code.Representation.VernacularDefaultWritingSystem =
+							TsStringUtils.MakeString(code.Representation.UserDefaultWritingSystem.Text, wsVern);
 				}
-				phone.Name.VernacularDefaultWritingSystem =
-					TsStringUtils.MakeString(phone.Name.UserDefaultWritingSystem.Text, wsVern);
+				if (phone.Name.VernacularDefaultWritingSystem.Length == 0)
+					phone.Name.VernacularDefaultWritingSystem =
+						TsStringUtils.MakeString(phone.Name.UserDefaultWritingSystem.Text, wsVern);
 			}
 			foreach (var mrkr in phSet.BoundaryMarkersOC)
 			{
 				foreach (var code in mrkr.CodesOS)
 				{
-					code.Representation.VernacularDefaultWritingSystem =
-						TsStringUtils.MakeString(code.Representation.UserDefaultWritingSystem.Text, wsVern);
+					if (code.Representation.VernacularDefaultWritingSystem.Length == 0)
+						code.Representation.VernacularDefaultWritingSystem =
+							TsStringUtils.MakeString(code.Representation.UserDefaultWritingSystem.Text, wsVern);
 				}
-				mrkr.Name.VernacularDefaultWritingSystem =
-					TsStringUtils.MakeString(mrkr.Name.UserDefaultWritingSystem.Text, wsVern);
+				if (mrkr.Name.VernacularDefaultWritingSystem.Length == 0)
+					mrkr.Name.VernacularDefaultWritingSystem =
+						TsStringUtils.MakeString(mrkr.Name.UserDefaultWritingSystem.Text, wsVern);
 			}
 		}
 

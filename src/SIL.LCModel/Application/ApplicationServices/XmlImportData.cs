@@ -1026,12 +1026,9 @@ namespace SIL.LCModel.Application.ApplicationServices
 						if (m_repoCmObject == null)
 							m_repoCmObject = m_cache.ServiceLocator.GetInstance<ICmObjectRepository>();
 						cmo = m_repoCmObject.GetObject(hvo);
-						var phoneme = (cmo as PhPhoneme);
-						if (phoneme != null)
-						{
-							// Remove the default code added by PhTerminalUnit.SetDefaultValuesAfterInit in OverridesLing_Lex.
-							phoneme.CodesOS.Clear();
-						}
+						// Remove the default code added by PhTerminalUnit.SetDefaultValuesAfterInit in OverridesLing_Lex.
+						(cmo as PhPhoneme)?.CodesOS.Clear();
+						(cmo as PhBdryMarker)?.CodesOS.Clear();
 					}
 					else
 					{
