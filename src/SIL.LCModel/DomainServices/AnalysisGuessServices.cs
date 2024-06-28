@@ -1032,11 +1032,16 @@ namespace SIL.LCModel.DomainServices
 							var newAnalysis = waFactory.Create(ww, wgFactory);
 							newAnalysis.CategoryRA = info.Pos;
 							// Not all entries have senses.
-							if (info.Sense != null)
+							if (info.Sense != null && info.Sense.Gloss.BestAnalysisVernacularAlternative.Length > 0)
 							{
 								// copy all the gloss alternatives from the sense into the word gloss.
 								IWfiGloss wg = newAnalysis.MeaningsOC.First();
 								wg.Form.MergeAlternatives(info.Sense.Gloss);
+							}
+							else
+							{
+								// Eliminate the dummy gloss (LT-21815).
+								newAnalysis.MeaningsOC.Clear();
 							}
 							var wmb = wmbFactory.Create();
 							newAnalysis.MorphBundlesOS.Add(wmb);
