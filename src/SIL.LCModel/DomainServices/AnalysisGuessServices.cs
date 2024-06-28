@@ -1032,7 +1032,7 @@ namespace SIL.LCModel.DomainServices
 							var newAnalysis = waFactory.Create(ww, wgFactory);
 							newAnalysis.CategoryRA = info.Pos;
 							// Not all entries have senses.
-							if (info.Sense != null && info.Sense.Gloss.BestAnalysisVernacularAlternative.Length > 0)
+							if (info.Sense != null && !IsEmptyMultiUnicode(info.Sense.Gloss))
 							{
 								// copy all the gloss alternatives from the sense into the word gloss.
 								IWfiGloss wg = newAnalysis.MeaningsOC.First();
@@ -1062,6 +1062,16 @@ namespace SIL.LCModel.DomainServices
 						});
 				}
 			}
+		}
+
+		bool IsEmptyMultiUnicode(IMultiUnicode multiUnicode)
+		{
+			foreach (var ws in multiUnicode.AvailableWritingSystemIds)
+			{
+				if (multiUnicode.get_String(ws).Length > 0)
+					return false;
+			}
+			return true;
 		}
 		#endregion GenerateEntryGuesses
 	}
