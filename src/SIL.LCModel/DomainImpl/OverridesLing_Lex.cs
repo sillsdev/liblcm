@@ -4028,7 +4028,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			get
 			{
-				// Test the cache for null and yeild an empty list - This can happen during a bulk delete operation
+				// Test the cache for null and yield an empty list - This can happen during a bulk delete operation
 				if (m_cache == null)
 				{
 					yield break;
