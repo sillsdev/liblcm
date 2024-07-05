@@ -78,10 +78,7 @@ namespace SIL.LCModel.FixData
 					var citationForm = rt.Element("CitationForm");
 					if (citationForm != null)
 					{
-						if (citationForm.Elements("AUni").Any(e => e.Attribute("ws")?.Value == m_homographWs))
-						{
-							entriesWithCitationForm.Add(guid, citationForm);
-						}
+						entriesWithCitationForm.Add(guid, citationForm);
 					}
 					break;
 				case "LangProject":
@@ -103,6 +100,10 @@ namespace SIL.LCModel.FixData
 		{
 			base.FinalFixerInitialization(owners, guids, parentToOwnedObjsur, rtElementsToDelete); // Sets base class member variables
 
+			// Filter the entriesWithCitationForm to only include those that match the homograph writing system.
+			var relevantCitationEntries = entriesWithCitationForm.Where(kvp =>
+				kvp.Value.Elements("AUni").Any(e => e.Attribute("ws")?.Value == m_homographWs)).ToDictionary(kv => kv.Key, kv => kv.Value);
+
 			// Create a dictionary with the Form and MorphType guid as the key and a list of ownerguid's as the value.  This
 			// will show us which LexEntries should have homograph numbers.  If the list of ownerguids has only one entry then
 			// it's homograph number should be zero. If the list of owerguids has more than one guid then the LexEntries
@@ -116,10 +117,10 @@ namespace SIL.LCModel.FixData
 				if (!m_firstAllomorphs.Contains(morphGuid))
 					continue;
 				string rtFormText;
-				if (entriesWithCitationForm.Keys.Contains(owners[morphGuid]))
+				if (relevantCitationEntries.Keys.Contains(owners[morphGuid]))
 				{
 					var entryGuid = owners[morphGuid];
-					var cfElement = entriesWithCitationForm[entryGuid];
+					var cfElement = relevantCitationEntries[entryGuid];
 					rtFormText = GetStringInHomographWritingSystem(cfElement);
 					if (string.IsNullOrWhiteSpace(rtFormText))
 						continue;

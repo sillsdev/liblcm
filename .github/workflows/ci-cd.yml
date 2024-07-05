@@ -71,7 +71,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
 
     - name: Test on Windows
-      run: dotnet test -a "%UserProfile%\.nuget\packages\nunit3testadapter\4.5.0\build\net462" --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release -- RunConfiguration.FailWhenNoTestsFound=true
+      run: dotnet test --test-adapter-path "%UserProfile%\.nuget\packages\nunit3testadapter\4.5.0\build\net462" --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release -- RunConfiguration.FailWhenNoTestsFound=true
       if: matrix.os != 'ubuntu-latest'
 
     - name: Package
