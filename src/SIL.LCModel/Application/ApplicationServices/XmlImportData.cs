@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
@@ -152,7 +153,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 
 		private Dictionary<string, Guid> m_mapIdGuid = new Dictionary<string, Guid>();
 		private Dictionary<Guid, string> m_mapGuidId = new Dictionary<Guid, string>();
-		private Dictionary<ICmObject, List<string>> m_ncSegments = new Dictionary<ICmObject, List<string>>();
 
 		private ReferenceTracker m_rglinks = new ReferenceTracker();
 		private TextWriter m_wrtrLog;
@@ -290,7 +290,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 					ReadXmlObject(xrdr, null, null);
 					xrdr.MoveToContent();
 				}
-				UpdateNCSegments();
 				FixPendingLinks();
 				CreateMissingSenses();
 				CreateMissingMsas();
@@ -1142,12 +1141,9 @@ namespace SIL.LCModel.Application.ApplicationServices
 			xrdr.MoveToContent();
 			while (xrdr.Depth > nDepth)
 			{
-				while (xrdr.IsEmptyElement)
+				while (xrdr.IsEmptyElement && xrdr.GetAttribute("dst") == null)
 				{
-					if (xrdr.Name == "Segments")
-					{
-						RecordNCSegment(cmoOwner, xrdr.GetAttribute("dst"));
-					}
+					// PhonologyServices uses a "dst" attribute on an empty element to represent a link.
 					xrdr.Read();
 					xrdr.MoveToContent();
 				}
@@ -1160,6 +1156,10 @@ namespace SIL.LCModel.Application.ApplicationServices
 				CellarPropertyType cpt;
 				ICmObject realOwner = null;
 				FieldInfo fi = null;
+				if (sField == "PhonologicalFeatures")
+					sField = "Features";
+				else if (sField == "FeatureConstraints" && cmoOwner.ClassName == "PhPhonData")
+					sField = "FeatConstraints";
 				if (cmoOwner.ClassID == LexDbTags.kClassId && sField == "Entries")
 				{
 					flid = 0; // no actual owning sequence.
@@ -1223,8 +1223,12 @@ namespace SIL.LCModel.Application.ApplicationServices
 				}
 				if (realOwner == null)
 					fi = new FieldInfo(cmoOwner, flid, cpt, fOwnerIsNew, fiParent);
-				xrdr.Read();
-				xrdr.MoveToContent();
+				bool isEmptyDst = xrdr.GetAttribute("dst") != null && xrdr.IsEmptyElement;
+				if (xrdr.GetAttribute("dst") == null)
+				{
+					xrdr.Read();
+					xrdr.MoveToContent();
+				}
 				if (xrdr.NodeType == XmlNodeType.EndElement && xrdr.Name == sField && xrdr.Depth == nDepthField)
 				{
 					// On Linux/Mono, empty elements can end up with both a start element node
@@ -1320,6 +1324,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 						} while (xrdr.Depth > nDepthField);
 						break;
 				}
+				if (isEmptyDst)
+					continue;
 				if (xrdr.Depth > nDepth)
 				{
 					while (xrdr.IsStartElement())
@@ -1346,36 +1352,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 					}
 					xrdr.ReadEndElement();
 					xrdr.MoveToContent();
-				}
-			}
-		}
-
-		/// <summary>
-		/// Record the forward reference to a segment in a natural class.
-		/// </summary>
-		/// <param name="naturalClass"></param>
-		/// <param name="reference"></param>
-		private void RecordNCSegment(ICmObject naturalClass, string reference)
-		{
-			if (reference == null) throw new ArgumentNullException("reference");
-			if (!m_ncSegments.ContainsKey(naturalClass))
-				m_ncSegments[naturalClass] = new List<string>();
-			m_ncSegments[naturalClass].Add(reference);
-		}
-
-		/// <summary>
-		/// Update the the segments in the natural classes
-		/// after the forward references have been resolved.
-		/// </summary>
-		private void UpdateNCSegments()
-		{
-			foreach (PhNCSegments nc in m_ncSegments.Keys)
-			{
-				foreach (var dest in m_ncSegments[nc])
-				{
-					Guid guid = m_mapIdGuid[dest];
-					ICmObject cmo = m_repoCmObject.GetObject(guid);
-					nc.SegmentsRC.Add(cmo as IPhPhoneme);
 				}
 			}
 		}
@@ -1761,7 +1737,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 			// input value along with all the attributes.  Later, after everything has been
 			// imported, so that all references can be resolved to actual objects, we'll try
 			// to decipher all the pending reference links.
-			if (xrdr.Name != "Link")
+			// NB: PhonologyServices uses a "dst" attribute instead of a "Link" element for links.
+			if (xrdr.Name != "Link" && xrdr.GetAttribute("dst") == null)
 			{
 				string sMsg = AppStrings.ksExpectedLink;
 				LogMessage(sMsg, LineNumber(xrdr));
@@ -3078,6 +3055,13 @@ namespace SIL.LCModel.Application.ApplicationServices
 					case CmPictureTags.kflidPictureFile:			//CmFile
 						return GetPictureFile(sPath, pend);
 				}
+			}
+			string sDst;
+			if (dictAttrs.TryGetValue("dst", out sDst))
+			{
+				Guid guid = m_mapIdGuid[sDst];
+				ICmObject cmo = m_repoCmObject.GetObject(guid);
+				return cmo.Hvo;
 			}
 			return 0;
 		}

@@ -11,6 +11,8 @@ using SIL.LCModel.Core.Text;
 using System.Xml.Linq;
 using System.Security.Cryptography;
 using SIL.Xml;
+using System.Xml;
+using static Icu.Normalization.Normalizer2;
 
 namespace SIL.LCModel.DomainServices
 {
@@ -95,10 +97,12 @@ namespace SIL.LCModel.DomainServices
 			using (var cache = LcmCache.CreateCacheFromExistingData(projectId, "en", m_ui, m_lcmDirectories, new LcmSettings(),
 					new DummyProgressDlg()))
 			{
+				// Export project as XML.
 				var services = new PhonologyServices(cache);
 				XDocument xdoc = services.ExportPhonologyAsXml();
-				XDocument xdoc2 = null;
 				var xml = xdoc.ToString();
+				// Import XML to a new cache and export it a second time.
+				XDocument xdoc2 = null;
 				using (var rdr = new StringReader(xml))
 				{
 					var vernWs = cache.ServiceLocator.WritingSystemManager.Get(cache.DefaultVernWs);
@@ -108,7 +112,9 @@ namespace SIL.LCModel.DomainServices
 					xdoc2 = services2.ExportPhonologyAsXml();
 				}
 				var xml2 = xdoc2.ToString();
+				// Compare original cache data to new cache data.
 				TestEqual(cache.LanguageProject.PhonologicalDataOA, m_cache.LanguageProject.PhonologicalDataOA);
+				// Compare original XML to new XML.
 				TestEqual(xdoc, xdoc2);
 			}
 		}
@@ -155,6 +161,7 @@ namespace SIL.LCModel.DomainServices
 			TestEqual(
 				phonologicalData.Services.GetInstance<IPhEnvironmentRepository>().AllValidInstances(),
 				phonologicalData2.Services.GetInstance<IPhEnvironmentRepository>().AllValidInstances());
+			TestEqual(phonologicalData.PhonRulesOS, phonologicalData2.PhonRulesOS);
 		}
 
 		private void TestEqual(IEnumerable<IPhPhonemeSet> phonemeSets, IEnumerable<IPhPhonemeSet> phonemeSets2)
@@ -217,7 +224,8 @@ namespace SIL.LCModel.DomainServices
 
 		private void TestEqual(IFsFeatStrucType type, IFsFeatStrucType type2)
 		{
-			Assert.True(type.Equals(type2));
+			if (type != type2)
+				Assert.True(type.Equals(type2));
 		}
 
 		private void TestEqual(IEnumerable<IFsFeatureSpecification> featureSpecs, IEnumerable<IFsFeatureSpecification> featureSpecs2)
@@ -323,6 +331,22 @@ namespace SIL.LCModel.DomainServices
 			TestEqual(environment.Name, environment2.Name);
 		}
 
+		private void TestEqual(IEnumerable<IPhSegmentRule> rules, IEnumerable<IPhSegmentRule> rules2)
+		{
+			Assert.AreEqual(rules.Count(), rules2.Count());
+			foreach (var pair in rules.Zip(rules2, Tuple.Create))
+			{
+				TestEqual(pair.Item1, pair.Item2);
+			}
+		}
+
+		private void TestEqual(IPhSegmentRule rule, IPhSegmentRule rule2)
+		{
+			Assert.AreEqual(rule.ClassName, rule2.ClassName);
+			// Too complicated to test the rest.
+			// We will depend on the XML test for it.
+		}
+
 		private void TestEqual(IMultiAccessorBase multiString, IMultiAccessorBase multiString2)
 		{
 			Assert.AreEqual(multiString.AvailableWritingSystemIds.Length, multiString2.AvailableWritingSystemIds.Length);
@@ -358,6 +382,22 @@ namespace SIL.LCModel.DomainServices
 		}
 
 		[Test]
+		public void TestBlxFlex()
+		{
+			TestProject(
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\blx-flex",
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\blx-flex\\blx-flex.fwdata");
+		}
+
+		[Test]
+		public void TestIkuzu()
+		{
+			TestProject(
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Ikizu",
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Ikizu\\Ikizu.fwdata");
+		}
+
+		[Test]
 		public void TestEmpty()
 		{
 			var services = new PhonologyServices(m_cache);
@@ -369,6 +409,140 @@ namespace SIL.LCModel.DomainServices
 				var xdoc2 = services.ExportPhonologyAsXml();
 				var xml2 = xdoc2.ToString();
 				Assert.AreEqual(xml, xml2);
+			}
+		}
+
+		public static readonly string ksPhFS1 =
+			string.Format("<item id=\"gPAMajorClassFeature\" posid=\"Adjective\" guid=\"f673a43d-ba35-44f1-a4d0-308a292c4b97\" status=\"visible\" type=\"group\"><abbrev ws=\"en\">mcf</abbrev><term ws=\"en\">major class features</term><def ws=\"en\">The features that represent the major classes of sounds.</def><citation>[http://en.wikipedia.org/wiki/Distinctive_feature] Date accessed: 12-Feb-2009</citation>" +
+				"<item id=\"fPAConsonantal\" guid=\"b4ddf8e5-1ff8-43fc-9723-04f1ee0471fc\" type=\"feature\"><abbrev ws=\"en\">cons</abbrev><term ws=\"en\">consonantal</term><def ws=\"en\">Consonantal segments are produced with an audible constriction in the vocal tract, like plosives, affricates, fricatives, nasals, laterals and [r]. Vowels, glides and laryngeal segments are not consonantal.</def><citation>[http://en.wikipedia.org/wiki/Distinctive_feature] Date accessed: 12-Feb-2009</citation>" +
+				"<item id='vPAConsonantalPositive' guid=\"ec5800b4-52a8-4859-a976-f3005c53bd5f\" type='value'><abbrev ws='en'>+</abbrev><term ws='en'>positive</term><fs id='vPAConsonantalPositiveFS' type='Phon' typeguid=\"0ea53dd6-79f5-4fac-a672-f2f7026d8d15\"><f name='fPAConsonantal'><sym value='+'/></f></fs></item>" +
+				"<item id='vPAConsonantalNegative' guid=\"81c50b82-83ff-4f73-8e27-6ff9217b810a\" type='value'><abbrev ws='en'>-</abbrev><term ws='en'>negative</term><fs id='vPAConsonantalNegativeFS' type='Phon' typeguid=\"0ea53dd6-79f5-4fac-a672-f2f7026d8d15\"><f name='fPAConsonantal'><sym value='-'/></f></fs></item></item>" +
+				"<item id=\"fPASonorant\" guid=\"7df7b583-dd42-424d-9730-ab7bcda314e7\" type=\"feature\"><abbrev ws=\"en\">son</abbrev><term ws=\"en\">sonorant</term><def ws=\"en\">This feature describes the type of oral constriction that can occur in the vocal tract. [+son] designates the vowels and sonorant consonants, which are produced without the imbalance of air pressure in the vocal tract that might cause turbulence. [-son] alternatively describes the obstruents, articulated with a noticeable turbulence caused by an imbalance of air pressure in the vocal tract.</def><citation>[http://en.wikipedia.org/wiki/Distinctive_feature] Date accessed: 12-Feb-2009</citation>" +
+				"<item id='vPASonorantPositive' guid=\"d190d8a1-f058-4a9c-b16e-f16b525b041c\" type='value'><abbrev ws='en'>+</abbrev><term ws='en'>positive</term><fs id='vPASonorantPositiveFS' type='Phon' typeguid=\"0ea53dd6-79f5-4fac-a672-f2f7026d8d15\"><f name='fPASonorant'><sym value='+'/></f></fs></item>" +
+				"<item id='vPASonorantNegative' guid=\"ff4a2434-54e9-4e3d-bf11-cadfedef1765\" type='value'><abbrev ws='en'>-</abbrev><term ws='en'>negative</term><fs id='vPASonorantNegativeFS' type='Phon' typeguid=\"0ea53dd6-79f5-4fac-a672-f2f7026d8d15\"><f name='fPASonorant'><sym value='-'/></f></fs></item></item>" +
+				"<item id=\"fPASyllabic\" guid=\"0acbdb9b-28bc-41c2-9706-5873bb3b12e5\" type=\"feature\"><abbrev ws=\"en\">syl</abbrev><term ws=\"en\">syllabic</term><def ws=\"en\">Syllabic segments may function as the nucleus of a syllable, while their counterparts, the [-syl] segments, may not.</def><citation>[http://en.wikipedia.org/wiki/Distinctive_feature] Date accessed: 12-Feb-2009</citation>" +
+				"<item id='vPASyllabicPositive' guid=\"31929bd3-e2f8-4ea7-beed-527404d34e74\" type='value'><abbrev ws='en'>+</abbrev><term ws='en'>positive</term><fs id='vPASyllabicPositiveFS' type='Phon' typeguid=\"0ea53dd6-79f5-4fac-a672-f2f7026d8d15\"><f name='fPASyllabic'><sym value='+'/></f></fs></item>" +
+				"<item id='vPASyllabicNegative' guid=\"73a064b8-21f0-479a-b5d2-142f30297ffa\" type='value'><abbrev ws='en'>-</abbrev><term ws='en'>negative</term><fs id='vPASyllabicNegativeFS' type='Phon' typeguid=\"0ea53dd6-79f5-4fac-a672-f2f7026d8d15\"><f name='fPASyllabic'><sym value='-'/></f></fs></item></item></item>",
+				Environment.NewLine);
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests adding closed features to feature system and to a feature structure
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void TestPhonologicalFeatures()
+		{
+			ILangProject lp = m_cache.LangProject;
+			var actionHandler = m_cache.ServiceLocator.GetInstance<IActionHandler>();
+			actionHandler.BeginUndoTask("Undo doing stuff", "Redo doing stuff");
+
+			// ==================================
+			// set up phonological feature system
+			// ==================================
+			// Set up the xml fs description
+			XmlDocument doc = new XmlDocument();
+			doc.LoadXml(ksPhFS1);
+			// get [consonantal:positive]
+			XmlNode itemValue = doc.SelectSingleNode("/item/item[1]/item[1]");
+
+			// Add the feature for first time
+			IFsFeatureSystem phfs = lp.PhFeatureSystemOA;
+			phfs.AddFeatureFromXml(itemValue);
+			// get [consonantal:negative]
+			itemValue = doc.SelectSingleNode("/item/item[1]/item[2]");
+			phfs.AddFeatureFromXml(itemValue);
+			// add sonorant feature
+			itemValue = doc.SelectSingleNode("/item/item[2]/item[1]");
+			phfs.AddFeatureFromXml(itemValue);
+			itemValue = doc.SelectSingleNode("/item/item[2]/item[2]");
+			phfs.AddFeatureFromXml(itemValue);
+			// add syllabic feature
+			itemValue = doc.SelectSingleNode("/item/item[3]/item[1]");
+			phfs.AddFeatureFromXml(itemValue);
+			itemValue = doc.SelectSingleNode("/item/item[3]/item[2]");
+			phfs.AddFeatureFromXml(itemValue);
+
+			// ===============
+			// set up phonemes
+			// ===============
+			var phonData = lp.PhonologicalDataOA;
+
+			var phonemeset = m_cache.ServiceLocator.GetInstance<IPhPhonemeSetFactory>().Create();
+			phonData.PhonemeSetsOS.Add(phonemeset);
+			var phonemeM = m_cache.ServiceLocator.GetInstance<IPhPhonemeFactory>().Create();
+			phonemeset.PhonemesOC.Add(phonemeM);
+			phonemeM.Name.set_String(m_cache.DefaultUserWs, "m");
+			phonemeM.FeaturesOA = m_cache.ServiceLocator.GetInstance<IFsFeatStrucFactory>().Create();
+			var fsM = phonemeM.FeaturesOA;
+			var closedValue = m_cache.ServiceLocator.GetInstance<IFsClosedValueFactory>().Create();
+			fsM.FeatureSpecsOC.Add(closedValue);
+			var feat = phfs.FeaturesOC.First() as IFsClosedFeature;
+			closedValue.FeatureRA = feat;
+			closedValue.ValueRA = feat.ValuesOC.First();
+			closedValue = m_cache.ServiceLocator.GetInstance<IFsClosedValueFactory>().Create();
+			fsM.FeatureSpecsOC.Add(closedValue);
+			feat = phfs.FeaturesOC.ElementAt(1) as IFsClosedFeature;
+			closedValue.FeatureRA = feat;
+			closedValue.ValueRA = feat.ValuesOC.First();
+			var phonemeP = m_cache.ServiceLocator.GetInstance<IPhPhonemeFactory>().Create();
+			phonemeset.PhonemesOC.Add(phonemeP);
+			phonemeP.Name.set_String(m_cache.DefaultUserWs, "p");
+			phonemeP.FeaturesOA = m_cache.ServiceLocator.GetInstance<IFsFeatStrucFactory>().Create();
+			var fsP = phonemeP.FeaturesOA;
+			closedValue = m_cache.ServiceLocator.GetInstance<IFsClosedValueFactory>().Create();
+			fsP.FeatureSpecsOC.Add(closedValue);
+			feat = phfs.FeaturesOC.First() as IFsClosedFeature;
+			closedValue.FeatureRA = feat;
+			closedValue.ValueRA = feat.ValuesOC.First();
+			closedValue = m_cache.ServiceLocator.GetInstance<IFsClosedValueFactory>().Create();
+			fsP.FeatureSpecsOC.Add(closedValue);
+			feat = phfs.FeaturesOC.ElementAt(1) as IFsClosedFeature;
+			closedValue.FeatureRA = feat;
+			closedValue.ValueRA = feat.ValuesOC.Last();
+
+			var phonemeB = m_cache.ServiceLocator.GetInstance<IPhPhonemeFactory>().Create();
+			phonemeset.PhonemesOC.Add(phonemeB);
+			phonemeB.Name.set_String(m_cache.DefaultUserWs, "b");
+			phonemeB.FeaturesOA = m_cache.ServiceLocator.GetInstance<IFsFeatStrucFactory>().Create();
+			var fsB = phonemeB.FeaturesOA;
+			closedValue = m_cache.ServiceLocator.GetInstance<IFsClosedValueFactory>().Create();
+			fsB.FeatureSpecsOC.Add(closedValue);
+			feat = phfs.FeaturesOC.First() as IFsClosedFeature;
+			closedValue.FeatureRA = feat;
+			closedValue.ValueRA = feat.ValuesOC.First();
+			closedValue = m_cache.ServiceLocator.GetInstance<IFsClosedValueFactory>().Create();
+			fsB.FeatureSpecsOC.Add(closedValue);
+			feat = phfs.FeaturesOC.ElementAt(1) as IFsClosedFeature;
+			closedValue.FeatureRA = feat;
+			closedValue.ValueRA = feat.ValuesOC.Last();
+
+			// ====================
+			// set up natural class
+			// ====================
+			var natClass = m_cache.ServiceLocator.GetInstance<IPhNCSegmentsFactory>().Create();
+			phonData.NaturalClassesOS.Add(natClass);
+			natClass.SegmentsRC.Add(phonemeM);
+			natClass.SegmentsRC.Add(phonemeP);
+			natClass.SegmentsRC.Add(phonemeB);
+
+			using (var cache = m_cache = LcmCache.CreateCacheWithNewBlankLangProj(
+					new TestProjectId(BackendProviderType.kMemoryOnly, "MemoryOnly.mem"),
+					"en", "fr", "en", new DummyLcmUI(), TestDirectoryFinder.LcmDirectories, new LcmSettings()))
+			{
+				var services = new PhonologyServices(m_cache);
+				XDocument xdoc = services.ExportPhonologyAsXml();
+				XDocument xdoc2 = null;
+				var xml = xdoc.ToString();
+				using (var rdr = new StringReader(xml))
+				{
+					var services2 = new PhonologyServices(cache);
+					services2.ImportPhonologyFromXml(rdr);
+					xdoc2 = services2.ExportPhonologyAsXml();
+				}
+				var xml2 = xdoc2.ToString();
+				TestEqual(m_cache.LanguageProject.PhonologicalDataOA, cache.LanguageProject.PhonologicalDataOA);
+				TestEqual(xdoc, xdoc2);
 			}
 		}
 

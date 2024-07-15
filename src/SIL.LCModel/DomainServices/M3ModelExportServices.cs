@@ -103,7 +103,7 @@ namespace SIL.LCModel.DomainServices
 				new XDeclaration("1.0", "utf-8", "yes"),
 				new XElement("FwDatabase",
 					ExportPhonologicalData(languageProject.PhonologicalDataOA, mode, true),
-					ExportFeatureSystem(languageProject.PhFeatureSystemOA, "PhFeatureSystem", mode)
+					ExportFeatureSystem(languageProject.PhFeatureSystemOA, "PhFeatureSystem", mode, true)
 				)
 			);
 			return doc;
@@ -497,8 +497,7 @@ namespace SIL.LCModel.DomainServices
 								new XElement("FeatureConstraints", from featureConstraint in phonologicalData.FeatConstraintsOS
 																 select ExportFeatureConstraint(featureConstraint)),
 								new XElement("PhonRules", from phonRule in phonologicalData.PhonRulesOS
-											where !phonRule.Disabled
-											select ExportPhonRule(phonRule, mode)),
+											select ExportPhonRule(phonRule, mode, fwDatabase)),
 								ExportPhonRuleFeats(phonologicalData, mode),
 							   new XElement("PhIters"),
 							   new XElement("PhIters"),
@@ -551,9 +550,9 @@ namespace SIL.LCModel.DomainServices
 								phonRuleFeat.ItemRA != null ? new XAttribute("itemRef", phonRuleFeat.ItemRA.Hvo) : new XAttribute("missing", 1)));
 		}
 
-		private static XElement ExportPhonRule(IPhSegmentRule phonRule, Normalizer.UNormalizationMode mode)
+		private static XElement ExportPhonRule(IPhSegmentRule phonRule, Normalizer.UNormalizationMode mode, bool fwDatabase = false)
 		{
-			if (phonRule.Disabled)
+			if (phonRule.Disabled && !fwDatabase)
 				return null;
 			XElement retVal = null;
 			switch (phonRule.ClassName)
@@ -562,34 +561,36 @@ namespace SIL.LCModel.DomainServices
 					var asMetathesisRule = (IPhMetathesisRule)phonRule;
 					retVal = new XElement("PhMetathesisRule",
 						new XAttribute("Id", phonRule.Hvo),
+						phonRule.Disabled ? new XAttribute("Disabled", phonRule.Disabled) : null,
 						new XAttribute("Direction", phonRule.Direction),
-						ExportBestAnalysis(phonRule.Name, "Name", mode),
-						ExportBestAnalysis(phonRule.Description, "Description", mode),
+						ExportBestAnalysis(phonRule.Name, "Name", mode, fwDatabase, phonRule),
+						ExportBestAnalysis(phonRule.Description, "Description", mode, fwDatabase, phonRule),
 						new XElement("StrucDesc",
 							ExportContextList(phonRule.StrucDescOS)),
 						new XElement("StrucChange", asMetathesisRule.StrucChange.Text));
 					break;
 				case "PhRegularRule":
-					var asRegularRule = (IPhRegularRule) phonRule;
+					var asRegularRule = (IPhRegularRule)phonRule;
 					var constraints = new List<IPhFeatureConstraint>(asRegularRule.FeatureConstraints);
 					retVal = new XElement("PhRegularRule",
 						new XAttribute("Id", phonRule.Hvo),
+						phonRule.Disabled ? new XAttribute("Disabled", phonRule.Disabled) : null,
 						new XAttribute("Direction", phonRule.Direction),
-						ExportBestAnalysis(phonRule.Name, "Name", mode),
-						ExportBestAnalysis(phonRule.Description, "Description", mode),
+						ExportBestAnalysis(phonRule.Name, "Name", mode, fwDatabase, phonRule),
+						ExportBestAnalysis(phonRule.Description, "Description", mode, fwDatabase, phonRule),
 						new XElement("StrucDesc",
 							ExportContextList(phonRule.StrucDescOS)),
 						from constraint in constraints
 						select ExportItemAsReference(constraint, constraints.IndexOf(constraint), "FeatureConstraints"),
-							new XElement("RightHandSides", from rhs in asRegularRule.RightHandSidesOS
+						new XElement("RightHandSides", from rhs in asRegularRule.RightHandSidesOS
 														select new XElement("PhSegRuleRHS",
 							new XAttribute("Id", rhs.Hvo),
 							new XElement("StrucChange", from structChange in rhs.StrucChangeOS
-															select ExportContext(structChange)),
+														select ExportContext(structChange)),
 							new XElement("InputPOSes", from pos in rhs.InputPOSesRC
-															select ExportItemAsReference(pos, "RequiredPOS")),
+														select ExportItemAsReference(pos, "RequiredPOS")),
 							new XElement("ReqRuleFeats", from rrf in rhs.ReqRuleFeatsRC
-															select ExportItemAsReference(rrf, "RuleFeat")),
+														select ExportItemAsReference(rrf, "RuleFeat")),
 							new XElement("ExclRuleFeats", from erf in rhs.ExclRuleFeatsRC
 															select ExportItemAsReference(erf, "RuleFeat")),
 							new XElement("LeftContext", ExportContext(rhs.LeftContextOA)),
@@ -598,10 +599,11 @@ namespace SIL.LCModel.DomainServices
 				case "PhSegmentRule":
 					retVal = new XElement("PhSegmentRule",
 						new XAttribute("Id", phonRule.Hvo),
+						phonRule.Disabled ? new XAttribute("Disabled", phonRule.Disabled) : null,
 						new XAttribute("Direction", phonRule.Direction),
 						CreateAttribute("ord", phonRule.IndexInOwner),
-						ExportBestAnalysis(phonRule.Name, "Name", mode),
-						ExportBestAnalysis(phonRule.Description, "Description", mode),
+						ExportBestAnalysis(phonRule.Name, "Name", mode, fwDatabase, phonRule),
+						ExportBestAnalysis(phonRule.Description, "Description", mode, fwDatabase, phonRule),
 						new XElement("StrucDesc",
 							ExportContextList(phonRule.StrucDescOS)));
 					break;
@@ -788,7 +790,7 @@ namespace SIL.LCModel.DomainServices
 														 select ExportFeatureStructure(region)));
 		}
 
-		private static XElement ExportFeatureSystem(IFsFeatureSystem featureSystem, string elementName, Normalizer.UNormalizationMode mode)
+		private static XElement ExportFeatureSystem(IFsFeatureSystem featureSystem, string elementName, Normalizer.UNormalizationMode mode, bool fwDatabase = false)
 		{
 			return new XElement(elementName,
 				new XAttribute("Id", featureSystem.Hvo),
@@ -796,18 +798,18 @@ namespace SIL.LCModel.DomainServices
 					from type in featureSystem.TypesOC
 					 select new XElement("FsFeatStrucType",
 						 new XAttribute("Id", type.Hvo),
-						 ExportBestAnalysis(type.Name, "Name", mode),
-						 ExportBestAnalysis(type.Description, "Description", mode),
-						 ExportBestAnalysis(type.Abbreviation, "Abbreviation", mode),
+						 ExportBestAnalysis(type.Name, "Name", mode, fwDatabase, featureSystem),
+						 ExportBestAnalysis(type.Description, "Description", mode, fwDatabase, featureSystem),
+						 ExportBestAnalysis(type.Abbreviation, "Abbreviation", mode, fwDatabase, featureSystem),
 						 new XElement("Features",
 							from featureRef in type.FeaturesRS
 							select ExportItemAsReference(featureRef, "Feature")))),
 				new XElement("Features",
 					from featDefn in featureSystem.FeaturesOC
-						select ExportFeatureDefn(featDefn, mode)));
+						select ExportFeatureDefn(featDefn, mode, fwDatabase)));
 		}
 
-		private static XElement ExportFeatureDefn(IFsFeatDefn featureDefn, Normalizer.UNormalizationMode mode)
+		private static XElement ExportFeatureDefn(IFsFeatDefn featureDefn, Normalizer.UNormalizationMode mode, bool fwDatabase = false)
 		{
 			switch (featureDefn.ClassName)
 			{
@@ -818,23 +820,23 @@ namespace SIL.LCModel.DomainServices
 					var closedFD = (IFsClosedFeature)featureDefn;
 					return new XElement("FsClosedFeature",
 						new XAttribute("Id", featureDefn.Hvo),
-						ExportBestAnalysis(featureDefn.Name, "Name", mode),
-						ExportBestAnalysis(featureDefn.Description, "Description", mode),
-						ExportBestAnalysis(closedFD.Abbreviation, "Abbreviation", mode),
+						ExportBestAnalysis(featureDefn.Name, "Name", mode, fwDatabase, featureDefn),
+						ExportBestAnalysis(featureDefn.Description, "Description", mode, fwDatabase, featureDefn),
+						ExportBestAnalysis(closedFD.Abbreviation, "Abbreviation", mode, fwDatabase, featureDefn),
 						new XElement("Values",
 							from value in closedFD.ValuesOC
 								 select new XElement("FsSymFeatVal",
 									 new XAttribute("Id", value.Hvo),
-									 ExportBestAnalysis(value.Name, "Name", mode),
-									 ExportBestAnalysis(value.Description, "Description", mode),
-									 ExportBestAnalysis(value.Abbreviation, "Abbreviation", mode))));
+									 ExportBestAnalysis(value.Name, "Name", mode, fwDatabase, value),
+									 ExportBestAnalysis(value.Description, "Description", mode, fwDatabase, featureDefn),
+									 ExportBestAnalysis(value.Abbreviation, "Abbreviation", mode, fwDatabase, value))));
 				case "FsComplexFeature":
 					var complexFD = (IFsComplexFeature) featureDefn;
 					return new XElement("FsComplexFeature",
 						new XAttribute("Id", featureDefn.Hvo),
-						ExportBestAnalysis(featureDefn.Name, "Name", mode),
-						ExportBestAnalysis(featureDefn.Description, "Description", mode),
-						ExportBestAnalysis(complexFD.Abbreviation, "Abbreviation", mode),
+						ExportBestAnalysis(featureDefn.Name, "Name", mode, fwDatabase, featureDefn),
+						ExportBestAnalysis(featureDefn.Description, "Description", mode, fwDatabase, featureDefn),
+						ExportBestAnalysis(complexFD.Abbreviation, "Abbreviation", mode, fwDatabase, featureDefn),
 						ExportItemAsReference(complexFD.TypeRA, "Type"));
 			}
 		}
