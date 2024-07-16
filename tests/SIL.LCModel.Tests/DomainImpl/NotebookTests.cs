@@ -2,7 +2,7 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
-using Microsoft.Practices.ServiceLocation;
+using System;
 using NUnit.Framework;
 using SIL.LCModel.Core.Text;
 
@@ -122,7 +122,7 @@ namespace SIL.LCModel.DomainImpl
 			Assert.That(lp.Texts.Contains(text), Is.True);
 		}
 
-		private static IText MakeATextWith2Paragraphs(IServiceLocator servLoc, IRnGenericRec owner)
+		private static IText MakeATextWith2Paragraphs(IServiceProvider servLoc, IRnGenericRec owner)
 		{
 			var result = servLoc.GetInstance<ITextFactory>().Create();
 			owner.TextRA = result;
