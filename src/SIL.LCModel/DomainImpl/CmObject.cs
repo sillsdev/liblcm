@@ -3447,7 +3447,7 @@ namespace SIL.LCModel.DomainImpl
 		// These methods allow a real CmObject to be used where we would sometimes use a surrogate.
 		#region ICmObjectOrSurrogate Members
 
-		string ICmObjectOrSurrogate.XML
+		string GetStringRepresentation
 		{
 			get { return ((ICmObjectInternal)this).ToXmlString(); }
 		}
@@ -3462,7 +3462,7 @@ namespace SIL.LCModel.DomainImpl
 			get { return ClassName; }
 		}
 
-		byte[] ICmObjectOrSurrogate.XMLBytes
+		byte[] GetByteRepresentation
 		{
 			get { return ((ICmObjectInternal)this).ToXmlBytes(); }
 		}
@@ -3484,6 +3484,17 @@ namespace SIL.LCModel.DomainImpl
 			get { return true; }
 		}
 
+		/// <summary>
+		/// The DTO for this class (which came from storage? which can go to storage?)
+		/// </summary>
+		ICmObjectDTO ICmObjectOrSurrogate.DTO
+		{
+			get
+			{
+				return ((BackendProvider)Cache.ServiceLocator.GetInstance<IDataStorer>())
+					.MakeDTO(this);
+			}
+		}
 		#endregion
 
 		#region IReferenceSource Members

@@ -58,17 +58,17 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			if (dtoPubList == null || dtoPubList.Count() == 0) // add the Publications list to the project
 			{   // This list is owned by LexDb
 				var ieDtoLexDb = domainObjectDtoRepository.AllInstancesSansSubclasses("LexDb");
-				Debug.Assert(ieDtoLexDb != null && ieDtoLexDb.Count<DomainObjectDTO>() == 1, "Project has no LexDb Dto or more than one");
-				var dtoLexDb = ieDtoLexDb.First<DomainObjectDTO>();
+				Debug.Assert(ieDtoLexDb != null && ieDtoLexDb.Count<DomainObjectXMLDTO>() == 1, "Project has no LexDb Dto or more than one");
+				var dtoLexDb = ieDtoLexDb.First<DomainObjectXMLDTO>();
 				var xNode = XElement.Parse(dtoLexDb.Xml);
 				var ksguidLexDb = xNode.Attribute("guid").Value;
 				var nowStr = DateTime.Now.ToLCMTimeFormatWithMillisString();
 				string xmlStrPub =
 "<rt guid=\"" + ksguidPubList + "\" class=\"CmPossibilityList\" ownerguid=\"" + ksguidLexDb + "\"><Name><AUni ws=\"en\">Publications</AUni></Name><DateCreated val=\"" + nowStr + "\" /><DateModified val=\"" + nowStr + "\" /><Depth val=\"1\" /><PreventChoiceAboveLevel val=\"0\" /><IsSorted val=\"True\" /><IsClosed val=\"False\" /><PreventDuplicates val=\"False\" /><PreventNodeChoices val=\"False\" /><UseExtendedFields val=\"False\" /><DisplayOption val=\"0\" /><ItemClsid val=\"7\" /><IsVernacular val=\"False\" /><WsSelector val=\"0\" /><ListVersion val=\"00000000-0000-0000-0000-000000000000\" /><Possibilities><objsur guid=\"" + ksguidMainDictionary + "\" t=\"o\" /></Possibilities></rt>";
-				var dtoPub = new DomainObjectDTO(ksguidPubList, "CmPossibilityList", xmlStrPub);
+				var dtoPub = new DomainObjectXMLDTO(ksguidPubList, "CmPossibilityList", xmlStrPub);
 
 				string xmlStrMD = "<rt guid=\"" + ksguidMainDictionary + "\" class=\"CmPossibility\" ownerguid=\"" + ksguidPubList + "\"><Name><AUni ws=\"en\">Main Dictionary</AUni></Name><Abbreviation><AUni ws=\"en\">Main</AUni></Abbreviation><SortSpec val=\"0\" /><DateCreated val=\"" + nowStr + "\" /><DateModified val=\"" + nowStr + "\" /><ForeColor val=\"0\" /><BackColor val=\"0\" /><UnderColor val=\"0\" /><UnderStyle val=\"0\" /><Hidden val=\"False\" /><IsProtected val=\"True\" /></rt>";
-				var dtoMD = new DomainObjectDTO(ksguidMainDictionary, "CmPossibility", xmlStrMD);
+				var dtoMD = new DomainObjectXMLDTO(ksguidMainDictionary, "CmPossibility", xmlStrMD);
 
 				domainObjectDtoRepository.Add(dtoMD);
 				domainObjectDtoRepository.Add(dtoPub);

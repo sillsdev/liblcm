@@ -17,15 +17,7 @@ namespace SIL.LCModel.Infrastructure
 		/// </summary>
 		/// <param name="obj"></param>
 		void AttachObject(ICmObject obj);
-
-		/// <summary>
-		/// Get the main XML string converted to a byte array encoded in UTF8. Typically this is how it is
-		/// actually stored, so it is more efficient to work with this than the XML string unless you
-		/// really need a string. Note that this (unlike ICmObjectOrSurrogate.XMLBytes) may answer null;
-		/// it will NOT generate the XML from the object.
-		/// </summary>
-		byte[] RawXmlBytes { get; }
-
+		
 		/// <summary>
 		/// Get the Object's Guid.
 		/// </summary>
@@ -52,18 +44,6 @@ namespace SIL.LCModel.Infrastructure
 	/// </summary>
 	internal interface ICmObjectOrSurrogate
 	{
-		/// <summary>
-		/// Get the main XML string for the internal CmObject.
-		/// </summary>
-		string XML { get; }
-
-		/// <summary>
-		/// Get the main byte array of the XML string for the internal CmObject. This should never be null;
-		/// if an XML representation is not stored it will be computed from the CmObject.
-		/// Enhance JohnT: this method should be renamed or merged with XmlBytes.
-		/// </summary>
-		byte[] XMLBytes { get; }
-
 		ICmObjectId Id { get; }
 
 		/// <summary>
@@ -80,6 +60,11 @@ namespace SIL.LCModel.Infrastructure
 		/// Find out if the surrogate has the actual object.
 		/// </summary>
 		bool HasObject { get; }
+
+		/// <summary>
+		/// Return the DTO for the object
+		/// </summary>
+		ICmObjectDTO DTO { get; }
 	}
 
 	/// <summary>
@@ -87,41 +72,20 @@ namespace SIL.LCModel.Infrastructure
 	/// </summary>
 	internal interface ICmObjectSurrogateFactory
 	{
-		/// <summary>
+		/// <summary/>
 		/// Create a surrogate from the data store.
-		/// This gets the full XML string of the object from the BEP.
-		/// </summary>
-		ICmObjectSurrogate Create(string xmlData);
+		ICmObjectSurrogate Create(ICmObjectDTO dto);
 
 		/// <summary>
 		/// Create a surrogate from the data store.
-		/// This gets the full XML string of the object from the BEP.
 		/// </summary>
-		ICmObjectSurrogate Create(byte[] xmlData);
-
+		ICmObjectSurrogate Create(Guid guid, string classname, ICmObjectDTO data);
+		
 		/// <summary>
 		/// Create a surrogate from the data store.
 		/// This gets the full XML string of the object from the BEP.
 		/// </summary>
-		ICmObjectSurrogate Create(Guid guid, string classname, string xmlData);
-
-		/// <summary>
-		/// Create a surrogate from the data store.
-		/// This gets the full XML string of the object from the BEP.
-		/// </summary>
-		ICmObjectSurrogate Create(Guid guid, string classname, byte[] xmlData);
-
-		/// <summary>
-		/// Create a surrogate from the data store.
-		/// This gets the full XML string of the object from the BEP.
-		/// </summary>
-		ICmObjectSurrogate Create(ICmObjectId objId, string classname, string xmlData);
-
-		/// <summary>
-		/// Create a surrogate from the data store.
-		/// This gets the full XML string of the object from the BEP.
-		/// </summary>
-		ICmObjectSurrogate Create(ICmObjectId objId, string classname, byte[] xmlData);
+		ICmObjectSurrogate Create(ICmObjectId objId, string classname, ICmObjectDTO xmlData);
 
 		/// <summary>
 		/// Create a surrogate from the data store.

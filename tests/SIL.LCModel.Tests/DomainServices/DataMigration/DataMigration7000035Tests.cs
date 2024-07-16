@@ -25,7 +25,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void DataMigration7000035Test()
 		{
-			var dtos = new HashSet<DomainObjectDTO>();
+			var dtos = new HashSet<DomainObjectXMLDTO>();
 			var sb = new StringBuilder();
 			// 1. Add barebones LP.
 			sb.Append("<rt class=\"LangProject\" guid=\"9719A466-2240-4DEA-9722-9FE0746A30A6\">");
@@ -37,16 +37,16 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("<objsur guid=\"2c5c1f5f-1f08-41d7-99fe-23893ee4ceef\" t=\"o\" />");
 			sb.Append("</TranslatedScripture>");
 			sb.Append("</rt>");
-			var lpDto = new DomainObjectDTO("9719A466-2240-4DEA-9722-9FE0746A30A6",
+			var lpDto = new DomainObjectXMLDTO("9719A466-2240-4DEA-9722-9FE0746A30A6",
 				"LangProject", sb.ToString());
 			dtos.Add(lpDto);
 
 			// Add text dto.
-			var txtDto = new DomainObjectDTO(lpTextsGuids.textGuid.ToString(),  "StText",
+			var txtDto = new DomainObjectXMLDTO(lpTextsGuids.textGuid.ToString(),  "StText",
 				lpTextsGuids.textXml);
 			dtos.Add(txtDto);
 			// Add text para dto.
-			var txtParaDto = new DomainObjectDTO(lpTextsGuids.paraGuid.ToString(), "ScrTxtPara",
+			var txtParaDto = new DomainObjectXMLDTO(lpTextsGuids.paraGuid.ToString(), "ScrTxtPara",
 				lpTextsGuids.paraXml);
 			dtos.Add(txtParaDto);
 
@@ -57,7 +57,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("<objsur guid=\"f213db11-7007-4a2f-9b94-06d6c96014ca\" t=\"o\" />");
 			sb.Append("</Books>");
 			sb.Append("</rt>");
-			var scrDto = new DomainObjectDTO("2c5c1f5f-1f08-41d7-99fe-23893ee4ceef", "Scripture",
+			var scrDto = new DomainObjectXMLDTO("2c5c1f5f-1f08-41d7-99fe-23893ee4ceef", "Scripture",
 				sb.ToString());
 			dtos.Add(scrDto);
 
@@ -80,24 +80,24 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("<objsur guid=\"" + footnoteGuids.textGuid + "\" t=\"o\" />");
 			sb.Append("</Footnotes>");
 			sb.Append("</rt>");
-			var bookDto = new DomainObjectDTO("f213db11-7007-4a2f-9b94-06d6c96014ca", "ScrBook", sb.ToString());
+			var bookDto = new DomainObjectXMLDTO("f213db11-7007-4a2f-9b94-06d6c96014ca", "ScrBook", sb.ToString());
 			dtos.Add(bookDto);
 
 			// Add title
-			var titleDto = new DomainObjectDTO(titleTextGuids.textGuid.ToString(), "StText",
+			var titleDto = new DomainObjectXMLDTO(titleTextGuids.textGuid.ToString(), "StText",
 				titleTextGuids.textXml);
 			dtos.Add(titleDto);
 			// Title para
-			var titleParaDto = new DomainObjectDTO(titleTextGuids.paraGuid.ToString(), "ScrTxtPara",
+			var titleParaDto = new DomainObjectXMLDTO(titleTextGuids.paraGuid.ToString(), "ScrTxtPara",
 				titleTextGuids.paraXml);
 			dtos.Add(titleParaDto);
 
 			// Add footnote
-			var footnoteDto = new DomainObjectDTO(footnoteGuids.textGuid.ToString(), "ScrFootnote",
+			var footnoteDto = new DomainObjectXMLDTO(footnoteGuids.textGuid.ToString(), "ScrFootnote",
 				footnoteGuids.textXml);
 			dtos.Add(footnoteDto);
 			// Footnote para
-			var footnoteParaDto = new DomainObjectDTO(footnoteGuids.paraGuid.ToString(), "ScrTxtPara",
+			var footnoteParaDto = new DomainObjectXMLDTO(footnoteGuids.paraGuid.ToString(), "ScrTxtPara",
 				footnoteGuids.paraXml);
 			dtos.Add(footnoteParaDto);
 
@@ -115,29 +115,29 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("<objsur guid=\"" + headingTextGuids.textGuid + "\" t=\"o\" />");
 			sb.Append("</Heading>");
 			sb.Append("</rt>");
-			var sectionDto = new DomainObjectDTO("834e1bf8-3a25-47d6-9f92-806b38b5f815", "ScrSection",
+			var sectionDto = new DomainObjectXMLDTO("834e1bf8-3a25-47d6-9f92-806b38b5f815", "ScrSection",
 				sb.ToString());
 			dtos.Add(sectionDto);
 
 			// Add the contents
-			var contentsDto = new DomainObjectDTO(contentsTextGuids.textGuid.ToString(), "StText",
+			var contentsDto = new DomainObjectXMLDTO(contentsTextGuids.textGuid.ToString(), "StText",
 				contentsTextGuids.textXml);
 			dtos.Add(contentsDto);
 			// Contents para
-			var contentsParaDto = new DomainObjectDTO(contentsTextGuids.paraGuid.ToString(), "ScrTxtPara",
+			var contentsParaDto = new DomainObjectXMLDTO(contentsTextGuids.paraGuid.ToString(), "ScrTxtPara",
 				contentsTextGuids.paraXml);
 			dtos.Add(contentsParaDto);
 			// BT of para
-			var btDto = new DomainObjectDTO(contentsTextGuids.btGuid.ToString(), "CmTranslation",
+			var btDto = new DomainObjectXMLDTO(contentsTextGuids.btGuid.ToString(), "CmTranslation",
 				contentsTextGuids.btXml);
 			dtos.Add(btDto);
 
 			// Add the heading to the xml
-			var headingDto = new DomainObjectDTO(headingTextGuids.textGuid.ToString(), "StText",
+			var headingDto = new DomainObjectXMLDTO(headingTextGuids.textGuid.ToString(), "StText",
 				headingTextGuids.textXml);
 			dtos.Add(headingDto);
 			// heading para
-			var headingParaDto = new DomainObjectDTO(headingTextGuids.paraGuid.ToString(), "ScrTxtPara",
+			var headingParaDto = new DomainObjectXMLDTO(headingTextGuids.paraGuid.ToString(), "ScrTxtPara",
 				headingTextGuids.paraXml);
 			dtos.Add(headingParaDto);
 
@@ -162,7 +162,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.AreEqual(7000035, dtoRepos.CurrentModelVersion, "Wrong updated version.");
 
 			// Check that the link to the footnote has been changed to an owniing link
-			DomainObjectDTO paraDTO = dtoRepos.GetDTO(contentsTextGuids.paraGuid.ToString());
+			DomainObjectXMLDTO paraDTO = dtoRepos.GetDTO(contentsTextGuids.paraGuid.ToString());
 			XElement para = XElement.Parse(paraDTO.Xml);
 			XElement contents = para.Element("Contents");
 			XElement str = contents.Element("Str");
@@ -172,7 +172,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.IsNotNull(linkAttr);
 			Assert.AreEqual(footnoteGuids.textGuid.ToString(), linkAttr.Value);
 			Assert.AreEqual(contentsTextGuids.btGuid.ToString(), para.Element("Translations").Element("objsur").Attribute("guid").Value);
-			DomainObjectDTO btDTO = dtoRepos.GetDTO(contentsTextGuids.btGuid.ToString());
+			DomainObjectXMLDTO btDTO = dtoRepos.GetDTO(contentsTextGuids.btGuid.ToString());
 			XElement bt = XElement.Parse(btDTO.Xml);
 			XElement btStr = bt.Element("Translation").Element("AStr");
 			XElement btRun = btStr.Element("Run");

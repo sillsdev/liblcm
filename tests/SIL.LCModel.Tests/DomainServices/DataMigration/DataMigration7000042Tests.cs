@@ -127,7 +127,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			VerifyMigration(dtos);
 		}
 
-		private void VerifyMigration(HashSet<DomainObjectDTO> dtos)
+		private void VerifyMigration(HashSet<DomainObjectXMLDTO> dtos)
 		{
 			// Create all the Mock classes for the classes in my test data.
 			var mockMDC = new MockMDCForDataMigration();
@@ -193,14 +193,14 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					var xaGuid = objsur.Attribute("guid");
 					Assert.IsNotNull(xaGuid, "objsur elements should always have a guid attribute.");
 					var guid = xaGuid.Value;
-					DomainObjectDTO dtoPoss;
+					DomainObjectXMLDTO dtoPoss;
 					Assert.IsTrue(repoDto.TryGetValue(guid, out dtoPoss), "Possibility Lists should point to valid objects.");
 					VerifySubpossibilities(repoDto, dtoPoss);
 				}
 			}
 		}
 
-		private void VerifySubpossibilities(IDomainObjectDTORepository repoDto, DomainObjectDTO dtoPoss)
+		private void VerifySubpossibilities(IDomainObjectDTORepository repoDto, DomainObjectXMLDTO dtoPoss)
 		{
 			var xePoss = XElement.Parse(dtoPoss.Xml);
 			foreach (var objsur in xePoss.XPathSelectElements("SubPossibilities/objsur"))
@@ -208,7 +208,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				var xaGuid = objsur.Attribute("guid");
 				Assert.IsNotNull(xaGuid, "objsur elements should always have a guid attribute.");
 				var guid = xaGuid.Value;
-				DomainObjectDTO dtoSub;
+				DomainObjectXMLDTO dtoSub;
 				Assert.IsTrue(repoDto.TryGetValue(guid, out dtoSub), "SubPossibility Lists should point to valid objects.");
 				VerifySubpossibilities(repoDto, dtoSub);
 			}
@@ -227,7 +227,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					var xaGuid = objsur.Attribute("guid");
 					Assert.IsNotNull(xaGuid, "objsur elements should always have a guid attribute.");
 					var guid = xaGuid.Value;
-					DomainObjectDTO dtoType;
+					DomainObjectXMLDTO dtoType;
 					Assert.IsTrue(repoDto.TryGetValue(guid, out dtoType), "LexEntryRef.ComplexEntryTypes should point to valid objects.");
 				}
 				foreach (var objsur in xeRef.XPathSelectElements("VariantEntryTypes/objsur"))
@@ -235,7 +235,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					var xaGuid = objsur.Attribute("guid");
 					Assert.IsNotNull(xaGuid, "objsur elements should always have a guid attribute.");
 					var guid = xaGuid.Value;
-					DomainObjectDTO dtoType;
+					DomainObjectXMLDTO dtoType;
 					Assert.IsTrue(repoDto.TryGetValue(guid, out dtoType), "LexEntryRef.VariantEntryTypes should point to valid objects.");
 				}
 			}
@@ -246,7 +246,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		private void VerifyEntryType(IDomainObjectDTORepository repoDto, string guid)
 		{
-			DomainObjectDTO dto;
+			DomainObjectXMLDTO dto;
 			Assert.IsTrue(repoDto.TryGetValue(guid, out dto),
 				String.Format("Check for known guid of LexEntryType ({0}).", m_mapGuidToName[guid]));
 			var xeType = XElement.Parse(dto.Xml);
@@ -270,9 +270,9 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		{
 			foreach (var dto in repoDto.AllInstancesWithSubclasses("LexEntryType"))
 			{
-				DomainObjectDTO dtoOwner;
+				DomainObjectXMLDTO dtoOwner;
 				Assert.IsTrue(repoDto.TryGetOwner(dto.Guid, out dtoOwner), "All entry types should have valid owners!");
-				DomainObjectDTO dtoOwnedOk = null;
+				DomainObjectXMLDTO dtoOwnedOk = null;
 				foreach (var dtoT in repoDto.GetDirectlyOwnedDTOs(dtoOwner.Guid))
 				{
 					if (dtoT == dto)

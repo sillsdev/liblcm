@@ -117,7 +117,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			DataMigrationServices.IncrementVersionNumber(domainObjectDtoRepository);
 		}
 
-		private static void GetWsNamesFromReversalIndex(DomainObjectDTO revIndexDto, Dictionary<string, string> wsCodeNameDict )
+		private static void GetWsNamesFromReversalIndex(DomainObjectXMLDTO revIndexDto, Dictionary<string, string> wsCodeNameDict )
 		{
 			var wsElt = XElement.Parse(revIndexDto.Xml).Element(Name);
 			var existingNameAUniElts = wsElt.Elements(Auni);
@@ -129,7 +129,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 		}
 
-		private static bool GetGuidForPosListSafely(DomainObjectDTO revIndexDto, out string possListGuid)
+		private static bool GetGuidForPosListSafely(DomainObjectXMLDTO revIndexDto, out string possListGuid)
 		{
 			possListGuid = string.Empty;
 			var posElt = XElement.Parse(revIndexDto.Xml).Element("PartsOfSpeech");
