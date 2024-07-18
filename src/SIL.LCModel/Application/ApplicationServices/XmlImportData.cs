@@ -95,7 +95,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			string m_sState;
 			Dictionary<string, string> m_dictAttrs = new Dictionary<string, string>();
 
-			internal PendingLink(FieldInfo fi, XmlReader xrdr)
+			internal PendingLink(FieldInfo fi, XmlReader xrdr, string linkAttribute)
 			{
 				m_fi = fi;
 				m_sName = xrdr.Name;
@@ -104,7 +104,13 @@ namespace SIL.LCModel.Application.ApplicationServices
 					m_line = (xrdr as IXmlLineInfo).LineNumber;
 				else
 					m_line = 0;
-				if (xrdr.MoveToFirstAttribute())
+				if (linkAttribute != null)
+				{
+					// PhonologyServices sometimes uses attributes instead of fields in the XML.
+					// Save the value under "dst" and don't move the attribute.
+					m_dictAttrs.Add("dst", xrdr.GetAttribute(linkAttribute));
+				}
+				else if (xrdr.MoveToFirstAttribute())
 				{
 					do
 					{
@@ -157,7 +163,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 		private ReferenceTracker m_rglinks = new ReferenceTracker();
 		private TextWriter m_wrtrLog;
 		private bool m_createLinks;
-		private bool m_m3Dump;
 
 
 		/// ------------------------------------------------------------------------------------
@@ -274,12 +279,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 				xrdr.MoveToContent();
 				if (xrdr.Name == "FwDatabase")
 				{
-					xrdr.Read();
-					xrdr.MoveToContent();
-				}
-				if (xrdr.Name == "M3Dump")
-				{
-					m_m3Dump = true;
 					xrdr.Read();
 					xrdr.MoveToContent();
 				}
@@ -954,12 +953,15 @@ namespace SIL.LCModel.Application.ApplicationServices
 
 #if DEBUG
 			int nDepth = xrdr.Depth;
+			int attributeCount = 0;
 #endif
 			string sClass = xrdr.Name;
 			string sId = xrdr.GetAttribute("id");
 			if (sId == null)
-				// M3ModelExportServices uses "Id".
+				// PhonologyServices uses "Id".
 				sId = xrdr.GetAttribute("Id");
+			if (sId != null)
+				attributeCount++;
 			ICmObject cmo = null;
 			// Check for singleton classes that should already exist before creating new
 			// objects.
@@ -1075,6 +1077,65 @@ namespace SIL.LCModel.Application.ApplicationServices
 				m_mapIdGuid.Add(sId, cmo.Guid);
 				m_mapGuidId.Add(cmo.Guid, sId);
 			}
+			// PhonologyServices sometimes uses attributes instead of fields in the XML.
+			// We read them here without advancing xrdr.
+			if (xrdr.GetAttribute("dst") != null)
+			{
+				attributeCount++;
+				if (xrdr.Name == "PhSimpleContextBdry" ||
+					xrdr.Name == "PhSimpleContextNC" ||
+					xrdr.Name == "PhSimpleContextSeg")
+				{
+					// This attribute should be named FeatureStructure instead of dst,
+					// but we can't change it in the XML without changing the parsers.
+					var flid = m_mdc.GetFieldId2(cmo.ClassID, "FeatureStructure", true);
+					var cpt = (CellarPropertyType)m_mdc.GetFieldType(flid);
+					var fsfi = new FieldInfo(cmo, flid, cpt, fNewObject, fi);
+					ReadReferenceLink(xrdr, fsfi, "dst");
+				} else
+				{
+					Debug.Assert(false);
+				}
+			}
+			if (xrdr.GetAttribute("Direction") != null)
+			{
+				attributeCount++;
+				var flid = m_mdc.GetFieldId2(cmo.ClassID, "Direction", true);
+				string sVal = xrdr.GetAttribute("Direction");
+				int iVal = Int32.Parse(sVal);
+				m_sda.SetInt(cmo.Hvo, flid, iVal);
+			}
+			if (xrdr.GetAttribute("Disabled") != null)
+			{
+				attributeCount++;
+				var flid = m_mdc.GetFieldId2(cmo.ClassID, "Disabled", true);
+				string sVal = xrdr.GetAttribute("Disabled");
+				sVal = sVal.ToLowerInvariant();
+				bool fVal = sVal == "true" || sVal == "yes" || sVal == "t" || sVal == "y" || sVal == "1";
+				m_sda.SetBoolean(cmo.Hvo, flid, fVal);
+			}
+			if (xrdr.GetAttribute("Guid") != null)
+			{
+				// Only PhBdryMarker has a Guid.
+				// We ignore it, which causes a new Guid to be generated.
+				attributeCount++;
+			}
+			if (xrdr.GetAttribute("LeftContext") != null)
+			{
+				attributeCount++;
+				ReadAttributeReference(xrdr, cmo, "LeftContext", fNewObject, fi);
+			}
+			if (xrdr.GetAttribute("RightContext") != null)
+			{
+				attributeCount++;
+				ReadAttributeReference(xrdr, cmo, "RightContext", fNewObject, fi);
+			}
+			if (xrdr.GetAttribute("Type") != null)
+			{
+				attributeCount++;
+				ReadAttributeReference(xrdr, cmo, "Type", fNewObject, fi);
+			}
+			Debug.Assert(xrdr.AttributeCount == attributeCount);
 			if (!xrdr.IsEmptyElement)
 			{
 				ReadXmlFields(xrdr, cmo, fNewObject, fi);
@@ -1116,6 +1177,14 @@ namespace SIL.LCModel.Application.ApplicationServices
 						le.HomographNumber = m_nHomograph;
 				}
 			}
+		}
+
+		private void ReadAttributeReference(XmlReader xrdr, ICmObject cmo, string attribute, bool fNewObject, FieldInfo fi)
+		{
+			var flid = m_mdc.GetFieldId2(cmo.ClassID, attribute, true);
+			var cpt = (CellarPropertyType)m_mdc.GetFieldType(flid);
+			var fsfi = new FieldInfo(cmo, flid, cpt, fNewObject, fi);
+			ReadReferenceLink(xrdr, fsfi, attribute);
 		}
 
 		private int LineNumber(XmlReader xrdr)
@@ -1613,14 +1682,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 		{
 			if (xrdr.Name != "AUni")
 			{
-				if (m_m3Dump)
-				{
-					int m3ws = m_cache.DefaultAnalWs;
-					string m3Data = xrdr.ReadString();
-					m_sda.SetMultiStringAlt(fi.Owner.Hvo, fi.FieldId, m3ws, TsStringUtils.MakeString(m3Data, m3ws));
-					xrdr.MoveToContent();
-					return;
-				}
 				string sMsg = AppStrings.ksExpectedAUni;
 				LogMessage(sMsg, LineNumber(xrdr));
 				throw new Exception(sMsg);
@@ -1644,15 +1705,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 		{
 			if (xrdr.Name != "Str")
 			{
-				if (m_m3Dump)
-				{
-					string m3Data = xrdr.ReadString();
-					int m3ws = m_cache.DefaultAnalWs;
-					ITsString m3tss = TsStringUtils.MakeString(m3Data, m3ws);
-					m_sda.SetString(fi.Owner.Hvo, fi.FieldId, m3tss);
-					xrdr.MoveToContent();
-					return;
-				}
 				string sMsg = AppStrings.ksExpectedStr;
 				LogMessage(sMsg, LineNumber(xrdr));
 				throw new Exception(sMsg);
@@ -1681,14 +1733,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 		{
 			if (xrdr.Name != "AStr")
 			{
-				if (m_m3Dump)
-				{
-					int m3ws = m_cache.DefaultAnalWs;
-					string m3Data = xrdr.ReadString();
-					m_sda.SetMultiStringAlt(fi.Owner.Hvo, fi.FieldId, m3ws, TsStringUtils.MakeString(m3Data, m3ws));
-					xrdr.MoveToContent();
-					return;
-				}
 				string sMsg = AppStrings.ksExpectedAStr;
 				LogMessage(sMsg, LineNumber(xrdr));
 				throw new Exception(sMsg);
@@ -1728,7 +1772,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			}
 		}
 
-		private void ReadReferenceLink(XmlReader xrdr, FieldInfo fi)
+		private void ReadReferenceLink(XmlReader xrdr, FieldInfo fi, string linkAttribute = null)
 		{
 			// This is going to be difficult, because all sorts of variants of links exist.
 			// The simplest has a target attribute which refers to the id attribute of another
@@ -1738,13 +1782,16 @@ namespace SIL.LCModel.Application.ApplicationServices
 			// imported, so that all references can be resolved to actual objects, we'll try
 			// to decipher all the pending reference links.
 			// NB: PhonologyServices uses a "dst" attribute instead of a "Link" element for links.
-			if (xrdr.Name != "Link" && xrdr.GetAttribute("dst") == null)
+			if (xrdr.Name != "Link" && xrdr.GetAttribute("dst") == null && linkAttribute == null)
 			{
 				string sMsg = AppStrings.ksExpectedLink;
 				LogMessage(sMsg, LineNumber(xrdr));
 				throw new Exception(sMsg);
 			}
-			PendingLink pend = new PendingLink(fi, xrdr);
+			if (linkAttribute != null && xrdr.GetAttribute(linkAttribute) == "0")
+				// Link is empty.
+				return;
+			PendingLink pend = new PendingLink(fi, xrdr, linkAttribute);
 			if (pend.LinkAttributes.Count == 0)
 			{
 				string sMsg = AppStrings.ksInvalidLinkElement;
@@ -1798,6 +1845,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 			{
 				m_rglinks.Add(pend);
 			}
+			if (linkAttribute != null)
+				return;
 			xrdr.MoveToElement();
 			xrdr.Read();
 			xrdr.MoveToContent();
@@ -2263,6 +2312,10 @@ namespace SIL.LCModel.Application.ApplicationServices
 							{
 								//This is a reversal index and we need a back reference set
 								rie.SensesRS.Add(pend.FieldInformation.Owner as ILexSense);
+							}
+							else if (pend.ElementName == "FeatureConstraints" && pend.FieldInformation.Owner is PhRegularRule)
+							{
+								// This is a synthetic feature.  We can't set it, so we ignore it.
 							}
 							else
 							{
