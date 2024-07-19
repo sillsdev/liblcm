@@ -498,7 +498,7 @@ namespace SIL.LCModel.DomainServices
 																 select ExportFeatureConstraint(featureConstraint)),
 								new XElement("PhonRules", from phonRule in phonologicalData.PhonRulesOS
 											select ExportPhonRule(phonRule, mode, fwDatabase)),
-								ExportPhonRuleFeats(phonologicalData, mode),
+								ExportPhonRuleFeats(phonologicalData, mode, fwDatabase),
 							   new XElement("PhIters"),
 							   new XElement("PhIters"),
 							   new XElement("PhIters"),
@@ -534,18 +534,20 @@ namespace SIL.LCModel.DomainServices
 				ExportBestAnalysis(goodEnvironment.Description, "Description", mode));
 		}
 
-		private static XElement ExportPhonRuleFeats(IPhPhonData phonData, Normalizer.UNormalizationMode mode)
+		private static XElement ExportPhonRuleFeats(IPhPhonData phonData, Normalizer.UNormalizationMode mode, bool fwDatabase)
 		{
+			if (fwDatabase)
+				return null;
 			return new XElement("PhonRuleFeats",
 				from phonRuleFeat in phonData.PhonRuleFeatsOA.ReallyReallyAllPossibilities
-				select ExportPhonRuleFeat(phonRuleFeat as IPhPhonRuleFeat, mode));
+				select ExportPhonRuleFeat(phonRuleFeat as IPhPhonRuleFeat, mode, fwDatabase));
 		}
 
-		private static XElement ExportPhonRuleFeat(IPhPhonRuleFeat phonRuleFeat, Normalizer.UNormalizationMode mode)
+		private static XElement ExportPhonRuleFeat(IPhPhonRuleFeat phonRuleFeat, Normalizer.UNormalizationMode mode, bool fwDatabase)
 		{
 			return new XElement("PhonRuleFeat",
 								new XAttribute("Id", phonRuleFeat.Hvo),
-								ExportBestAnalysis(phonRuleFeat.Name, "Name", mode),
+								ExportBestAnalysis(phonRuleFeat.Name, "Name", mode, fwDatabase, phonRuleFeat),
 								new XElement("Item",
 								phonRuleFeat.ItemRA != null ? new XAttribute("itemRef", phonRuleFeat.ItemRA.Hvo) : new XAttribute("missing", 1)));
 		}
@@ -861,7 +863,7 @@ namespace SIL.LCModel.DomainServices
 			}
 		}
 
-		private static XElement ExportFeatureSpecification(IFsFeatureSpecification featureSpec, bool fwDatabase = false)
+		private static XElement ExportFeatureSpecification(IFsFeatureSpecification featureSpec)
 		{
 			switch (featureSpec.ClassName)
 			{

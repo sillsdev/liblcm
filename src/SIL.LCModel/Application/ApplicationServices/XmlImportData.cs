@@ -951,17 +951,17 @@ namespace SIL.LCModel.Application.ApplicationServices
 		{
 			Debug.Assert(xrdr.NodeType == XmlNodeType.Element);
 
+			string sClass = xrdr.Name;
 #if DEBUG
 			int nDepth = xrdr.Depth;
-			int attributeCount = 0;
+			string sOriginalClass = sClass;
 #endif
-			string sClass = xrdr.Name;
+			if (sClass == "PhonRuleFeat")
+				sClass = "PhPhonRuleFeat";
 			string sId = xrdr.GetAttribute("id");
 			if (sId == null)
 				// PhonologyServices uses "Id".
 				sId = xrdr.GetAttribute("Id");
-			if (sId != null)
-				attributeCount++;
 			ICmObject cmo = null;
 			// Check for singleton classes that should already exist before creating new
 			// objects.
@@ -1030,6 +1030,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 						// Remove the default code added by PhTerminalUnit.SetDefaultValuesAfterInit in OverridesLing_Lex.
 						(cmo as PhPhoneme)?.CodesOS.Clear();
 						(cmo as PhBdryMarker)?.CodesOS.Clear();
+						// Remove default values.
+						(cmo as PhRegularRule)?.RightHandSidesOS.Clear();
 					}
 					else
 					{
@@ -1078,69 +1080,15 @@ namespace SIL.LCModel.Application.ApplicationServices
 				m_mapGuidId.Add(cmo.Guid, sId);
 			}
 			// PhonologyServices sometimes uses attributes instead of fields in the XML.
-			// We read them here without advancing xrdr.
-			if (xrdr.GetAttribute("dst") != null)
-			{
-				attributeCount++;
-				if (xrdr.Name == "PhSimpleContextBdry" ||
-					xrdr.Name == "PhSimpleContextNC" ||
-					xrdr.Name == "PhSimpleContextSeg")
-				{
-					// This attribute should be named FeatureStructure instead of dst,
-					// but we can't change it in the XML without changing the parsers.
-					var flid = m_mdc.GetFieldId2(cmo.ClassID, "FeatureStructure", true);
-					var cpt = (CellarPropertyType)m_mdc.GetFieldType(flid);
-					var fsfi = new FieldInfo(cmo, flid, cpt, fNewObject, fi);
-					ReadReferenceLink(xrdr, fsfi, "dst");
-				} else
-				{
-					Debug.Assert(false);
-				}
-			}
-			if (xrdr.GetAttribute("Direction") != null)
-			{
-				attributeCount++;
-				var flid = m_mdc.GetFieldId2(cmo.ClassID, "Direction", true);
-				string sVal = xrdr.GetAttribute("Direction");
-				int iVal = Int32.Parse(sVal);
-				m_sda.SetInt(cmo.Hvo, flid, iVal);
-			}
-			if (xrdr.GetAttribute("Disabled") != null)
-			{
-				attributeCount++;
-				var flid = m_mdc.GetFieldId2(cmo.ClassID, "Disabled", true);
-				string sVal = xrdr.GetAttribute("Disabled");
-				sVal = sVal.ToLowerInvariant();
-				bool fVal = sVal == "true" || sVal == "yes" || sVal == "t" || sVal == "y" || sVal == "1";
-				m_sda.SetBoolean(cmo.Hvo, flid, fVal);
-			}
-			if (xrdr.GetAttribute("Guid") != null)
-			{
-				// Only PhBdryMarker has a Guid.
-				// We ignore it, which causes a new Guid to be generated.
-				attributeCount++;
-			}
-			if (xrdr.GetAttribute("LeftContext") != null)
-			{
-				attributeCount++;
-				ReadAttributeReference(xrdr, cmo, "LeftContext", fNewObject, fi);
-			}
-			if (xrdr.GetAttribute("RightContext") != null)
-			{
-				attributeCount++;
-				ReadAttributeReference(xrdr, cmo, "RightContext", fNewObject, fi);
-			}
-			if (xrdr.GetAttribute("Type") != null)
-			{
-				attributeCount++;
-				ReadAttributeReference(xrdr, cmo, "Type", fNewObject, fi);
-			}
-			Debug.Assert(xrdr.AttributeCount == attributeCount);
+			ReadXmlAttributes(xrdr, cmo, fNewObject, fi);
 			if (!xrdr.IsEmptyElement)
 			{
-				ReadXmlFields(xrdr, cmo, fNewObject, fi);
+				if (sClass == "FsFeatStruc")
+					ReadFeatureStructure(xrdr, cmo, fNewObject, fi);
+				else
+					ReadXmlFields(xrdr, cmo, fNewObject, fi);
 #if DEBUG
-				Debug.Assert(xrdr.Name == sClass);	// we should be on the end element
+				Debug.Assert(xrdr.Name == sOriginalClass);	// we should be on the end element
 				Debug.Assert(xrdr.Depth == nDepth);
 #endif
 				xrdr.ReadEndElement();
@@ -1179,12 +1127,102 @@ namespace SIL.LCModel.Application.ApplicationServices
 			}
 		}
 
-		private void ReadAttributeReference(XmlReader xrdr, ICmObject cmo, string attribute, bool fNewObject, FieldInfo fi)
+		private void ReadXmlAttributes(XmlReader xrdr, ICmObject cmo, bool fNewObject, FieldInfo fi)
+		{
+			int attributeCount = 0;
+			if (xrdr.GetAttribute("Id") != null)
+				attributeCount++;
+			if (xrdr.GetAttribute("dst") != null)
+			{
+				attributeCount++;
+				if (xrdr.Name == "PhSimpleContextBdry" ||
+					xrdr.Name == "PhSimpleContextNC" ||
+					xrdr.Name == "PhSimpleContextSeg")
+				{
+					// This attribute should be named FeatureStructure instead of dst,
+					// but we can't change it in the XML without changing the parsers.
+					var flid = m_mdc.GetFieldId2(cmo.ClassID, "FeatureStructure", true);
+					var cpt = (CellarPropertyType)m_mdc.GetFieldType(flid);
+					var fsfi = new FieldInfo(cmo, flid, cpt, fNewObject, fi);
+					ReadReferenceLink(xrdr, fsfi, "dst");
+				}
+				else
+				{
+					Debug.Assert(false);
+				}
+			}
+			if (xrdr.GetAttribute("Direction") != null)
+			{
+				attributeCount++;
+				ReadIntegerAttribute(xrdr, cmo, "Direction");
+			}
+			if (xrdr.GetAttribute("Disabled") != null)
+			{
+				attributeCount++;
+				var flid = m_mdc.GetFieldId2(cmo.ClassID, "Disabled", true);
+				string sVal = xrdr.GetAttribute("Disabled");
+				sVal = sVal.ToLowerInvariant();
+				bool fVal = sVal == "true" || sVal == "yes" || sVal == "t" || sVal == "y" || sVal == "1";
+				m_sda.SetBoolean(cmo.Hvo, flid, fVal);
+			}
+			if (xrdr.GetAttribute("Feature") != null)
+			{
+				attributeCount++;
+				ReadReferenceAttribute(xrdr, cmo, "Feature", fNewObject, fi);
+			}
+			if (xrdr.GetAttribute("Guid") != null)
+			{
+				// Only PhBdryMarker has a Guid.
+				// We ignore it, which causes a new Guid to be generated.
+				attributeCount++;
+			}
+			if (xrdr.GetAttribute("LeftContext") != null)
+			{
+				attributeCount++;
+				ReadReferenceAttribute(xrdr, cmo, "LeftContext", fNewObject, fi);
+			}
+			if (xrdr.GetAttribute("Maximum") != null)
+			{
+				attributeCount++;
+				ReadIntegerAttribute(xrdr, cmo, "Maximum");
+			}
+			if (xrdr.GetAttribute("Minimum") != null)
+			{
+				attributeCount++;
+				ReadIntegerAttribute(xrdr, cmo, "Minimum");
+			}
+			if (xrdr.GetAttribute("RightContext") != null)
+			{
+				attributeCount++;
+				ReadReferenceAttribute(xrdr, cmo, "RightContext", fNewObject, fi);
+			}
+			if (xrdr.GetAttribute("Type") != null)
+			{
+				attributeCount++;
+				ReadReferenceAttribute(xrdr, cmo, "Type", fNewObject, fi);
+			}
+			if (xrdr.GetAttribute("Value") != null)
+			{
+				attributeCount++;
+				ReadReferenceAttribute(xrdr, cmo, "Value", fNewObject, fi);
+			}
+			Debug.Assert(xrdr.AttributeCount == attributeCount);
+		}
+
+		private void ReadReferenceAttribute(XmlReader xrdr, ICmObject cmo, string attribute, bool fNewObject, FieldInfo fi)
 		{
 			var flid = m_mdc.GetFieldId2(cmo.ClassID, attribute, true);
 			var cpt = (CellarPropertyType)m_mdc.GetFieldType(flid);
 			var fsfi = new FieldInfo(cmo, flid, cpt, fNewObject, fi);
 			ReadReferenceLink(xrdr, fsfi, attribute);
+		}
+
+		private void ReadIntegerAttribute(XmlReader xrdr, ICmObject cmo, string attribute)
+		{
+			var flid = m_mdc.GetFieldId2(cmo.ClassID, attribute, true);
+			string sVal = xrdr.GetAttribute(attribute);
+			int iVal = Int32.Parse(sVal);
+			m_sda.SetInt(cmo.Hvo, flid, iVal);
 		}
 
 		private int LineNumber(XmlReader xrdr)
@@ -1200,6 +1238,22 @@ namespace SIL.LCModel.Application.ApplicationServices
 
 		const int kflidCrossReferences = -123;
 		const int kflidLexicalRelations = -124;
+
+		private void ReadFeatureStructure(XmlReader xrdr, ICmObject cmoOwner, bool fOwnerIsNew,
+			FieldInfo fiParent)
+		{
+			int nDepth = xrdr.Depth;
+			// Consume the start element of the owning object.
+			xrdr.Read();
+			xrdr.MoveToContent();
+			var flid = m_mdc.GetFieldId2(cmoOwner.ClassID, "FeatureSpecs", true);
+			var cpt = (CellarPropertyType)m_mdc.GetFieldType(flid);
+			var fi = new FieldInfo(cmoOwner, flid, cpt, fOwnerIsNew, fiParent);
+			while (xrdr.Depth > nDepth)
+			{
+				ReadXmlObject(xrdr, fi, null);
+			}
+		}
 
 		private void ReadXmlFields(XmlReader xrdr, ICmObject cmoOwner, bool fOwnerIsNew,
 			FieldInfo fiParent)
@@ -1229,6 +1283,13 @@ namespace SIL.LCModel.Application.ApplicationServices
 					sField = "Features";
 				else if (sField == "FeatureConstraints" && cmoOwner.ClassName == "PhPhonData")
 					sField = "FeatConstraints";
+				else if (sField == "PhonRuleFeats")
+				{
+					// PhPhonData.PhonRuleFeats is an ICmPossibilityList
+					// but only the Possibilities are exported.
+					sField = "Possibilities";
+					cmoOwner = ((PhPhonData)cmoOwner).PhonRuleFeatsOA;
+				}
 				if (cmoOwner.ClassID == LexDbTags.kClassId && sField == "Entries")
 				{
 					flid = 0; // no actual owning sequence.

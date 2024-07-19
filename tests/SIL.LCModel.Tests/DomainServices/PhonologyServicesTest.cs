@@ -139,6 +139,7 @@ namespace SIL.LCModel.DomainServices
 			IDictionary<string, XElement> idMap1,
 			IDictionary<string, XElement> idMap2)
 		{
+			Assert.AreEqual(elements.Count(), elements2.Count());
 			foreach (var pair in elements.Zip(elements2, Tuple.Create))
 			{
 				TestXml(pair.Item1, pair.Item2, dstMap, idMap1, idMap2);
@@ -174,7 +175,7 @@ namespace SIL.LCModel.DomainServices
 							else
 								idMap2[attr2.Value] = element2;
 						}
-						else if (name == "dst")
+						else if (name == "dst" || name == "Feature" || name == "Value")
 						{
 							// Save for later.
 							if (dstMap.ContainsKey(attr.Value))
@@ -184,7 +185,7 @@ namespace SIL.LCModel.DomainServices
 						}
 						else
 						{
-							Assert.AreEqual(attr.Value, attr2.Value);
+							Assert.AreEqual(attr.Value, attr2.Value, "Attribute " + name + " has different values.");
 						}
 						found = true;
 					}
@@ -407,6 +408,14 @@ namespace SIL.LCModel.DomainServices
 		}
 
 		[Test]
+		public void TestAmharic()
+		{
+			TestProject(
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Amharic Fidel root-based",
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Amharic Fidel root-based\\Amharic Fidel root-based.fwdata");
+		}
+
+		[Test]
 		public void TestQuechua()
 		{
 			TestProject(
@@ -436,6 +445,22 @@ namespace SIL.LCModel.DomainServices
 			TestProject(
 				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Ikizu",
 				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Ikizu\\Ikizu.fwdata");
+		}
+
+		[Test]
+		public void TestKuni()
+		{
+			TestProject(
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\KVG_Kuni",
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\KVG_Kuni\\KVG_Kuni.fwdata");
+		}
+
+		[Test]
+		public void TestPuguli()
+		{
+			TestProject(
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Puguli (shared)",
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Puguli (shared)\\Puguli (shared).fwdata");
 		}
 
 		[Test]
