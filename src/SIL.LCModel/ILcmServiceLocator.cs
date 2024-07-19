@@ -3,10 +3,13 @@
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System;
+using System.Collections.Generic;
+using CommonServiceLocator;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.Infrastructure;
 using SIL.LCModel.Infrastructure.Impl;
+using SIL.LCModel.IOC;
 
 namespace SIL.LCModel
 {
@@ -109,6 +112,14 @@ namespace SIL.LCModel
 		public static TService GetInstance<TService>(this IServiceProvider provider)
 		{
 			return (TService)provider.GetService(typeof(TService));
+		}
+
+		public static IEnumerable<TService> GetAllInstances<TService>(this IServiceProvider provider)
+		{
+			//structure map might not work the same way as the standard service provider, so we need to handle it separately.
+			if (provider is IServiceLocator serviceLocator) return serviceLocator.GetAllInstances<TService>();
+			//the standard service provider handles listing all services like this, however that might not work the same in structure map if an IEnumerable is explicitly registered.
+			return (IEnumerable<TService>) provider.GetService(typeof(IEnumerable<TService>));
 		}
 	}
 }
