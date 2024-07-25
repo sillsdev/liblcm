@@ -87,6 +87,10 @@ jobs:
       run: dotnet nuget push artifacts/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{secrets.SILLSDEV_PUBLISH_NUGET_ORG}} --skip-duplicate
       if: github.event_name == 'push' && matrix.os == 'ubuntu-latest'
 
+    - name: Publish to Github packages
+      if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest'
+      run: dotnet nuget push artifacts/*.nupkg -s https://nuget.pkg.github.com/sillsdev/index.json -k ${{secrets.GITHUB_TOKEN}} --skip-duplicate
+
     - name: Publish Artifacts
       uses: actions/upload-artifact@v4
       with:
