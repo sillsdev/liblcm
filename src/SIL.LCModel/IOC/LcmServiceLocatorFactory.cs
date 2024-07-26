@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Microsoft.Practices.ServiceLocation;
+using CommonServiceLocator;
 using SIL.LCModel.Application;
 using SIL.LCModel.Application.Impl;
 using SIL.LCModel.Core.KernelInterfaces;
@@ -54,7 +54,7 @@ namespace SIL.LCModel.IOC
 		/// </summary>
 		/// <returns>An IServiceLocator instance.</returns>
 		/// ------------------------------------------------------------------------------------
-		public IServiceLocator CreateServiceLocator()
+		public IServiceProvider CreateServiceLocator()
 		{
 			// NOTE: When creating an object through IServiceLocator.GetInstance the caller has
 			// to call Dispose() on the newly created object, unless it's a singleton
