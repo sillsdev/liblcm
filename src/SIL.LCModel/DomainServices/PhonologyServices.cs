@@ -27,7 +27,8 @@ namespace SIL.LCModel.DomainServices
 		private readonly string m_wsVernId;
 
 		/// <summary>
-		/// Export the phonology to a file.
+		/// Export the phonology to a file in the Phonology format.
+		/// The Phonology format is similar to M3Dump except that strings are exported as multi-strings.
 		/// </summary>
 		/// <param name="filename"></param>
 		public void ExportPhonologyAsXml(string filename)
@@ -61,6 +62,8 @@ namespace SIL.LCModel.DomainServices
 		/// <param name="rdr"></param>
 		public void ImportPhonologyFromXml(TextReader rdr)
 		{
+			// Import the Phonology format using ImportData.
+			// ImportData has been extended to accept the Phonology format.
 			XmlImportData xid = new XmlImportData(Cache, true);
 			xid.ImportData(rdr, null, null);
 			// NonUndoableUnitOfWorkHelper.DoUsingNewOrCurrentUOW(Cache.ActionHandlerAccessor,

@@ -106,7 +106,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 					m_line = 0;
 				if (linkAttribute != null)
 				{
-					// PhonologyServices sometimes uses attributes instead of fields in the XML.
+					// The Phonology format sometimes uses attributes instead of fields in the XML.
 					// Save the value under "dst" and don't move the attribute.
 					m_dictAttrs.Add("dst", xrdr.GetAttribute(linkAttribute));
 				}
@@ -159,6 +159,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 
 		private Dictionary<string, Guid> m_mapIdGuid = new Dictionary<string, Guid>();
 		private Dictionary<Guid, string> m_mapGuidId = new Dictionary<Guid, string>();
+		bool m_phonology = false;
 
 		private ReferenceTracker m_rglinks = new ReferenceTracker();
 		private TextWriter m_wrtrLog;
@@ -279,6 +280,13 @@ namespace SIL.LCModel.Application.ApplicationServices
 				xrdr.MoveToContent();
 				if (xrdr.Name == "FwDatabase")
 				{
+					xrdr.Read();
+					xrdr.MoveToContent();
+				}
+				if (xrdr.Name == "Phonology")
+				{
+					// We are reading data in the Phonology format.
+					m_phonology = true;
 					xrdr.Read();
 					xrdr.MoveToContent();
 				}
@@ -958,10 +966,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 #endif
 			if (sClass == "PhonRuleFeat")
 				sClass = "PhPhonRuleFeat";
-			string sId = xrdr.GetAttribute("id");
-			if (sId == null)
-				// PhonologyServices uses "Id".
-				sId = xrdr.GetAttribute("Id");
+			// The Phonology format uses "Id" instead of "id".
+			string sId = xrdr.GetAttribute(m_phonology ? "Id" : "id");
 			ICmObject cmo = null;
 			// Check for singleton classes that should already exist before creating new
 			// objects.
@@ -1079,8 +1085,9 @@ namespace SIL.LCModel.Application.ApplicationServices
 				m_mapIdGuid.Add(sId, cmo.Guid);
 				m_mapGuidId.Add(cmo.Guid, sId);
 			}
-			// PhonologyServices sometimes uses attributes instead of fields in the XML.
-			ReadXmlAttributes(xrdr, cmo, fNewObject, fi);
+			if (m_phonology)
+				// The Phonology format sometimes uses attributes instead of fields in the XML.
+				ReadXmlAttributes(xrdr, cmo, fNewObject, fi);
 			if (!xrdr.IsEmptyElement)
 			{
 				if (sClass == "FsFeatStruc")
@@ -1127,105 +1134,62 @@ namespace SIL.LCModel.Application.ApplicationServices
 			}
 		}
 
+		/// <summary>
+		/// Read the XML attributes without moving the XmlReader.
+		/// </summary>
 		private void ReadXmlAttributes(XmlReader xrdr, ICmObject cmo, bool fNewObject, FieldInfo fi)
 		{
+			IEnumerable<string> attributeNames = new List<string>()
+			{
+				"Direction", "Disabled", "dst",
+				"Feature", "Guid", "Id",
+				"LeftContext", "Maximum", "Minimum",
+				"RightContext", "Type", "Value"
+			};
 			int attributeCount = 0;
-			if (xrdr.GetAttribute("Id") != null)
-				attributeCount++;
-			if (xrdr.GetAttribute("dst") != null)
+			foreach (string attributeName in attributeNames)
 			{
-				attributeCount++;
-				if (xrdr.Name == "PhSimpleContextBdry" ||
-					xrdr.Name == "PhSimpleContextNC" ||
-					xrdr.Name == "PhSimpleContextSeg")
+				if (xrdr.GetAttribute(attributeName) != null)
 				{
-					// This attribute should be named FeatureStructure instead of dst,
-					// but we can't change it in the XML without changing the parsers.
-					var flid = m_mdc.GetFieldId2(cmo.ClassID, "FeatureStructure", true);
+					attributeCount++;
+					if (attributeName == "Id" || attributeName == "Guid")
+						continue;
+					string fieldName = attributeName;
+					if (attributeName == "dst" &&
+						((xrdr.Name == "PhSimpleContextBdry" ||
+							xrdr.Name == "PhSimpleContextNC" ||
+							xrdr.Name == "PhSimpleContextSeg")))
+					{
+						fieldName = "FeatureStructure";
+					}
+					var flid = m_mdc.GetFieldId2(cmo.ClassID, fieldName, true);
 					var cpt = (CellarPropertyType)m_mdc.GetFieldType(flid);
-					var fsfi = new FieldInfo(cmo, flid, cpt, fNewObject, fi);
-					ReadReferenceLink(xrdr, fsfi, "dst");
+					string sVal = xrdr.GetAttribute(attributeName);
+					switch (cpt)
+					{
+						case CellarPropertyType.Boolean:
+							sVal = sVal.ToLowerInvariant();
+							bool fVal = sVal == "true" || sVal == "yes" || sVal == "t" || sVal == "y" || sVal == "1";
+							m_sda.SetBoolean(cmo.Hvo, flid, fVal);
+							break;
+						case CellarPropertyType.Integer:
+							int iVal = Int32.Parse(sVal);
+							m_sda.SetInt(cmo.Hvo, flid, iVal);
+							break;
+						case CellarPropertyType.ReferenceAtom:
+							var fsfi = new FieldInfo(cmo, flid, cpt, fNewObject, fi);
+							ReadReferenceLink(xrdr, fsfi, attributeName);
+							break;
+						default:
+							Debug.Assert(false);
+							break;
+					}
 				}
-				else
-				{
-					Debug.Assert(false);
-				}
-			}
-			if (xrdr.GetAttribute("Direction") != null)
-			{
-				attributeCount++;
-				ReadIntegerAttribute(xrdr, cmo, "Direction");
-			}
-			if (xrdr.GetAttribute("Disabled") != null)
-			{
-				attributeCount++;
-				var flid = m_mdc.GetFieldId2(cmo.ClassID, "Disabled", true);
-				string sVal = xrdr.GetAttribute("Disabled");
-				sVal = sVal.ToLowerInvariant();
-				bool fVal = sVal == "true" || sVal == "yes" || sVal == "t" || sVal == "y" || sVal == "1";
-				m_sda.SetBoolean(cmo.Hvo, flid, fVal);
-			}
-			if (xrdr.GetAttribute("Feature") != null)
-			{
-				attributeCount++;
-				ReadReferenceAttribute(xrdr, cmo, "Feature", fNewObject, fi);
-			}
-			if (xrdr.GetAttribute("Guid") != null)
-			{
-				// Only PhBdryMarker has a Guid.
-				// We ignore it, which causes a new Guid to be generated.
-				attributeCount++;
-			}
-			if (xrdr.GetAttribute("LeftContext") != null)
-			{
-				attributeCount++;
-				ReadReferenceAttribute(xrdr, cmo, "LeftContext", fNewObject, fi);
-			}
-			if (xrdr.GetAttribute("Maximum") != null)
-			{
-				attributeCount++;
-				ReadIntegerAttribute(xrdr, cmo, "Maximum");
-			}
-			if (xrdr.GetAttribute("Minimum") != null)
-			{
-				attributeCount++;
-				ReadIntegerAttribute(xrdr, cmo, "Minimum");
-			}
-			if (xrdr.GetAttribute("RightContext") != null)
-			{
-				attributeCount++;
-				ReadReferenceAttribute(xrdr, cmo, "RightContext", fNewObject, fi);
-			}
-			if (xrdr.GetAttribute("Type") != null)
-			{
-				attributeCount++;
-				ReadReferenceAttribute(xrdr, cmo, "Type", fNewObject, fi);
-			}
-			if (xrdr.GetAttribute("Value") != null)
-			{
-				attributeCount++;
-				ReadReferenceAttribute(xrdr, cmo, "Value", fNewObject, fi);
 			}
 			Debug.Assert(xrdr.AttributeCount == attributeCount);
 		}
 
-		private void ReadReferenceAttribute(XmlReader xrdr, ICmObject cmo, string attribute, bool fNewObject, FieldInfo fi)
-		{
-			var flid = m_mdc.GetFieldId2(cmo.ClassID, attribute, true);
-			var cpt = (CellarPropertyType)m_mdc.GetFieldType(flid);
-			var fsfi = new FieldInfo(cmo, flid, cpt, fNewObject, fi);
-			ReadReferenceLink(xrdr, fsfi, attribute);
-		}
-
-		private void ReadIntegerAttribute(XmlReader xrdr, ICmObject cmo, string attribute)
-		{
-			var flid = m_mdc.GetFieldId2(cmo.ClassID, attribute, true);
-			string sVal = xrdr.GetAttribute(attribute);
-			int iVal = Int32.Parse(sVal);
-			m_sda.SetInt(cmo.Hvo, flid, iVal);
-		}
-
-		private int LineNumber(XmlReader xrdr)
+	private int LineNumber(XmlReader xrdr)
 		{
 			if (xrdr != null)
 			{
@@ -1266,7 +1230,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			{
 				while (xrdr.IsEmptyElement && xrdr.GetAttribute("dst") == null)
 				{
-					// PhonologyServices uses a "dst" attribute on an empty element to represent a link.
+					// The Phonology format uses a "dst" attribute on an empty element to represent a link.
 					xrdr.Read();
 					xrdr.MoveToContent();
 				}
@@ -1842,7 +1806,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			// input value along with all the attributes.  Later, after everything has been
 			// imported, so that all references can be resolved to actual objects, we'll try
 			// to decipher all the pending reference links.
-			// NB: PhonologyServices uses a "dst" attribute instead of a "Link" element for links.
+			// NB: The Phonology format uses a "dst" attribute instead of a "Link" element for links.
 			if (xrdr.Name != "Link" && xrdr.GetAttribute("dst") == null && linkAttribute == null)
 			{
 				string sMsg = AppStrings.ksExpectedLink;

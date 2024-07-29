@@ -415,20 +415,11 @@ namespace SIL.LCModel.DomainServices
 				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Amharic Fidel root-based\\Amharic Fidel root-based.fwdata");
 		}
 
-		[Test]
-		public void TestQuechua()
+		public void TestAyta()
 		{
 			TestProject(
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\QuechuaMark",
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\QuechuaMark\\QuechuaMark.fwdata");
-		}
-
-		[Test]
-		public void TestSpanish()
-		{
-			TestProject(
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Spanish-GenerateWords-Experiment",
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Spanish-GenerateWords-Experiment\\Spanish-GenerateWords-Experiment.fwdata");
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Ayta-Mag-Indi",
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Ayta-Mag-Indi\\Ayta-Mag-Indi.fwdata");
 		}
 
 		[Test]
@@ -461,6 +452,22 @@ namespace SIL.LCModel.DomainServices
 			TestProject(
 				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Puguli (shared)",
 				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Puguli (shared)\\Puguli (shared).fwdata");
+		}
+
+		[Test]
+		public void TestQuechua()
+		{
+			TestProject(
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\QuechuaMark",
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\QuechuaMark\\QuechuaMark.fwdata");
+		}
+
+		[Test]
+		public void TestSpanish()
+		{
+			TestProject(
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Spanish-GenerateWords-Experiment",
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Spanish-GenerateWords-Experiment\\Spanish-GenerateWords-Experiment.fwdata");
 		}
 
 		[Test]
