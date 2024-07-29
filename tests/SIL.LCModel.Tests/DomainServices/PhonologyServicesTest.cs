@@ -120,6 +120,24 @@ namespace SIL.LCModel.DomainServices
 			}
 		}
 
+		private void TestXml(string xml, string vernWs)
+		{
+			var xdoc = XDocument.Parse(xml);
+			NonUndoableUnitOfWorkHelper.Do(m_cache.ActionHandlerAccessor, () =>
+			{
+				m_cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem =
+					m_cache.ServiceLocator.WritingSystemManager.Get(vernWs);
+			});
+			var services = new PhonologyServices(m_cache);
+			using (var rdr = new StringReader(xml))
+			{
+				services.ImportPhonologyFromXml(rdr);
+				var xdoc2 = services.ExportPhonologyAsXml();
+				var xml2 = xdoc2.ToString();
+				TestXml(xdoc, xdoc2);
+			}
+		}
+
 		private void TestXml(XDocument xdoc, XDocument xdoc2)
 		{
 			IDictionary<string, string> dstMap = new Dictionary<string, string>();
@@ -462,12 +480,834 @@ namespace SIL.LCModel.DomainServices
 				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\QuechuaMark\\QuechuaMark.fwdata");
 		}
 
+		string SpanishPhonology = @"<Phonology Version=""1"" DefaultVernWs=""es"">
+  <PhPhonData Id=""11847"">
+    <Environments>
+      <PhEnvironment Id=""379"" LeftContext=""0"" RightContext=""0"">
+        <StringRepresentation>
+          <Str>
+            <Run ws=""es"" underline=""none"">/n_</Run>
+          </Str>
+        </StringRepresentation>
+      </PhEnvironment>
+      <PhEnvironment Id=""7858"" LeftContext=""0"" RightContext=""0"">
+        <StringRepresentation>
+          <Str>
+            <Run ws=""es"" underline=""none"">/[C]_</Run>
+          </Str>
+        </StringRepresentation>
+      </PhEnvironment>
+    </Environments>
+    <NaturalClasses>
+      <PhNCSegments Id=""12043"">
+        <Name>
+          <AUni ws=""en"">Consonants</AUni>
+        </Name>
+        <Description>
+          <AStr ws=""en"">
+            <Run ws=""en"">Consonants</Run>
+          </AStr>
+        </Description>
+        <Abbreviation>
+          <AUni ws=""en"">C</AUni>
+        </Abbreviation>
+        <Segments dst=""136"" />
+        <Segments dst=""4583"" />
+        <Segments dst=""5849"" />
+        <Segments dst=""9618"" />
+        <Segments dst=""12056"" />
+        <Segments dst=""12057"" />
+        <Segments dst=""12059"" />
+        <Segments dst=""12060"" />
+        <Segments dst=""12062"" />
+        <Segments dst=""12063"" />
+        <Segments dst=""12064"" />
+        <Segments dst=""12065"" />
+        <Segments dst=""12066"" />
+        <Segments dst=""12068"" />
+        <Segments dst=""12069"" />
+        <Segments dst=""12070"" />
+        <Segments dst=""12087"" />
+        <Segments dst=""12089"" />
+        <Segments dst=""12090"" />
+        <Segments dst=""12091"" />
+        <Segments dst=""12092"" />
+        <Segments dst=""12093"" />
+        <Segments dst=""11391"" />
+      </PhNCSegments>
+      <PhNCSegments Id=""12044"">
+        <Name>
+          <AUni ws=""en"">Vowels</AUni>
+        </Name>
+        <Description>
+          <AStr ws=""en"">
+            <Run ws=""en"">Vowels</Run>
+          </AStr>
+        </Description>
+        <Abbreviation>
+          <AUni ws=""en"">V</AUni>
+        </Abbreviation>
+        <Segments dst=""12055"" />
+        <Segments dst=""12058"" />
+        <Segments dst=""12061"" />
+        <Segments dst=""12067"" />
+        <Segments dst=""12088"" />
+      </PhNCSegments>
+    </NaturalClasses>
+    <Contexts />
+    <PhonemeSets>
+      <PhPhonemeSet Id=""11848"">
+        <Name>
+          <AUni ws=""en"">Main phoneme set</AUni>
+        </Name>
+        <Description>
+          <AStr ws=""en"">
+            <Run ws=""en"">Main phoneme set</Run>
+          </AStr>
+        </Description>
+        <Phonemes>
+          <PhPhoneme Id=""136"">
+            <Name>
+              <AUni ws=""es"">ñ</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">Voiced palatal nasal</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""1399"">
+                <Representation>
+                  <AUni ws=""es"">ñ</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en"">ɲ</Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""4583"">
+            <Name>
+              <AUni ws=""es"">rr</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">Voiced alveolar trill</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""8552"">
+                <Representation>
+                  <AUni ws=""es"">rr</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en"">r</Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""5849"">
+            <Name>
+              <AUni ws=""es"">ch</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">Voiceless alveolar affricate</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""7516"">
+                <Representation>
+                  <AUni ws=""es"">ch</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en"">tʃ</Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""9618"">
+            <Name>
+              <AUni ws=""es"">y</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">Voiced palatal approximant</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""6345"">
+                <Representation>
+                  <AUni ws=""es"">y</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en"">j</Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12055"">
+            <Name>
+              <AUni ws=""en"">a</AUni>
+              <AUni ws=""es"">a</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">low central unrounded vowel</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11853"">
+                <Representation>
+                  <AUni ws=""en"">a</AUni>
+                  <AUni ws=""es"">a</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12056"">
+            <Name>
+              <AUni ws=""en"">b</AUni>
+              <AUni ws=""es"">b</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">voiced bilabial stop</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11857"">
+                <Representation>
+                  <AUni ws=""en"">b</AUni>
+                  <AUni ws=""es"">b</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12057"">
+            <Name>
+              <AUni ws=""en"">d</AUni>
+              <AUni ws=""es"">d</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">voiced alveolar stop</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11859"">
+                <Representation>
+                  <AUni ws=""en"">d</AUni>
+                  <AUni ws=""es"">d</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12058"">
+            <Name>
+              <AUni ws=""en"">e</AUni>
+              <AUni ws=""es"">e</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">mid front unrounded vowel</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11852"">
+                <Representation>
+                  <AUni ws=""en"">e</AUni>
+                  <AUni ws=""es"">e</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12059"">
+            <Name>
+              <AUni ws=""en"">f</AUni>
+              <AUni ws=""es"">f</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">voiceless labiodental fricative</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11862"">
+                <Representation>
+                  <AUni ws=""en"">f</AUni>
+                  <AUni ws=""es"">f</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12060"">
+            <Name>
+              <AUni ws=""en"">g</AUni>
+              <AUni ws=""es"">g</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">voiced velar stop</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11861"">
+                <Representation>
+                  <AUni ws=""en"">g</AUni>
+                  <AUni ws=""es"">g</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12061"">
+            <Name>
+              <AUni ws=""en"">i</AUni>
+              <AUni ws=""es"">i</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">high front unrounded vowel</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11851"">
+                <Representation>
+                  <AUni ws=""en"">i</AUni>
+                  <AUni ws=""es"">i</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12062"">
+            <Name>
+              <AUni ws=""en"">j</AUni>
+              <AUni ws=""es"">j</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">palatal approximant</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11873"">
+                <Representation>
+                  <AUni ws=""en"">j</AUni>
+                  <AUni ws=""es"">j</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12063"">
+            <Name>
+              <AUni ws=""en"">k</AUni>
+              <AUni ws=""es"">k</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">voiceless velar stop</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11860"">
+                <Representation>
+                  <AUni ws=""en"">k</AUni>
+                  <AUni ws=""es"">k</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12064"">
+            <Name>
+              <AUni ws=""en"">l</AUni>
+              <AUni ws=""es"">l</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">alveolar lateral</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11870"">
+                <Representation>
+                  <AUni ws=""en"">l</AUni>
+                  <AUni ws=""es"">l</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12065"">
+            <Name>
+              <AUni ws=""en"">m</AUni>
+              <AUni ws=""es"">m</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">bilabial nasal</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11867"">
+                <Representation>
+                  <AUni ws=""en"">m</AUni>
+                  <AUni ws=""es"">m</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12066"">
+            <Name>
+              <AUni ws=""en"">n</AUni>
+              <AUni ws=""es"">n</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">alveolar nasal</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11868"">
+                <Representation>
+                  <AUni ws=""en"">n</AUni>
+                  <AUni ws=""es"">n</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12067"">
+            <Name>
+              <AUni ws=""en"">o</AUni>
+              <AUni ws=""es"">o</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">mid back rounded vowel</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11854"">
+                <Representation>
+                  <AUni ws=""en"">o</AUni>
+                  <AUni ws=""es"">o</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12068"">
+            <Name>
+              <AUni ws=""en"">p</AUni>
+              <AUni ws=""es"">p</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">voiceless bilabial stop</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11856"">
+                <Representation>
+                  <AUni ws=""en"">p</AUni>
+                  <AUni ws=""es"">p</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12069"">
+            <Name>
+              <AUni ws=""en"">r</AUni>
+              <AUni ws=""es"">r</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">alveolar flap</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11871"">
+                <Representation>
+                  <AUni ws=""en"">r</AUni>
+                  <AUni ws=""es"">r</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12070"">
+            <Name>
+              <AUni ws=""en"">s</AUni>
+              <AUni ws=""es"">s</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">voiceless alveolar fricative</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11864"">
+                <Representation>
+                  <AUni ws=""en"">s</AUni>
+                  <AUni ws=""es"">s</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12087"">
+            <Name>
+              <AUni ws=""en"">t</AUni>
+              <AUni ws=""es"">t</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">voiceless alveolar stop</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11858"">
+                <Representation>
+                  <AUni ws=""en"">t</AUni>
+                  <AUni ws=""es"">t</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12088"">
+            <Name>
+              <AUni ws=""en"">u</AUni>
+              <AUni ws=""es"">u</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">high back rounded vowel</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11855"">
+                <Representation>
+                  <AUni ws=""en"">u</AUni>
+                  <AUni ws=""es"">u</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12089"">
+            <Name>
+              <AUni ws=""en"">v</AUni>
+              <AUni ws=""es"">v</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">voiced labiodental fricative</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11863"">
+                <Representation>
+                  <AUni ws=""en"">v</AUni>
+                  <AUni ws=""es"">v</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12090"">
+            <Name>
+              <AUni ws=""en"">w</AUni>
+              <AUni ws=""es"">w</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">labiovelar approximant</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11872"">
+                <Representation>
+                  <AUni ws=""en"">w</AUni>
+                  <AUni ws=""es"">w</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12091"">
+            <Name>
+              <AUni ws=""en"">x</AUni>
+              <AUni ws=""es"">x</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">voiceless velar fricative</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11866"">
+                <Representation>
+                  <AUni ws=""en"">x</AUni>
+                  <AUni ws=""es"">x</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12092"">
+            <Name>
+              <AUni ws=""en"">z</AUni>
+              <AUni ws=""es"">z</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">voiced alveolar fricative</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11865"">
+                <Representation>
+                  <AUni ws=""en"">z</AUni>
+                  <AUni ws=""es"">z</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en""></Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""12093"">
+            <Name>
+              <AUni ws=""en"">ŋ</AUni>
+              <AUni ws=""es"">ŋ</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">velar nasal</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""11869"">
+                <Representation>
+                  <AUni ws=""en"">ŋ</AUni>
+                  <AUni ws=""es"">ng</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""es"">ŋ</Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+          <PhPhoneme Id=""11391"">
+            <Name>
+              <AUni ws=""es"">q</AUni>
+            </Name>
+            <Description>
+              <AStr ws=""en"">
+                <Run ws=""en"">Voiceless velar plosive</Run>
+              </AStr>
+            </Description>
+            <Codes>
+              <PhCode Id=""2380"">
+                <Representation>
+                  <AUni ws=""es"">q</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+            <BasicIPASymbol>
+              <Str>
+                <Run ws=""en"">k</Run>
+              </Str>
+            </BasicIPASymbol>
+            <PhonologicalFeatures />
+          </PhPhoneme>
+        </Phonemes>
+        <BoundaryMarkers>
+          <PhBdryMarker Id=""2622"" Guid=""3bde17ce-e39a-4bae-8a5c-a8d96fd4cb56"">
+            <Name>
+              <AUni ws=""en"">+</AUni>
+              <AUni ws=""es"">+</AUni>
+            </Name>
+            <Codes>
+              <PhCode Id=""11850"">
+                <Representation>
+                  <AUni ws=""en"">+</AUni>
+                  <AUni ws=""es"">+</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+          </PhBdryMarker>
+          <PhBdryMarker Id=""5736"" Guid=""7db635e0-9ef3-4167-a594-12551ed89aaa"">
+            <Name>
+              <AUni ws=""en"">#</AUni>
+              <AUni ws=""es"">#</AUni>
+            </Name>
+            <Codes>
+              <PhCode Id=""11849"">
+                <Representation>
+                  <AUni ws=""en"">#</AUni>
+                  <AUni ws=""es"">#</AUni>
+                </Representation>
+              </PhCode>
+            </Codes>
+          </PhBdryMarker>
+        </BoundaryMarkers>
+      </PhPhonemeSet>
+    </PhonemeSets>
+    <FeatureConstraints />
+    <PhonRules />
+    <PhIters />
+    <PhIters />
+    <PhIters />
+    <PhIters />
+    <PhIters />
+    <PhIters />
+  </PhPhonData>
+  <PhFeatureSystem Id=""12049"">
+    <Types />
+    <Features />
+  </PhFeatureSystem>
+</Phonology>";
+
 		[Test]
 		public void TestSpanish()
 		{
-			TestProject(
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Spanish-GenerateWords-Experiment",
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Spanish-GenerateWords-Experiment\\Spanish-GenerateWords-Experiment.fwdata");
+			TestXml(SpanishPhonology, "es");
 		}
 
 		[Test]

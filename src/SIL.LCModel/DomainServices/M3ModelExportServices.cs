@@ -96,11 +96,14 @@ namespace SIL.LCModel.DomainServices
 		public static XDocument ExportPhonology(ILangProject languageProject)
 		{
 			if (languageProject == null) throw new ArgumentNullException("languageProject");
+			string vernWs = languageProject.Cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem.IcuLocale;
 
 			const Normalizer.UNormalizationMode mode = Normalizer.UNormalizationMode.UNORM_NFD;
 			var doc = new XDocument(
 				new XDeclaration("1.0", "utf-8", "yes"),
 				new XElement("Phonology",
+					new XAttribute("Version", PhonologyServices.VersionId),
+					new XAttribute("DefaultVernWs", vernWs),
 					ExportPhonologicalData(languageProject.PhonologicalDataOA, mode, useMultiStrings: true, phonology: true),
 					ExportFeatureSystem(languageProject.PhFeatureSystemOA, "PhFeatureSystem", mode, useMultiStrings: true)
 				)

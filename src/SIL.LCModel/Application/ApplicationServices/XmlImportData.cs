@@ -287,6 +287,12 @@ namespace SIL.LCModel.Application.ApplicationServices
 				{
 					// We are reading data in the Phonology format.
 					m_phonology = true;
+					string versionId = xrdr.GetAttribute("Version");
+					if (versionId != null && versionId != PhonologyServices.VersionId)
+						throw new InvalidDataException("version");
+					string vernWs = xrdr.GetAttribute("DefaultVernWs");
+					if (vernWs != null && vernWs != m_cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem.IcuLocale)
+						throw new InvalidDataException("vernWs");
 					xrdr.Read();
 					xrdr.MoveToContent();
 				}

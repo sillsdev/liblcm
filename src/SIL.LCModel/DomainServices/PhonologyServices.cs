@@ -22,6 +22,8 @@ namespace SIL.LCModel.DomainServices
 			m_wsVernId = wsVernId;
 		}
 
+		public static string VersionId = "1";
+
 		LcmCache Cache { get; set; }
 
 		private readonly string m_wsVernId;
@@ -50,6 +52,7 @@ namespace SIL.LCModel.DomainServices
 		/// Import phonology from the give XML file.
 		/// </summary>
 		/// <param name="sFilename"></param>
+		/// <exception cref="InvalidDataException">invalid version ("version") or vernacular writing system ("vernWs")</exception>
 		public void ImportPhonologyFromXml(string sFilename)
 		{
 			var streamReader = new StreamReader(sFilename, Encoding.UTF8);
