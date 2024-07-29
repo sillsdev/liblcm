@@ -289,10 +289,19 @@ namespace SIL.LCModel.Application.ApplicationServices
 					m_phonology = true;
 					string versionId = xrdr.GetAttribute("Version");
 					if (versionId != null && versionId != PhonologyServices.VersionId)
-						throw new InvalidDataException("version");
+					{
+						string sMsg = String.Format(AppStrings.ksWrongVersion, m_sFilename, PhonologyServices.VersionId);
+						LogMessage(sMsg, LineNumber(xrdr));
+						throw new Exception(sMsg);
+					}
 					string vernWs = xrdr.GetAttribute("DefaultVernWs");
-					if (vernWs != null && vernWs != m_cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem.IcuLocale)
-						throw new InvalidDataException("vernWs");
+					string cacheVernWs = m_cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem.IcuLocale;
+					if (vernWs != null && vernWs != cacheVernWs)
+					{
+						string sMsg = String.Format(AppStrings.ksWrongVernWs, m_sFilename, cacheVernWs);
+						LogMessage(sMsg, LineNumber(xrdr));
+						throw new Exception(sMsg);
+					}
 					xrdr.Read();
 					xrdr.MoveToContent();
 				}
@@ -1249,17 +1258,10 @@ namespace SIL.LCModel.Application.ApplicationServices
 				CellarPropertyType cpt;
 				ICmObject realOwner = null;
 				FieldInfo fi = null;
-				if (sField == "PhonologicalFeatures")
+				if (sField == "PhonologicalFeatures" && cmoOwner.ClassName == "PhPhoneme")
 					sField = "Features";
 				else if (sField == "FeatureConstraints" && cmoOwner.ClassName == "PhPhonData")
 					sField = "FeatConstraints";
-				else if (sField == "PhonRuleFeats")
-				{
-					// PhPhonData.PhonRuleFeats is an ICmPossibilityList
-					// but only the Possibilities are exported.
-					sField = "Possibilities";
-					cmoOwner = ((PhPhonData)cmoOwner).PhonRuleFeatsOA;
-				}
 				if (cmoOwner.ClassID == LexDbTags.kClassId && sField == "Entries")
 				{
 					flid = 0; // no actual owning sequence.
