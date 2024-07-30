@@ -425,61 +425,6 @@ namespace SIL.LCModel.DomainServices
 			Assert.AreEqual(tsString.ToString(), tsString2.ToString());
 		}
 
-		[Test]
-		public void TestAmharic()
-		{
-			TestProject(
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Amharic Fidel root-based",
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Amharic Fidel root-based\\Amharic Fidel root-based.fwdata");
-		}
-
-		public void TestAyta()
-		{
-			TestProject(
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Ayta-Mag-Indi",
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Ayta-Mag-Indi\\Ayta-Mag-Indi.fwdata");
-		}
-
-		[Test]
-		public void TestBlxFlex()
-		{
-			TestProject(
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\blx-flex",
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\blx-flex\\blx-flex.fwdata");
-		}
-
-		[Test]
-		public void TestIkuzu()
-		{
-			TestProject(
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Ikizu",
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Ikizu\\Ikizu.fwdata");
-		}
-
-		[Test]
-		public void TestKuni()
-		{
-			TestProject(
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\KVG_Kuni",
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\KVG_Kuni\\KVG_Kuni.fwdata");
-		}
-
-		[Test]
-		public void TestPuguli()
-		{
-			TestProject(
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Puguli (shared)",
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Puguli (shared)\\Puguli (shared).fwdata");
-		}
-
-		[Test]
-		public void TestQuechua()
-		{
-			TestProject(
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\QuechuaMark",
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\QuechuaMark\\QuechuaMark.fwdata");
-		}
-
 		string SpanishPhonology = @"<Phonology Version=""1"" DefaultVernWs=""es"">
   <PhPhonData Id=""11847"">
     <Environments>
