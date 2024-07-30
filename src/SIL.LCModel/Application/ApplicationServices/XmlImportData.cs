@@ -291,7 +291,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 					if (versionId != null && versionId != PhonologyServices.VersionId)
 					{
 						string sMsg = String.Format(AppStrings.ksWrongVersion, m_sFilename, PhonologyServices.VersionId, versionId);
-						LogMessage(sMsg, LineNumber(xrdr));
 						throw new Exception(sMsg);
 					}
 					string vernWs = xrdr.GetAttribute("DefaultVernWs");
@@ -299,7 +298,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 					if (vernWs != null && vernWs != cacheVernWs)
 					{
 						string sMsg = String.Format(AppStrings.ksWrongVernWs, m_sFilename, cacheVernWs, vernWs);
-						LogMessage(sMsg, LineNumber(xrdr));
 						throw new Exception(sMsg);
 					}
 					xrdr.Read();
