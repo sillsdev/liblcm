@@ -489,12 +489,26 @@ namespace SIL.LCModel.Utils
 			try
 			{
 				// will throw in .net framework, but not newer versions
+				_ = Path.GetFullPath(filename);
 				var name = Path.GetFileName(filename);
-				if (name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+				var invalidFileNameChars = Path.GetInvalidFileNameChars();
+				if (name.IndexOfAny(invalidFileNameChars) >= 0)
 					return false;
 				var directoryPath = filename.Substring(0, filename.Length - name.Length);
 				if (directoryPath.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
 					return false;
+				if (Platform.IsWindows)
+				{
+					// some paths like "C:\bla" are valid, but not C\:bla, we want to catch those by excluding the drive letter and checking for invalid file name chars in each directory
+
+					//trim off the drive letter if it exists
+					directoryPath = directoryPath.Substring(Path.GetPathRoot(directoryPath).Length);
+					//each directory must be a valid file name. Using both / and \ because it could be a mixed path which usually works fine
+					if (directoryPath.Split('\\', '/').Any(dir => dir.IndexOfAny(invalidFileNameChars) >= 0))
+					{
+						return false;
+					}
+				}
 			}
 			catch
 			{
