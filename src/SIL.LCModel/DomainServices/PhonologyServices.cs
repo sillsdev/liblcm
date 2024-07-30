@@ -54,8 +54,10 @@ namespace SIL.LCModel.DomainServices
 		/// <param name="sFilename"></param>
 		public void ImportPhonologyFromXml(string sFilename)
 		{
-			var streamReader = new StreamReader(sFilename, Encoding.UTF8);
-			ImportPhonologyFromXml(streamReader);
+			// Import the Phonology format using ImportData.
+			// ImportData has been extended to accept the Phonology format.
+			XmlImportData xid = new XmlImportData(Cache, true);
+			xid.ImportData(sFilename, null);
 		}
 
 		/// <summary>

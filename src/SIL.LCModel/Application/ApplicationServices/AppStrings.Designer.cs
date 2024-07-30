@@ -639,7 +639,7 @@ namespace SIL.LCModel.Application.ApplicationServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Warning: {0} has the wrong default vernacular writing system (expecting {1})..
+        ///   Looks up a localized string similar to Warning: {0} has the wrong default vernacular writing system (expecting {1}, was {2})..
         /// </summary>
         internal static string ksWrongVernWs {
             get {
@@ -648,7 +648,7 @@ namespace SIL.LCModel.Application.ApplicationServices {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Warning: {0} has an invalid version number (expecting {1})..
+        ///   Looks up a localized string similar to Warning: {0} has an invalid version number (expecting {1}, was {2})..
         /// </summary>
         internal static string ksWrongVersion {
             get {

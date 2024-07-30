@@ -319,9 +319,9 @@
     <comment>Shown during import. The current entry is supposed to be shown as a subentry under "{1}".</comment>
   </data>
   <data name="ksWrongVernWs" xml:space="preserve">
-    <value>Warning: {0} has the wrong default vernacular writing system (expecting {1}).</value>
+    <value>Warning: {0} has the wrong default vernacular writing system (expecting {1}, was {2}).</value>
   </data>
   <data name="ksWrongVersion" xml:space="preserve">
-    <value>Warning: {0} has an invalid version number (expecting {1}).</value>
+    <value>Warning: {0} has an invalid version number (expecting {1}, was {2}).</value>
   </data>
 </root>

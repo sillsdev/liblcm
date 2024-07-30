@@ -290,7 +290,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 					string versionId = xrdr.GetAttribute("Version");
 					if (versionId != null && versionId != PhonologyServices.VersionId)
 					{
-						string sMsg = String.Format(AppStrings.ksWrongVersion, m_sFilename, PhonologyServices.VersionId);
+						string sMsg = String.Format(AppStrings.ksWrongVersion, m_sFilename, PhonologyServices.VersionId, versionId);
 						LogMessage(sMsg, LineNumber(xrdr));
 						throw new Exception(sMsg);
 					}
@@ -298,7 +298,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 					string cacheVernWs = m_cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem.IcuLocale;
 					if (vernWs != null && vernWs != cacheVernWs)
 					{
-						string sMsg = String.Format(AppStrings.ksWrongVernWs, m_sFilename, cacheVernWs);
+						string sMsg = String.Format(AppStrings.ksWrongVernWs, m_sFilename, cacheVernWs, vernWs);
 						LogMessage(sMsg, LineNumber(xrdr));
 						throw new Exception(sMsg);
 					}
