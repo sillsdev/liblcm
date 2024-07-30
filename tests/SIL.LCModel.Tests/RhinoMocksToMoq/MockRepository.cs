@@ -17,6 +17,8 @@ namespace Rhino.Mocks
         public static T GenerateMock<T>(MockBehavior behavior = MockBehavior.Default) where T : class
         {
             var mock = new Mock<T>(behavior);
+			mock.DefaultValueProvider = DefaultValueProvider.Empty;
+            mock.SetupAllProperties();
 			return mock.Object;
         }
     }
