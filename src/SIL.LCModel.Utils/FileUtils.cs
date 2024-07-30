@@ -494,6 +494,7 @@ namespace SIL.LCModel.Utils
 				var invalidFileNameChars = Path.GetInvalidFileNameChars();
 				if (name.IndexOfAny(invalidFileNameChars) >= 0)
 					return false;
+				if (name == filename) return true;
 				var directoryPath = filename.Substring(0, filename.Length - name.Length);
 				if (directoryPath.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
 					return false;
