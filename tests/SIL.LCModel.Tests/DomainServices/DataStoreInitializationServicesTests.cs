@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Moq;
 using NUnit.Framework;
 using Rhino.Mocks;
 using SIL.LCModel.Core.KernelInterfaces;
@@ -12,6 +13,7 @@ using SIL.LCModel.Core.Scripture;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.DomainImpl;
 using SIL.LCModel.Utils;
+using MockRepository = Rhino.Mocks.MockRepository;
 
 namespace SIL.LCModel.DomainServices
 {
@@ -320,7 +322,7 @@ namespace SIL.LCModel.DomainServices
 			GetBtDelegate getBtDelegate = () =>
 				m_para.TranslationsOC.FirstOrDefault(trans => trans.TypeRA != null &&
 					trans.TypeRA.Guid == CmPossibilityTags.kguidTranBackTranslation);
-			m_para.Stub(p => p.GetBT()).Do(getBtDelegate);
+			Mock.Get(m_para).Setup(p => p.GetBT()).Returns(getBtDelegate);
 		}
 		#endregion
 
