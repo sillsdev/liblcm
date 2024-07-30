@@ -473,16 +473,8 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		public static void AssertValidFilePath(string filename)
 		{
-			try
-			{
-				new FileInfo(filename);
-			}
-			catch (SecurityException)
-			{
-			}
-			catch (UnauthorizedAccessException)
-			{
-			}
+			if (!IsFilePathValid(filename))
+				throw new ArgumentException("Illegal characters in path.");
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -492,11 +484,19 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		public static bool IsFilePathValid(string filename)
 		{
+			if (filename == null)
+				return false;
 			try
 			{
-				AssertValidFilePath(filename);
+				// will throw in .net framework, but not newer versions
+				var name = Path.GetFileName(filename);
+				if (name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+					return false;
+				var directoryPath = filename.Substring(0, filename.Length - name.Length);
+				if (directoryPath.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
+					return false;
 			}
-			catch (Exception)
+			catch
 			{
 				return false;
 			}
@@ -936,7 +936,7 @@ namespace SIL.LCModel.Utils
 		public static string ChangeWindowsPathIfLinuxPreservingPrefix(string windowsPath,
 			string prefix)
 		{
-			if (windowsPath == null || prefix == null || !windowsPath.StartsWith(prefix))
+			if (windowsPath == null || prefix == null || !windowsPath.StartsWith(prefix, StringComparison.Ordinal))
 				return ChangeWindowsPathIfLinux(windowsPath);
 			// Preserve prefix
 			windowsPath = windowsPath.Substring(prefix.Length);
@@ -975,7 +975,7 @@ namespace SIL.LCModel.Utils
 		public static string ChangeLinuxPathIfWindowsPreservingPrefix(string linuxPath,
 			string prefix)
 		{
-			if (linuxPath == null || prefix == null || !linuxPath.StartsWith(prefix))
+			if (linuxPath == null || prefix == null || !linuxPath.StartsWith(prefix, StringComparison.Ordinal))
 				return ChangeLinuxPathIfWindows(linuxPath);
 			// Preserve prefix
 			linuxPath = linuxPath.Substring(prefix.Length);
