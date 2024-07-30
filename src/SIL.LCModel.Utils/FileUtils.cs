@@ -319,7 +319,7 @@ namespace SIL.LCModel.Utils
 			byte[] fileHash2;
 
 			// compute the hashes for comparison
-			using(var hash = HashAlgorithm.Create())
+			using(var hash = HashAlgorithm.Create("SHA1"))
 			using(Stream fileStream1 = OpenStreamForRead(file1),
 							 fileStream2 = OpenStreamForRead(file2))
 			{
