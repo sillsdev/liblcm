@@ -319,10 +319,10 @@ namespace SIL.LCModel.DomainServices
 			m_para.Stub(p => p.Id).Return(paraId);
 			m_para.Contents = TsStringUtils.EmptyString(Cache.DefaultVernWs);
 
-			GetBtDelegate getBtDelegate = () =>
+			Func<ICmTranslation> getBtDelegate = () =>
 				m_para.TranslationsOC.FirstOrDefault(trans => trans.TypeRA != null &&
 					trans.TypeRA.Guid == CmPossibilityTags.kguidTranBackTranslation);
-			Mock.Get(m_para).Setup(p => p.GetBT()).Returns(getBtDelegate);
+			m_para.Stub(p => p.GetBT()).Do(getBtDelegate);
 		}
 		#endregion
 
