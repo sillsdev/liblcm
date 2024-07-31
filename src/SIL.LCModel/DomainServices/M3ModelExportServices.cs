@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using Icu;
-using Microsoft.Practices.ServiceLocation;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Core.WritingSystems;
@@ -344,7 +343,7 @@ namespace SIL.LCModel.DomainServices
 		/// <summary>
 		/// Export the full lexicon when exporting both grammar and lexicon.
 		/// </summary>
-		private static XElement ExportLexiconFull(IServiceLocator servLoc, Normalizer.UNormalizationMode mode)
+		private static XElement ExportLexiconFull(IServiceProvider servLoc, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("Lexicon",
 					ExportEntries(servLoc.GetInstance<ILexEntryRepository>()),
@@ -378,7 +377,7 @@ namespace SIL.LCModel.DomainServices
 							select ExportItemAsReference(lexEntryType, "LexEntryType"))));
 		}
 
-		private static XElement ExportMsas(IServiceLocator servLoc)
+		private static XElement ExportMsas(IServiceProvider servLoc)
 		{
 			return new XElement("MorphoSyntaxAnalyses",
 				from stemMsa in servLoc.GetInstance<IMoStemMsaRepository>().AllInstances()
@@ -436,7 +435,7 @@ namespace SIL.LCModel.DomainServices
 					ExportBestAnalysis(sense.Definition, "Definition", mode)));
 		}
 
-		private static XElement ExportAllomorphs(IServiceLocator servLoc, Normalizer.UNormalizationMode mode)
+		private static XElement ExportAllomorphs(IServiceProvider servLoc, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("Allomorphs",
 				from stemAllo in servLoc.GetInstance<IMoStemAllomorphRepository>().AllInstances()
