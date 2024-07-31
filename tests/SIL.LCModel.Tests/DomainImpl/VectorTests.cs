@@ -396,11 +396,11 @@ namespace SIL.LCModel.DomainImpl
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the CopyTo method.
+		/// Tests the CopyTo LcmList method.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void CopyTo_OneItemInLongListTest()
+		public void CopyTo_LcmList_OneItemInLongListTest()
 		{
 			ILcmServiceLocator servLoc = Cache.ServiceLocator;
 			IScrBookFactory bookFact = servLoc.GetInstance<IScrBookFactory>();
@@ -420,11 +420,35 @@ namespace SIL.LCModel.DomainImpl
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
+		/// Tests the CopyTo LcmSet method.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void CopyTo_LcmSet_OneItemInLongListTest()
+		{
+			ILcmServiceLocator servLoc = Cache.ServiceLocator;
+			IScrDraftFactory draftFactory = servLoc.GetInstance<IScrDraftFactory>();
+
+			// Setup the source sequence using the drafts collection.
+			IScrDraft draft0 = draftFactory.Create("draft");
+
+			IScrDraft[] draftArray = new IScrDraft[5];
+			m_scr.ArchivedDraftsOC.CopyTo(draftArray, 3);
+
+			Assert.IsNull(draftArray[0]);
+			Assert.IsNull(draftArray[1]);
+			Assert.IsNull(draftArray[2]);
+			Assert.AreEqual(draft0, draftArray[3]);
+			Assert.IsNull(draftArray[4]);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
 		/// Tests the CopyTo method when we are copying into a one-item list.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void CopyTo_OneItemInOneItemListTest()
+		public void CopyTo_LcmList_OneItemInOneItemListTest()
 		{
 			ILcmServiceLocator servLoc = Cache.ServiceLocator;
 			IScrBookFactory bookFact = servLoc.GetInstance<IScrBookFactory>();
@@ -440,16 +464,50 @@ namespace SIL.LCModel.DomainImpl
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
+		/// Tests the CopyTo method when we are copying into a one-item set.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void CopyTo_LcmSet_OneItemInOneItemListTest()
+		{
+			ILcmServiceLocator servLoc = Cache.ServiceLocator;
+			IScrDraftFactory draftFactory = servLoc.GetInstance<IScrDraftFactory>();
+
+			// Setup the source sequence using the drafts collection.
+			IScrDraft draft0 = draftFactory.Create("draft");
+
+			IScrDraft[] draftArray = new IScrDraft[1];
+			m_scr.ArchivedDraftsOC.CopyTo(draftArray, 0);
+
+			Assert.AreEqual(draft0, draftArray[0]);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
 		/// Tests the CopyTo method when we are copying no items into an empty list.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void CopyTo_NoItemsInEmptyItemListTest()
+		public void CopyTo_LcmList_NoItemsInEmptyItemListTest()
 		{
 			ILcmServiceLocator servLoc = Cache.ServiceLocator;
 
 			IScrBook[] bookArray = new IScrBook[0];
 			m_scr.ScriptureBooksOS.CopyTo(bookArray, 0);
+			// This test makes sure that an exception is not thrown when the array is empty.
+			// This fixes creating a new List<> when giving a LcmVector as the parameter.
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the CopyTo method when we are copying no items into an empty set.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void CopyTo_LcmSet_NoItemsInEmptyItemListTest()
+		{
+			IScrDraft[] draftArray = new IScrDraft[0];
+			m_scr.ArchivedDraftsOC.CopyTo(draftArray, 0);
 			// This test makes sure that an exception is not thrown when the array is empty.
 			// This fixes creating a new List<> when giving a LcmVector as the parameter.
 		}

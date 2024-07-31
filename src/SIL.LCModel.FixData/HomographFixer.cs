@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2018 SIL International
+// Copyright (c) 2012-2018 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -100,6 +100,10 @@ namespace SIL.LCModel.FixData
 		{
 			base.FinalFixerInitialization(owners, guids, parentToOwnedObjsur, rtElementsToDelete); // Sets base class member variables
 
+			// Filter the entriesWithCitationForm to only include those that match the homograph writing system.
+			var relevantCitationEntries = entriesWithCitationForm.Where(kvp =>
+				kvp.Value.Elements("AUni").Any(e => e.Attribute("ws")?.Value == m_homographWs)).ToDictionary(kv => kv.Key, kv => kv.Value);
+
 			// Create a dictionary with the Form and MorphType guid as the key and a list of ownerguid's as the value.  This
 			// will show us which LexEntries should have homograph numbers.  If the list of ownerguids has only one entry then
 			// it's homograph number should be zero. If the list of owerguids has more than one guid then the LexEntries
@@ -113,10 +117,10 @@ namespace SIL.LCModel.FixData
 				if (!m_firstAllomorphs.Contains(morphGuid))
 					continue;
 				string rtFormText;
-				if (entriesWithCitationForm.Keys.Contains(owners[morphGuid]))
+				if (relevantCitationEntries.Keys.Contains(owners[morphGuid]))
 				{
 					var entryGuid = owners[morphGuid];
-					var cfElement = entriesWithCitationForm[entryGuid];
+					var cfElement = relevantCitationEntries[entryGuid];
 					rtFormText = GetStringInHomographWritingSystem(cfElement);
 					if (string.IsNullOrWhiteSpace(rtFormText))
 						continue;
@@ -127,6 +131,7 @@ namespace SIL.LCModel.FixData
 					var rtForm = rtElem.Element("Form");
 					if (rtForm == null)
 						continue;
+
 					rtFormText = GetStringInHomographWritingSystem(rtForm);
 					if (string.IsNullOrWhiteSpace(rtFormText))
 						continue; // entries with no lexeme form are not considered homographs.
@@ -142,17 +147,20 @@ namespace SIL.LCModel.FixData
 
 				// if there was a citation form which matches the form of this MoStemAllomorph the MorphType
 				// is not important to the homograph determination.
-				var key = m_Homographs.ContainsKey(rtFormText) ? rtFormText : rtFormText + m_MorphTypeSort[new Guid(guid)];
+				if (m_Homographs.ContainsKey(rtFormText) || m_MorphTypeSort.Any())
+				{
+					var key = m_Homographs.ContainsKey(rtFormText) ? rtFormText : rtFormText + m_MorphTypeSort[new Guid(guid)];
 
-				var ownerguid = new Guid(rtElem.Attribute("ownerguid").Value);
-				if (m_Homographs.TryGetValue(key, out guidsForHomograph))
-				{
-					guidsForHomograph.Add(ownerguid);
-				}
-				else
-				{
-					guidsForHomograph = new List<Guid> { ownerguid };
-					m_Homographs.Add(key, guidsForHomograph);
+					var ownerguid = new Guid(rtElem.Attribute("ownerguid").Value);
+					if (m_Homographs.TryGetValue(key, out guidsForHomograph))
+					{
+						guidsForHomograph.Add(ownerguid);
+					}
+					else
+					{
+						guidsForHomograph = new List<Guid> { ownerguid };
+						m_Homographs.Add(key, guidsForHomograph);
+					}
 				}
 			}
 

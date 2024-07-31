@@ -4,7 +4,6 @@
 
 using System;
 using System.Diagnostics;
-using Microsoft.Practices.ServiceLocation;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Core.WritingSystems;
@@ -23,7 +22,7 @@ namespace SIL.LCModel.DomainServices
 		/// <summary>
 		/// Create a new Language Project.
 		/// </summary>
-		internal static void BootstrapNewSystem(IServiceLocator servLoc)
+		internal static void BootstrapNewSystem(IServiceProvider servLoc)
 		{
 			using (var nonUndoableUOW = new NonUndoableUnitOfWorkHelper(servLoc.GetInstance<IActionHandler>()))
 			{
