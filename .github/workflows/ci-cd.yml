@@ -67,11 +67,11 @@ jobs:
     - name: Test on Linux
       run: |
         . environ
-        dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release --logger:"trx" --results-directory ./test-results
+        dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
       if: matrix.os == 'ubuntu-latest'
 
     - name: Test on Windows
-      run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release --logger:"trx" --results-directory ./test-results
+      run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
       if: matrix.os != 'ubuntu-latest'
     - name: Upload test results
       if: always()
