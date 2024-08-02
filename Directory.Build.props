@@ -11,7 +11,8 @@
     <PackageProjectUrl>https://github.com/sillsdev/liblcm</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Platform>Any CPU</Platform>
-    <OutputPath>$(MSBuildThisFileDirectory)/artifacts/$(Configuration)/$(TargetFramework)</OutputPath>
+	<Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <OutputPath>$(MSBuildThisFileDirectory)artifacts/$(Configuration)/$(TargetFramework)</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <PackageOutputPath>$(MSBuildThisFileDirectory)/artifacts</PackageOutputPath>
     <SignAssembly>true</SignAssembly>

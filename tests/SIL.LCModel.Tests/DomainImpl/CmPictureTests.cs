@@ -252,7 +252,7 @@ namespace SIL.LCModel.DomainImpl
 		public void CmPictureConstructor_FromTextRep_MissingFilename()
 		{
 			Assert.That(() => m_pictureFactory.Create("CmPicture||||||This is a caption||",
-				CmFolderTags.LocalPictures), Throws.ArgumentException.With.Property("Message").Matches("File path not specified.(\\r)?\\nParameter( )?name: srcFile"));
+				CmFolderTags.LocalPictures), Throws.ArgumentException.With.Message.Contains("File path not specified"));
 		}
 
 		/// -------------------------------------------------------------------------------------

@@ -2298,9 +2298,7 @@ namespace SIL.LCModel.DomainServices
 			if (String.IsNullOrEmpty(srcFile))
 				throw new ArgumentException("File path not specified.", "srcFile");
 
-			char[] bad = Path.GetInvalidPathChars();
-			int idx = srcFile.IndexOfAny(bad);
-			if (idx >= 0)
+			if (!FileUtils.IsFilePathValid(srcFile))
 				throw new ArgumentException("File path (" + srcFile + ") contains at least one invalid character.", "srcFile");
 
 			foreach (ICmFile file in folder.FilesOC)
