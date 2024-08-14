@@ -318,4 +318,10 @@
     <value>{0}: Could not create Show Subentry Under link to entry "{1}", because it does not exist.</value>
     <comment>Shown during import. The current entry is supposed to be shown as a subentry under "{1}".</comment>
   </data>
+  <data name="ksWrongVernWs" xml:space="preserve">
+    <value>Error: {0} has the wrong default vernacular writing system (expecting {1}, was {2}).  Import aborted.</value>
+  </data>
+  <data name="ksWrongVersion" xml:space="preserve">
+    <value>Error: {0} has an invalid version number (expecting {1}, was {2}).  Import aborted.</value>
+  </data>
 </root>

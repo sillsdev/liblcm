@@ -19,7 +19,7 @@ namespace SIL.LCModel.Application.ApplicationServices {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class AppStrings {
@@ -635,6 +635,24 @@ namespace SIL.LCModel.Application.ApplicationServices {
         internal static string ksUnrecognizedOwnerlessObjectClass {
             get {
                 return ResourceManager.GetString("ksUnrecognizedOwnerlessObjectClass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error: {0} has the wrong default vernacular writing system (expecting {1}, was {2}).  Import aborted..
+        /// </summary>
+        internal static string ksWrongVernWs {
+            get {
+                return ResourceManager.GetString("ksWrongVernWs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error: {0} has an invalid version number (expecting {1}, was {2}).  Import aborted..
+        /// </summary>
+        internal static string ksWrongVersion {
+            get {
+                return ResourceManager.GetString("ksWrongVersion", resourceCulture);
             }
         }
     }

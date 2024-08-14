@@ -425,7 +425,7 @@ namespace SIL.LCModel.DomainImpl
 					throw new ArgumentOutOfRangeException("arrayIndex");
 
 				int currentcopiedIndex = arrayIndex;
-				foreach (var cmObjectOrId in m_items)
+				foreach (var cmObjectOrId in m_items.ToArray()) // ToArray to avoid collection modified exception on object FluffUp
 				{
 					array[currentcopiedIndex++] = FluffUpObjectIfNeeded(cmObjectOrId);
 				}
