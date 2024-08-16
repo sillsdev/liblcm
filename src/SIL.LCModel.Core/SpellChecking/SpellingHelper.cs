@@ -22,6 +22,17 @@ namespace SIL.LCModel.Core.SpellChecking
 	/// </summary>
 	public static class SpellingHelper
 	{
+		/// <summary>
+		/// FieldWorks uses NHunspell for spell checking, but NHunspell is not available on Linux.
+		/// Use this flag to switch between NHunspell and WeCantSpell as needed. On dotnet framework we use NHunspell by default.
+		/// On dotnet core we use WeCantSpell by default.
+		/// </summary>
+		public static bool UseWeCantSpell { get; set; } =
+			#if NETFRAMEWORK
+			false;
+			#else
+			true;
+			#endif
 		// A helper object used to ensure that the spelling engines are properly disposed of
 		private sealed class SingletonToDispose : IDisposable
 		{

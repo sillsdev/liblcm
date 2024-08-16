@@ -15,7 +15,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <PackageOutputPath>$(MSBuildThisFileDirectory)/artifacts</PackageOutputPath>
     <SignAssembly>true</SignAssembly>
-    <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
+    <WarningsAsErrors>NU1605</WarningsAsErrors>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)/liblcm.snk</AssemblyOriginatorKeyFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

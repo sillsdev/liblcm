@@ -22,8 +22,6 @@ namespace SIL.LCModel.Core.SpellChecking
 	internal sealed class SpellEngineWindows: SpellEngine
 	{
 		private readonly Hunspell _hunspellHandle;
-		private bool _isVernacular;
-		private bool _gotIsVernacular;
 
 		internal SpellEngineWindows(string affixPath, string dictPath, string exceptionPath)
 			: base(exceptionPath)
@@ -85,20 +83,6 @@ namespace SIL.LCModel.Core.SpellChecking
 		public override ICollection<string> Suggest(string badWord)
 		{
 			return _hunspellHandle.Suggest(MarshallAsUtf8Bytes(badWord));
-		}
-
-		/// <inheritdoc />
-		public override bool IsVernacular
-		{
-			get
-			{
-				if (_gotIsVernacular)
-					return _isVernacular;
-
-				_isVernacular = Check(MarshallAsUtf8Bytes(SpellingHelper.PrototypeWord));
-				_gotIsVernacular = true;
-				return _isVernacular;
-			}
 		}
 
 		/// <summary>
