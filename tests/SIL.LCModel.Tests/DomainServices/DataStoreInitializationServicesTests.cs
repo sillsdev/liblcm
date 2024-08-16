@@ -322,7 +322,7 @@ namespace SIL.LCModel.DomainServices
 			Func<ICmTranslation> getBtDelegate = () =>
 				m_para.TranslationsOC.FirstOrDefault(trans => trans.TypeRA != null &&
 					trans.TypeRA.Guid == CmPossibilityTags.kguidTranBackTranslation);
-			m_para.Stub(p => p.GetBT()).Do(getBtDelegate);
+			Mock.Get(m_para).Setup(p => p.GetBT()).Returns(getBtDelegate);
 		}
 		#endregion
 
