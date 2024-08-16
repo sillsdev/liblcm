@@ -6,6 +6,7 @@
     <Description>TestHelper</Description>
     <IsPackable>false</IsPackable>
     <OutputType>Exe</OutputType>
+    <UpdateAssemblyInfo>false</UpdateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
