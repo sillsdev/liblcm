@@ -995,12 +995,23 @@ namespace SIL.LCModel.Application.ApplicationServices
 					cmo = m_cache.LangProject.LexDbOA;
 					Debug.Assert(cmo != null);
 					break;
+				case "PhBdryMarker":
+					IPhBdryMarkerFactory factory = m_cache.ServiceLocator.GetInstance<IPhBdryMarkerFactory>();
+					Guid guid = Guid.Parse(xrdr.GetAttribute("Guid"));
+					cmo = factory.Create(guid, (IPhPhonemeSet)fi.Owner);
+					// Remove the default code added by PhTerminalUnit.SetDefaultValuesAfterInit in OverridesLing_Lex.
+					(cmo as PhBdryMarker).CodesOS.Clear();
+					break;
 				case "PhPhonData":
 					cmo = m_cache.LangProject.PhonologicalDataOA;
 					Debug.Assert(cmo != null);
 					break;
 				case "PhFeatureSystem":
 					cmo = m_cache.LangProject.PhFeatureSystemOA;
+					Debug.Assert(cmo != null);
+					break;
+				case "PhPhonemeSet":
+					cmo = m_cache.LangProject.PhonologicalDataOA.GetPhonemeSet();
 					Debug.Assert(cmo != null);
 					break;
 				default:
@@ -1048,7 +1059,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 						cmo = m_repoCmObject.GetObject(hvo);
 						// Remove the default code added by PhTerminalUnit.SetDefaultValuesAfterInit in OverridesLing_Lex.
 						(cmo as PhPhoneme)?.CodesOS.Clear();
-						(cmo as PhBdryMarker)?.CodesOS.Clear();
 						// Remove default values.
 						(cmo as PhRegularRule)?.RightHandSidesOS.Clear();
 					}

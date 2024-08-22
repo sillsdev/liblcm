@@ -125,7 +125,14 @@ namespace SIL.LCModel.DomainServices
 			{
 				m_cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem =
 					m_cache.ServiceLocator.WritingSystemManager.Get(vernWs);
+				if (m_cache.LangProject.PhonologicalDataOA.PhonemeSetsOS.Count == 0)
+				{
+					var phonemeset = m_cache.ServiceLocator.GetInstance<IPhPhonemeSetFactory>().Create();
+					m_cache.LangProject.PhonologicalDataOA.PhonemeSetsOS.Add(phonemeset);
+				}
 			});
+			ILcmOwningSequence<IPhPhonemeSet> phonemeList = m_cache.LangProject.PhonologicalDataOA.PhonemeSetsOS;
+			IPhPhonemeSet phonemeSet = m_cache.LangProject.PhonologicalDataOA.GetPhonemeSet();
 			var services = new PhonologyServices(m_cache);
 			using (var rdr = new StringReader(xml))
 			{
@@ -134,6 +141,21 @@ namespace SIL.LCModel.DomainServices
 				var xml2 = xdoc2.ToString();
 				TestXml(xdoc, xdoc2);
 			}
+			// Verify that the references to the PhonemeSet didn't change.
+			Assert.IsTrue(ReferenceEquals(phonemeList, m_cache.LangProject.PhonologicalDataOA.PhonemeSetsOS));
+			Assert.IsTrue(ReferenceEquals(phonemeSet, m_cache.LangProject.PhonologicalDataOA.GetPhonemeSet()));
+			// Verify that the boundary markers exist with the right GUIDs.
+			bool hasMorphBdry = false;
+			bool hasWordBdry = false;
+			foreach (var marker in m_cache.LangProject.PhonologicalDataOA.GetPhonemeSet().BoundaryMarkersOC)
+			{
+				if (marker.Guid == LangProjectTags.kguidPhRuleMorphBdry)
+					hasMorphBdry = true;
+				if (marker.Guid == LangProjectTags.kguidPhRuleWordBdry)
+					hasWordBdry = true;
+			}
+			Assert.IsTrue(hasMorphBdry);
+			Assert.IsTrue(hasWordBdry);
 		}
 
 		private void TestXml(XDocument xdoc, XDocument xdoc2)
