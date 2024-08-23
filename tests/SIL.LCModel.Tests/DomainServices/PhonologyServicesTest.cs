@@ -90,6 +90,24 @@ namespace SIL.LCModel.DomainServices
 				m_cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem = vernWritingSystem);
 		}
 
+		/// <summary>
+		/// Test all projects in a directory.
+		/// </summary>
+		/// <param name="directory"></param>
+		private void TestProjects(string directory)
+		{
+			foreach (string subDirectory in Directory.GetDirectories(directory, "*"))
+			{
+				foreach (string project in Directory.GetFiles(subDirectory, "*.fwdata"))
+				{
+					Console.WriteLine("Testing " + project);
+					CreateTestCache();
+					TestProject(subDirectory, project);
+					DestroyTestCache();
+				}
+			}
+		}
+
 		private void TestProject(string projectsDirectory, string dbFileName)
 		{
 			var projectId = new TestProjectId(BackendProviderType.kXML, dbFileName);
@@ -98,6 +116,15 @@ namespace SIL.LCModel.DomainServices
 			using (var cache = LcmCache.CreateCacheFromExistingData(projectId, "en", m_ui, m_lcmDirectories, new LcmSettings(),
 					new DummyProgressDlg()))
 			{
+				// Create PhonemeSet if necessary.
+				NonUndoableUnitOfWorkHelper.Do(m_cache.ActionHandlerAccessor, () =>
+				{
+					if (m_cache.LangProject.PhonologicalDataOA.PhonemeSetsOS.Count == 0)
+					{
+						var phonemeset = m_cache.ServiceLocator.GetInstance<IPhPhonemeSetFactory>().Create();
+						m_cache.LangProject.PhonologicalDataOA.PhonemeSetsOS.Add(phonemeset);
+					}
+				});
 				// Export project as XML.
 				var services = new PhonologyServices(cache);
 				XDocument xdoc = services.ExportPhonologyAsXml();
@@ -109,6 +136,7 @@ namespace SIL.LCModel.DomainServices
 					var vernWs = cache.ServiceLocator.WritingSystemManager.Get(cache.DefaultVernWs);
 					SetDefaultVernacularWritingSystem(m_cache, vernWs);
 					var services2 = new PhonologyServices(m_cache, vernWs.Id);
+					services2.DeletePhonology();
 					services2.ImportPhonologyFromXml(rdr);
 					xdoc2 = services2.ExportPhonologyAsXml();
 				}
@@ -134,6 +162,7 @@ namespace SIL.LCModel.DomainServices
 			ILcmOwningSequence<IPhPhonemeSet> phonemeList = m_cache.LangProject.PhonologicalDataOA.PhonemeSetsOS;
 			IPhPhonemeSet phonemeSet = m_cache.LangProject.PhonologicalDataOA.GetPhonemeSet();
 			var services = new PhonologyServices(m_cache);
+			services.DeletePhonology();
 			using (var rdr = new StringReader(xml))
 			{
 				services.ImportPhonologyFromXml(rdr);
@@ -156,6 +185,7 @@ namespace SIL.LCModel.DomainServices
 			}
 			Assert.IsTrue(hasMorphBdry);
 			Assert.IsTrue(hasWordBdry);
+			Assert.IsTrue(m_cache.LangProject.PhonologicalDataOA.GetPhonemeSet().BoundaryMarkersOC.Count == 2);
 		}
 
 		private void TestXml(XDocument xdoc, XDocument xdoc2)
@@ -1210,6 +1240,12 @@ namespace SIL.LCModel.DomainServices
 				var xml2 = xdoc2.ToString();
 				TestXml(xdoc, xdoc2);
 			}
+		}
+
+		// [Test]
+		public void TestPCProjects()
+		{
+			TestProjects("C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects");
 		}
 	}
 }

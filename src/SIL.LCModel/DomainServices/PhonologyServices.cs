@@ -11,6 +11,7 @@ using SIL.LCModel.Application.ApplicationServices;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Infrastructure.Impl;
 using static Icu.Normalization.Normalizer2;
+using SIL.LCModel.Core.KernelInterfaces;
 
 namespace SIL.LCModel.DomainServices
 {
@@ -74,42 +75,27 @@ namespace SIL.LCModel.DomainServices
 				// () => AssignVernacularWritingSystemToDefaultPhPhonemes(Cache));
 		}
 
-		private void AssignVernacularWritingSystemToDefaultPhPhonemes(LcmCache cache)
+		/// <summary>
+		/// Clear PhonologicalData and Phonological Features.
+		/// Don't clear boundary markers.
+		/// </summary>
+		public void DeletePhonology()
 		{
-			// For all PhCodes in the default phoneme set, change the writing system from "en" to icuLocale
-			if (cache.LanguageProject.PhonologicalDataOA.PhonemeSetsOS.Count == 0)
-				return;
-			var phSet = cache.LanguageProject.PhonologicalDataOA.PhonemeSetsOS[0];
-			int wsVern = m_wsVernId == null
-				? cache.DefaultVernWs
-				: cache.ServiceLocator.WritingSystemManager.Get(m_wsVernId).Handle;
-			foreach (var phone in phSet.PhonemesOC)
+			NonUndoableUnitOfWorkHelper.Do(Cache.ServiceLocator.GetInstance<IActionHandler>(), () =>
 			{
-				foreach (var code in phone.CodesOS)
-				{
-
-					if (code.Representation.VernacularDefaultWritingSystem.Length == 0)
-						code.Representation.VernacularDefaultWritingSystem =
-							TsStringUtils.MakeString(code.Representation.UserDefaultWritingSystem.Text, wsVern);
-				}
-				if (phone.Name.VernacularDefaultWritingSystem.Length == 0)
-					phone.Name.VernacularDefaultWritingSystem =
-						TsStringUtils.MakeString(phone.Name.UserDefaultWritingSystem.Text, wsVern);
-			}
-			foreach (var mrkr in phSet.BoundaryMarkersOC)
-			{
-				foreach (var code in mrkr.CodesOS)
-				{
-					if (code.Representation.VernacularDefaultWritingSystem.Length == 0)
-						code.Representation.VernacularDefaultWritingSystem =
-							TsStringUtils.MakeString(code.Representation.UserDefaultWritingSystem.Text, wsVern);
-				}
-				if (mrkr.Name.VernacularDefaultWritingSystem.Length == 0)
-					mrkr.Name.VernacularDefaultWritingSystem =
-						TsStringUtils.MakeString(mrkr.Name.UserDefaultWritingSystem.Text, wsVern);
-			}
+				IPhPhonData phonData = Cache.LangProject.PhonologicalDataOA;
+				// Delete what is covered by ImportPhonology.
+				phonData.ContextsOS.Clear();
+				phonData.EnvironmentsOS.Clear();
+				phonData.FeatConstraintsOS.Clear();
+				phonData.NaturalClassesOS.Clear();
+				phonData.GetPhonemeSet().PhonemesOC.Clear();
+				// Don't clear phonData.GetPhonemeSet().BoundaryMarkersOC!
+				// They have GUIDs known to the code.
+				phonData.PhonRulesOS.Clear();
+				Cache.LanguageProject.PhFeatureSystemOA.TypesOC.Clear();
+				Cache.LanguageProject.PhFeatureSystemOA.FeaturesOC.Clear();
+			});
 		}
-
-
 	}
 }
