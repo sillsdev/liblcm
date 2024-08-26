@@ -90,24 +90,6 @@ namespace SIL.LCModel.DomainServices
 				m_cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem = vernWritingSystem);
 		}
 
-		/// <summary>
-		/// Test all projects in a directory.
-		/// </summary>
-		/// <param name="directory"></param>
-		private void TestProjects(string directory)
-		{
-			foreach (string subDirectory in Directory.GetDirectories(directory, "*"))
-			{
-				foreach (string project in Directory.GetFiles(subDirectory, "*.fwdata"))
-				{
-					Console.WriteLine("Testing " + project);
-					CreateTestCache();
-					TestProject(subDirectory, project);
-					DestroyTestCache();
-				}
-			}
-		}
-
 		private void TestProject(string projectsDirectory, string dbFileName)
 		{
 			var projectId = new TestProjectId(BackendProviderType.kXML, dbFileName);
@@ -1240,12 +1222,6 @@ namespace SIL.LCModel.DomainServices
 				var xml2 = xdoc2.ToString();
 				TestXml(xdoc, xdoc2);
 			}
-		}
-
-		// [Test]
-		public void TestPCProjects()
-		{
-			TestProjects("C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects");
 		}
 	}
 }

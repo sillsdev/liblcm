@@ -996,9 +996,14 @@ namespace SIL.LCModel.Application.ApplicationServices
 					Debug.Assert(cmo != null);
 					break;
 				case "PhBdryMarker":
+					IPhBdryMarkerRepository repository = m_cache.ServiceLocator.GetInstance<IPhBdryMarkerRepository>();
 					IPhBdryMarkerFactory factory = m_cache.ServiceLocator.GetInstance<IPhBdryMarkerFactory>();
 					Guid guid = Guid.Parse(xrdr.GetAttribute("Guid"));
-					cmo = factory.Create(guid, (IPhPhonemeSet)fi.Owner);
+					IPhBdryMarker marker;
+					if (repository.TryGetObject(guid, out marker))
+						cmo = marker;
+					else
+						cmo = factory.Create(guid, (IPhPhonemeSet)fi.Owner);
 					// Remove the default code added by PhTerminalUnit.SetDefaultValuesAfterInit in OverridesLing_Lex.
 					(cmo as PhBdryMarker).CodesOS.Clear();
 					break;
