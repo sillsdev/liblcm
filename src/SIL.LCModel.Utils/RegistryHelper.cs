@@ -45,7 +45,8 @@ namespace SIL.LCModel.Utils
 			{
 				using (var softwareKey = Registry.CurrentUser.CreateSubKey("Software"))
 				{
-					Debug.Assert(softwareKey != null);
+					if (softwareKey == null)
+						throw new InvalidOperationException("Could not open HKCU\\Software");
 					return softwareKey.CreateSubKey(CompanyName);
 				}
 			}
@@ -71,7 +72,8 @@ namespace SIL.LCModel.Utils
 			{
 				using (var softwareKey = Registry.LocalMachine.OpenSubKey("Software"))
 				{
-					Debug.Assert(softwareKey != null);
+					if (softwareKey == null)
+						throw new InvalidOperationException("Could not open HKLM\\Software");
 					return softwareKey.OpenSubKey(CompanyName);
 				}
 			}
@@ -97,7 +99,8 @@ namespace SIL.LCModel.Utils
 			{
 				using (var softwareKey = Registry.LocalMachine.CreateSubKey("Software"))
 				{
-					Debug.Assert(softwareKey != null);
+					if (softwareKey == null)
+						throw new InvalidOperationException("Could not open HKLM\\Software");
 					return softwareKey.CreateSubKey(CompanyName);
 				}
 			}
@@ -149,7 +152,8 @@ namespace SIL.LCModel.Utils
 
 			using (var regSubKey = key.OpenSubKey(subKey))
 			{
-				Debug.Assert(regSubKey != null, "Should have caught this in the KeyExists call above");
+				if (regSubKey == null)
+					throw new InvalidOperationException("Could not open subkey");
 				if (Array.IndexOf(regSubKey.GetValueNames(), regEntry) >= 0)
 				{
 					value = regSubKey.GetValue(regEntry);

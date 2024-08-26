@@ -464,9 +464,11 @@ namespace SIL.LCModel.Core.Scripture
 
 			// No abbreviation found in primary writing system; get SIL code instead
 			wsNames = GetWsNames(kWsSilCodes); // SIL codes
-			Debug.Assert (wsNames != null);
+			if (wsNames == null)
+				throw new InvalidOperationException("Could not get SIL codes");
 			sAbbrev = wsNames.Name[nBook - 1]; // full SIL code is the .Name
-			Debug.Assert(sAbbrev != null);
+			if (sAbbrev == null)
+				throw new InvalidOperationException("Could not get abbreviation for book " + nBook);
 			return sAbbrev;
 		}
 
