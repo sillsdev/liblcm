@@ -6859,6 +6859,21 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
+		/// Get the PhonemeSet.
+		/// Hides the fact that multiple PhonemeSets used to be allowed.
+		/// </summary>
+		/// <returns></returns>
+		/// <exception cref="Exception"></exception>
+		public IPhPhonemeSet GetPhonemeSet()
+		{
+			if (this.PhonemeSetsOS.Count == 0)
+				throw new Exception("Missing PhonemeSet.");
+			if (this.PhonemeSetsOS.Count > 1)
+				throw new Exception("Too many PhonemeSets.");
+			return this.PhonemeSetsOS[0];
+		}
+
+		/// <summary>
 		/// Return the list of abbreviations for all the natural classes defined, each in the
 		/// default analysis writing system.
 		/// </summary>
