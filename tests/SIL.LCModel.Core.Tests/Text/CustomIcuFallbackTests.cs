@@ -90,8 +90,8 @@ namespace SIL.LCModel.Core.Text
 				if (process.ExitCode != 0)
 				{
 					var expected = expectFailure ? "expected" : "unexpected";
-					Console.WriteLine($"TestHelper.exe failed ({expected}):");
-					Console.WriteLine(stdErr);
+					TestContext.Out.WriteLine($"TestHelper.exe failed ({expected}):");
+					TestContext.Out.WriteLine(stdErr);
 				}
 				return output.TrimEnd('\r', '\n');
 			}
@@ -111,10 +111,10 @@ namespace SIL.LCModel.Core.Text
 
 		private static void CopyTestFiles(string sourceDir, string targetDir)
 		{
-			var testHelper = Path.Combine(sourceDir, "TestHelper.exe");
-			if (!File.Exists(testHelper))
-				testHelper = Path.Combine(sourceDir, "TestHelper.dll");
-			CopyFile(testHelper, targetDir);
+			foreach (var file in Directory.EnumerateFiles(sourceDir, "TestHelper.*"))
+			{
+				CopyFile(file, targetDir);
+			}
 			var targetIcuDataDir = Path.Combine(targetDir, "IcuData");
 			Directory.CreateDirectory(targetIcuDataDir);
 			DirectoryHelper.Copy(Path.Combine(sourceDir, "IcuData"), targetIcuDataDir);
@@ -126,7 +126,8 @@ namespace SIL.LCModel.Core.Text
 				"SIL.LCModel.Utils",
 				"icu.net",
 				"SIL.Core",
-				"Microsoft.Extensions.DependencyModel"
+				"Microsoft.Extensions.DependencyModel",
+				"Newtonsoft.Json"
 			})
 			{
 				var sourceFile = Path.Combine(sourceDir, $"{file}.dll");
@@ -222,21 +223,31 @@ namespace SIL.LCModel.Core.Text
 				}
 				catch (Exception e)
 				{
-					Console.WriteLine($"Error enumerating: {e.GetType()}: {e.Message}");
+					TestContext.Out.WriteLine($"Error enumerating: {e.GetType()}: {e.Message}");
 				}
 			}
 			if (files.Any())
 			{
-				Console.WriteLine($"Found the following ICU DLL's lurking around:\r\n{string.Join("\r\n", files)}");
-				Console.WriteLine("(note: DLL's without a version number in the name should not be a problem)");
+				TestContext.Out.WriteLine($"Found the following ICU DLL's lurking around:\r\n{string.Join("\r\n", files)}");
+				TestContext.Out.WriteLine("(note: DLL's without a version number in the name should not be a problem)");
+			}
+			else
+			{
+				TestContext.Out.WriteLine("No ICU DLL's found");
 			}
 		}
 
 		[Test]
 		public void InitIcuDataDir_NoIcuLibrary()
 		{
-			Assert.That(RunTestHelper(_tmpDir, out var stdErr, true), Is.Empty);
-			Assert.That(stdErr, Does.Contain("Unhandled Exception: System.IO.FileLoadException: Can't load ICU library (version 0)"));
+			var result = RunTestHelper(_tmpDir, out var stdErr, true);
+			if (!string.IsNullOrEmpty(result))
+			{
+				PrintIcuDllsOnPath();
+			}
+
+			Assert.That(result, Is.Empty);
+			Assert.That(stdErr, Does.Contain("System.IO.FileLoadException: Can't load ICU library (version 0)"));
 		}
 	}
 }

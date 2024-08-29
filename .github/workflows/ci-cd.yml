@@ -28,9 +28,9 @@ jobs:
 
     # Install the .NET Core workload
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v2
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.0.x
 
     - name: Install mono-devel package
       run: sudo apt-get install mono-devel
@@ -67,11 +67,11 @@ jobs:
     - name: Test on Linux
       run: |
         . environ
-        dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release --logger:"trx" --results-directory ./test-results
+        dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
       if: matrix.os == 'ubuntu-latest'
 
     - name: Test on Windows
-      run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release --logger:"trx" --results-directory ./test-results
+      run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
       if: matrix.os != 'ubuntu-latest'
     - name: Upload test results
       if: always()
@@ -94,7 +94,7 @@ jobs:
     - name: Publish Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: NugetPackages
+        name: NugetPackages (${{ matrix.os }})
         path: artifacts/*.nupkg
       if: github.event_name == 'pull_request'
   publish-test-results:
