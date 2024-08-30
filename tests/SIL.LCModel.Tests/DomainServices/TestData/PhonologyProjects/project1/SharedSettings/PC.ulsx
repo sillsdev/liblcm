@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<UserLexiconSettings>
+  <WritingSystems>
+    <WritingSystem id="en">
+      <LocalKeyboard>en-US_English</LocalKeyboard>
+      <DefaultFontName>Charis SIL</DefaultFontName>
+    </WritingSystem>
+    <WritingSystem id="ms">
+      <LocalKeyboard>en-US_English</LocalKeyboard>
+      <DefaultFontName>Charis SIL</DefaultFontName>
+    </WritingSystem>
+    <WritingSystem id="kqr">
+      <LocalKeyboard>en-US_English</LocalKeyboard>
+      <DefaultFontName>Charis SIL</DefaultFontName>
+    </WritingSystem>
+  </WritingSystems>
+</UserLexiconSettings>
