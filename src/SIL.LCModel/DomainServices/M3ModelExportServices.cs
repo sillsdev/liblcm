@@ -591,12 +591,16 @@ namespace SIL.LCModel.DomainServices
 							new XAttribute("Id", rhs.Hvo),
 							new XElement("StrucChange", from structChange in rhs.StrucChangeOS
 														select ExportContext(structChange)),
-							new XElement("InputPOSes", from pos in rhs.InputPOSesRC
-														select ExportItemAsReference(pos, "RequiredPOS")),
-							new XElement("ReqRuleFeats", from rrf in rhs.ReqRuleFeatsRC
-														select ExportItemAsReference(rrf, "RuleFeat")),
-							new XElement("ExclRuleFeats", from erf in rhs.ExclRuleFeatsRC
-															select ExportItemAsReference(erf, "RuleFeat")),
+							// RuleFeats and POS are not part of the phonology.
+							phonology ? null
+								: new XElement("InputPOSes", from pos in rhs.InputPOSesRC
+															select ExportItemAsReference(pos, "RequiredPOS")),
+							phonology ? null
+								: new XElement("ReqRuleFeats", from rrf in rhs.ReqRuleFeatsRC
+															select ExportItemAsReference(rrf, "RuleFeat")),
+							phonology ? null
+								: new XElement("ExclRuleFeats", from erf in rhs.ExclRuleFeatsRC
+																select ExportItemAsReference(erf, "RuleFeat")),
 							new XElement("LeftContext", ExportContext(rhs.LeftContextOA)),
 							new XElement("RightContext", ExportContext(rhs.RightContextOA)))));
 					break;
