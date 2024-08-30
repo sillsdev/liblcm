@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WritingSystemChangeLog
+	Version="1">
+	<Changes>
+		<Add
+			Producer="???"
+			ProducerVersion="unknown"
+			TimeStamp="2024-08-30T15:06:05Z">
+			<Id>en</Id>
+		</Add>
+		<Add
+			Producer="???"
+			ProducerVersion="unknown"
+			TimeStamp="2024-08-30T15:06:05Z">
+			<Id>ms</Id>
+		</Add>
+		<Add
+			Producer="???"
+			ProducerVersion="unknown"
+			TimeStamp="2024-08-30T15:06:05Z">
+			<Id>kqr</Id>
+		</Add>
+	</Changes>
+</WritingSystemChangeLog>

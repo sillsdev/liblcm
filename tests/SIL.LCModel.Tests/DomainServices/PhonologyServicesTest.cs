@@ -90,6 +90,17 @@ namespace SIL.LCModel.DomainServices
 				m_cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem = vernWritingSystem);
 		}
 
+		private void TestProjects(string directory)
+		{
+			foreach (string subdir in Directory.GetDirectories(directory))
+				foreach (string file in Directory.GetFiles(subdir, "*.fwdata"))
+				{
+					CreateTestCache();
+					TestProject(subdir, file);
+					DestroyTestCache();
+				}
+		}
+
 		private void TestProject(string projectsDirectory, string dbFileName)
 		{
 			var projectId = new TestProjectId(BackendProviderType.kXML, dbFileName);
@@ -1222,6 +1233,16 @@ namespace SIL.LCModel.DomainServices
 				var xml2 = xdoc2.ToString();
 				TestXml(xdoc, xdoc2);
 			}
+		}
+
+		private string PhonologyProjectsDirectory => Path.Combine(TestDirectoryFinder.RootDirectory, "tests", "SIL.LCModel.Tests", "DomainServices", "TestData", "PhonologyProjects");
+
+		[Test]
+		public void TestPhonologyProjects()
+		{
+			// You can test your personal projects with something like
+			// TestProjects("C:\\Users\\[MyAccount]\\FieldWorks\\DistFiles\\Projects")
+			TestProjects(PhonologyProjectsDirectory);
 		}
 	}
 }

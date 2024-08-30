@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<ProjectLexiconSettings>
+  <WritingSystems>
+    <WritingSystem id="en">
+      <Abbreviation>Eng</Abbreviation>
+      <LanguageName>English</LanguageName>
+    </WritingSystem>
+    <WritingSystem id="ms">
+      <Abbreviation>Mal</Abbreviation>
+      <LanguageName>Malay (macrolanguage)</LanguageName>
+      <SystemCollation />
+    </WritingSystem>
+    <WritingSystem id="kqr">
+      <Abbreviation>Kim</Abbreviation>
+      <LanguageName>Kimaragang</LanguageName>
+    </WritingSystem>
+  </WritingSystems>
+</ProjectLexiconSettings>
