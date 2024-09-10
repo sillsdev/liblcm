@@ -119,7 +119,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			DataMigrationServices.IncrementVersionNumber(domainObjectDtoRepository);
 		}
 
-		private static DomainObjectDTO MakeEvaluation(string ownerGuid, IDomainObjectDTORepository domainObjectDtoRepository, XElement agentElement, string owningAttr)
+		private static DomainObjectXMLDTO MakeEvaluation(string ownerGuid, IDomainObjectDTORepository domainObjectDtoRepository, XElement agentElement, string owningAttr)
 		{
 			var newGuid = Guid.NewGuid().ToString().ToLower();
 			var newEvalElt = new XElement("rt",
@@ -129,7 +129,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				new XElement("CmObject"),
 				new XElement("CmAgentEvaluation"));
 			// Create new dto and add to repos.
-			var newEval = new DomainObjectDTO(newGuid, "CmAgentEvaluation", newEvalElt.ToString());
+			var newEval = new DomainObjectXMLDTO(newGuid, "CmAgentEvaluation", newEvalElt.ToString());
 			domainObjectDtoRepository.Add(newEval);
 			agentElement.Add(new XElement(owningAttr,
 				new XElement("objsur", new XAttribute("t", "o"), new XAttribute("guid", newGuid))));

@@ -20,7 +20,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 	/// Instances of this object will be available to DM-land via a special Repository.
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
-	internal class DomainObjectDTO
+	internal class DomainObjectXMLDTO
 	{
 		private readonly string m_guid;
 		private string m_classname;
@@ -34,7 +34,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// <param name="classname">The CmObject's class name.</param>
 		/// <param name="xml">The CmObject's xml representation.</param>
 		/// ------------------------------------------------------------------------------------
-		internal DomainObjectDTO(string guid, string classname, byte[] xml)
+		internal DomainObjectXMLDTO(string guid, string classname, byte[] xml)
 		{
 			if (string.IsNullOrEmpty(guid)) throw new ArgumentNullException("guid");
 			if (string.IsNullOrEmpty(classname)) throw new ArgumentNullException("classname");
@@ -45,7 +45,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			m_xml = xml;
 		}
 
-		internal DomainObjectDTO(string guid, string classname, string xml)
+		internal DomainObjectXMLDTO(string guid, string classname, string xml)
 			: this(guid, classname, Encoding.UTF8.GetBytes(xml))
 		{
 
@@ -113,10 +113,10 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		{
 			if (obj == null)
 				return false;
-			if (!(obj is DomainObjectDTO))
+			if (!(obj is DomainObjectXMLDTO))
 				return false;
 
-			return m_guid.ToLower() == ((DomainObjectDTO)obj).m_guid.ToLower();
+			return m_guid.ToLower() == ((DomainObjectXMLDTO)obj).m_guid.ToLower();
 		}
 
 		/// <summary>
@@ -140,7 +140,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>
-	/// Provide information on class and superclass of a <see cref="DomainObjectDTO"/>.
+	/// Provide information on class and superclass of a <see cref="DomainObjectXMLDTO"/>.
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
 	internal class ClassStructureInfo

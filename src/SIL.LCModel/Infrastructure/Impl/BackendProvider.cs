@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.WritingSystems;
+using SIL.LCModel.DomainImpl;
 using SIL.LCModel.DomainServices;
 using SIL.LCModel.DomainServices.DataMigration;
 using SIL.LCModel.Utils;
@@ -28,7 +29,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		// and the client can load more domains, as needed.
 		private LoadedDomains m_loadedDomains = new LoadedDomains(false, false, false, false);
 		protected readonly IdentityMap m_identityMap;
-		protected readonly ICmObjectSurrogateFactory m_surrogateFactory;
+		protected ICmObjectSurrogateFactory m_surrogateFactory;
 		protected readonly LcmCache m_cache;
 		protected readonly IFwMetaDataCacheManagedInternal m_mdcInternal;
 		private readonly IDataMigrationManager m_dataMigrationManager;
@@ -44,13 +45,11 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <summary>
 		///
 		/// </summary>
-		protected BackendProvider(LcmCache cache, IdentityMap identityMap,
-			ICmObjectSurrogateFactory surrogateFactory, IFwMetaDataCacheManagedInternal mdc, IDataMigrationManager dataMigrationManager,
+		protected BackendProvider(LcmCache cache, IdentityMap identityMap, IFwMetaDataCacheManagedInternal mdc, IDataMigrationManager dataMigrationManager,
 			ILcmUI ui, ILcmDirectories dirs, LcmSettings settings)
 		{
 			if (cache == null) throw new ArgumentNullException("cache");
 			if (identityMap == null) throw new ArgumentNullException("identityMap");
-			if (surrogateFactory == null) throw new ArgumentNullException("surrogateFactory");
 			if (dataMigrationManager == null) throw new ArgumentNullException("dataMigrationManager");
 			if (ui == null) throw new ArgumentNullException("ui");
 			if (dirs == null) throw new ArgumentNullException("dirs");
@@ -59,7 +58,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 			m_cache = cache;
 			m_cache.Disposing += OnCacheDisposing;
 			m_identityMap = identityMap;
-			m_surrogateFactory = surrogateFactory;
 			m_mdcInternal = mdc;
 			m_dataMigrationManager = dataMigrationManager;
 			m_ui = ui;
@@ -399,8 +397,8 @@ namespace SIL.LCModel.Infrastructure.Impl
 			// only if passed an actual collection of some sort. Passing just the enumeration is therefore actually LESS
 			// efficient, and may cause the large object heap to become fragmented. Please don't take the ToArray() call out
 			// unless you really know what you're doing, and preferably discuss with JohnT first.
-			var dtos = new HashSet<DomainObjectDTO>((from surrogate in m_identityMap.AllObjectsOrSurrogates()
-				select new DomainObjectDTO(surrogate.Id.Guid.ToString(), surrogate.Classname, surrogate.XMLBytes)).ToArray());
+			var dtos = new HashSet<DomainObjectXMLDTO>((from surrogate in m_identityMap.AllObjectsOrSurrogates()
+				select new DomainObjectXMLDTO(surrogate.Id.Guid.ToString(), surrogate.Classname, ((CmObjectXmlDTO)surrogate.DTO).XMLBytes)).ToArray());
 			var dtoRepository = new DomainObjectDtoRepository(
 				currentDataStoreVersion,
 				dtos,
@@ -418,7 +416,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			foreach (var dirtball in dtoRepository.Dirtballs)
 			{
 				// Since we're doing migration, everything in the map should still be a surrogate.
-				var originalSurr = (CmObjectSurrogate)m_identityMap.GetObjectOrSurrogate(idFact.FromGuid(new Guid(dirtball.Guid)));
+				var originalSurr = (CmObjectXmlSurrogate)m_identityMap.GetObjectOrSurrogate(idFact.FromGuid(new Guid(dirtball.Guid)));
 				originalSurr.Reset(dirtball.Classname, dirtball.XmlBytes);
 				dirtballs.Add(originalSurr);
 			}
@@ -444,7 +442,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				var newSurr = m_surrogateFactory.Create(
 					new Guid(newbie.Guid),
 					newbie.Classname,
-					newbie.Xml);
+					new CmObjectXmlDTO(newbie.Xml));
 				RegisterInactiveSurrogate(newSurr);
 				newbies.Add(newSurr);
 			}
@@ -1223,6 +1221,8 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// Update the version number.
 		/// </summary>
 		protected abstract void UpdateVersionNumber();
+
+		public abstract ICmObjectDTO MakeDTO(ICmObject cmObject);
 	}
 
 	/// <summary>
