@@ -59,6 +59,8 @@ namespace SIL.LCModel.DomainServices
 			Human = 1,
 		}
 
+		public AnalysisOccurrence IgnoreOccurrence { get; set; }
+
 		LcmCache Cache { get; set; }
 
 		// PriorityCount provides a count of the number of times an analysis
@@ -400,6 +402,11 @@ namespace SIL.LCModel.DomainServices
 				{
 					IAnalysis analysis = seg.AnalysesRS[i];
 					if (analysis.Wordform != wordform) continue;
+					if (IgnoreOccurrence != null && IgnoreOccurrence.Segment == seg && IgnoreOccurrence.Index == i)
+					{
+						// Leave this occurrence out.
+						continue;
+					}
 					IAnalysis previous = GetPreviousWordform(seg, i);
 					if (analysis is IWfiGloss)
 					{
@@ -413,6 +420,9 @@ namespace SIL.LCModel.DomainServices
 					}
 				}
 			}
+			if (IgnoreOccurrence != null)
+				// Only include selected analyses.
+				return counts;
 			// Include analyses that may not have been selected.
 			foreach (IWfiAnalysis analysis in wordform.AnalysesOC)
 			{

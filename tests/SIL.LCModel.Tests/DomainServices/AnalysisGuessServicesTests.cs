@@ -2,7 +2,9 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -1442,6 +1444,58 @@ namespace SIL.LCModel.DomainServices
 				Assert.AreEqual(contextedApprovedGloss1, sorted_glosses[1]);
 				Assert.AreEqual(uncontextedApprovedGloss, sorted_glosses[2]);
 			}
+		}
+
+		[Test]
+		public void TestPrioritizerProject()
+		{
+			TestProject(
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Test prioritization",
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Test prioritization\\Test prioritization.fwdata"
+			);
+		}
+
+		private void TestProject(string projectsDirectory, string dbFileName)
+		{
+			var projectId = new TestProjectId(BackendProviderType.kXML, dbFileName);
+			var m_ui = new DummyLcmUI();
+			var m_lcmDirectories = new TestLcmDirectories(projectsDirectory);
+			int total = 0;
+			int correct = 0;
+			using (var cache = LcmCache.CreateCacheFromExistingData(projectId, "en", m_ui, m_lcmDirectories, new LcmSettings(),
+					new DummyProgressDlg()))
+			{
+				AnalysisGuessServices guesser = new AnalysisGuessServices(cache);
+				IStTextRepository textRepository = cache.ServiceLocator.GetInstance<IStTextRepository>();
+				foreach (IStText text in textRepository.AllInstances())
+				{
+					foreach (IStTxtPara para in text.ParagraphsOS)
+					{
+						foreach (var occurrence in SegmentServices.StTextAnnotationNavigator.GetWordformOccurrencesAdvancingInPara(para))
+						{
+							var analysis = occurrence.Analysis;
+							if (analysis is IWfiGloss)
+							{
+								NonUndoableUnitOfWorkHelper.DoUsingNewOrCurrentUOW(cache.ActionHandlerAccessor, () =>
+								{
+									guesser.ClearGuessData();
+									guesser.IgnoreOccurrence = occurrence;
+									occurrence.Analysis = analysis.Wordform;
+									var bestGuess = guesser.GetBestGuess(occurrence);
+									occurrence.Analysis = analysis;
+									total++;
+									if (bestGuess == analysis)
+										correct++;
+								});
+							}
+						}
+					}
+				}
+			}
+			float ratio = total == 0 ? 0 : (float)correct / (float)total;
+			Console.WriteLine("correct: " + correct.ToString() + ", total: " + total.ToString() + " (" + (100 * ratio).ToString() + "%)");
+			Assert.AreEqual(52, total);
+			Assert.AreEqual(26, correct);
 		}
 	}
 }
