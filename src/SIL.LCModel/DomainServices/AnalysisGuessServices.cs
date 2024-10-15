@@ -9,14 +9,9 @@
 // </remarks>
 
 using System.Collections.Generic;
-using System.Configuration;
-using System.Diagnostics;
 using System.Linq;
-using Icu;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
-using SIL.LCModel.Core.WritingSystems;
-using SIL.LCModel.DomainImpl;
 using SIL.LCModel.Infrastructure;
 
 
@@ -73,29 +68,37 @@ namespace SIL.LCModel.DomainServices
 			public int count = 0;
 		}
 
-		// First key of m_guessTable = word form (or analysis).
-		// Second key of m_guessTable = previous word form (including m_nullWAG for unknown).
-		// Final value of m_guessTable = default analysis (or gloss).
-		private IDictionary<IAnalysis, Dictionary<IAnalysis, IAnalysis>> m_guessTable;
-		IDictionary<IAnalysis, Dictionary<IAnalysis, IAnalysis>> GuessTable
+		class ContextCount
+		{
+			// First key is the previous/next wordform.
+			// Second key is an analysis that occurs in that context.
+			// The PriorityCount is the count for the analysis.
+			public IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> previousWordform;
+			public IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> nextWordform;
+		}
+
+		// Key of m_guessTable = word form (or analysis).
+		// Value of m_guessTable = context counts for word form.
+		private IDictionary<IAnalysis, ContextCount> m_guessTable;
+		IDictionary<IAnalysis, ContextCount> GuessTable
 		{
 			get
 			{
 				if (m_guessTable == null)
-					GuessTable = new Dictionary<IAnalysis, Dictionary<IAnalysis, IAnalysis>>();
+					GuessTable = new Dictionary<IAnalysis, ContextCount>();
 				return m_guessTable;
 			}
 			set { m_guessTable = value; }
 		}
 
 		// CaselessGuessTable is like GuessTable, but for uppercase word forms that can have lowercase analyses.
-		private IDictionary<IAnalysis, Dictionary<IAnalysis, IAnalysis>> m_caselessGuessTable;
-		IDictionary<IAnalysis, Dictionary<IAnalysis, IAnalysis>> CaselessGuessTable
+		private IDictionary<IAnalysis, ContextCount> m_caselessGuessTable;
+		IDictionary<IAnalysis, ContextCount> CaselessGuessTable
 		{
 			get
 			{
 				if (m_caselessGuessTable == null)
-					CaselessGuessTable = new Dictionary<IAnalysis, Dictionary<IAnalysis, IAnalysis>>();
+					CaselessGuessTable = new Dictionary<IAnalysis, ContextCount>();
 				return m_caselessGuessTable;
 			}
 			set { m_caselessGuessTable = value; }
@@ -300,25 +303,27 @@ namespace SIL.LCModel.DomainServices
 		/// <returns>bool</returns>
 		private bool TryGetContextAwareGuess(IAnalysis form, IWfiWordform lowercaseForm, IAnalysis previous, out IAnalysis analysis)
 		{
-			IDictionary<IAnalysis, Dictionary<IAnalysis, IAnalysis>> guessTable = lowercaseForm != null ? CaselessGuessTable : GuessTable;
+			IDictionary<IAnalysis, ContextCount> guessTable = lowercaseForm != null ? CaselessGuessTable : GuessTable;
 
 			if (!guessTable.ContainsKey(form))
 			{
 				// Fill in GuessTable.
-				guessTable[form] = GetDefaultAnalyses(form, lowercaseForm);
+				guessTable[form] = GetContextCounts(form);
+				if (lowercaseForm != null)
+					GetContextCounts(lowercaseForm, true, guessTable[form]);
 			}
-			if (!guessTable[form].ContainsKey(previous))
+			if (!guessTable[form].previousWordform.ContainsKey(previous))
 			{
 				// back off to all forms.
 				previous = m_nullWAG;
-				if (!guessTable[form].ContainsKey(previous))
+				if (!guessTable[form].previousWordform.ContainsKey(previous))
 				{
 					// form doesn't occur in the interlinear texts.
 					analysis = m_nullWAG;
 					return false;
 				}
 			}
-			analysis = guessTable[form][previous];
+			analysis = GetBestAnalysis(guessTable[form], previous);
 			if (analysis == null)
 				return false;
 			if (analysis is IWfiAnalysis)
@@ -333,51 +338,45 @@ namespace SIL.LCModel.DomainServices
 		}
 
 		/// <summary>
-		/// Get the default analyses for the given form in the context of the previous word form.
-		/// If lowercaseForm is given, then include its analyses, too.
-		/// If form is an analysis,then the default analyses are glosses.
-		/// Uses m_emptyWAG as previous word form for the first analysis in a segment.
-		/// Uses m_nullWAG as previous word form when unknown.
+		/// Get the best analysis from counts given previous.
 		/// </summary>
-		/// <param name="form">the form that you want analyses for</param>
-		/// <param name="lowercaseForm">lowercase version of form</param>
-		/// <returns>Dictionary<IAnalysis, IAnalysis></returns>
-		private Dictionary<IAnalysis, IAnalysis> GetDefaultAnalyses(IAnalysis form, IWfiWordform lowercaseForm)
+		/// <param name="counts"></param>
+		/// <param name="previous"></param>
+		/// <returns></returns>
+		private IAnalysis GetBestAnalysis(ContextCount counts, IAnalysis previous)
 		{
-			Dictionary<IAnalysis, IAnalysis> defaults = new Dictionary<IAnalysis, IAnalysis>();
-			Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts = null;
+			IAnalysis best = null;
+			foreach (IAnalysis key in counts.previousWordform[previous].Keys)
+			{
+				if (best == null || ComparePriorityCounts(key, best, previous, counts.previousWordform) < 0)
+				{
+					best = key;
+				}
+			}
+			return best;
+		}
+
+		/// <summary>
+		/// Get the context counts for form.
+		/// </summary>
+		/// <param name="form"></param>
+		/// <param name="lowercased">whether form is lowercased</param>
+		/// <param name="counts">existing context counts</param>
+		/// <returns></returns>
+		private ContextCount GetContextCounts(IAnalysis form, bool lowercased = false, ContextCount counts = null)
+		{
+			if (counts == null)
+				counts = new ContextCount();
 			if (form is IWfiWordform wordform)
 			{
-				// Get default analyses.
-				counts = GetAnalysisCounts(wordform);
-				if (lowercaseForm != null)
-					// Add lowercase analyses to counts.
-					GetAnalysisCounts(lowercaseForm, true, counts);
+				counts.previousWordform = GetAnalysisCounts(wordform, lowercased, counts.previousWordform);
 			}
 			else if (form is IWfiAnalysis analysis)
 			{
 				// Get default glosses.
-				counts = GetGlossCounts(analysis);
+				counts.previousWordform = GetGlossCounts(analysis);
 			}
-			if (counts != null)
-			{
-				// Get the best analysis for each key in counts.
-				foreach (IAnalysis previous in counts.Keys)
-				{
-					IAnalysis best = null;
-					// Use counts[previous].Keys instead of wordform.AnalysesOC 
-					// because counts[previous].Keys may include lowercase analyses.
-					foreach (IAnalysis key in counts[previous].Keys)
-					{
-						if (best == null || ComparePriorityCounts(key, best, previous, counts) < 0)
-						{
-							best = key;
-							defaults[previous] = best;
-						}
-					}
-				}
-			}
-			return defaults;
+			return counts;
 		}
 
 		/// <summary>
@@ -388,8 +387,8 @@ namespace SIL.LCModel.DomainServices
 		/// </summary>
 		/// <param name="wordform">the form that you want an analysis for</param>
 		/// <returns>Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>></returns>
-		private Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> GetAnalysisCounts(IWfiWordform wordform, bool lowercased = false,
-			Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts = null)
+		private IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> GetAnalysisCounts(IWfiWordform wordform, bool lowercased = false,
+			IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts = null)
 		{
 			if (counts == null)
 				counts = new Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>>();
@@ -511,7 +510,7 @@ namespace SIL.LCModel.DomainServices
 		/// <param name="counts">the dictionary of counts being incremented</param>
 		/// <returns>void</returns>
 		private void AddAnalysisCount(IAnalysis previous, IAnalysis analysis, int priority, bool lowercased,
-			Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts)
+			IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts)
 		{
 			if (previous != m_nullWAG)
 			{
@@ -548,7 +547,7 @@ namespace SIL.LCModel.DomainServices
 		/// Sort in descending order.
 		/// </summary>
 		private int ComparePriorityCounts(IAnalysis a1, IAnalysis a2, IAnalysis previous,
-			Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts)
+			IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts)
 		{
 			// Check for existence of previous.
 			if (!counts.ContainsKey(previous))
