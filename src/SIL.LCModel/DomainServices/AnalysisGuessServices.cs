@@ -8,6 +8,7 @@
 // <remarks>
 // </remarks>
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SIL.LCModel.Core.KernelInterfaces;
@@ -290,7 +291,7 @@ namespace SIL.LCModel.DomainServices
 		}
 
 		/// <summary>
-		/// Try to get the default analysis for form in the context of its previous word form.
+		/// Try to get the default analysis for form in the context of its occurrence.
 		/// If form is an analysis,then the result is a gloss.
 		/// If form is a wordform, then try to get the default gloss of the default analysis if it exists.
 		/// Use m_emptyWAG as the previous word form for the first analysis in a segment.
@@ -298,10 +299,27 @@ namespace SIL.LCModel.DomainServices
 		/// </summary>
 		/// <param name="form">the form that you want an analysis for</param>
 		/// <param name="lowercaseForm">the lowercase version of form if its analyses should be included</param>
-		/// <param name="previous">the context of the form</param>
+		/// <param name="occurrence">where the form occurs (used for context)</param>
 		/// <param name="analysis">the resulting analysis</param>
 		/// <returns>bool</returns>
-		private bool TryGetContextAwareGuess(IAnalysis form, IWfiWordform lowercaseForm, IAnalysis previous, out IAnalysis analysis)
+		private bool TryGetContextAwareGuess(IAnalysis form, IWfiWordform lowercaseForm, AnalysisOccurrence occurrence, out IAnalysis analysis)
+		{
+			IDictionary<IAnalysis, ContextCount> guessTable = GetGuessTable(form, lowercaseForm);
+			analysis = GetBestAnalysis(guessTable[form], occurrence);
+			if (analysis == null)
+				return false;
+			if (analysis is IWfiAnalysis)
+			{
+				// Get the best gloss for analysis.
+				if (TryGetContextAwareGuess(analysis, null, occurrence, out IAnalysis gloss))
+				{
+					analysis = gloss;
+				}
+			}
+			return true;
+		}
+
+		private IDictionary<IAnalysis, ContextCount> GetGuessTable(IAnalysis form, IWfiWordform lowercaseForm)
 		{
 			IDictionary<IAnalysis, ContextCount> guessTable = lowercaseForm != null ? CaselessGuessTable : GuessTable;
 
@@ -312,43 +330,26 @@ namespace SIL.LCModel.DomainServices
 				if (lowercaseForm != null)
 					GetContextCounts(lowercaseForm, true, guessTable[form]);
 			}
-			if (!guessTable[form].previousWordform.ContainsKey(previous))
-			{
-				// back off to all forms.
-				previous = m_nullWAG;
-				if (!guessTable[form].previousWordform.ContainsKey(previous))
-				{
-					// form doesn't occur in the interlinear texts.
-					analysis = m_nullWAG;
-					return false;
-				}
-			}
-			analysis = GetBestAnalysis(guessTable[form], previous);
-			if (analysis == null)
-				return false;
-			if (analysis is IWfiAnalysis)
-			{
-				// Get the best gloss for analysis.
-				if (TryGetContextAwareGuess(analysis, null, previous, out IAnalysis gloss))
-				{
-					analysis = gloss;
-				}
-			}
-			return true;
+			return guessTable;
 		}
 
 		/// <summary>
-		/// Get the best analysis from counts given previous.
+		/// Get the best analysis from counts given context of occurrence.
 		/// </summary>
 		/// <param name="counts"></param>
-		/// <param name="previous"></param>
+		/// <param name="occurrence"></param>
 		/// <returns></returns>
-		private IAnalysis GetBestAnalysis(ContextCount counts, IAnalysis previous)
+		private IAnalysis GetBestAnalysis(ContextCount counts, AnalysisOccurrence occurrence)
 		{
 			IAnalysis best = null;
-			foreach (IAnalysis key in counts.previousWordform[previous].Keys)
+			if (!counts.previousWordform.ContainsKey(m_nullWAG))
 			{
-				if (best == null || ComparePriorityCounts(key, best, previous, counts.previousWordform) < 0)
+				// No analyses to enumerate.
+				return null;
+			}
+			foreach (IAnalysis key in counts.previousWordform[m_nullWAG].Keys)
+			{
+				if (best == null || ComparePriorityCounts(key, best, occurrence, counts) < 0)
 				{
 					best = key;
 				}
@@ -369,26 +370,26 @@ namespace SIL.LCModel.DomainServices
 				counts = new ContextCount();
 			if (form is IWfiWordform wordform)
 			{
-				counts.previousWordform = GetAnalysisCounts(wordform, lowercased, counts.previousWordform);
+				counts.previousWordform = GetAnalysisCounts(wordform, lowercased, true, counts.previousWordform);
+				counts.nextWordform = GetAnalysisCounts(wordform, lowercased, false, counts.nextWordform);
 			}
 			else if (form is IWfiAnalysis analysis)
 			{
 				// Get default glosses.
-				counts.previousWordform = GetGlossCounts(analysis);
+				counts.previousWordform = GetGlossCounts(analysis, true);
+				counts.nextWordform = GetGlossCounts(analysis, false);
 			}
 			return counts;
 		}
 
 		/// <summary>
-		/// Get analysis counts for the given word form in the context of the previous word form.
+		/// Get analysis counts for the given word form in its context.
 		/// Uses m_emptyWAG as previous word form for the first analysis in a segment.
 		/// Uses m_nullWAG as previous word form when unknown.
 		/// This is used by GetBestGuess for word forms and GetSortedAnalysisGuesses.
 		/// </summary>
-		/// <param name="wordform">the form that you want an analysis for</param>
-		/// <returns>Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>></returns>
 		private IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> GetAnalysisCounts(IWfiWordform wordform, bool lowercased = false,
-			IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts = null)
+			bool previous = true, IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts = null)
 		{
 			if (counts == null)
 				counts = new Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>>();
@@ -406,7 +407,7 @@ namespace SIL.LCModel.DomainServices
 						// Leave this occurrence out.
 						continue;
 					}
-					IAnalysis previous = GetPreviousWordform(seg, i);
+					IAnalysis adjacent = GetAdjacentWordform(seg, i, previous);
 					if (analysis is IWfiGloss)
 					{
 						// Get analysis for gloss.
@@ -415,7 +416,7 @@ namespace SIL.LCModel.DomainServices
 					if (analysis is IWfiAnalysis)
 					{
 						// Add high priority count to analysis.
-						AddAnalysisCount(previous, analysis, 7, lowercased, counts);
+						AddAnalysisCount(adjacent, analysis, 7, lowercased, counts);
 					}
 				}
 			}
@@ -440,15 +441,14 @@ namespace SIL.LCModel.DomainServices
 		}
 
 		/// <summary>
-		/// Get gloss counts for the given analysis in the context of the previous word form.
-		/// If form is an analysis,then the analysis counts are for glosses.
+		/// Get gloss counts for the given analysis in its context.
 		/// Uses m_emptyWAG as previous word form for the first analysis in a segment.
 		/// Uses m_nullWAG as previous word form when unknown.
 		/// This is used by GetBestGuess for analyses and GetSortedGlossGuesses.
 		/// </summary>
 		/// <param name="analysis">the analysis that you want a gloss for</param>
 		/// <returns>Dictionary<IAnalysis, Dictionary<IAnalysis, int>></returns>
-		private Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> GetGlossCounts(IWfiAnalysis analysis)
+		private Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> GetGlossCounts(IWfiAnalysis analysis, bool previous)
 		{
 			var counts = new Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>>();
 			var segs = new HashSet<ISegment>();
@@ -461,14 +461,14 @@ namespace SIL.LCModel.DomainServices
 				for (int i = 0; i < seg.AnalysesRS.Count; i++)
 				{
 					// Get gloss for analysis.
-					IAnalysis previous = GetPreviousWordform(seg, i);
+					IAnalysis adjacent = GetAdjacentWordform(seg, i, previous);
 					IAnalysis gloss = seg.AnalysesRS[i];
 					if (gloss is IWfiGloss)
 					{
 						if (gloss.Analysis == analysis)
 						{
 							// Add high priority count to gloss.
-							AddAnalysisCount(previous, gloss, 2, false, counts);
+							AddAnalysisCount(adjacent, gloss, 2, false, counts);
 						}
 					}
 				}
@@ -501,54 +501,76 @@ namespace SIL.LCModel.DomainServices
 		}
 
 		/// <summary>
-		/// Add a count to counts for analysis with the given previous word form and the given priority.
+		/// Get the adjacent word form of a location.
 		/// </summary>
-		/// <param name="previous">the previous word form</param>
+		/// <param name="seg">the segment of the location</param>
+		/// <param name="i">the index of the location</param>
+		/// <returns>IAnalysis</returns>
+		private IAnalysis GetAdjacentWordform(ISegment seg, int i, bool previous)
+		{
+			if (previous && i == 0)
+				return m_emptyWAG;
+			if (!previous && i == seg.AnalysesRS.Count - 1)
+				return m_emptyWAG;
+			int j = previous ? i - 1 : i + 1;
+			IAnalysis adjacent = seg.AnalysesRS[j];
+			if (adjacent is IWfiAnalysis || adjacent is IWfiGloss)
+			{
+				adjacent = adjacent.Wordform;
+			}
+			// Should be IWfiWordform or IPunctuationForm.
+			return adjacent;
+		}
+
+		/// <summary>
+		/// Add a count to counts for analysis with the given context word form and the given priority.
+		/// </summary>
+		/// <param name="context">the context word form</param>
 		/// <param name="analysis">the analysis being counted</param>
 		/// <param name="priority">the priority of the count</param>
 		/// <param name="lowercased">whether the word form of the analysis was lowercased</param>
 		/// <param name="counts">the dictionary of counts being incremented</param>
 		/// <returns>void</returns>
-		private void AddAnalysisCount(IAnalysis previous, IAnalysis analysis, int priority, bool lowercased,
+		private void AddAnalysisCount(IAnalysis context, IAnalysis analysis, int priority, bool lowercased,
 			IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts)
 		{
-			if (previous != m_nullWAG)
+			if (context != m_nullWAG)
 			{
 				// Record count for unknown/backoff.
 				AddAnalysisCount(m_nullWAG, analysis, priority, lowercased, counts);
 			}
-			if (!counts.ContainsKey(previous))
+			if (!counts.ContainsKey(context))
 			{
-				counts[previous] = new Dictionary<IAnalysis, PriorityCount>();
+				counts[context] = new Dictionary<IAnalysis, PriorityCount>();
 			}
-			if (!counts[previous].ContainsKey(analysis))
+			if (!counts[context].ContainsKey(analysis))
 			{
-				counts[previous][analysis] = new PriorityCount();
+				counts[context][analysis] = new PriorityCount();
 			}
-			if (counts[previous][analysis].priority > priority)
+			if (counts[context][analysis].priority > priority)
 			{
 				// Ignore this count because its priority is too low.
 				return;
 			}
-			if (counts[previous][analysis].priority < priority)
+			if (counts[context][analysis].priority < priority)
 			{
 				// Start a new priority count.
-				counts[previous][analysis].priority = priority;
-				counts[previous][analysis].lowercased = lowercased;
-				counts[previous][analysis].count = 0;
+				counts[context][analysis].priority = priority;
+				counts[context][analysis].lowercased = lowercased;
+				counts[context][analysis].count = 0;
 			}
 			// Increment count.
-			counts[previous][analysis].count += 1;
+			counts[context][analysis].count += 1;
 		}
 
 		/// <summary>
-		/// Compare the priority counts for a1 and a2 based on
-		/// the previous wordform and a dictionary of counts.
+		/// Compare the priority counts for a1 and a2 based on the context of the occurrence.
 		/// Sort in descending order.
 		/// </summary>
-		private int ComparePriorityCounts(IAnalysis a1, IAnalysis a2, IAnalysis previous,
-			IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts)
+		private int ComparePriorityCounts(IAnalysis a1, IAnalysis a2, AnalysisOccurrence occurrence, ContextCount contextCount)
 		{
+			IAnalysis previous = occurrence != null ? GetPreviousWordform(occurrence.Segment, occurrence.Index) : m_nullWAG;
+			IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts = contextCount.previousWordform;
 			// Check for existence of previous.
 			if (!counts.ContainsKey(previous))
 			{
@@ -614,7 +636,7 @@ namespace SIL.LCModel.DomainServices
 			if (!EntryGenerated(wf))
 				GenerateEntryGuesses(wf, ws);
 			IAnalysis wag;
-			if (TryGetContextAwareGuess(wf, null, m_nullWAG, out wag))
+			if (TryGetContextAwareGuess(wf, null, null, out wag))
 				return wag;
 			return new NullWAG();
 		}
@@ -627,7 +649,7 @@ namespace SIL.LCModel.DomainServices
 		public IAnalysis GetBestGuess(IWfiAnalysis wa)
 		{
 			IAnalysis wag;
-			if (TryGetContextAwareGuess(wa, null, m_nullWAG, out wag))
+			if (TryGetContextAwareGuess(wa, null, null, out wag))
 				return wag;
 			return new NullWAG();
 		}
@@ -641,34 +663,27 @@ namespace SIL.LCModel.DomainServices
 		/// False: Do lowercase matching regardless of the occurrence index.
 		/// </param>
 		/// <param name="includeContext">
-		/// True: Consider previous word when getting best guess.
-		/// False: Ignore previous word when getting best guess.
+		/// True: Consider context when getting best guess.
+		/// False: Ignore context when getting best guess.
 		/// </param>
 		public IAnalysis GetBestGuess(AnalysisOccurrence occurrence, bool onlyIndexZeroLowercaseMatching = true, bool includeContext = true)
 		{
-			// first see if there is a relevant lowercase form of a sentence initial (non-lowercase) wordform
-			// TODO: make it look for the first word in the sentence...may not be at Index 0!
-			IWfiWordform lowercaseWf = null;
 			int ws = occurrence.BaselineWs;
-			if (occurrence.Analysis is IWfiWordform wordform)
-				{
-					if (!EntryGenerated(wordform))
-						GenerateEntryGuesses(wordform, ws);
-					if (!onlyIndexZeroLowercaseMatching || occurrence.Index == 0)
-					{
-						lowercaseWf = GetLowercaseWordform(occurrence, ws);
-						if (lowercaseWf != null && lowercaseWf != wordform)
-						{
-							if (!EntryGenerated(lowercaseWf))
-								GenerateEntryGuesses(lowercaseWf, ws);
-						}
-					}
-			}
 			if (ws == -1)
 				return new NullWAG(); // happens with empty translation lines
+
+			IWfiWordform lowercaseWf = null;
+			if (occurrence.Analysis is IWfiWordform wordform)
+			{
+				lowercaseWf = GetLowercaseWordform(occurrence, ws, onlyIndexZeroLowercaseMatching, wordform);
+				// Generate entries if necessary.
+				if (!EntryGenerated(wordform))
+					GenerateEntryGuesses(wordform, ws);
+				if (lowercaseWf != null && !EntryGenerated(lowercaseWf))
+					GenerateEntryGuesses(lowercaseWf, ws);
+			}
 			IAnalysis bestGuess;
-			IAnalysis previous = includeContext ? GetPreviousWordform(occurrence.Segment, occurrence.Index) : m_nullWAG;
-			if (TryGetContextAwareGuess(occurrence.Analysis, lowercaseWf, previous, out bestGuess))
+			if (TryGetContextAwareGuess(occurrence.Analysis, lowercaseWf, includeContext ? occurrence : null, out bestGuess))
 				return bestGuess;
 			return new NullWAG();
 		}
@@ -676,13 +691,19 @@ namespace SIL.LCModel.DomainServices
 		/// <summary>
 		/// Get the lowercase word form if the occurrence is uppercase.
 		/// </summary>
-		private IWfiWordform GetLowercaseWordform(AnalysisOccurrence occurrence, int ws)
+		private IWfiWordform GetLowercaseWordform(AnalysisOccurrence occurrence, int ws,
+			bool onlyIndexZeroLowercaseMatching, IWfiWordform wordform)
 		{
+			// TODO: make it look for the first word in the sentence...may not be at Index 0!
+			if (occurrence == null)
+				return null;
+			if (onlyIndexZeroLowercaseMatching && occurrence.Index != 0)
+				return null;
 			ITsString tssWfBaseline = occurrence.BaselineText;
 			var cf = new CaseFunctions(Cache.ServiceLocator.WritingSystemManager.Get(ws));
 			string sLower = cf.ToLower(tssWfBaseline.Text);
 			// don't bother looking up the lowercased wordform if the instanceOf is already in lowercase form.
-			if (sLower != tssWfBaseline.Text)
+			if (sLower != wordform.ShortName)
 			{
 				return GetWordformIfNeeded(sLower, ws);
 			}
@@ -808,26 +829,22 @@ namespace SIL.LCModel.DomainServices
 				if (originalCaseWf != null)
 					wordform = originalCaseWf;
 			}
+			IWfiWordform lowercaseWf = GetLowercaseWordform(occurrence, ws, onlyIndexZeroLowercaseMatching, wordform);
 
+			// Generate entries if necessary.
 			if (!EntryGenerated(wordform))
 				GenerateEntryGuesses(wordform, ws);
+			if (lowercaseWf != null && !EntryGenerated(lowercaseWf))
+				GenerateEntryGuesses(lowercaseWf, ws);
 
-			var counts = GetAnalysisCounts(wordform);
+			// Get analyses to sort.
 			List<IWfiAnalysis> analyses = wordform.AnalysesOC.ToList();
-			if (occurrence != null && (!onlyIndexZeroLowercaseMatching || occurrence.Index == 0))
-			{
-				IWfiWordform lowercaseWf = GetLowercaseWordform(occurrence, ws);
-				if (lowercaseWf != null && lowercaseWf != wordform)
-				{
-					// Add lowercase analyses.
-					if (!EntryGenerated(lowercaseWf))
-						GenerateEntryGuesses(lowercaseWf, ws);
-					GetAnalysisCounts(lowercaseWf, true, counts);
-					analyses.AddRange(lowercaseWf.AnalysesOC);
-				}
-			}
-			var previous = occurrence == null ? m_nullWAG : GetPreviousWordform(occurrence.Segment, occurrence.Index);
-			analyses.Sort((x, y) => ComparePriorityCounts(x, y, previous, counts));
+			if (lowercaseWf != null)
+				analyses.AddRange(lowercaseWf.AnalysesOC);
+
+			// Sort analyses.
+			IDictionary<IAnalysis, ContextCount> guessTable = GetGuessTable(wordform, lowercaseWf);
+			analyses.Sort((x, y) => ComparePriorityCounts(x, y, occurrence, guessTable[wordform]));
 			return analyses;
 		}
 
@@ -836,12 +853,12 @@ namespace SIL.LCModel.DomainServices
 		/// </summary>
 		public List<IWfiGloss> GetSortedGlossGuesses(IWfiAnalysis analysis, AnalysisOccurrence occurrence = null)
 		{
-			var counts = GetGlossCounts(analysis);
-			var previous = occurrence == null ? m_nullWAG : GetPreviousWordform(occurrence.Segment, occurrence.Index);
 			List<IWfiGloss> glosses = analysis.MeaningsOC.ToList();
-			glosses.Sort((x, y) => ComparePriorityCounts(x, y, previous, counts));
+			IDictionary<IAnalysis, ContextCount> guessTable = GetGuessTable(analysis, null);
+			glosses.Sort((x, y) => ComparePriorityCounts(x, y, occurrence, guessTable[analysis]));
 			return glosses;
 		}
+
 		#region GenerateEntryGuesses
 		/// <summary>
 		/// This class stores the relevant database ids for information which can generate a

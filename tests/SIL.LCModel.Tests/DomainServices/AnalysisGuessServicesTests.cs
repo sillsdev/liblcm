@@ -4,8 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using SIL.LCModel.Core.Text;
@@ -554,6 +552,7 @@ namespace SIL.LCModel.DomainServices
 				// Test GetOriginalCaseWordform.
 				// Set the analysis to the lowercase wordform.
 				setup.Para0.SetAnalysis(0, 0, sorted_analyses[1]);
+				setup.GuessServices.ClearGuessData();
 				sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(occurrence.Analysis.Wordform, occurrence);
 				// We should still get the uppercase wordform as a guess.
 				// The lowercase wordform is preferred because it is human-approved.
