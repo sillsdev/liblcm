@@ -1445,16 +1445,36 @@ namespace SIL.LCModel.DomainServices
 			}
 		}
 
-		[Test]
-		public void TestPrioritizerProject()
+		public void TestPrioritionProject()
 		{
 			TestProject(
 				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Test prioritization",
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Test prioritization\\Test prioritization.fwdata"
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Test prioritization\\Test prioritization.fwdata",
+				30, 52
 			);
 		}
 
-		private void TestProject(string projectsDirectory, string dbFileName)
+		[Test]
+		public void TestPrioritionApprovedProject()
+		{
+			TestProject(
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Test prioritization-Approved",
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Test prioritization-Approved\\Test prioritization-Approved.fwdata",
+				37, 47
+			);
+		}
+
+		[Test]
+		public void TestPrioritionUnapprovedProject()
+		{
+			TestProject(
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Test prioritization-Unapproved",
+				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Test prioritization-Unapproved\\Test prioritization-Unapproved.fwdata",
+				18, 22
+			);
+		}
+
+		private void TestProject(string projectsDirectory, string dbFileName, int expectedCorrect, int expectedTotal)
 		{
 			var projectId = new TestProjectId(BackendProviderType.kXML, dbFileName);
 			var m_ui = new DummyLcmUI();
@@ -1493,8 +1513,8 @@ namespace SIL.LCModel.DomainServices
 			}
 			float ratio = total == 0 ? 0 : (float)correct / (float)total;
 			Console.WriteLine("correct: " + correct.ToString() + ", total: " + total.ToString() + " (" + (100 * ratio).ToString() + "%)");
-			Assert.AreEqual(52, total);
-			Assert.AreEqual(26, correct);
+			Assert.AreEqual(expectedCorrect, correct);
+			Assert.AreEqual(expectedTotal, total);
 		}
 	}
 }

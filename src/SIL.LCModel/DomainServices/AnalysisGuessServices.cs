@@ -569,18 +569,19 @@ namespace SIL.LCModel.DomainServices
 		/// </summary>
 		private int ComparePriorityCounts(IAnalysis a1, IAnalysis a2, AnalysisOccurrence occurrence, ContextCount contextCount)
 		{
-			IAnalysis previous = occurrence != null ? GetPreviousWordform(occurrence.Segment, occurrence.Index) : m_nullWAG;
-			IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts = contextCount.previousWordform;
-			// Check for existence of previous.
-			if (!counts.ContainsKey(previous))
+			// Compare contexted counts.
+			if (occurrence != null)
 			{
-				previous = m_nullWAG;
-				if (!counts.ContainsKey(previous))
-					return 0;
+				float score1 = GetContextScore(a1, occurrence, contextCount);
+				float score2 = GetContextScore(a2, occurrence, contextCount);
+				if (score1 < score2)
+					return 1;
+				if (score1 > score2)
+					return -1;
 			}
-			// See if we should back off.
-			if (!counts[previous].ContainsKey(a1) && !counts[previous].ContainsKey(a2))
-				previous = m_nullWAG;
+			// Compare non-contexted counts.
+			IAnalysis previous = m_nullWAG;
+			IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts = contextCount.previousWordform;
 			// Prefer higher priority counts.
 			int priority1 = counts[previous].ContainsKey(a1) ? counts[previous][a1].priority : 0;
 			int priority2 = counts[previous].ContainsKey(a2) ? counts[previous][a2].priority : 0;
@@ -605,6 +606,33 @@ namespace SIL.LCModel.DomainServices
 			// Maintain a complete order to avoid non-determinism.
 			// This means that GetBestGuess and GetSortedAnalyses[0] should have the same analysis.
 			return a1.Guid.CompareTo(a2.Guid);
+
+		}
+
+		float GetContextScore(IAnalysis analysis, AnalysisOccurrence occurrence, ContextCount contextCount)
+		{
+			float previousScore = GetContextScore(analysis, occurrence, true, contextCount);
+			float nextScore = GetContextScore(analysis, occurrence, false, contextCount);
+			return previousScore + nextScore;
+		}
+
+		float GetContextScore(IAnalysis analysis, AnalysisOccurrence occurrence, bool previous, ContextCount contextCount)
+		{
+			IAnalysis context = GetAdjacentWordform(occurrence.Segment, occurrence.Index, previous);
+			IDictionary < IAnalysis, Dictionary < IAnalysis, PriorityCount >> counts = previous
+				? contextCount.previousWordform
+				: contextCount.nextWordform;
+			if (counts.ContainsKey(context) &&
+				counts[context].ContainsKey(analysis))
+			{
+				float count = counts[context][analysis].count;
+				float total = 0;
+				foreach (IAnalysis anal in counts[context].Keys)
+					total += counts[context][anal].count;
+				if (total > 0)
+					return count / total;
+			}
+			return 0;
 		}
 
 		/// <summary>
