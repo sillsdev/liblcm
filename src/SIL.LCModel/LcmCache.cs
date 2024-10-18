@@ -1085,6 +1085,11 @@ namespace SIL.LCModel
 			get { return m_serviceLocator; }
 		}
 
+		internal IServiceLocatorInternal InternalServices
+		{
+			get { return (IServiceLocatorInternal) m_serviceLocator; }
+		}
+
 		/// <summary>
 		/// Add to the list a ClassAndPropInfo for each concrete class of object that may be added to
 		/// property flid.
