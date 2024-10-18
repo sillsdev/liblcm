@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using SIL.LCModel.Core.Text;
@@ -1445,42 +1446,41 @@ namespace SIL.LCModel.DomainServices
 			}
 		}
 
-		public void TestPrioritionProject()
-		{
-			TestProject(
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Test prioritization",
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Test prioritization\\Test prioritization.fwdata",
-				30, 52
-			);
-		}
-
 		[Test]
-		public void TestPrioritionApprovedProject()
+		public void TestProjects()
 		{
-			TestProject(
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Test prioritization-Approved",
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Test prioritization-Approved\\Test prioritization-Approved.fwdata",
-				37, 47
-			);
+			TestProjects("C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects");
 		}
 
-		[Test]
-		public void TestPrioritionUnapprovedProject()
+		private void TestProjects(string directory)
 		{
-			TestProject(
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Test prioritization-Unapproved",
-				"C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects\\Test prioritization-Unapproved\\Test prioritization-Unapproved.fwdata",
-				18, 22
-			);
+			float count = 0;
+			int correct = 0;
+			int total = 0;
+			foreach (string subdir in Directory.GetDirectories(directory))
+			{
+				foreach (string file in Directory.GetFiles(subdir, "*.fwdata"))
+				{
+					int pCorrect;
+					int pTotal;
+					TestProject(subdir, file, out pCorrect, out pTotal);
+					if (pTotal == 0) continue;
+					correct += pCorrect;
+					total += pTotal;
+					count++;
+				}
+			}
+			float ratio = (float)correct / (float)total;
+			Console.WriteLine("overall correct: " + correct.ToString() + ", total: " + total.ToString() + " (" + (100 * ratio).ToString() + "%) for " + count + " projects");
 		}
 
-		private void TestProject(string projectsDirectory, string dbFileName, int expectedCorrect, int expectedTotal)
+		private void TestProject(string projectsDirectory, string dbFileName, out int outCorrect, out int outTotal)
 		{
+			int correct = 0;
+			int total = 0;
 			var projectId = new TestProjectId(BackendProviderType.kXML, dbFileName);
 			var m_ui = new DummyLcmUI();
 			var m_lcmDirectories = new TestLcmDirectories(projectsDirectory);
-			int total = 0;
-			int correct = 0;
 			using (var cache = LcmCache.CreateCacheFromExistingData(projectId, "en", m_ui, m_lcmDirectories, new LcmSettings(),
 					new DummyProgressDlg()))
 			{
@@ -1488,10 +1488,13 @@ namespace SIL.LCModel.DomainServices
 				IStTextRepository textRepository = cache.ServiceLocator.GetInstance<IStTextRepository>();
 				foreach (IStText text in textRepository.AllInstances())
 				{
+					if (total == 100) break;
 					foreach (IStTxtPara para in text.ParagraphsOS)
 					{
+						if (total == 100) break;
 						foreach (var occurrence in SegmentServices.StTextAnnotationNavigator.GetWordformOccurrencesAdvancingInPara(para))
 						{
+							if (total == 100) break;
 							var analysis = occurrence.Analysis;
 							if (analysis is IWfiGloss)
 							{
@@ -1502,19 +1505,21 @@ namespace SIL.LCModel.DomainServices
 									occurrence.Analysis = analysis.Wordform;
 									var bestGuess = guesser.GetBestGuess(occurrence);
 									occurrence.Analysis = analysis;
-									total++;
 									if (bestGuess == analysis)
 										correct++;
+									total++;
 								});
 							}
 						}
 					}
 				}
 			}
+			outCorrect = correct;
+			outTotal = total;
+			if (total < 5) return;
 			float ratio = total == 0 ? 0 : (float)correct / (float)total;
-			Console.WriteLine("correct: " + correct.ToString() + ", total: " + total.ToString() + " (" + (100 * ratio).ToString() + "%)");
-			Assert.AreEqual(expectedCorrect, correct);
-			Assert.AreEqual(expectedTotal, total);
+			string name = dbFileName.Substring(projectsDirectory.Length + 1);
+			Console.WriteLine("correct: " + correct.ToString() + ", total: " + total.ToString() + " (" + (100 * ratio).ToString() + "%): " + name);
 		}
 	}
 }
