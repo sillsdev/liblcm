@@ -1463,8 +1463,10 @@ namespace SIL.LCModel.DomainServices
 				{
 					int pCorrect;
 					int pTotal;
-					TestProject(subdir, file, out pCorrect, out pTotal);
-					if (pTotal == 0) continue;
+					int min = 5;
+					int cutoff = 100;
+					TestProject(subdir, file, min, cutoff, out pCorrect, out pTotal);
+					if (pTotal < min) continue;
 					correct += pCorrect;
 					total += pTotal;
 					count++;
@@ -1474,7 +1476,7 @@ namespace SIL.LCModel.DomainServices
 			Console.WriteLine("overall correct: " + correct.ToString() + ", total: " + total.ToString() + " (" + (100 * ratio).ToString() + "%) for " + count + " projects");
 		}
 
-		private void TestProject(string projectsDirectory, string dbFileName, out int outCorrect, out int outTotal)
+		private void TestProject(string projectsDirectory, string dbFileName, int min, int cutoff, out int outCorrect, out int outTotal)
 		{
 			int correct = 0;
 			int total = 0;
@@ -1488,13 +1490,13 @@ namespace SIL.LCModel.DomainServices
 				IStTextRepository textRepository = cache.ServiceLocator.GetInstance<IStTextRepository>();
 				foreach (IStText text in textRepository.AllInstances())
 				{
-					if (total == 100) break;
+					if (total == cutoff) break;
 					foreach (IStTxtPara para in text.ParagraphsOS)
 					{
-						if (total == 100) break;
+						if (total == cutoff) break;
 						foreach (var occurrence in SegmentServices.StTextAnnotationNavigator.GetWordformOccurrencesAdvancingInPara(para))
 						{
-							if (total == 100) break;
+							if (total == cutoff) break;
 							var analysis = occurrence.Analysis;
 							if (analysis is IWfiGloss)
 							{
@@ -1516,7 +1518,7 @@ namespace SIL.LCModel.DomainServices
 			}
 			outCorrect = correct;
 			outTotal = total;
-			if (total < 5) return;
+			if (total < min) return;
 			float ratio = total == 0 ? 0 : (float)correct / (float)total;
 			string name = dbFileName.Substring(projectsDirectory.Length + 1);
 			Console.WriteLine("correct: " + correct.ToString() + ", total: " + total.ToString() + " (" + (100 * ratio).ToString() + "%): " + name);
