@@ -10,6 +10,7 @@
 ## --------------------------------------------------------------------------------------------
 #set( $className = $class.Name )
 #set( $baseClassName = $class.BaseClass.Name )
+#set( $ownerStatus = $class.OwnerStatus )
 #if ($class.Name == "LgWritingSystem")
 #set( $classSfx = "FactoryLcm" )
 #else
@@ -50,6 +51,25 @@
 			var newby = new $className();
 			if (newby.OwnershipStatus != ClassOwnershipStatus.kOwnerRequired)
 				((ICmObjectInternal)newby).InitializeNewOwnerlessCmObject(m_cache);
+			return newby;
+		}
+
+		/// <summary>
+		/// Basic creation method for an $className.
+		/// </summary>
+		/// <returns>A new, unowned, $className with the given guid.</returns>
+		public I$className Create(Guid guid)
+		{
+#if ($class.IsSingleton)
+			if (m_cache.ServiceLocator.GetInstance<I${className}Repository>().Singleton != null)
+				throw new InvalidOperationException("Can not create more than one ${className}");
+#end
+			if (guid == Guid.Empty) throw new ArgumentException("Can not create a new ${className} with an empty guid.");
+			int hvo = m_cache.InternalServices.DataReader.GetNextRealHvo();
+			var newby = new $className(m_cache, hvo, guid);
+#if ( $ownerStatus != "required")
+			((ICmObjectInternal) newby).InitializeNewOwnerlessCmObjectWithPresetGuid();
+#end
 			return newby;
 		}
 #end
