@@ -64,7 +64,7 @@
 			if (m_cache.ServiceLocator.GetInstance<I${className}Repository>().Singleton != null)
 				throw new InvalidOperationException("Can not create more than one ${className}");
 #end
-			if (guid == Guid.Empty) throw new ArgumentException("Can not create a new ${className} with an empty guid.");
+			if (guid == Guid.Empty) guid = Guid.NewGuid();
 			int hvo = m_cache.InternalServices.DataReader.GetNextRealHvo();
 			var newby = new $className(m_cache, hvo, guid);
 #if ( $ownerStatus != "required")
