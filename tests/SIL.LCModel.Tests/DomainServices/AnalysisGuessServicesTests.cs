@@ -1446,12 +1446,10 @@ namespace SIL.LCModel.DomainServices
 			}
 		}
 
-		[Test]
-		public void TestProjects()
-		{
-			TestProjects("C:\\Users\\PC\\source\\repos\\FieldWorks\\DistFiles\\Projects");
-		}
-
+		/// <summary>
+		/// Test all of the projects in a directory.
+		/// </summary>
+		/// <param name="directory"></param>
 		private void TestProjects(string directory)
 		{
 			float count = 0;
@@ -1476,6 +1474,15 @@ namespace SIL.LCModel.DomainServices
 			Console.WriteLine("overall correct: " + correct.ToString() + ", total: " + total.ToString() + " (" + (100 * ratio).ToString() + "%) for " + count + " projects");
 		}
 
+		/// <summary>
+		/// Test a project.
+		/// </summary>
+		/// <param name="projectsDirectory"></param>
+		/// <param name="dbFileName"></param>
+		/// <param name="min">Skip project if it has less than min approved wordforms.</param>
+		/// <param name="cutoff">Number of approved wordforms to test</param>
+		/// <param name="outCorrect">Number of correct guesses</param>
+		/// <param name="outTotal">Number of total guesses</param>
 		private void TestProject(string projectsDirectory, string dbFileName, int min, int cutoff, out int outCorrect, out int outTotal)
 		{
 			int correct = 0;
