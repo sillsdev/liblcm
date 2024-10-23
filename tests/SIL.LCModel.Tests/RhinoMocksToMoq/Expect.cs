@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using Moq;
 
-namespace Rhino.Mocks
+namespace SIL.LCModel.Tests.Rhino.Mocks
 {
     public interface IExpect<T> where T : class
     {
