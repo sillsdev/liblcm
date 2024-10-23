@@ -198,7 +198,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			return nameElem;
 		}
 
-		private static DomainObjectDTO GetListDto(IDomainObjectDTORepository dtoRepos,
+		private static DomainObjectXMLDTO GetListDto(IDomainObjectDTORepository dtoRepos,
 			XElement owningElem, string flidName)
 		{
 			var xPath = flidName + "/objsur";
@@ -206,7 +206,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			if (objsurElem == null)
 				return null;
 			var guid = objsurElem.Attribute("guid").Value;
-			DomainObjectDTO dto;
+			DomainObjectXMLDTO dto;
 			if(dtoRepos.TryGetValue(guid, out dto))
 				return dto;
 			return null;

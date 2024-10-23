@@ -76,8 +76,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 			// The old objects to be removed go into 'goners'.
 			// In this case, it is the annotation defn type objects.
-			var goners = new List<DomainObjectDTO>((int) (dtoRepos.Count*0.80));
-			DomainObjectDTO dtoGoner;
+			var goners = new List<DomainObjectXMLDTO>((int) (dtoRepos.Count*0.80));
+			DomainObjectXMLDTO dtoGoner;
 			if (dtoRepos.TryGetValue(DataMigrationServices.kSegmentAnnDefnGuid, out dtoGoner))
 				goners.Add(dtoGoner);
 			if (dtoRepos.TryGetValue(DataMigrationServices.kTwficAnnDefnGuid, out dtoGoner))
@@ -245,7 +245,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 		private static void DeleteCcwgWithGuidIndex(IDomainObjectDTORepository dtoRepos)
 		{
-			var goners = new List<DomainObjectDTO>();
+			var goners = new List<DomainObjectXMLDTO>();
 			var ccwgs = dtoRepos.AllInstancesSansSubclasses("ConstChartWordGroup");
 			foreach (var dto in ccwgs)
 			{
@@ -277,7 +277,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		}
 
 		private static void DeleteUnneededGoners(IDomainObjectDTORepository dtoRepos,
-			IEnumerable<DomainObjectDTO> goners, ICollection<string> neededGoners)
+			IEnumerable<DomainObjectXMLDTO> goners, ICollection<string> neededGoners)
 		{
 			// We have run out of memory during this data migration on large projects.  (See
 			// FWR-3849.) One possible reason is that we can make 15000+ copies of LangProject
@@ -291,10 +291,10 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					Where(t => (t.Attribute("t") != null && t.Attribute("t").Value == "o")).Count();
 				if (cAnn > 0)
 				{
-					var gonersInLangProject = new List<DomainObjectDTO>(cAnn);
+					var gonersInLangProject = new List<DomainObjectXMLDTO>(cAnn);
 					foreach (var goner in goners)
 					{
-						DomainObjectDTO gonerActual;
+						DomainObjectXMLDTO gonerActual;
 						if (!dtoRepos.TryGetValue(goner.Guid, out gonerActual))
 							continue; // Not in repos.
 						if (neededGoners.Contains(goner.Guid))
@@ -329,7 +329,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Dictionary<string, byte[]> oldCcas,
 			Dictionary<Guid, Guid> ccaGuidMap,
 			IEnumerable<byte[]> oldCcrs,
-			List<DomainObjectDTO> goners)
+			List<DomainObjectXMLDTO> goners)
 		{
 			// Look for any xfics that have multiple CCA backrefs.
 			// If we find any, look through backrefs of CCAs and backrefs of xfic.BeginObj
@@ -674,7 +674,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 							halfBakedCcwgItems, refsFromAppliesTo, oldCCAs, ccaGuidMap, newGuid.ToString().ToLowerInvariant())));
 
 				// Add DTO to repos.
-				dtoRepos.Add(new DomainObjectDTO(newGuid.ToString().ToLowerInvariant(), className, newCCRElement.ToString()));
+				dtoRepos.Add(new DomainObjectXMLDTO(newGuid.ToString().ToLowerInvariant(), className, newCCRElement.ToString()));
 			}
 
 			return halfBakedCcwgItems;
@@ -942,7 +942,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				retval.Add(DataMigrationServices.CreateOwningObjSurElement(newGuid));
 
 				// Add newly converted CCA to repos.
-				dtoRepos.Add(new DomainObjectDTO(newGuid, newClassName, newCCAElement.ToString()));
+				dtoRepos.Add(new DomainObjectXMLDTO(newGuid, newClassName, newCCAElement.ToString()));
 			}
 
 			return retval;
@@ -1022,7 +1022,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		}
 
 		private static void DeleteImmediatelyAllUnlovedCCRs(
-			IDomainObjectDTORepository dtoRepos, ICollection<DomainObjectDTO> goners,
+			IDomainObjectDTORepository dtoRepos, ICollection<DomainObjectXMLDTO> goners,
 			IDictionary<string, int> xficHasTextOrDiscourseBackReference,
 			ICollection<byte[]> oldCCRs,
 			IDictionary<string, byte[]> oldCCAs,
@@ -1060,7 +1060,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 		private static void DeleteImmediatelyBadCca(IDomainObjectDTORepository dtoRepos,
 			string gonerCcaGuid,
-			ICollection<DomainObjectDTO> goners,
+			ICollection<DomainObjectXMLDTO> goners,
 			IDictionary<Guid, Guid> ccaGuidMap,
 			IDictionary<string, byte[]> oldCcas,
 			IDictionary<string, int> xficHasTextOrDiscourseBackReference)
@@ -1353,7 +1353,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					newSegmentElement = DeleteTemporaryAnalyses(newSegmentElement);
 					// Create a new Segment instance DTO from the 'newSegmentElement',
 					// and add it to repos.
-					var newSegDto = new DomainObjectDTO(newSegGuid, "Segment", newSegmentElement.ToString());
+					var newSegDto = new DomainObjectXMLDTO(newSegGuid, "Segment", newSegmentElement.ToString());
 					dtoRepos.Add(newSegDto);
 				}
 
@@ -1485,7 +1485,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		}
 
 		private static void CollectIndirectAnnotations(
-			IDomainObjectDTORepository dtoRepos, ICollection<DomainObjectDTO> goners,
+			IDomainObjectDTORepository dtoRepos, ICollection<DomainObjectXMLDTO> goners,
 			IDictionary<string, byte[]> oldCCAs,
 			IDictionary<Guid, Guid> ccaGuidMap,
 			IDictionary<string, int> xficHasTextOrDiscourseBackReference,
@@ -1632,7 +1632,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		}
 
 		private static void CollectBaseAnnotations(
-			IDomainObjectDTORepository dtoRepos, ICollection<DomainObjectDTO> goners,
+			IDomainObjectDTORepository dtoRepos, ICollection<DomainObjectXMLDTO> goners,
 			IDictionary<string, byte[]> oldCCAs,
 			IDictionary<Guid, Guid> ccaGuidMap,
 			IDictionary<string, int> xficHasTextOrDiscourseBackReference,
@@ -1641,7 +1641,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			IDictionary<string, SortedList<int, List<byte[]>>> paraToDuplicateOldXfics,
 			IDictionary<string, SortedList<int, byte[]>> paraToOldXfics)
 		{
-			var newPunctForms = new Dictionary<string, DomainObjectDTO>();
+			var newPunctForms = new Dictionary<string, DomainObjectXMLDTO>();
 			foreach (var baseAnnDto in dtoRepos.AllInstancesSansSubclasses("CmBaseAnnotation"))
 			{
 				var surrGuid = GetAnnotationTypeGuid(baseAnnDto.XmlBytes);
@@ -1712,8 +1712,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 		private static bool EnsurePficHasInstanceOf(
 			IDomainObjectDTORepository dtoRepos,
-			DomainObjectDTO dtoPfic,
-			IDictionary<string, DomainObjectDTO> newPunctForms)
+			DomainObjectXMLDTO dtoPfic,
+			IDictionary<string, DomainObjectXMLDTO> newPunctForms)
 		{
 			var pficElement = dtoPfic.XmlBytes;
 			/*
@@ -1795,7 +1795,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			// then make the new PF object, and return true.
 			// Find/Create PunctuationForm object that has a Form in the matching IcuLocale & matching string.
 			var key = icuLocale + "-" + newForm;
-			DomainObjectDTO dtoMatchingPf;
+			DomainObjectXMLDTO dtoMatchingPf;
 			if (!newPunctForms.TryGetValue(key, out dtoMatchingPf))
 			{
 				// Create new PunctuationForm dto.
@@ -1809,7 +1809,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 						new XElement("Form",
 							new XElement("Str",
 								new XElement("Run", new XAttribute("ws", icuLocale), newForm)))));
-				dtoMatchingPf = new DomainObjectDTO(newPunctFormGuid, className, newPfElement.ToString());
+				dtoMatchingPf = new DomainObjectXMLDTO(newPunctFormGuid, className, newPfElement.ToString());
 				// Add new PunctuationForm to dtoRepos.
 				dtoRepos.Add(dtoMatchingPf);
 				// Add new PunctuationForm to newPunctForms.
@@ -1830,7 +1830,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		}
 
 		private static void MarkParaAsNeedingTokenization(IDomainObjectDTORepository dtoRepos,
-			DomainObjectDTO paraDto)
+			DomainObjectXMLDTO paraDto)
 		{
 			var stTxtParaBounds = new ElementBounds(paraDto.XmlBytes, s_tagsStTxtPara);
 			if (!stTxtParaBounds.IsValid)
@@ -1917,19 +1917,19 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			return new XElement(elementName, actualCommentNodes);
 		}
 
-		private static void PreprocessTextTagAnnotation(ICollection<DomainObjectDTO> goners,
+		private static void PreprocessTextTagAnnotation(ICollection<DomainObjectXMLDTO> goners,
 			ICollection<byte[]> annElements,
-			DomainObjectDTO annDto,
+			DomainObjectXMLDTO annDto,
 			byte[] annElement)
 		{
 			goners.Add(annDto);
 			annElements.Add(annElement);
 		}
 
-		private static void PreprocessDiscourseAnnotation(ICollection<DomainObjectDTO> goners,
+		private static void PreprocessDiscourseAnnotation(ICollection<DomainObjectXMLDTO> goners,
 			IDictionary<string, byte[]> annElements,
 			IDictionary<Guid, Guid> ccaGuidMap,
-			DomainObjectDTO annDto, byte[] annElement)
+			DomainObjectXMLDTO annDto, byte[] annElement)
 		{
 			goners.Add(annDto);
 			var oldGuid = GetGuid(annElement);
@@ -1939,8 +1939,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			ccaGuidMap.Add(new Guid(oldGuid), Guid.NewGuid());
 		}
 
-		private static void PreprocessDiscourseAnnotation(ICollection<DomainObjectDTO> goners,
-			ICollection<byte[]> annElements, DomainObjectDTO annDto, byte[] annElement)
+		private static void PreprocessDiscourseAnnotation(ICollection<DomainObjectXMLDTO> goners,
+			ICollection<byte[]> annElements, DomainObjectXMLDTO annDto, byte[] annElement)
 		{
 			goners.Add(annDto);
 			var annoBounds = new ElementBounds(annElement, s_tagsCmAnnotation);
@@ -1952,8 +1952,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				annElements.Add(annElement);
 		}
 
-		private static void PreprocessTranslationOrNoteAnnotation(ICollection<DomainObjectDTO> goners,
-			Dictionary<string, List<byte[]>> annElements, DomainObjectDTO annDto, byte[] annElement)
+		private static void PreprocessTranslationOrNoteAnnotation(ICollection<DomainObjectXMLDTO> goners,
+			Dictionary<string, List<byte[]>> annElements, DomainObjectXMLDTO annDto, byte[] annElement)
 		{
 			goners.Add(annDto);
 			var annoBounds = new ElementBounds(annElement, s_tagsCmAnnotation);
@@ -1980,10 +1980,10 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 		private static void PreprocessBaseAnnotation(
 			IDomainObjectDTORepository dtoRepos,
-			ICollection<DomainObjectDTO> goners,
+			ICollection<DomainObjectXMLDTO> goners,
 			IDictionary<string, SortedList<int, List<byte[]>>> paraToDuplicates,
 			IDictionary<string, SortedList<int, byte[]>> paraToAnnotation,
-			DomainObjectDTO baseAnnDto, byte[] annElement, bool checkOnInstanceOf)
+			DomainObjectXMLDTO baseAnnDto, byte[] annElement, bool checkOnInstanceOf)
 		{
 			goners.Add(baseAnnDto);
 
@@ -2106,7 +2106,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 						new XElement("CmObject"),
 						new XElement("Note", GetOptionalComment(oldNotePair, "Content")));
 					// Create new dto and add to repos.
-					var newNoteDto = new DomainObjectDTO(newNoteGuid, "Note", newNoteElement.ToString());
+					var newNoteDto = new DomainObjectXMLDTO(newNoteGuid, "Note", newNoteElement.ToString());
 					dtoRepos.Add(newNoteDto);
 				}
 			}
@@ -2121,7 +2121,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			ICollection<byte[]> oldTextTags,
 			string newSegmentGuid,
 			bool isLastOldSegment,
-			DomainObjectDTO paraDto)
+			DomainObjectXMLDTO paraDto)
 		{
 			XElement retval = null;
 
@@ -2288,7 +2288,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 							new XElement("Tag", DataMigrationServices.CreateReferenceObjSurElement(GetInstanceOfGuid(oldTextTagAnnElement)))));
 
 					// Add new DTO to repos.
-					var newTextTagDto = new DomainObjectDTO(newTextTagGuid, "TextTag", newTextTagElement.ToString());
+					var newTextTagDto = new DomainObjectXMLDTO(newTextTagGuid, "TextTag", newTextTagElement.ToString());
 					dtoRepos.Add(newTextTagDto);
 					// Add new TextTag to owning prop on owner as objsur element.
 					var owningStTextElement = XElement.Parse(owningStText.Xml);

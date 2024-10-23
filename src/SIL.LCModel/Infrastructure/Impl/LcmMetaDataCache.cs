@@ -83,7 +83,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 			var cmObjectTypesBaseFirst = CmObjectTypesBaseFirst();
 
-			CmObjectSurrogate.InitializeConstructors(cmObjectTypesBaseFirst);
+			SurrogateConstructorInfo.InitializeConstructors(cmObjectTypesBaseFirst);
 
 			InitializeMetaDataCache(cmObjectTypesBaseFirst);
 

@@ -31,8 +31,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		private void RenameDuplicateCustomListsAndFixBadLists(IDomainObjectDTORepository repoDto)
 		{
 			var allLists = repoDto.AllInstancesWithSubclasses("CmPossibilityList");
-			var namesAndLists = new Dictionary<Tuple<string, string>, DomainObjectDTO>();
-			var duplicates = new List<Tuple<DomainObjectDTO, DomainObjectDTO>>();
+			var namesAndLists = new Dictionary<Tuple<string, string>, DomainObjectXMLDTO>();
+			var duplicates = new List<Tuple<DomainObjectXMLDTO, DomainObjectXMLDTO>>();
 			foreach (var list in allLists)
 			{
 				var listElement = XElement.Parse(list.Xml);
@@ -70,7 +70,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 						continue;
 					if (namesAndLists.ContainsKey(key))
 					{
-						duplicates.Add(new Tuple<DomainObjectDTO, DomainObjectDTO>(namesAndLists[key], list));
+						duplicates.Add(new Tuple<DomainObjectXMLDTO, DomainObjectXMLDTO>(namesAndLists[key], list));
 					}
 					else
 					{
@@ -94,7 +94,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 		}
 
-		private void AppendCustomToNamesAndUpdate(IDomainObjectDTORepository repoDto, DomainObjectDTO dto, XElement dtoXml)
+		private void AppendCustomToNamesAndUpdate(IDomainObjectDTORepository repoDto, DomainObjectXMLDTO dto, XElement dtoXml)
 		{
 			var names = dtoXml.Elements("Name");
 			foreach (var titleElement in names.Select(name => name.Element("AUni")).Where(titleElement => titleElement != null))

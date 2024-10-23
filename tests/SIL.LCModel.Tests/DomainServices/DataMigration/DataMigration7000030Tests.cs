@@ -190,7 +190,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.AreEqual(9, CmFolders[CmFolderTags.LocalFilePathsInTsStrings].Count, "The number of references to CmFiles is incorrect in this CmFolder.");
 		}
 
-		private void GetCmFolderNamesAndObjsurs(IEnumerable<DomainObjectDTO> CmFolderDtos, Dictionary<string, HashSet<string>> CmFolders)
+		private void GetCmFolderNamesAndObjsurs(IEnumerable<DomainObjectXMLDTO> CmFolderDtos, Dictionary<string, HashSet<string>> CmFolders)
 		{
 			foreach (var folderDto in CmFolderDtos)
 			{
@@ -300,14 +300,14 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.That(filesPaths.ElementAt(6), Is.EqualTo(@"C:\FwWW\DistFiles\AudioVisual\NotInLinkedFilesPath.WMV"));
 		}
 
-		private string GetCmFilePath(DomainObjectDTO fileDto)
+		private string GetCmFilePath(DomainObjectXMLDTO fileDto)
 		{
 			XElement cmFileXML = XElement.Parse(fileDto.Xml);
 			var filePathMoreDirect = cmFileXML.XPathSelectElement("InternalPath").XPathSelectElement("Uni").Value;
 			return filePathMoreDirect;
 		}
 
-		private string GetCmFileGuid(DomainObjectDTO fileDto)
+		private string GetCmFileGuid(DomainObjectXMLDTO fileDto)
 		{
 			XElement cmFileXML = XElement.Parse(fileDto.Xml);
 			var cmFileGuid = cmFileXML.Attribute("guid").Value;

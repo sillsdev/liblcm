@@ -57,7 +57,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 			if (pictures != null && pictures.Elements().Count() > 1)
 			{
-				DomainObjectDTO folder = null;
+				DomainObjectXMLDTO folder = null;
 				bool foundFiles = false;
 				foreach (var x in pictures.Elements())
 				{
@@ -84,8 +84,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			DataMigrationServices.IncrementVersionNumber(repoDto);
 		}
 
-		private void MoveFileReferences(IDomainObjectDTORepository repoDto, DomainObjectDTO langProj,
-			DomainObjectDTO srcFolder, DomainObjectDTO destFolder)
+		private void MoveFileReferences(IDomainObjectDTORepository repoDto, DomainObjectXMLDTO langProj,
+			DomainObjectXMLDTO srcFolder, DomainObjectXMLDTO destFolder)
 		{
 			var srcFolderElement = XElement.Parse(srcFolder.Xml);
 			var destFolderElement = XElement.Parse(destFolder.Xml);
@@ -105,7 +105,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			DataMigrationServices.UpdateDTO(repoDto, destFolder, destFolderElement.ToString());
 		}
 
-		private void RemoveReferenceFromPictures(IDomainObjectDTORepository repoDto, DomainObjectDTO langProj,
+		private void RemoveReferenceFromPictures(IDomainObjectDTORepository repoDto, DomainObjectXMLDTO langProj,
 			string guid)
 		{
 			var langProjElement = XElement.Parse(langProj.Xml);
@@ -121,7 +121,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		}
 
 		private void RemoveInvalidFiles(IDomainObjectDTORepository repoDto,
-			DomainObjectDTO langProj, DomainObjectDTO folder)
+			DomainObjectXMLDTO langProj, DomainObjectXMLDTO folder)
 		{
 			var langProjElement = XElement.Parse(langProj.Xml);
 			var pictures = langProjElement.Element("Pictures");
@@ -151,7 +151,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 		}
 
-		private void MoveFileToFolder(IDomainObjectDTORepository repoDto, DomainObjectDTO folder, DomainObjectDTO fileToMove)
+		private void MoveFileToFolder(IDomainObjectDTORepository repoDto, DomainObjectXMLDTO folder, DomainObjectXMLDTO fileToMove)
 		{
 			// Create surogate for file and add it to the folder
 			var surrogate = DataMigrationServices.CreateOwningObjSurElement(fileToMove.Guid);
@@ -166,11 +166,11 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			DataMigrationServices.UpdateDTO(repoDto, fileToMove, fileElement.ToString());
 		}
 
-		private void UpdatePictureReferences(IDomainObjectDTORepository repoDto, DomainObjectDTO file,
+		private void UpdatePictureReferences(IDomainObjectDTORepository repoDto, DomainObjectXMLDTO file,
 			string replacementFileGuid,
-			Dictionary<string, List<DomainObjectDTO>> pictureMap)
+			Dictionary<string, List<DomainObjectXMLDTO>> pictureMap)
 		{
-			List<DomainObjectDTO> pictures;
+			List<DomainObjectXMLDTO> pictures;
 			if(pictureMap.TryGetValue(file.Guid, out pictures))
 			{
 				foreach (var picture in pictures)
@@ -183,9 +183,9 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 		}
 
-		private Dictionary<string, List<DomainObjectDTO>> CreateFileGuidToPictureMap(IDomainObjectDTORepository repoDto)
+		private Dictionary<string, List<DomainObjectXMLDTO>> CreateFileGuidToPictureMap(IDomainObjectDTORepository repoDto)
 		{
-			var map = new Dictionary<string, List<DomainObjectDTO>>();
+			var map = new Dictionary<string, List<DomainObjectXMLDTO>>();
 			foreach (var picture in repoDto.AllInstancesSansSubclasses("CmPicture"))
 			{
 				// all TE pictures are unowned, so no need to look at those with owners
@@ -200,10 +200,10 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					var objSurrogateElement = pictureFileElement.Element("objsur");
 					var fileGuid = objSurrogateElement.Attribute("guid").Value;
 
-					List<DomainObjectDTO> list;
+					List<DomainObjectXMLDTO> list;
 					if (!map.TryGetValue(fileGuid, out list))
 					{
-						list = new List<DomainObjectDTO>();
+						list = new List<DomainObjectXMLDTO>();
 						map[fileGuid] = list;
 					}
 					list.Add(picture);
@@ -212,7 +212,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			return map;
 		}
 
-		private Dictionary<string, string> CreateFilePathToGuidMap(IDomainObjectDTORepository repoDto, DomainObjectDTO folder)
+		private Dictionary<string, string> CreateFilePathToGuidMap(IDomainObjectDTORepository repoDto, DomainObjectXMLDTO folder)
 		{
 			var folderElement = XElement.Parse(folder.Xml);
 			var map = new Dictionary<string, string>();
@@ -226,7 +226,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			return map;
 		}
 
-		private string GetFilePath(DomainObjectDTO file)
+		private string GetFilePath(DomainObjectXMLDTO file)
 		{
 			var fileElement = XElement.Parse(file.Xml);
 			var pathElement = fileElement.Element("InternalPath");
