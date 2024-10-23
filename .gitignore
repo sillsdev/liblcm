@@ -12,6 +12,7 @@ artifacts/
 lib/downloads/
 .idea/
 .vs/
+*.bak
 
 src/SIL.LCModel.Core/KernelInterfaces/Kernel.cs
 src/SIL.LCModel/Infrastructure/Impl/Generated*.cs

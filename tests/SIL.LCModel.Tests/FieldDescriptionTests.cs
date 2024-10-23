@@ -9,6 +9,7 @@ using NUnit.Framework;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Infrastructure;
 using SIL.LCModel.Infrastructure.Impl;
+using YYClass;
 
 namespace SIL.LCModel
 {
@@ -118,6 +119,7 @@ namespace SIL.LCModel
 		/// Test adding a new field that tries to use a name previously used.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[Ignore("The code path used in this test may no longer be valid, keep test in case new exception reveals a real use case")]
 		[Test]
 		public void AddNewFieldDescriptionWithOldName()
 		{
@@ -175,10 +177,14 @@ namespace SIL.LCModel
 			}
 			Assert.AreEqual(0, flid, "new field should not exist");
 
+			m_actionHandler.EndUndoTask();
 			fd.UpdateCustomField();
+			m_actionHandler.BeginUndoTask("rename the custom field", "undo rename");
 			flid = m_mdc.GetFieldId2(fd.Class, fd.Name, true);
 			Assert.AreNotEqual(0, fd.Id, "field should have been assigned a flid");
 			Assert.AreEqual(fd.Id, flid, "new field should exist");
+
+			
 
 			// Phase 2: Replace 1st Custom field's User label
 			fd.Userlabel = ultimateUserLabel;

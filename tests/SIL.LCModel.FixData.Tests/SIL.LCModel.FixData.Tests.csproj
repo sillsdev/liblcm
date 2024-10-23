@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net461;net8.0</TargetFrameworks>
     <RootNamespace>SIL.LCModel.FixData</RootNamespace>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -11,13 +11,17 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="NUnit" Version="3.13.3" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.3.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.3.2" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SIL.LCModel.FixData\SIL.LCModel.FixData.csproj" />
     <ProjectReference Include="..\SIL.LCModel.Tests\SIL.LCModel.Tests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="TestData\HomographDrops\" />
   </ItemGroup>
 
 </Project>

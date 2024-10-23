@@ -4028,6 +4028,11 @@ namespace SIL.LCModel.DomainImpl
 		{
 			get
 			{
+				// Test the cache for null and yield an empty list - This can happen during a bulk delete operation
+				if (m_cache == null)
+				{
+					yield break;
+				}
 				((ICmObjectRepositoryInternal) Services.ObjectRepository).EnsureCompleteIncomingRefsFrom(
 					LexEntryRefTags.kflidComponentLexemes);
 				foreach (var item in m_incomingRefs)
@@ -6851,6 +6856,21 @@ namespace SIL.LCModel.DomainImpl
 				}
 			}
 			return phReps;
+		}
+
+		/// <summary>
+		/// Get the PhonemeSet.
+		/// Hides the fact that multiple PhonemeSets used to be allowed.
+		/// </summary>
+		/// <returns></returns>
+		/// <exception cref="Exception"></exception>
+		public IPhPhonemeSet GetPhonemeSet()
+		{
+			if (this.PhonemeSetsOS.Count == 0)
+				throw new Exception("Missing PhonemeSet.");
+			if (this.PhonemeSetsOS.Count > 1)
+				throw new Exception("Too many PhonemeSets.");
+			return this.PhonemeSetsOS[0];
 		}
 
 		/// <summary>

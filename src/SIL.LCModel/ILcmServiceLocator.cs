@@ -3,11 +3,13 @@
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System;
-using Microsoft.Practices.ServiceLocation;
+using System.Collections.Generic;
+using CommonServiceLocator;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.Infrastructure;
 using SIL.LCModel.Infrastructure.Impl;
+using SIL.LCModel.IOC;
 
 namespace SIL.LCModel
 {
@@ -15,7 +17,7 @@ namespace SIL.LCModel
 	/// This interface defines LCM extensions to IServiceLocator, mainly shortcuts for particular
 	/// GetService() calls.
 	/// </summary>
-	public interface ILcmServiceLocator : IServiceLocator
+	public interface ILcmServiceLocator : IServiceProvider
 	{
 		/// <summary>
 		/// Shortcut to the IActionHandler instance.
@@ -94,5 +96,30 @@ namespace SIL.LCModel
 		IdentityMap IdentityMap { get; }
 		LoadingServices LoadingServices { get; }
 		IUnitOfWorkService UnitOfWorkService { get; }
+	}
+
+	/// <summary>
+	/// Helpers to provide drop in methods that match the api of IServiceLocator, but use IServiceProvider instead.
+	/// </summary>
+	public static class IocHelpers
+	{
+		public static object GetInstance(this IServiceProvider provider, Type serviceType)
+		{
+			//todo how to handle null? Should we throw an exception?
+			return provider.GetService(serviceType);
+		}
+
+		public static TService GetInstance<TService>(this IServiceProvider provider)
+		{
+			return (TService)provider.GetService(typeof(TService));
+		}
+
+		public static IEnumerable<TService> GetAllInstances<TService>(this IServiceProvider provider)
+		{
+			//structure map might not work the same way as the standard service provider, so we need to handle it separately.
+			if (provider is IServiceLocator serviceLocator) return serviceLocator.GetAllInstances<TService>();
+			//the standard service provider handles listing all services like this, however that might not work the same in structure map if an IEnumerable is explicitly registered.
+			return (IEnumerable<TService>) provider.GetService(typeof(IEnumerable<TService>));
+		}
 	}
 }

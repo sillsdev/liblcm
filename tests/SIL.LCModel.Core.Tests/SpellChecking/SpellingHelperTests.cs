@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using NUnit.Framework;
 using SIL.IO;
@@ -21,6 +22,17 @@ namespace SIL.LCModel.Core.SpellChecking
 	public class SpellingHelperTests
 	{
 		// TODO-Linux: need slightly modified hunspell package installed!
+
+		[OneTimeSetUp]
+		public void FixtureSetUp()
+		{
+			#if NET8_0
+			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				Assert.Ignore("NHunspell does not work on dotnet 8 on linux");
+			}
+			#endif
+		}
 
 		/// <summary>
 		/// Check how spelling status is set and cleared.

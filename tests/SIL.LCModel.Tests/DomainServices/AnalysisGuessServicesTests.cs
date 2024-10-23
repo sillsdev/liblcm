@@ -3,10 +3,12 @@
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.DomainImpl;
+using SIL.LCModel.Infrastructure;
 using SIL.ObjectModel;
 
 namespace SIL.LCModel.DomainServices
@@ -110,6 +112,46 @@ namespace SIL.LCModel.DomainServices
 					" " + Words_para0[4].Form.BestVernacularAlternative.Text + " " +
 					Words_para0[5].Form.BestVernacularAlternative.Text + ".", wsVern));
 				Para0.Contents = bldr.GetString();
+				/* c c c c d c d c d c d c, c. */
+				IWfiWordform c = wfFactory.Create(TsStringUtils.MakeString("c", wsVern));
+				IWfiWordform d = wfFactory.Create(TsStringUtils.MakeString("d", wsVern));
+				Words_para0.Add(c);
+				Words_para0.Add(c);
+				Words_para0.Add(c);
+				Words_para0.Add(c);
+				Words_para0.Add(d);
+				Words_para0.Add(c);
+				Words_para0.Add(d); 
+				Words_para0.Add(c);
+				Words_para0.Add(d);
+				Words_para0.Add(c);
+				Words_para0.Add(d);
+				Words_para0.Add(c);
+				Words_para0.Add(c); // after punctuation
+				var bldr2 = Para0.Contents.GetIncBldr();
+				bldr2.AppendTsString(TsStringUtils.MakeString(
+					" " + Words_para0[6].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[7].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[8].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[9].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[10].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[11].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[12].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[13].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[14].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[15].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[16].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[17].Form.BestVernacularAlternative.Text +
+					", " + Words_para0[18].Form.BestVernacularAlternative.Text +
+					".", wsVern));
+				Para0.Contents = bldr2.GetString();
+				/* E. */
+				IWfiWordform E = wfFactory.Create(TsStringUtils.MakeString("E", wsVern));
+				Words_para0.Add(E);
+				var bldr3 = Para0.Contents.GetIncBldr();
+				bldr3.AppendTsString(TsStringUtils.MakeString(
+					" " + Words_para0[19].Form.BestVernacularAlternative.Text + ".", wsVern));
+				Para0.Contents = bldr3.GetString();
 				using (ParagraphParser pp = new ParagraphParser(Cache))
 				{
 					foreach (IStTxtPara para in StText.ParagraphsOS)
@@ -376,7 +418,6 @@ namespace SIL.LCModel.DomainServices
 				setup.EntryFactory.Create("a", "aroot", SandboxGenericMSA.Create(MsaType.kRoot, null));
 
 				// expect a guess to be generated
-				setup.GuessServices.GenerateEntryGuesses(setup.StText);
 				var guessActual = setup.GuessServices.GetBestGuess(setup.Words_para0[1]);
 				Assert.AreNotEqual(new NullWAG(), guessActual);
 				Assert.AreEqual(newEntry4_expectedMatch.LexemeFormOA.Form.BestVernacularAlternative.Text, guessActual.Wordform.Form.BestVernacularAlternative.Text);
@@ -486,6 +527,58 @@ namespace SIL.LCModel.DomainServices
 				Assert.AreEqual(setup.Pos_noun, guessVariantOfSense.Analysis.CategoryRA);
 				int cAnalyses = Cache.ServiceLocator.GetInstance<IWfiAnalysisRepository>().Count;
 				Assert.AreEqual(1, cAnalyses, "Should have only generated one computer guess analysis.");
+			}
+		}
+
+		/// <summary>
+		/// make generated entries for upper and lower case and return both for upper case word at beginning of sentence.
+		/// </summary>
+		[Test]
+		public void ExpectedGuessForWord_GuessUpperAndLowerGenerated()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache,
+				AnalysisGuessBaseSetup.Flags.PartsOfSpeech, AnalysisGuessBaseSetup.Flags.VariantEntryTypes))
+			{
+				// create an affix entry
+				setup.EntryFactory.Create("a", "astem", SandboxGenericMSA.Create(MsaType.kStem, setup.Pos_noun));
+				setup.EntryFactory.Create("A", "Astem", SandboxGenericMSA.Create(MsaType.kStem, setup.Pos_noun));
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(setup.Para0.SegmentsOS[0], 0);
+				// GenerateEntryGuesses implicitly gets called.
+				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(occurrence.Analysis.Wordform, occurrence);
+				// The uppercase wordform is preferred because it hasn't been lowercased.
+				Assert.AreEqual(2, sorted_analyses.Count);
+				Assert.AreEqual("A", sorted_analyses[0].Analysis.Wordform.ShortName);
+				Assert.AreEqual("a", sorted_analyses[1].Analysis.Wordform.ShortName);
+				// Test GetOriginalCaseWordform.
+				// Set the analysis to the lowercase wordform.
+				setup.Para0.SetAnalysis(0, 0, sorted_analyses[1]);
+				sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(occurrence.Analysis.Wordform, occurrence);
+				// We should still get the uppercase wordform as a guess.
+				// The lowercase wordform is preferred because it is human-approved.
+				Assert.AreEqual(2, sorted_analyses.Count);
+				Assert.AreEqual("a", sorted_analyses[0].Analysis.Wordform.ShortName);
+				Assert.AreEqual("A", sorted_analyses[1].Analysis.Wordform.ShortName);
+			}
+		}
+
+		/// <summary>
+		/// make generated entries for upper and lower case when only upper case is in corpus.
+		/// </summary>
+		[Test]
+		public void ExpectedGuessForWord_GuessUpperAndLowerGenerated2()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache,
+				AnalysisGuessBaseSetup.Flags.PartsOfSpeech, AnalysisGuessBaseSetup.Flags.VariantEntryTypes))
+			{
+				// create an affix entry
+				setup.EntryFactory.Create("e", "astem", SandboxGenericMSA.Create(MsaType.kStem, setup.Pos_noun));
+				setup.EntryFactory.Create("E", "Astem", SandboxGenericMSA.Create(MsaType.kStem, setup.Pos_noun));
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(setup.Para0.SegmentsOS[3], 0);
+				// GenerateEntryGuesses implicitly gets called.
+				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(occurrence.Analysis.Wordform, occurrence);
+				Assert.AreEqual(2, sorted_analyses.Count);
+				Assert.AreEqual("E", sorted_analyses[0].Analysis.Wordform.ShortName);
+				Assert.AreEqual("e", sorted_analyses[1].Analysis.Wordform.ShortName);
 			}
 		}
 
@@ -749,7 +842,7 @@ namespace SIL.LCModel.DomainServices
 
 
 		/// <summary>
-		/// If a wordform is in a sentence initial position (and non-lowercase), prefer a guess for
+		/// If a wordform is in a sentence initial position (and non-lowercase), consider
 		/// the lowercase form.
 		/// </summary>
 		[Test]
@@ -757,10 +850,20 @@ namespace SIL.LCModel.DomainServices
 		{
 			using (var setup = new AnalysisGuessBaseSetup(Cache))
 			{
-				WordAnalysisOrGlossServices.CreateNewAnalysisTreeGloss(setup.Words_para0[0]);
+				var newWagUppercase = WordAnalysisOrGlossServices.CreateNewAnalysisTreeGloss(setup.Words_para0[0]);
 				var newWagLowercase = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[1]);
-				var wagUppercase = new AnalysisOccurrence(setup.Para0.SegmentsOS[0], 0);
-				var guessActual = setup.GuessServices.GetBestGuess(wagUppercase);
+				var uppercaseOccurrence = new AnalysisOccurrence(setup.Para0.SegmentsOS[0], 0);
+				// There should be two possible analyses: one uppercase and one lowercase.
+				var wordform = uppercaseOccurrence.Analysis.Wordform;
+				var analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform, uppercaseOccurrence);
+				Assert.AreEqual(analyses.Count, 2);
+				// All else being equal, prefer the uppercase analysis.
+				var guessActual = setup.GuessServices.GetBestGuess(uppercaseOccurrence);
+				Assert.AreEqual(newWagUppercase.Analysis, guessActual);
+				// If the lowercase has been selected, prefer the lowercase analysis.
+				setup.Para0.SetAnalysis(0, 1, newWagLowercase);
+				setup.GuessServices.ClearGuessData();
+				guessActual = setup.GuessServices.GetBestGuess(uppercaseOccurrence);
 				Assert.AreEqual(newWagLowercase.Analysis, guessActual);
 			}
 
@@ -911,12 +1014,31 @@ namespace SIL.LCModel.DomainServices
 			using (var setup = new AnalysisGuessBaseSetup(Cache))
 			{
 				var newWagApproves = WordAnalysisOrGlossServices.CreateNewAnalysisTreeGloss(setup.Words_para0[1]);
+				var newWagApproves2 = WordAnalysisOrGlossServices.CreateNewAnalysisTreeGloss(setup.Words_para0[1]);
+				setup.Para0.SetAnalysis(0, 1, newWagApproves2.Gloss);
+				setup.Para0.SetAnalysis(0, 2, newWagApproves.WfiAnalysis);
+				setup.Para0.SetAnalysis(0, 3, newWagApproves.WfiAnalysis);
+				setup.UserAgent.SetEvaluation(newWagApproves.WfiAnalysis, Opinions.approves);
+				var guessActual = setup.GuessServices.GetBestGuess(setup.Words_para0[1]);
+				Assert.AreEqual(newWagApproves.Analysis, guessActual);
+			}
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		[Test]
+		public void ExpectedAnalysisGuessForWord_GetMostCommonGlossOfMostCommonAnalysis()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var newWagApproves = WordAnalysisOrGlossServices.CreateNewAnalysisTreeGloss(setup.Words_para0[1]);
 				setup.Para0.SetAnalysis(0, 1, newWagApproves.Gloss);
 				setup.Para0.SetAnalysis(0, 2, newWagApproves.WfiAnalysis);
 				setup.Para0.SetAnalysis(0, 3, newWagApproves.WfiAnalysis);
 				setup.UserAgent.SetEvaluation(newWagApproves.WfiAnalysis, Opinions.approves);
 				var guessActual = setup.GuessServices.GetBestGuess(setup.Words_para0[1]);
-				Assert.AreEqual(newWagApproves.WfiAnalysis, guessActual);
+				Assert.AreEqual(newWagApproves.Gloss, guessActual);
 			}
 		}
 
@@ -1010,6 +1132,316 @@ namespace SIL.LCModel.DomainServices
 				Assert.AreEqual(newWagHumanApproves.Analysis, guessActual);
 			}
 		}
-	}
 
+		/// <summary>
+		/// Prefer analyses that are in the right context over analyses that are not.
+		/// </summary>
+		[Test]
+		public void ExpectedContextAwareGuess_PreferContextedOverUncontexted()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var segment = setup.Para0.SegmentsOS[2];
+				var uncontextedApprovedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[1].Wordform).Analysis;
+				var dAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[4].Wordform).Analysis;
+				var contextedApprovedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[5].Wordform).Analysis;
+				// Analyses must be set in order.
+				setup.Para0.SetAnalysis(2, 0, uncontextedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 1, uncontextedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 2, uncontextedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 3, uncontextedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 4, dAnalysis); // "d"
+				setup.Para0.SetAnalysis(2, 5, contextedApprovedAnalysis); // "c"
+				// Verify uncontexted guess.
+				var wordform = segment.AnalysesRS[7].Wordform;
+				var guessActual = setup.GuessServices.GetBestGuess(wordform);
+				Assert.AreEqual(uncontextedApprovedAnalysis, guessActual);
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(segment, 7);
+				// Make sure we get a contexted guess for occurrence instead of an uncontexted guess.
+				guessActual = setup.GuessServices.GetBestGuess(occurrence);
+				Assert.AreEqual(contextedApprovedAnalysis, guessActual);
+				// Verify uncontexted guess for sort.
+				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform, wordform.Cache.DefaultVernWs);
+				Assert.AreEqual(2, sorted_analyses.Count);
+				Assert.AreEqual(uncontextedApprovedAnalysis, sorted_analyses[0]);
+				Assert.AreEqual(contextedApprovedAnalysis, sorted_analyses[1]);
+				// Make sure the contexted guess is prioritized.
+				sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform, occurrence);
+				Assert.AreEqual(2, sorted_analyses.Count);
+				Assert.AreEqual(contextedApprovedAnalysis, sorted_analyses[0]);
+				Assert.AreEqual(uncontextedApprovedAnalysis, sorted_analyses[1]);
+			}
+		}
+
+		/// <summary>
+		/// Prefer analyses that are approved more often in the right context.
+		/// </summary>
+		[Test]
+		public void ExpectedContextAwareGuess_PreferTwoContextedApprovedOverOneContextedApproved()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var segment = setup.Para0.SegmentsOS[2];
+				var uncontextedApprovedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[1].Wordform).Analysis;
+				var dAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[4].Wordform).Analysis;
+				var approvedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[5].Wordform).Analysis;
+				var approvedAnalysis2 = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[7].Wordform).Analysis;
+				// Analyses must be set in order.
+				// Add uncontexted analyses as a distractor.
+				setup.Para0.SetAnalysis(2, 0, uncontextedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 1, uncontextedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 2, uncontextedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 3, uncontextedApprovedAnalysis); // "c"
+				// Set up test.
+				setup.Para0.SetAnalysis(2, 4, dAnalysis); // "d"
+				setup.Para0.SetAnalysis(2, 5, approvedAnalysis.Analysis); // "c"
+				setup.Para0.SetAnalysis(2, 7, approvedAnalysis2.Analysis); // "c"
+				setup.Para0.SetAnalysis(2, 9, approvedAnalysis2.Analysis); // "c"
+				// Check guess for occurrence.
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(segment, 11);
+				var guessActual = setup.GuessServices.GetBestGuess(occurrence);
+				Assert.AreEqual(approvedAnalysis2.Analysis, guessActual);
+				// Check sorted analyses.
+				var wordform = segment.AnalysesRS[11].Wordform;
+				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform, occurrence);
+				Assert.AreEqual(3, sorted_analyses.Count);
+				Assert.AreEqual(approvedAnalysis2, sorted_analyses[0]);
+				Assert.AreEqual(approvedAnalysis, sorted_analyses[1]);
+				Assert.AreEqual(uncontextedApprovedAnalysis, sorted_analyses[2]);
+			}
+		}
+
+		/// <summary>
+		/// Prefer analyses that are approved in the right context over analyses that are human approved.
+		/// </summary>
+		[Test]
+		public void ExpectedContextAwareGuess_PreferContextedApprovedOverHumanApproved()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var segment = setup.Para0.SegmentsOS[2];
+				var uncontextedApprovedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[1].Wordform).Analysis;
+				var dAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[4].Wordform).Analysis;
+				var approvedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[5].Wordform).Analysis;
+				var humanApprovedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[7].Wordform).Analysis;
+				// Analyses must be set in order.
+				// Add uncontexted analyses as a distractor.
+				setup.Para0.SetAnalysis(2, 0, uncontextedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 1, uncontextedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 2, uncontextedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 3, uncontextedApprovedAnalysis); // "c"
+				// Set up test.
+				setup.Para0.SetAnalysis(2, 4, dAnalysis); // "d"
+				setup.Para0.SetAnalysis(2, 5, approvedAnalysis.Analysis); // "c"
+				setup.UserAgent.SetEvaluation(humanApprovedAnalysis, Opinions.approves); // "c"
+				// Check guess for occurrence.
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(segment, 11);
+				var guessActual = setup.GuessServices.GetBestGuess(occurrence);
+				Assert.AreEqual(approvedAnalysis.Analysis, guessActual);
+				// Check sorted analyses.
+				var wordform = segment.AnalysesRS[11].Wordform;
+				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform, occurrence);
+				Assert.AreEqual(3, sorted_analyses.Count);
+				Assert.AreEqual(approvedAnalysis, sorted_analyses[0]);
+				Assert.AreEqual(uncontextedApprovedAnalysis, sorted_analyses[1]);
+				Assert.AreEqual(humanApprovedAnalysis, sorted_analyses[2]);
+			}
+		}
+
+		/// <summary>
+		/// Prefer analyses that are approved in the right context over analyses that are parser approved.
+		/// </summary>
+		[Test]
+		public void ExpectedContextAwareGuess_PreferContextedApprovedOverParserApproved()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var segment = setup.Para0.SegmentsOS[2];
+				var uncontextedApprovedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[1].Wordform).Analysis;
+				var dAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[4].Wordform).Analysis;
+				var approvedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[5].Wordform).Analysis;
+				var parserApprovedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[7].Wordform).Analysis;
+				// Analyses must be set in order.
+				// Add uncontexted analyses as a distractor.
+				setup.Para0.SetAnalysis(2, 0, uncontextedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 1, uncontextedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 2, uncontextedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 3, uncontextedApprovedAnalysis); // "c"
+				// Set up test.
+				setup.Para0.SetAnalysis(2, 4, dAnalysis); // "d"
+				setup.Para0.SetAnalysis(2, 5, approvedAnalysis.Analysis); // "c"
+				setup.ParserAgent.SetEvaluation(parserApprovedAnalysis, Opinions.approves); // "c"
+				// Check guess for occurrence.
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(segment, 11);
+				var guessActual = setup.GuessServices.GetBestGuess(occurrence);
+				Assert.AreEqual(approvedAnalysis.Analysis, guessActual);
+				// Check sorted analyses.
+				var wordform = segment.AnalysesRS[11].Wordform;
+				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform, occurrence);
+				Assert.AreEqual(3, sorted_analyses.Count);
+				Assert.AreEqual(approvedAnalysis, sorted_analyses[0]);
+				Assert.AreEqual(uncontextedApprovedAnalysis, sorted_analyses[1]);
+				Assert.AreEqual(parserApprovedAnalysis, sorted_analyses[2]);
+			}
+		}
+
+		/// <summary>
+		/// Prefer analyses that are approved in the right context over analyses that are not approved.
+		/// </summary>
+		[Test]
+		public void ExpectedContextAwareGuess_PreferContextedApprovedOverUnapproved()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var segment = setup.Para0.SegmentsOS[2];
+				var uncontextedApprovedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[1].Wordform).Analysis;
+				var dAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[4].Wordform).Analysis;
+				var approvedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[5].Wordform).Analysis;
+				var unapprovedAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[7].Wordform).Analysis;
+				// Analyses must be set in order.
+				// Add uncontexted analyses as a distractor.
+				setup.Para0.SetAnalysis(2, 0, uncontextedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 1, uncontextedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 2, uncontextedApprovedAnalysis); // "c"
+				setup.Para0.SetAnalysis(2, 3, uncontextedApprovedAnalysis); // "c"
+				// Set up test.
+				setup.Para0.SetAnalysis(2, 4, dAnalysis); // "d"
+				setup.Para0.SetAnalysis(2, 5, approvedAnalysis.Analysis); // "c"
+				// Check guess for occurrence.
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(segment, 11);
+				var guessActual = setup.GuessServices.GetBestGuess(occurrence);
+				Assert.AreEqual(approvedAnalysis.Analysis, guessActual);
+				// Check sorted analyses.
+				var wordform = segment.AnalysesRS[11].Wordform;
+				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform, occurrence);
+				Assert.AreEqual(3, sorted_analyses.Count);
+				Assert.AreEqual(approvedAnalysis, sorted_analyses[0]);
+				Assert.AreEqual(uncontextedApprovedAnalysis, sorted_analyses[1]);
+				Assert.AreEqual(unapprovedAnalysis, sorted_analyses[2]);
+			}
+		}
+
+		/// <summary>
+		/// GetBestGuess should equal GetSortedAnalyses[0].
+		/// </summary>
+		[Test]
+		public void ExpectedContextAwareGuess_CheckGuessWithSorted()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var segment = setup.Para0.SegmentsOS[2];
+				var dAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[4].Wordform).Analysis;
+				var approvedAnalysis1 = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[0].Wordform).Analysis;
+				var approvedAnalysis2 = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[1].Wordform).Analysis;
+				var approvedAnalysis3 = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[2].Wordform).Analysis;
+				var approvedAnalysis4 = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[3].Wordform).Analysis;
+				var approvedAnalysis5 = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[5].Wordform).Analysis;
+				var approvedAnalysis6 = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[7].Wordform).Analysis;
+				var approvedAnalysis7 = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[9].Wordform).Analysis;
+				// Analyses must be set in order.
+				// Create analyses with equal priority.
+				setup.Para0.SetAnalysis(2, 0, approvedAnalysis7.Analysis); // "c"
+				setup.Para0.SetAnalysis(2, 1, approvedAnalysis6.Analysis); // "c"
+				setup.Para0.SetAnalysis(2, 2, approvedAnalysis5.Analysis); // "c"
+				setup.Para0.SetAnalysis(2, 3, approvedAnalysis4.Analysis); // "c"
+				setup.Para0.SetAnalysis(2, 4, dAnalysis); // "d"
+				setup.Para0.SetAnalysis(2, 5, approvedAnalysis3.Analysis); // "c"
+				setup.Para0.SetAnalysis(2, 7, approvedAnalysis2.Analysis); // "c"
+				setup.Para0.SetAnalysis(2, 9, approvedAnalysis1.Analysis); // "c"
+				// Check guess with sorted.
+				var wordform = segment.AnalysesRS[11].Wordform;
+				var guessActual = setup.GuessServices.GetBestGuess(wordform);
+				var sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(wordform, wordform.Cache.DefaultVernWs);
+				Assert.AreEqual(guessActual, sorted_analyses[0]);
+			}
+		}
+
+		/// <summary>
+		/// Prefer gloss based on previous word ("river bank" vs. "financial bank").
+		/// </summary>
+		[Test]
+		public void ExpectedContextAwareGloss_PreferContextedOverUncontexted()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var segment = setup.Para0.SegmentsOS[2];
+				var servLoc = segment.Cache.ServiceLocator;
+				var glossFactory = servLoc.GetInstance<IWfiGlossFactory>();
+				var analysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[1].Wordform).Analysis;
+				var dAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[4].Wordform).Analysis;
+				var uncontextedApprovedGloss = glossFactory.Create();
+				var contextedApprovedGloss = glossFactory.Create();
+				analysis.MeaningsOC.Add(uncontextedApprovedGloss);
+				analysis.MeaningsOC.Add(contextedApprovedGloss);
+				// Analyses must be set in order.
+				setup.Para0.SetAnalysis(2, 0, uncontextedApprovedGloss); // "c"
+				setup.Para0.SetAnalysis(2, 1, uncontextedApprovedGloss); // "c"
+				setup.Para0.SetAnalysis(2, 2, uncontextedApprovedGloss); // "c"
+				setup.Para0.SetAnalysis(2, 3, uncontextedApprovedGloss); // "c"
+				setup.Para0.SetAnalysis(2, 4, dAnalysis); // "d"
+				setup.Para0.SetAnalysis(2, 5, contextedApprovedGloss); // "c"
+				// Verify uncontexted guess.
+				var wordform = segment.AnalysesRS[11].Wordform;
+				var guessActual = setup.GuessServices.GetBestGuess(wordform);
+				Assert.AreEqual(uncontextedApprovedGloss, guessActual);
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(segment, 11);
+				// Make sure we get a contexted guess for occurrence instead of an uncontexted guess.
+				guessActual = setup.GuessServices.GetBestGuess(occurrence);
+				Assert.AreEqual(contextedApprovedGloss, guessActual);
+				guessActual = setup.GuessServices.GetBestGuess(occurrence, includeContext: false);
+				Assert.AreEqual(uncontextedApprovedGloss, guessActual);
+				// Verify uncontexted guess for sort.
+				var sorted_glosses = setup.GuessServices.GetSortedGlossGuesses(analysis);
+				Assert.AreEqual(2, sorted_glosses.Count);
+				Assert.AreEqual(uncontextedApprovedGloss, sorted_glosses[0]);
+				Assert.AreEqual(contextedApprovedGloss, sorted_glosses[1]);
+				// Make sure the contexted guess is prioritized.
+				sorted_glosses = setup.GuessServices.GetSortedGlossGuesses(analysis, occurrence);
+				Assert.AreEqual(2, sorted_glosses.Count);
+				Assert.AreEqual(contextedApprovedGloss, sorted_glosses[0]);
+				Assert.AreEqual(uncontextedApprovedGloss, sorted_glosses[1]);
+			}
+		}
+
+		/// <summary>
+		/// Prefer glosses that are approved more often in the right context.
+		/// </summary>
+		[Test]
+		public void ExpectedContextAwareGloss_PreferTwoContextedOverOneContexted()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var segment = setup.Para0.SegmentsOS[2];
+				var servLoc = segment.Cache.ServiceLocator;
+				var glossFactory = servLoc.GetInstance<IWfiGlossFactory>();
+				var analysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[1].Wordform).Analysis;
+				var dAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[4].Wordform).Analysis;
+				var uncontextedApprovedGloss = glossFactory.Create();
+				var contextedApprovedGloss1 = glossFactory.Create();
+				var contextedApprovedGloss2 = glossFactory.Create();
+				analysis.MeaningsOC.Add(uncontextedApprovedGloss);
+				analysis.MeaningsOC.Add(contextedApprovedGloss1);
+				analysis.MeaningsOC.Add(contextedApprovedGloss2);
+				// Analyses must be set in order.
+				setup.Para0.SetAnalysis(2, 0, uncontextedApprovedGloss); // "c"
+				setup.Para0.SetAnalysis(2, 1, uncontextedApprovedGloss); // "c"
+				setup.Para0.SetAnalysis(2, 2, uncontextedApprovedGloss); // "c"
+				setup.Para0.SetAnalysis(2, 3, uncontextedApprovedGloss); // "c"
+				setup.Para0.SetAnalysis(2, 4, dAnalysis); // "d"
+				setup.Para0.SetAnalysis(2, 5, contextedApprovedGloss1); // "c"
+				setup.Para0.SetAnalysis(2, 7, contextedApprovedGloss2); // "c"
+				setup.Para0.SetAnalysis(2, 9, contextedApprovedGloss2); // "c"
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(segment, 11);
+				// Check guess.
+				var guessActual = setup.GuessServices.GetBestGuess(occurrence);
+				Assert.AreEqual(contextedApprovedGloss2, guessActual);
+				// Check sorting.
+				var sorted_glosses = setup.GuessServices.GetSortedGlossGuesses(analysis, occurrence);
+				Assert.AreEqual(3, sorted_glosses.Count);
+				Assert.AreEqual(contextedApprovedGloss2, sorted_glosses[0]);
+				Assert.AreEqual(contextedApprovedGloss1, sorted_glosses[1]);
+				Assert.AreEqual(uncontextedApprovedGloss, sorted_glosses[2]);
+			}
+		}
+	}
 }

@@ -22,15 +22,15 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
     # Install the .NET Core workload
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.0.x
 
     - name: Install mono-devel package
       run: sudo apt-get install mono-devel
@@ -47,18 +47,38 @@ jobs:
       run: Remove-Item c:\tools\php\icuuc*.dll -Force
       if: matrix.os == 'windows-latest'
 
+    - name: Download 461 targeting pack
+      uses: suisei-cn/actions-download-file@818d6b7dc8fe73f2f924b6241f2b1134ca1377d9 # 1.6.0
+      id: downloadfile  # Remember to give an ID if you need the output filename
+      with:
+          url: "https://download.microsoft.com/download/F/1/D/F1DEB8DB-D277-4EF9-9F48-3A65D4D8F965/NDP461-DevPack-KB3105179-ENU.exe"
+          target: public/
+      if: matrix.os == 'windows-latest'
+
+    - name: Install targeting pack
+      shell: cmd
+      working-directory: public
+      run: NDP461-DevPack-KB3105179-ENU.exe /q
+      if: matrix.os == 'windows-latest'
+
     - name: Build
       run: dotnet build --configuration Release
 
     - name: Test on Linux
       run: |
         . environ
-        dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release -- RunConfiguration.FailWhenNoTestsFound=true
+        dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
       if: matrix.os == 'ubuntu-latest'
 
     - name: Test on Windows
-      run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release -- RunConfiguration.FailWhenNoTestsFound=true
+      run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
       if: matrix.os != 'ubuntu-latest'
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: Test results (${{ matrix.os }})
+        path: ./test-results
 
     - name: Package
       run: dotnet pack --include-symbols --no-restore --no-build -p:SymbolPackageFormat=snupkg --configuration Release
@@ -67,9 +87,30 @@ jobs:
       run: dotnet nuget push artifacts/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{secrets.SILLSDEV_PUBLISH_NUGET_ORG}} --skip-duplicate
       if: github.event_name == 'push' && matrix.os == 'ubuntu-latest'
 
+    - name: Publish to Github packages
+      if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest'
+      run: dotnet nuget push artifacts/*.nupkg -s https://nuget.pkg.github.com/sillsdev/index.json -k ${{secrets.GITHUB_TOKEN}} --skip-duplicate
+
     - name: Publish Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: NugetPackages
+        name: NugetPackages (${{ matrix.os }})
         path: artifacts/*.nupkg
       if: github.event_name == 'pull_request'
+  publish-test-results:
+    runs-on: ubuntu-latest
+    needs: build
+    if: always()
+    steps:
+      - name: Download test results
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: Test results *
+      - name: Publish test results
+        uses: EnricoMi/publish-unit-test-result-action@8885e273a4343cd7b48eaa72428dea0c3067ea98 # v2.14.0
+        with:
+          check_name: LCM Tests
+          files: artifacts/**/*.trx
+          action_fail: true
+          action_fail_on_inconclusive: true

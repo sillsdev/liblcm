@@ -4,12 +4,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 using Icu;
-using Microsoft.Practices.ServiceLocation;
 using SIL.LCModel.Core.KernelInterfaces;
+using SIL.LCModel.Core.Text;
 using SIL.LCModel.Core.WritingSystems;
+using SIL.LCModel.DomainImpl;
+using SIL.LCModel.Infrastructure;
+using static SIL.LCModel.Application.ApplicationServices.XmlImportData;
 
 namespace SIL.LCModel.DomainServices
 {
@@ -77,6 +82,29 @@ namespace SIL.LCModel.DomainServices
 					ExportLexiconFull(servLoc, mode),
 					ExportFeatureSystem(languageProject.MsFeatureSystemOA, "FeatureSystem", mode),
 					ExportFeatureSystem(languageProject.PhFeatureSystemOA, "PhFeatureSystem", mode)
+				)
+			);
+			return doc;
+		}
+
+		/// <summary>
+		/// Export the phonology of languageProject in the Phonology format.
+		/// </summary>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		public static XDocument ExportPhonology(ILangProject languageProject)
+		{
+			if (languageProject == null) throw new ArgumentNullException("languageProject");
+			string vernWs = languageProject.Cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem.IcuLocale;
+
+			const Normalizer.UNormalizationMode mode = Normalizer.UNormalizationMode.UNORM_NFD;
+			var doc = new XDocument(
+				new XDeclaration("1.0", "utf-8", "yes"),
+				new XElement("Phonology",
+					new XAttribute("Version", PhonologyServices.VersionId),
+					new XAttribute("DefaultVernWs", vernWs),
+					ExportPhonologicalData(languageProject.PhonologicalDataOA, mode, useMultiStrings: true, phonology: true),
+					ExportFeatureSystem(languageProject.PhFeatureSystemOA, "PhFeatureSystem", mode, useMultiStrings: true)
 				)
 			);
 			return doc;
@@ -315,7 +343,7 @@ namespace SIL.LCModel.DomainServices
 		/// <summary>
 		/// Export the full lexicon when exporting both grammar and lexicon.
 		/// </summary>
-		private static XElement ExportLexiconFull(IServiceLocator servLoc, Normalizer.UNormalizationMode mode)
+		private static XElement ExportLexiconFull(IServiceProvider servLoc, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("Lexicon",
 					ExportEntries(servLoc.GetInstance<ILexEntryRepository>()),
@@ -349,7 +377,7 @@ namespace SIL.LCModel.DomainServices
 							select ExportItemAsReference(lexEntryType, "LexEntryType"))));
 		}
 
-		private static XElement ExportMsas(IServiceLocator servLoc)
+		private static XElement ExportMsas(IServiceProvider servLoc)
 		{
 			return new XElement("MorphoSyntaxAnalyses",
 				from stemMsa in servLoc.GetInstance<IMoStemMsaRepository>().AllInstances()
@@ -407,7 +435,7 @@ namespace SIL.LCModel.DomainServices
 					ExportBestAnalysis(sense.Definition, "Definition", mode)));
 		}
 
-		private static XElement ExportAllomorphs(IServiceLocator servLoc, Normalizer.UNormalizationMode mode)
+		private static XElement ExportAllomorphs(IServiceProvider servLoc, Normalizer.UNormalizationMode mode)
 		{
 			return new XElement("Allomorphs",
 				from stemAllo in servLoc.GetInstance<IMoStemAllomorphRepository>().AllInstances()
@@ -454,32 +482,26 @@ namespace SIL.LCModel.DomainServices
 
 		// ExportMorphTypes rules go above this line.
 
-		private static XElement ExportPhonologicalData(IPhPhonData phonologicalData, Normalizer.UNormalizationMode mode)
+		private static XElement ExportPhonologicalData(IPhPhonData phonologicalData, Normalizer.UNormalizationMode mode, bool useMultiStrings = false, bool phonology = false)
 		{
 			return new XElement("PhPhonData",
 								new XAttribute("Id", phonologicalData.Hvo),
 								new XElement("Environments",
-									from goodEnvironment in phonologicalData.Services.GetInstance<IPhEnvironmentRepository>().AllValidInstances()
-									select new XElement("PhEnvironment",
-										new XAttribute("Id", goodEnvironment.Hvo),
-										new XAttribute("StringRepresentation",
-											Normalize(goodEnvironment.StringRepresentation, mode)),
-										CreateAttribute("LeftContext", goodEnvironment.LeftContextRA),
-										CreateAttribute("RightContext", goodEnvironment.RightContextRA),
-										ExportBestAnalysis(goodEnvironment.Name, "Name", mode),
-										ExportBestAnalysis(goodEnvironment.Description, "Description", mode))),
+									from goodEnvironment in GetPhEnvironments(phonologicalData)
+									select ExportPhEnvironment(goodEnvironment, mode, useMultiStrings)),
 								new XElement("NaturalClasses", from naturalClass in phonologicalData.NaturalClassesOS
-																select ExportNaturalClass(naturalClass, mode)),
+																select ExportNaturalClass(naturalClass, mode, useMultiStrings)),
 								new XElement("Contexts", from context in phonologicalData.ContextsOS
 														  select ExportContext(context)),
 								new XElement("PhonemeSets", from phonemeSet in phonologicalData.PhonemeSetsOS
-															 select ExportPhonemeSet(phonemeSet, mode)),
+															 select ExportPhonemeSet(phonemeSet, mode, useMultiStrings)),
 								new XElement("FeatureConstraints", from featureConstraint in phonologicalData.FeatConstraintsOS
 																 select ExportFeatureConstraint(featureConstraint)),
 								new XElement("PhonRules", from phonRule in phonologicalData.PhonRulesOS
-											where !phonRule.Disabled
-											select ExportPhonRule(phonRule, mode)),
-								ExportPhonRuleFeats(phonologicalData, mode),
+											select ExportPhonRule(phonRule, mode, useMultiStrings, phonology)),
+								// Don't export PhonRuleFeats if we are only doing phonology
+								// because they can contain references to non-phonological data.
+								phonology ? null : ExportPhonRuleFeats(phonologicalData, mode, useMultiStrings),
 							   new XElement("PhIters"),
 							   new XElement("PhIters"),
 							   new XElement("PhIters"),
@@ -488,25 +510,53 @@ namespace SIL.LCModel.DomainServices
 							   new XElement("PhIters"));
 		}
 
-		private static XElement ExportPhonRuleFeats(IPhPhonData phonData, Normalizer.UNormalizationMode mode)
+		private static IEnumerable<IPhEnvironment> GetPhEnvironments(IPhPhonData phonologicalData)
+		{
+			return phonologicalData.Services.GetInstance<IPhEnvironmentRepository>().AllValidInstances();
+		}
+
+		private static XElement ExportPhEnvironment(IPhEnvironment goodEnvironment, Normalizer.UNormalizationMode mode, bool useMultiStrings = false)
+		{
+			if (useMultiStrings)
+			{
+				return new XElement("PhEnvironment",
+					new XAttribute("Id", goodEnvironment.Hvo),
+					CreateAttribute("LeftContext", goodEnvironment.LeftContextRA),
+					CreateAttribute("RightContext", goodEnvironment.RightContextRA),
+					ExportMultiString(goodEnvironment.Name, "Name", goodEnvironment),
+					ExportMultiString(goodEnvironment.Description, "Description", goodEnvironment),
+					ExportTsString(goodEnvironment.StringRepresentation, "StringRepresentation", goodEnvironment));
+			}
+			return new XElement("PhEnvironment",
+				new XAttribute("Id", goodEnvironment.Hvo),
+				new XAttribute("StringRepresentation",
+					Normalize(goodEnvironment.StringRepresentation, mode)),
+				CreateAttribute("LeftContext", goodEnvironment.LeftContextRA),
+				CreateAttribute("RightContext", goodEnvironment.RightContextRA),
+				ExportBestAnalysis(goodEnvironment.Name, "Name", mode),
+				ExportBestAnalysis(goodEnvironment.Description, "Description", mode));
+		}
+
+		private static XElement ExportPhonRuleFeats(IPhPhonData phonData, Normalizer.UNormalizationMode mode, bool useMultiStrings)
 		{
 			return new XElement("PhonRuleFeats",
 				from phonRuleFeat in phonData.PhonRuleFeatsOA.ReallyReallyAllPossibilities
-				select ExportPhonRuleFeat(phonRuleFeat as IPhPhonRuleFeat, mode));
+				select ExportPhonRuleFeat(phonRuleFeat as IPhPhonRuleFeat, mode, useMultiStrings));
 		}
 
-		private static XElement ExportPhonRuleFeat(IPhPhonRuleFeat phonRuleFeat, Normalizer.UNormalizationMode mode)
+		private static XElement ExportPhonRuleFeat(IPhPhonRuleFeat phonRuleFeat, Normalizer.UNormalizationMode mode, bool useMultiStrings)
 		{
 			return new XElement("PhonRuleFeat",
 								new XAttribute("Id", phonRuleFeat.Hvo),
-								ExportBestAnalysis(phonRuleFeat.Name, "Name", mode),
+								ExportBestAnalysis(phonRuleFeat.Name, "Name", mode, useMultiStrings, phonRuleFeat),
 								new XElement("Item",
 								phonRuleFeat.ItemRA != null ? new XAttribute("itemRef", phonRuleFeat.ItemRA.Hvo) : new XAttribute("missing", 1)));
 		}
 
-		private static XElement ExportPhonRule(IPhSegmentRule phonRule, Normalizer.UNormalizationMode mode)
+		private static XElement ExportPhonRule(IPhSegmentRule phonRule, Normalizer.UNormalizationMode mode, bool useMultiStrings = false, bool phonology = false)
 		{
-			if (phonRule.Disabled)
+			if (phonRule.Disabled && !phonology)
+				// Don't export disabled rules unless you are exporting the phonology.
 				return null;
 			XElement retVal = null;
 			switch (phonRule.ClassName)
@@ -515,46 +565,53 @@ namespace SIL.LCModel.DomainServices
 					var asMetathesisRule = (IPhMetathesisRule)phonRule;
 					retVal = new XElement("PhMetathesisRule",
 						new XAttribute("Id", phonRule.Hvo),
+						phonRule.Disabled ? new XAttribute("Disabled", phonRule.Disabled) : null,
 						new XAttribute("Direction", phonRule.Direction),
-						ExportBestAnalysis(phonRule.Name, "Name", mode),
-						ExportBestAnalysis(phonRule.Description, "Description", mode),
+						ExportBestAnalysis(phonRule.Name, "Name", mode, useMultiStrings, phonRule),
+						ExportBestAnalysis(phonRule.Description, "Description", mode, useMultiStrings, phonRule),
 						new XElement("StrucDesc",
 							ExportContextList(phonRule.StrucDescOS)),
 						new XElement("StrucChange", asMetathesisRule.StrucChange.Text));
 					break;
 				case "PhRegularRule":
-					var asRegularRule = (IPhRegularRule) phonRule;
+					var asRegularRule = (IPhRegularRule)phonRule;
 					var constraints = new List<IPhFeatureConstraint>(asRegularRule.FeatureConstraints);
 					retVal = new XElement("PhRegularRule",
 						new XAttribute("Id", phonRule.Hvo),
+						phonRule.Disabled ? new XAttribute("Disabled", phonRule.Disabled) : null,
 						new XAttribute("Direction", phonRule.Direction),
-						ExportBestAnalysis(phonRule.Name, "Name", mode),
-						ExportBestAnalysis(phonRule.Description, "Description", mode),
+						ExportBestAnalysis(phonRule.Name, "Name", mode, useMultiStrings, phonRule),
+						ExportBestAnalysis(phonRule.Description, "Description", mode, useMultiStrings, phonRule),
 						new XElement("StrucDesc",
 							ExportContextList(phonRule.StrucDescOS)),
 						from constraint in constraints
 						select ExportItemAsReference(constraint, constraints.IndexOf(constraint), "FeatureConstraints"),
-							new XElement("RightHandSides", from rhs in asRegularRule.RightHandSidesOS
+						new XElement("RightHandSides", from rhs in asRegularRule.RightHandSidesOS
 														select new XElement("PhSegRuleRHS",
 							new XAttribute("Id", rhs.Hvo),
 							new XElement("StrucChange", from structChange in rhs.StrucChangeOS
-															select ExportContext(structChange)),
-							new XElement("InputPOSes", from pos in rhs.InputPOSesRC
+														select ExportContext(structChange)),
+							// RuleFeats and POS are not part of the phonology.
+							phonology ? null
+								: new XElement("InputPOSes", from pos in rhs.InputPOSesRC
 															select ExportItemAsReference(pos, "RequiredPOS")),
-							new XElement("ReqRuleFeats", from rrf in rhs.ReqRuleFeatsRC
+							phonology ? null
+								: new XElement("ReqRuleFeats", from rrf in rhs.ReqRuleFeatsRC
 															select ExportItemAsReference(rrf, "RuleFeat")),
-							new XElement("ExclRuleFeats", from erf in rhs.ExclRuleFeatsRC
-															select ExportItemAsReference(erf, "RuleFeat")),
+							phonology ? null
+								: new XElement("ExclRuleFeats", from erf in rhs.ExclRuleFeatsRC
+																select ExportItemAsReference(erf, "RuleFeat")),
 							new XElement("LeftContext", ExportContext(rhs.LeftContextOA)),
 							new XElement("RightContext", ExportContext(rhs.RightContextOA)))));
 					break;
 				case "PhSegmentRule":
 					retVal = new XElement("PhSegmentRule",
 						new XAttribute("Id", phonRule.Hvo),
+						phonRule.Disabled ? new XAttribute("Disabled", phonRule.Disabled) : null,
 						new XAttribute("Direction", phonRule.Direction),
 						CreateAttribute("ord", phonRule.IndexInOwner),
-						ExportBestAnalysis(phonRule.Name, "Name", mode),
-						ExportBestAnalysis(phonRule.Description, "Description", mode),
+						ExportBestAnalysis(phonRule.Name, "Name", mode, useMultiStrings, phonRule),
+						ExportBestAnalysis(phonRule.Description, "Description", mode, useMultiStrings, phonRule),
 						new XElement("StrucDesc",
 							ExportContextList(phonRule.StrucDescOS)));
 					break;
@@ -575,46 +632,48 @@ namespace SIL.LCModel.DomainServices
 				ExportItemAsReference(featureConstraint.FeatureRA, "Feature"));
 		}
 
-		private static XElement ExportPhonemeSet(IPhPhonemeSet phonemeSet, Normalizer.UNormalizationMode mode)
+		private static XElement ExportPhonemeSet(IPhPhonemeSet phonemeSet, Normalizer.UNormalizationMode mode, bool useMultiStrings = false)
 		{
 			return new XElement("PhPhonemeSet",
 								new XAttribute("Id", phonemeSet.Hvo),
-								ExportBestAnalysis(phonemeSet.Name, "Name", mode),
-								ExportBestAnalysis(phonemeSet.Description, "Description", mode),
+								ExportBestAnalysis(phonemeSet.Name, "Name", mode, useMultiStrings, phonemeSet),
+								ExportBestAnalysis(phonemeSet.Description, "Description", mode, useMultiStrings, phonemeSet),
 								new XElement("Phonemes", from phoneme in phonemeSet.PhonemesOC
-														  select ExportPhoneme(phoneme, mode)),
+														  select ExportPhoneme(phoneme, mode, useMultiStrings)),
 								new XElement("BoundaryMarkers", from marker in phonemeSet.BoundaryMarkersOC
-																 select ExportBoundaryMarker(marker, mode)));
+																 select ExportBoundaryMarker(marker, mode, useMultiStrings)));
 		}
 
-		private static XElement ExportBoundaryMarker(IPhBdryMarker bdryMarker, Normalizer.UNormalizationMode mode)
+		private static XElement ExportBoundaryMarker(IPhBdryMarker bdryMarker, Normalizer.UNormalizationMode mode, bool useMultiStrings = false)
 		{
 			return new XElement("PhBdryMarker",
 								new XAttribute("Id", bdryMarker.Hvo),
 								new XAttribute("Guid", bdryMarker.Guid.ToString()),
-								ExportBestAnalysis(bdryMarker.Name, "Name", mode),
-								ExportCodes(bdryMarker.CodesOS, mode));
+								ExportBestAnalysis(bdryMarker.Name, "Name", mode, useMultiStrings, bdryMarker),
+								ExportCodes(bdryMarker.CodesOS, mode, useMultiStrings));
 		}
 
-		private static XElement ExportPhoneme(IPhPhoneme phoneme, Normalizer.UNormalizationMode mode)
+		private static XElement ExportPhoneme(IPhPhoneme phoneme, Normalizer.UNormalizationMode mode, bool useMultiStrings = false)
 		{
 			return new XElement("PhPhoneme",
 								new XAttribute("Id", phoneme.Hvo),
-								ExportBestVernacular(phoneme.Name, "Name", mode),
-								ExportBestAnalysis(phoneme.Description, "Description", mode),
-								ExportCodes(phoneme.CodesOS, mode),
-								new XElement("BasicIPASymbol", phoneme.BasicIPASymbol.Text),
+								ExportBestVernacular(phoneme.Name, "Name", mode, useMultiStrings, phoneme),
+								ExportBestAnalysis(phoneme.Description, "Description", mode, useMultiStrings, phoneme),
+								ExportCodes(phoneme.CodesOS, mode, useMultiStrings),
+								useMultiStrings ?
+									ExportTsString(phoneme.BasicIPASymbol, "BasicIPASymbol", phoneme) :
+									new XElement("BasicIPASymbol", phoneme.BasicIPASymbol.Text),
 								new XElement("PhonologicalFeatures", ExportFeatureStructure(phoneme.FeaturesOA)));
 		}
 
-		private static XElement ExportCodes(IEnumerable<IPhCode> codes, Normalizer.UNormalizationMode mode)
+		private static XElement ExportCodes(IEnumerable<IPhCode> codes, Normalizer.UNormalizationMode mode, bool useMultiStrings = false)
 		{
 			return new XElement("Codes", from phone in codes.Where(phone =>
 					!string.IsNullOrEmpty(phone.Representation.BestVernacularAnalysisAlternative.Text))
 				select new XElement("PhCode",
 					new XAttribute("Id", phone.Hvo),
 					ExportBestVernacularOrAnalysis(phone.Representation,
-					"Representation", mode)));
+					"Representation", mode, useMultiStrings, phone)));
 		}
 
 		private static XElement ExportContext(IPhContextOrVar context)
@@ -672,13 +731,13 @@ namespace SIL.LCModel.DomainServices
 			return retVal;
 		}
 
-		private static XElement ExportNaturalClass(IPhNaturalClass naturalClass, Normalizer.UNormalizationMode mode)
+		private static XElement ExportNaturalClass(IPhNaturalClass naturalClass, Normalizer.UNormalizationMode mode, bool useMultiStrings = false)
 		{
 			return new XElement(naturalClass.ClassName,
 								new XAttribute("Id", naturalClass.Hvo),
-								ExportBestAnalysis(naturalClass.Name, "Name", mode),
-								ExportBestAnalysis(naturalClass.Description, "Description", mode),
-								ExportBestAnalysis(naturalClass.Abbreviation, "Abbreviation", mode),
+								ExportBestAnalysis(naturalClass.Name, "Name", mode, useMultiStrings, naturalClass),
+								ExportBestAnalysis(naturalClass.Description, "Description", mode, useMultiStrings, naturalClass),
+								ExportBestAnalysis(naturalClass.Abbreviation, "Abbreviation", mode, useMultiStrings, naturalClass),
 								(naturalClass is IPhNCFeatures)
 									? ExportNaturalClassContents(naturalClass as IPhNCFeatures)
 									: ExportNaturalClassContents(naturalClass as IPhNCSegments));
@@ -739,7 +798,7 @@ namespace SIL.LCModel.DomainServices
 														 select ExportFeatureStructure(region)));
 		}
 
-		private static XElement ExportFeatureSystem(IFsFeatureSystem featureSystem, string elementName, Normalizer.UNormalizationMode mode)
+		private static XElement ExportFeatureSystem(IFsFeatureSystem featureSystem, string elementName, Normalizer.UNormalizationMode mode, bool useMultiStrings = false)
 		{
 			return new XElement(elementName,
 				new XAttribute("Id", featureSystem.Hvo),
@@ -747,18 +806,18 @@ namespace SIL.LCModel.DomainServices
 					from type in featureSystem.TypesOC
 					 select new XElement("FsFeatStrucType",
 						 new XAttribute("Id", type.Hvo),
-						 ExportBestAnalysis(type.Name, "Name", mode),
-						 ExportBestAnalysis(type.Description, "Description", mode),
-						 ExportBestAnalysis(type.Abbreviation, "Abbreviation", mode),
+						 ExportBestAnalysis(type.Name, "Name", mode, useMultiStrings, featureSystem),
+						 ExportBestAnalysis(type.Description, "Description", mode, useMultiStrings, featureSystem),
+						 ExportBestAnalysis(type.Abbreviation, "Abbreviation", mode, useMultiStrings, featureSystem),
 						 new XElement("Features",
 							from featureRef in type.FeaturesRS
 							select ExportItemAsReference(featureRef, "Feature")))),
 				new XElement("Features",
 					from featDefn in featureSystem.FeaturesOC
-						select ExportFeatureDefn(featDefn, mode)));
+						select ExportFeatureDefn(featDefn, mode, useMultiStrings)));
 		}
 
-		private static XElement ExportFeatureDefn(IFsFeatDefn featureDefn, Normalizer.UNormalizationMode mode)
+		private static XElement ExportFeatureDefn(IFsFeatDefn featureDefn, Normalizer.UNormalizationMode mode, bool useMultiStrings = false)
 		{
 			switch (featureDefn.ClassName)
 			{
@@ -769,23 +828,23 @@ namespace SIL.LCModel.DomainServices
 					var closedFD = (IFsClosedFeature)featureDefn;
 					return new XElement("FsClosedFeature",
 						new XAttribute("Id", featureDefn.Hvo),
-						ExportBestAnalysis(featureDefn.Name, "Name", mode),
-						ExportBestAnalysis(featureDefn.Description, "Description", mode),
-						ExportBestAnalysis(closedFD.Abbreviation, "Abbreviation", mode),
+						ExportBestAnalysis(featureDefn.Name, "Name", mode, useMultiStrings, featureDefn),
+						ExportBestAnalysis(featureDefn.Description, "Description", mode, useMultiStrings, featureDefn),
+						ExportBestAnalysis(closedFD.Abbreviation, "Abbreviation", mode, useMultiStrings, featureDefn),
 						new XElement("Values",
 							from value in closedFD.ValuesOC
 								 select new XElement("FsSymFeatVal",
 									 new XAttribute("Id", value.Hvo),
-									 ExportBestAnalysis(value.Name, "Name", mode),
-									 ExportBestAnalysis(value.Description, "Description", mode),
-									 ExportBestAnalysis(value.Abbreviation, "Abbreviation", mode))));
+									 ExportBestAnalysis(value.Name, "Name", mode, useMultiStrings, value),
+									 ExportBestAnalysis(value.Description, "Description", mode, useMultiStrings, featureDefn),
+									 ExportBestAnalysis(value.Abbreviation, "Abbreviation", mode, useMultiStrings, value))));
 				case "FsComplexFeature":
 					var complexFD = (IFsComplexFeature) featureDefn;
 					return new XElement("FsComplexFeature",
 						new XAttribute("Id", featureDefn.Hvo),
-						ExportBestAnalysis(featureDefn.Name, "Name", mode),
-						ExportBestAnalysis(featureDefn.Description, "Description", mode),
-						ExportBestAnalysis(complexFD.Abbreviation, "Abbreviation", mode),
+						ExportBestAnalysis(featureDefn.Name, "Name", mode, useMultiStrings, featureDefn),
+						ExportBestAnalysis(featureDefn.Description, "Description", mode, useMultiStrings, featureDefn),
+						ExportBestAnalysis(complexFD.Abbreviation, "Abbreviation", mode, useMultiStrings, featureDefn),
 						ExportItemAsReference(complexFD.TypeRA, "Type"));
 			}
 		}
@@ -867,28 +926,66 @@ namespace SIL.LCModel.DomainServices
 								   select ExportItemAsReference(sfxslot, template.PrefixSlotsRS.IndexOf(sfxslot), "SuffixSlots"));
 		}
 
-		private static XElement ExportBestAnalysis(IMultiAccessorBase multiString, string elementName, Normalizer.UNormalizationMode mode)
+		private static XElement ExportTsString(ITsString tsString, string elementName, ICmObject obj)
 		{
-			if (multiString == null) throw new ArgumentNullException("multiString");
+			if (tsString == null) throw new ArgumentNullException("tsString");
 			if (String.IsNullOrEmpty(elementName)) throw new ArgumentNullException("elementName");
-
-			return new XElement(elementName, Normalize(multiString.BestAnalysisAlternative, mode));
+			if (obj == null) throw new ArgumentNullException("obj");
+			var writingSystemManager = obj.Cache.WritingSystemFactory;
+			string xml = TsStringSerializer.SerializeTsStringToXml(tsString, writingSystemManager);
+			return new XElement(elementName, XElement.Parse(xml));
 		}
 
-		private static XElement ExportBestVernacular(IMultiAccessorBase multiString, string elementName, Normalizer.UNormalizationMode mode)
+		private static IEnumerable<XElement> ExportMultiString(IMultiAccessorBase multiString, string elementName, ICmObject obj)
 		{
 			if (multiString == null) throw new ArgumentNullException("multiString");
 			if (String.IsNullOrEmpty(elementName)) throw new ArgumentNullException("elementName");
-
-			return new XElement(elementName, Normalize(multiString.BestVernacularAlternative, mode));
+			if (obj == null) throw new ArgumentNullException("obj");
+			if (multiString.StringCount == 0)
+				return null;
+			using (var memoryStream = new MemoryStream())
+			{
+				using (var writer = XmlServices.CreateWriter(memoryStream))
+				{
+					ReadWriteServices.WriteMultiFoo(writer, elementName, (MultiAccessor)multiString);
+					writer.Flush();
+				}
+				var bytes = memoryStream.ToArray();
+				string xml = Encoding.UTF8.GetString(bytes);
+				return new List<XElement> { XElement.Parse(xml) };
+			}
 		}
 
-		private static XElement ExportBestVernacularOrAnalysis(IMultiAccessorBase multiString, string elementName, Normalizer.UNormalizationMode mode)
+		private static IEnumerable<XElement> ExportBestAnalysis(IMultiAccessorBase multiString, string elementName, Normalizer.UNormalizationMode mode,
+			bool useMultiStrings = false, ICmObject obj = null)
 		{
+			if (useMultiStrings)
+				return ExportMultiString(multiString, elementName, obj);
+			if (multiString == null) throw new ArgumentNullException("multiString");
+			if (String.IsNullOrEmpty(elementName)) throw new ArgumentNullException("elementName");
+			return new List<XElement> { new XElement(elementName, Normalize(multiString.BestAnalysisAlternative, mode)) };
+		}
+
+		private static IEnumerable<XElement> ExportBestVernacular(IMultiAccessorBase multiString, string elementName, Normalizer.UNormalizationMode mode,
+			bool useMultiStrings = false, ICmObject obj = null)
+		{
+			if (useMultiStrings)
+				return ExportMultiString(multiString, elementName, obj);
 			if (multiString == null) throw new ArgumentNullException("multiString");
 			if (String.IsNullOrEmpty(elementName)) throw new ArgumentNullException("elementName");
 
-			return new XElement(elementName, Normalize(multiString.BestVernacularAnalysisAlternative, mode));
+			return new List<XElement> { new XElement(elementName, Normalize(multiString.BestVernacularAlternative, mode)) };
+		}
+
+		private static IEnumerable<XElement> ExportBestVernacularOrAnalysis(IMultiAccessorBase multiString, string elementName, Normalizer.UNormalizationMode mode,
+			bool useMultiStrings = false, ICmObject obj = null)
+		{
+			if (useMultiStrings)
+				return ExportMultiString(multiString, elementName, obj);
+			if (multiString == null) throw new ArgumentNullException("multiString");
+			if (String.IsNullOrEmpty(elementName)) throw new ArgumentNullException("elementName");
+
+			return new List<XElement> { new XElement(elementName, Normalize(multiString.BestVernacularAnalysisAlternative, mode)) };
 		}
 
 		private static string Normalize(ITsString text, Normalizer.UNormalizationMode mode)

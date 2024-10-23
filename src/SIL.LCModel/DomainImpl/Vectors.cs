@@ -421,19 +421,13 @@ namespace SIL.LCModel.DomainImpl
 			// TODO: Check for multidimensional 'array' and throw ArgumentException, if it is.
 			lock (SyncRoot)
 			{
-				//if (arrayIndex >= array.Length || m_items.Count - arrayIndex >= array.Length)
-				// equals sign causes spurious ArgumentException when copying entire array
-				if (array.Length == 0)
-					return;
-				if (arrayIndex >= array.Length || m_items.Count - arrayIndex > array.Length)
-					throw new ArgumentException();
+				if (m_items.Count + arrayIndex > array.Length)
+					throw new ArgumentOutOfRangeException("arrayIndex");
 
-				int currentIndex = 0;
-				int currentcopiedIndex = 0;
-				foreach (var objOrId in m_items.ToArray())
+				int currentcopiedIndex = arrayIndex;
+				foreach (var cmObjectOrId in m_items.ToArray()) // ToArray to avoid collection modified exception on object FluffUp
 				{
-					if (currentIndex++ < arrayIndex) continue;
-					array.SetValue(FluffUpObjectIfNeeded(objOrId), currentcopiedIndex++);
+					array[currentcopiedIndex++] = FluffUpObjectIfNeeded(cmObjectOrId);
 				}
 			}
 		}
