@@ -153,6 +153,23 @@ namespace SIL.LCModel.DomainServices
 				bldr3.AppendTsString(TsStringUtils.MakeString(
 					" " + Words_para0[19].Form.BestVernacularAlternative.Text + ".", wsVern));
 				Para0.Contents = bldr3.GetString();
+				/* a c a  a c a  a c b  b c b */
+				var bldr4 = Para0.Contents.GetIncBldr();
+				bldr4.AppendTsString(TsStringUtils.MakeString(
+					" " + Words_para0[1].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[6].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[1].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[1].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[6].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[1].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[1].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[6].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[4].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[4].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[6].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[4].Form.BestVernacularAlternative.Text +
+					".", wsVern));
+				Para0.Contents = bldr4.GetString();
 				using (ParagraphParser pp = new ParagraphParser(Cache))
 				{
 					foreach (IStTxtPara para in StText.ParagraphsOS)
@@ -1443,6 +1460,37 @@ namespace SIL.LCModel.DomainServices
 				Assert.AreEqual(contextedApprovedGloss2, sorted_glosses[0]);
 				Assert.AreEqual(contextedApprovedGloss1, sorted_glosses[1]);
 				Assert.AreEqual(uncontextedApprovedGloss, sorted_glosses[2]);
+			}
+		}
+
+		/// <summary>
+		/// Prefer glosses that are approved more often in the following context.
+		/// </summary>
+		[Test]
+		public void ExpectedContextAwareGloss_PreferFollowingContexted()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var segment = setup.Para0.SegmentsOS[4];
+				var servLoc = segment.Cache.ServiceLocator;
+				var glossFactory = servLoc.GetInstance<IWfiGlossFactory>();
+				var analysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[1].Wordform).Analysis;
+				var dAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[4].Wordform).Analysis;
+				var uncontextedApprovedGloss = glossFactory.Create();
+				var contextedApprovedGloss1 = glossFactory.Create();
+				var contextedApprovedGloss2 = glossFactory.Create();
+				analysis.MeaningsOC.Add(uncontextedApprovedGloss);
+				analysis.MeaningsOC.Add(contextedApprovedGloss1);
+				analysis.MeaningsOC.Add(contextedApprovedGloss2);
+				// Analyses must be set in order.
+				setup.Para0.SetAnalysis(4, 1, contextedApprovedGloss1); // "a c a"
+				setup.Para0.SetAnalysis(4, 4, contextedApprovedGloss1); // "a c a"
+				setup.Para0.SetAnalysis(4, 7, contextedApprovedGloss2); // "a c b"
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(segment, 10); // "b c b"
+				// Check guess.
+				var guessActual = setup.GuessServices.GetBestGuess(occurrence);
+				// Prefer contextedApprovedGloss2 because it is followed by "b".
+				Assert.AreEqual(contextedApprovedGloss2, guessActual);
 			}
 		}
 
