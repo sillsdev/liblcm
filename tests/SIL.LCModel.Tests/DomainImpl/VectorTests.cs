@@ -9,7 +9,7 @@
 using System;
 using System.Linq;
 using NUnit.Framework;
-using Rhino.Mocks;
+using SIL.LCModel.Tests.Rhino.Mocks;
 using SIL.LCModel.Core.Scripture;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Infrastructure;

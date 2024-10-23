@@ -5,15 +5,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Moq;
 using NUnit.Framework;
-using Rhino.Mocks;
+using SIL.LCModel.Tests.Rhino.Mocks;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Scripture;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.DomainImpl;
 using SIL.LCModel.Utils;
-using MockRepository = Rhino.Mocks.MockRepository;
 
 namespace SIL.LCModel.DomainServices
 {
