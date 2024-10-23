@@ -13,8 +13,6 @@ namespace SIL.LCModel.Core.SpellChecking
 	internal sealed class SpellEngineLinux: SpellEngine
 	{
 		private IntPtr _hunspellHandle;
-		private bool _isVernacular;
-		private bool _gotIsVernacular;
 
 		internal SpellEngineLinux(string affixPath, string dictPath, string exceptionPath)
 			: base(exceptionPath)
@@ -217,20 +215,6 @@ namespace SIL.LCModel.Core.SpellChecking
 			var results = MarshalUnmanagedStrArray2ManagedStrArray(pointerToAddressStringArray, resultCount);
 			Hunspell_free_list(_hunspellHandle, ref pointerToAddressStringArray, resultCount);
 			return results;
-		}
-
-		/// <inheritdoc />
-		public override bool IsVernacular
-		{
-			get
-			{
-				if (_gotIsVernacular)
-					return _isVernacular;
-
-				_isVernacular = Check(SpellingHelper.PrototypeWord);
-				_gotIsVernacular = true;
-				return _isVernacular;
-			}
 		}
 	}
 
