@@ -1,6 +1,6 @@
-﻿using Moq;
+using Moq;
 
-namespace Rhino.Mocks
+namespace SIL.LCModel.Tests.Rhino.Mocks
 {
     public static class MockRepository
     {
