@@ -2,7 +2,7 @@ using System;
 using System.Linq.Expressions;
 using Moq;
 
-namespace Rhino.Mocks
+namespace SIL.LCModel.Tests.Rhino.Mocks
 {
 	class MoqAdapter<T, TR> where T : class
 	{
