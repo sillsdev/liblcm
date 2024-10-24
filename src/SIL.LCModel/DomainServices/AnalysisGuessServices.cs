@@ -76,6 +76,7 @@ namespace SIL.LCModel.DomainServices
 			// The PriorityCount is the count for the analysis.
 			public IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> previousWordform;
 			public IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> nextWordform;
+			public IDictionary<IAnalysis, PriorityCount> wordform;
 		}
 
 		// Key of m_guessTable = word form (or analysis).
@@ -329,6 +330,16 @@ namespace SIL.LCModel.DomainServices
 				guessTable[form] = GetContextCounts(form);
 				if (lowercaseForm != null)
 					GetContextCounts(lowercaseForm, true, guessTable[form]);
+				// Move uncontexted counts from previousWordform to wordform.
+				if (guessTable[form].previousWordform.ContainsKey(m_nullWAG))
+				{
+					guessTable[form].wordform = guessTable[form].previousWordform[m_nullWAG];
+					guessTable[form].previousWordform.Remove(m_nullWAG);
+					guessTable[form].nextWordform.Remove(m_nullWAG);
+				} else
+				{
+					guessTable[form].wordform = new Dictionary<IAnalysis, PriorityCount>();
+				}
 			}
 			return guessTable;
 		}
@@ -342,12 +353,7 @@ namespace SIL.LCModel.DomainServices
 		private IAnalysis GetBestAnalysis(ContextCount counts, AnalysisOccurrence occurrence)
 		{
 			IAnalysis best = null;
-			if (!counts.previousWordform.ContainsKey(m_nullWAG))
-			{
-				// No analyses to enumerate.
-				return null;
-			}
-			foreach (IAnalysis key in counts.previousWordform[m_nullWAG].Keys)
+			foreach (IAnalysis key in counts.wordform.Keys)
 			{
 				if (best == null || ComparePriorityCounts(key, best, occurrence, counts) < 0)
 				{
@@ -580,25 +586,24 @@ namespace SIL.LCModel.DomainServices
 					return -1;
 			}
 			// Compare non-contexted counts.
-			IAnalysis previous = m_nullWAG;
-			IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> counts = contextCount.previousWordform;
+			IDictionary<IAnalysis, PriorityCount> counts = contextCount.wordform;
 			// Prefer higher priority counts.
-			int priority1 = counts[previous].ContainsKey(a1) ? counts[previous][a1].priority : 0;
-			int priority2 = counts[previous].ContainsKey(a2) ? counts[previous][a2].priority : 0;
+			int priority1 = counts.ContainsKey(a1) ? counts[a1].priority : 0;
+			int priority2 = counts.ContainsKey(a2) ? counts[a2].priority : 0;
 			if (priority1 < priority2)
 				return 1;
 			if (priority1 > priority2)
 				return -1;
 			// Prefer higher counts.
-			int count1 = counts[previous].ContainsKey(a1) ? counts[previous][a1].count : 0;
-			int count2 = counts[previous].ContainsKey(a2) ? counts[previous][a2].count : 0;
+			int count1 = counts.ContainsKey(a1) ? counts[a1].count : 0;
+			int count2 = counts.ContainsKey(a2) ? counts[a2].count : 0;
 			if (count1 < count2)
 				return 1;
 			if (count1 > count2)
 				return -1;
 			// Prefer analyses that haven't been lowercased.
-			bool lowercased1 = counts[previous].ContainsKey(a1) && counts[previous][a1].lowercased;
-			bool lowercased2 = counts[previous].ContainsKey(a2) && counts[previous][a2].lowercased;
+			bool lowercased1 = counts.ContainsKey(a1) && counts[a1].lowercased;
+			bool lowercased2 = counts.ContainsKey(a2) && counts[a2].lowercased;
 			if (lowercased1 && !lowercased2)
 				return 1;
 			if (lowercased2 && !lowercased1)
