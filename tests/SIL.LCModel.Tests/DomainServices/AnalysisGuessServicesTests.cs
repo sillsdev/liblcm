@@ -2,6 +2,7 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -152,6 +153,23 @@ namespace SIL.LCModel.DomainServices
 				bldr3.AppendTsString(TsStringUtils.MakeString(
 					" " + Words_para0[19].Form.BestVernacularAlternative.Text + ".", wsVern));
 				Para0.Contents = bldr3.GetString();
+				/* a c a  a c a  a c b  b c b */
+				var bldr4 = Para0.Contents.GetIncBldr();
+				bldr4.AppendTsString(TsStringUtils.MakeString(
+					" " + Words_para0[1].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[6].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[1].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[1].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[6].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[1].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[1].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[6].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[4].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[4].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[6].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[4].Form.BestVernacularAlternative.Text +
+					".", wsVern));
+				Para0.Contents = bldr4.GetString();
 				using (ParagraphParser pp = new ParagraphParser(Cache))
 				{
 					foreach (IStTxtPara para in StText.ParagraphsOS)
@@ -552,6 +570,7 @@ namespace SIL.LCModel.DomainServices
 				// Test GetOriginalCaseWordform.
 				// Set the analysis to the lowercase wordform.
 				setup.Para0.SetAnalysis(0, 0, sorted_analyses[1]);
+				setup.GuessServices.ClearGuessData();
 				sorted_analyses = setup.GuessServices.GetSortedAnalysisGuesses(occurrence.Analysis.Wordform, occurrence);
 				// We should still get the uppercase wordform as a guess.
 				// The lowercase wordform is preferred because it is human-approved.
@@ -1442,6 +1461,122 @@ namespace SIL.LCModel.DomainServices
 				Assert.AreEqual(contextedApprovedGloss1, sorted_glosses[1]);
 				Assert.AreEqual(uncontextedApprovedGloss, sorted_glosses[2]);
 			}
+		}
+
+		/// <summary>
+		/// Prefer glosses that are approved more often in the following context.
+		/// </summary>
+		[Test]
+		public void ExpectedContextAwareGloss_PreferFollowingContexted()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var segment = setup.Para0.SegmentsOS[4];
+				var servLoc = segment.Cache.ServiceLocator;
+				var glossFactory = servLoc.GetInstance<IWfiGlossFactory>();
+				var analysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[1].Wordform).Analysis;
+				var dAnalysis = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(segment.AnalysesRS[4].Wordform).Analysis;
+				var uncontextedApprovedGloss = glossFactory.Create();
+				var contextedApprovedGloss1 = glossFactory.Create();
+				var contextedApprovedGloss2 = glossFactory.Create();
+				analysis.MeaningsOC.Add(uncontextedApprovedGloss);
+				analysis.MeaningsOC.Add(contextedApprovedGloss1);
+				analysis.MeaningsOC.Add(contextedApprovedGloss2);
+				// Analyses must be set in order.
+				setup.Para0.SetAnalysis(4, 1, contextedApprovedGloss1); // "a c a"
+				setup.Para0.SetAnalysis(4, 4, contextedApprovedGloss1); // "a c a"
+				setup.Para0.SetAnalysis(4, 7, contextedApprovedGloss2); // "a c b"
+				AnalysisOccurrence occurrence = new AnalysisOccurrence(segment, 10); // "b c b"
+				// Check guess.
+				var guessActual = setup.GuessServices.GetBestGuess(occurrence);
+				// Prefer contextedApprovedGloss2 because it is followed by "b".
+				Assert.AreEqual(contextedApprovedGloss2, guessActual);
+			}
+		}
+
+		/// <summary>
+		/// Test all of the projects in a directory.
+		/// </summary>
+		/// <param name="directory"></param>
+		private void TestProjects(string directory)
+		{
+			float count = 0;
+			int correct = 0;
+			int total = 0;
+			foreach (string subdir in Directory.GetDirectories(directory))
+			{
+				foreach (string file in Directory.GetFiles(subdir, "*.fwdata"))
+				{
+					int pCorrect;
+					int pTotal;
+					int min = 5;
+					int cutoff = 100;
+					TestProject(subdir, file, min, cutoff, out pCorrect, out pTotal);
+					if (pTotal < min) continue;
+					correct += pCorrect;
+					total += pTotal;
+					count++;
+				}
+			}
+			float ratio = (float)correct / (float)total;
+			Console.WriteLine("overall correct: " + correct.ToString() + ", total: " + total.ToString() + " (" + (100 * ratio).ToString() + "%) for " + count + " projects");
+		}
+
+		/// <summary>
+		/// Test a project.
+		/// </summary>
+		/// <param name="projectsDirectory"></param>
+		/// <param name="dbFileName"></param>
+		/// <param name="min">Skip project if it has less than min approved wordforms.</param>
+		/// <param name="cutoff">Number of approved wordforms to test</param>
+		/// <param name="outCorrect">Number of correct guesses</param>
+		/// <param name="outTotal">Number of total guesses</param>
+		private void TestProject(string projectsDirectory, string dbFileName, int min, int cutoff, out int outCorrect, out int outTotal)
+		{
+			int correct = 0;
+			int total = 0;
+			var projectId = new TestProjectId(BackendProviderType.kXML, dbFileName);
+			var m_ui = new DummyLcmUI();
+			var m_lcmDirectories = new TestLcmDirectories(projectsDirectory);
+			using (var cache = LcmCache.CreateCacheFromExistingData(projectId, "en", m_ui, m_lcmDirectories, new LcmSettings(),
+					new DummyProgressDlg()))
+			{
+				AnalysisGuessServices guesser = new AnalysisGuessServices(cache);
+				IStTextRepository textRepository = cache.ServiceLocator.GetInstance<IStTextRepository>();
+				foreach (IStText text in textRepository.AllInstances())
+				{
+					if (total == cutoff) break;
+					foreach (IStTxtPara para in text.ParagraphsOS)
+					{
+						if (total == cutoff) break;
+						foreach (var occurrence in SegmentServices.StTextAnnotationNavigator.GetWordformOccurrencesAdvancingInPara(para))
+						{
+							if (total == cutoff) break;
+							var analysis = occurrence.Analysis;
+							if (analysis is IWfiGloss)
+							{
+								NonUndoableUnitOfWorkHelper.DoUsingNewOrCurrentUOW(cache.ActionHandlerAccessor, () =>
+								{
+									guesser.ClearGuessData();
+									guesser.IgnoreOccurrence = occurrence;
+									occurrence.Analysis = analysis.Wordform;
+									var bestGuess = guesser.GetBestGuess(occurrence);
+									occurrence.Analysis = analysis;
+									if (bestGuess == analysis)
+										correct++;
+									total++;
+								});
+							}
+						}
+					}
+				}
+			}
+			outCorrect = correct;
+			outTotal = total;
+			if (total < min) return;
+			float ratio = total == 0 ? 0 : (float)correct / (float)total;
+			string name = dbFileName.Substring(projectsDirectory.Length + 1);
+			Console.WriteLine("correct: " + correct.ToString() + ", total: " + total.ToString() + " (" + (100 * ratio).ToString() + "%): " + name);
 		}
 	}
 }
