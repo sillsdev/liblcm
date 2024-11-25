@@ -3413,6 +3413,10 @@ namespace SIL.LCModel.DomainImpl
 			var owner = ReferenceTargetOwner(flid) as ICmPossibilityList;
 			if (owner != null)
 				return owner.PossibilitiesOS.Cast<ICmObject>();
+			var mdc = m_cache.ServiceLocator.GetInstance<IFwMetaDataCacheManaged>();
+			int classId = mdc.GetDstClsId(flid);
+			if (classId == MoStratumTags.kClassId)
+				return m_cache.LangProject.MorphologicalDataOA.StrataOS;
 
 			var type = (CellarPropertyType)m_cache.MetaDataCache.GetFieldType(flid);
 			if (type == CellarPropertyType.ReferenceSequence || type == CellarPropertyType.ReferenceCollection)

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2002-2017 SIL International
+// Copyright (c) 2002-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -134,6 +134,23 @@ namespace SIL.LCModel.DomainImpl
 			var msn = Cache.ServiceLocator.GetInstance<IMoStemNameFactory>().Create();
 			pos.StemNamesOC.Add(msn);
 			Assert.That(msn.RegionsOC, Has.Count.EqualTo(1)); // can only be FsFeatStruc, there are no subclasses.
+		}
+
+		[Test]
+		public void Strata()
+		{
+			int ws = Cache.DefaultAnalWs;
+			IMoStratumFactory stratumFactory = Cache.ServiceLocator.GetInstance<IMoStratumFactory>();
+			IMoStratum stratum = stratumFactory.Create();
+			Cache.LangProject.MorphologicalDataOA.StrataOS.Add(stratum);
+			ITsString tss = TsStringUtils.MakeString("Clitic", ws);
+			stratum.Name.set_String(ws, tss);
+			Assert.That(stratum.ChooserNameTS.Text.Equals(tss.Text));
+			IPhRegularRuleFactory ruleFactory = Cache.ServiceLocator.GetInstance<IPhRegularRuleFactory>();
+			IPhRegularRule rule = ruleFactory.Create();
+			Cache.LangProject.PhonologicalDataOA.PhonRulesOS.Add(rule);
+			var strata = new HashSet<ICmObject>(rule.ReferenceTargetCandidates(PhRegularRuleTags.kflidInitialStratum));
+			Assert.That(strata.First().Equals(stratum));
 		}
 	}
 
