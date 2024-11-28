@@ -61,7 +61,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					XAttribute linkAttr = run.Attribute("ownlink");
 					if (linkAttr == null)
 						continue; // Run doesn't contain a link
-					DomainObjectDTO linkObj;
+					DomainObjectXMLDTO linkObj;
 					// skip links to missing footnotes - user will have to clean these up later.
 					if (!domainObjectDtoRepository.TryGetValue(linkAttr.Value, out linkObj))
 						continue;

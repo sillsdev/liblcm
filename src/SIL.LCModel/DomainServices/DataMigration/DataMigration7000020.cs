@@ -30,7 +30,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		{
 			DataMigrationServices.CheckVersionNumber(repoDto, 7000019);
 
-			var viewsToDelete = new List<DomainObjectDTO>();
+			var viewsToDelete = new List<DomainObjectXMLDTO>();
 			foreach (var dtoView in repoDto.AllInstancesSansSubclasses("UserView"))
 			{
 				var xeView = XElement.Parse(dtoView.Xml);

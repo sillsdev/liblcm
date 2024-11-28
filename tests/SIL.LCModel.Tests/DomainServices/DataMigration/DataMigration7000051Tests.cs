@@ -25,7 +25,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void DataMigration7000051Test()
 		{
-			var dtos = new HashSet<DomainObjectDTO>();
+			var dtos = new HashSet<DomainObjectXMLDTO>();
 			var sb = new StringBuilder();
 			// Add Lang Project dto.
 			const string sLpGuid = "9719A466-2240-4DEA-9722-9FE0746A30A6";
@@ -35,12 +35,12 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.AppendFormat("<objsur guid=\"{0}\" t=\"o\" />", afxCatGuid);
 			sb.Append("</AffixCategories>");
 			sb.Append("</rt>");
-			var oldDto = new DomainObjectDTO(sLpGuid, "LangProject", sb.ToString());
+			var oldDto = new DomainObjectXMLDTO(sLpGuid, "LangProject", sb.ToString());
 			dtos.Add(oldDto);
 			sb.Length = 0;
 
 			sb.AppendFormat("<rt class=\"CmPossibilityList\" guid=\"{0}\"  ownerguid=\"{1}\" />", afxCatGuid, sLpGuid);
-			var afxCatDto = new DomainObjectDTO(afxCatGuid, "CmPossibilityList", sb.ToString());
+			var afxCatDto = new DomainObjectXMLDTO(afxCatGuid, "CmPossibilityList", sb.ToString());
 			dtos.Add(afxCatDto);
 
 			// Set up mock MDC.
@@ -55,7 +55,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.AreEqual(7000051, dtoRepos.CurrentModelVersion, "Wrong updated version.");
 
 			// Check that the old LP is not present.
-			DomainObjectDTO gonerDto;
+			DomainObjectXMLDTO gonerDto;
 			Assert.IsFalse(dtoRepos.TryGetValue(sLpGuid, out gonerDto));
 			Assert.IsTrue(((DomainObjectDtoRepository)dtoRepos).Goners.Contains(oldDto));
 			var newDto = dtoRepos.AllInstancesSansSubclasses("LangProject").FirstOrDefault();

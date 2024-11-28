@@ -23,7 +23,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void DataMigration7000009Test()
 		{
-			var dtos = new HashSet<DomainObjectDTO>();
+			var dtos = new HashSet<DomainObjectXMLDTO>();
 			var sb = new StringBuilder();
 			// 1. Add barebones LP.
 			sb.Append("<rt class=\"LangProject\" guid=\"9719A466-2240-4DEA-9722-9FE0746A30A6\">");
@@ -38,7 +38,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("</LangProject>");
 			sb.Append("</rt>");
 			var expectedLp = sb.ToString();
-			var lpDto = new DomainObjectDTO("9719A466-2240-4DEA-9722-9FE0746A30A6",
+			var lpDto = new DomainObjectXMLDTO("9719A466-2240-4DEA-9722-9FE0746A30A6",
 											"LangProject",
 											expectedLp);
 			dtos.Add(lpDto);
@@ -58,7 +58,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			string expected = sb.ToString();
 			sb.Insert(index, " owningflid=\"6001040\" owningord=\"0\"");
 
-			var scrDto = new DomainObjectDTO("2c5c1f5f-1f08-41d7-99fe-23893ee4ceef",
+			var scrDto = new DomainObjectXMLDTO("2c5c1f5f-1f08-41d7-99fe-23893ee4ceef",
 											 "Scripture",
 											 sb.ToString());
 			dtos.Add(scrDto);

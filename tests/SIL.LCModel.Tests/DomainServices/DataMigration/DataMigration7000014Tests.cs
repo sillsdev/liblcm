@@ -74,7 +74,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				Assert.Contains(goner.Guid.ToLower(), gonerGuids, "Goner guid not found.");
 		}
 
-		private void VerifyAnalysis(DomainObjectDTO analysis, string[] evaluations)
+		private void VerifyAnalysis(DomainObjectXMLDTO analysis, string[] evaluations)
 		{
 			var rtElement = XElement.Parse(analysis.Xml);
 			var agentElt = rtElement.Element("WfiAnalysis");
@@ -94,7 +94,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.IsTrue(wanted.Contains(guid));
 		}
 
-		private void VerifyAgent(DomainObjectDTO agent, IDomainObjectDTORepository dtoRepos, out string approvesGuid, out string disapprovesGuid)
+		private void VerifyAgent(DomainObjectXMLDTO agent, IDomainObjectDTORepository dtoRepos, out string approvesGuid, out string disapprovesGuid)
 		{
 			var rtElement = XElement.Parse(agent.Xml);
 			var agentElement = rtElement.Element("CmAgent");

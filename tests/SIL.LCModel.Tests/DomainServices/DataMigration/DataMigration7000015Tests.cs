@@ -51,7 +51,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			VerifyObject(dtoRepos.GetDTO("C83E33DD-2A79-4A4B-84F6-92343C4F5325"), oldClassElementNames, expectedPropertyElements);
 		}
 
-		private static void VerifyObject(DomainObjectDTO dto, IEnumerable<string> oldClassElements, ICollection<string> expectedPropertyElements)
+		private static void VerifyObject(DomainObjectXMLDTO dto, IEnumerable<string> oldClassElements, ICollection<string> expectedPropertyElements)
 		{
 			// Make sure the old class elements are gone.
 			var rtElement = XElement.Parse(dto.Xml);

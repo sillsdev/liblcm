@@ -46,7 +46,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				var newPhPhonDataElt = new XElement("PhPhonData",
 													new XAttribute("guid", sPhPhonDataGuid),
 													new XAttribute("ownerguid", wmbLangProj.Guid));
-				wmbPhonData = new DomainObjectDTO(sPhPhonDataGuid, "PhPhonData", newPhPhonDataElt.ToString());
+				wmbPhonData = new DomainObjectXMLDTO(sPhPhonDataGuid, "PhPhonData", newPhPhonDataElt.ToString());
 				domainObjectDtoRepository.Add(wmbPhonData);
 			}
 			XElement wmbPhonDataElt = XElement.Parse(wmbPhonData.Xml);
@@ -83,7 +83,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("<WsSelector val=\"0\" />");
 			sb.Append("</rt>");
 			var newCmPossibilityListElt = XElement.Parse(sb.ToString());
-			var dtoCmPossibilityList = new DomainObjectDTO(sPossibilityListGuid, "CmPossibilityList", newCmPossibilityListElt.ToString());
+			var dtoCmPossibilityList = new DomainObjectXMLDTO(sPossibilityListGuid, "CmPossibilityList", newCmPossibilityListElt.ToString());
 			domainObjectDtoRepository.Add(dtoCmPossibilityList);
 
 			DataMigrationServices.IncrementVersionNumber(domainObjectDtoRepository);

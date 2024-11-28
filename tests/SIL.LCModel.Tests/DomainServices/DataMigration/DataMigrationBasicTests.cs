@@ -36,7 +36,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		{
 			var mockMDC = new MockMDCForDataMigration();
 			IDomainObjectDTORepository dtoRepos = new DomainObjectDtoRepository(7100000,
-				new HashSet<DomainObjectDTO>(), mockMDC, null, TestDirectoryFinder.LcmDirectories);
+				new HashSet<DomainObjectXMLDTO>(), mockMDC, null, TestDirectoryFinder.LcmDirectories);
 			Assert.That(() => m_dataMigrationManager.PerformMigration(dtoRepos, 7000000, null),
 				Throws.TypeOf<DataMigrationException>());
 		}
