@@ -3947,7 +3947,10 @@ namespace SIL.LCModel.DomainImpl
 				tisb.Append("[");
 			}
 			var count = 0;
-			foreach (var spec in FeatureSpecsOC)
+			var sortedSpecs = from s in FeatureSpecsOC
+							  orderby FeatureSpecKey(s)
+							  select s;
+			foreach (var spec in sortedSpecs)
 			{
 				if (count++ > 0)
 				{
@@ -3992,6 +3995,21 @@ namespace SIL.LCModel.DomainImpl
 					m_cache.DefaultAnalWs);
 			}
 			return tisb.GetString();
+		}
+
+		private string FeatureSpecKey(IFsFeatureSpecification spec)
+		{
+			if (spec.FeatureRA == null)
+				return "";
+			if (TypeRA != null)
+			{
+				int index = TypeRA.FeaturesRS.IndexOf(spec.FeatureRA);
+				if (index >= 0)
+				{
+					return index.ToString("000");
+				}
+			}
+			return "1" + spec.FeatureRA.Name.BestAnalysisAlternative.Text;
 		}
 
 		internal ITsString GetFeatureValueStringSorted()
