@@ -2275,7 +2275,12 @@ namespace SIL.LCModel.DomainImpl
 					if (sValue == null || sValue.Length == 0)
 						sValue = ValueRA.Name.BestAnalysisAlternative.Text;
 					if (!fLongForm)
-						sValue = sValue + ValueRA.RightGlossSep.AnalysisDefaultWritingSystem.Text;
+					{
+						string sep = ValueRA.RightGlossSep.AnalysisDefaultWritingSystem.Text;
+						if (sep == "***")
+							sep = ":";
+						sValue = sValue + sep;
+					}
 				}
 			}
 			else
@@ -2296,7 +2301,12 @@ namespace SIL.LCModel.DomainImpl
 					if (fLongForm)
 						sFeature = sFeature + ":";
 					else
-						sFeature = sFeature + FeatureRA.RightGlossSep.BestAnalysisAlternative.Text;
+					{
+						string sep = ValueRA.RightGlossSep.AnalysisDefaultWritingSystem.Text;
+						if (sep == "***")
+							sep = ":";
+						sFeature = sFeature + sep;
+					}
 				}
 			}
 			else
@@ -2531,7 +2541,10 @@ namespace SIL.LCModel.DomainImpl
 					sFeature = FeatureRA.Abbreviation.BestAnalysisAlternative.Text;
 					if (string.IsNullOrEmpty(sFeature))
 						sFeature = FeatureRA.Name.BestAnalysisAlternative.Text;
-					sFeature = fLongForm ? sFeature + ":" : sFeature + FeatureRA.RightGlossSep.BestAnalysisAlternative.Text;
+					string sep = fLongForm ? ":" : FeatureRA.RightGlossSep.AnalysisDefaultWritingSystem.Text;
+					if (sep == "***")
+						sep = ":";
+					sFeature = sFeature + sep;
 				}
 			}
 			else
