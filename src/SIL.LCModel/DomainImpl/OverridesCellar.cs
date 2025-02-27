@@ -2460,7 +2460,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			get
 			{
-				return GetFeatureValueStringSorted();
+				return GetFeatureValueString(true);
 			}
 		}
 		/// <summary>
@@ -2491,17 +2491,6 @@ namespace SIL.LCModel.DomainImpl
 			var sValue = GetValueString(fLongForm);
 			tisb.Append(sFeature);
 			tisb.Append(sValue);
-			return tisb.GetString();
-		}
-
-		private ITsString GetFeatureValueStringSorted()
-		{
-			var tisb = TsStringUtils.MakeIncStrBldr();
-			tisb.SetIntPropValues((int)FwTextPropType.ktptWs,
-				0, Cache.DefaultAnalWs);
-			var sFeature = GetFeatureString(true);
-			tisb.Append(sFeature);
-			tisb.AppendTsString((ValueOA as FsFeatStruc).GetFeatureValueStringSorted());
 			return tisb.GetString();
 		}
 
@@ -3794,7 +3783,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			get
 			{
-				return GetFeatureValueStringSorted();
+				return GetFeatureValueString(true);
 			}
 		}
 		/// <summary>
@@ -4012,56 +4001,6 @@ namespace SIL.LCModel.DomainImpl
 			return "1" + spec.FeatureRA.Name.BestAnalysisAlternative.Text;
 		}
 
-		internal ITsString GetFeatureValueStringSorted()
-		{
-			var tisb = TsStringUtils.MakeIncStrBldr();
-			var iCount = FeatureSpecsOC.Count;
-			if (iCount > 0)
-			{
-				tisb.SetIntPropValues((int)FwTextPropType.ktptWs, (int)FwTextPropVar.ktpvDefault,
-					m_cache.DefaultAnalWs);
-				tisb.Append("[");
-			}
-			var count = 0;
-			var sortedSpecs = from s in FeatureSpecsOC
-							  orderby s.FeatureRA.Name.BestAnalysisAlternative.Text
-							  select s;
-			foreach (var spec in sortedSpecs)
-			{
-				if (count++ > 0)
-				{
-					tisb.SetIntPropValues((int)FwTextPropType.ktptWs, (int)FwTextPropVar.ktpvDefault,
-						m_cache.DefaultAnalWs);
-					tisb.Append(" "); // insert space except for first item
-				}
-				var cv = spec as IFsClosedValue;
-				if (cv != null)
-				{
-						tisb.AppendTsString((cv as FsClosedValue).LongNameTSS);
-				}
-				else
-				{
-					var complex = spec as IFsComplexValue;
-					if (complex != null)
-					{
-							tisb.AppendTsString((complex as FsComplexValue).LongNameSortedTSS);
-					}
-				}
-			}
-			if (iCount > 0)
-			{
-				tisb.SetIntPropValues((int)FwTextPropType.ktptWs, (int)FwTextPropVar.ktpvDefault,
-					m_cache.DefaultAnalWs);
-				tisb.Append("]");
-			}
-			if (tisb.Text == null)
-			{
-				// Ensure that we have a ws for the empty string!  See FWR-1122.
-				tisb.SetIntPropValues((int)FwTextPropType.ktptWs, (int)FwTextPropVar.ktpvDefault,
-					m_cache.DefaultAnalWs);
-			}
-			return tisb.GetString();
-		}
 		/// <summary>
 		/// Provide a "Name" for this (is a long name)
 		/// </summary>
