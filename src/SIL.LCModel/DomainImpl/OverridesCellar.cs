@@ -2276,16 +2276,21 @@ namespace SIL.LCModel.DomainImpl
 						sValue = ValueRA.Name.BestAnalysisAlternative.Text;
 					if (!fLongForm)
 					{
-						string sep = ValueRA.RightGlossSep.AnalysisDefaultWritingSystem.Text;
-						if (sep == "***")
-							sep = ":";
-						sValue = sValue + sep;
+						sValue = sValue + GetSeparator(ValueRA.RightGlossSep, fLongForm);
 					}
 				}
 			}
 			else
 				sValue = m_ksUnknown;
 			return sValue;
+		}
+
+		internal static string GetSeparator(IMultiUnicode rightGlossSep, bool longForm)
+		{
+			string sep = rightGlossSep.AnalysisDefaultWritingSystem.Text;
+			if (longForm || sep == "***")
+				return ":";
+			return sep;
 		}
 
 		private string GetFeatureString(bool fLongForm)
@@ -2298,15 +2303,7 @@ namespace SIL.LCModel.DomainImpl
 					sFeature = FeatureRA.Abbreviation.BestAnalysisAlternative.Text;
 					if (sFeature == null || sFeature.Length == 0)
 						sFeature = FeatureRA.Name.BestAnalysisAlternative.Text;
-					if (fLongForm)
-						sFeature = sFeature + ":";
-					else
-					{
-						string sep = ValueRA.RightGlossSep.AnalysisDefaultWritingSystem.Text;
-						if (sep == "***")
-							sep = ":";
-						sFeature = sFeature + sep;
-					}
+					sFeature = sFeature + GetSeparator(FeatureRA.RightGlossSep, fLongForm);
 				}
 			}
 			else
@@ -2541,10 +2538,7 @@ namespace SIL.LCModel.DomainImpl
 					sFeature = FeatureRA.Abbreviation.BestAnalysisAlternative.Text;
 					if (string.IsNullOrEmpty(sFeature))
 						sFeature = FeatureRA.Name.BestAnalysisAlternative.Text;
-					string sep = fLongForm ? ":" : FeatureRA.RightGlossSep.AnalysisDefaultWritingSystem.Text;
-					if (sep == "***")
-						sep = ":";
-					sFeature = sFeature + sep;
+					sFeature = sFeature + FsClosedValue.GetSeparator(FeatureRA.RightGlossSep, fLongForm);
 				}
 			}
 			else
