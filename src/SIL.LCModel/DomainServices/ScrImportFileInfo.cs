@@ -683,7 +683,7 @@ namespace SIL.LCModel.DomainServices
 
 								// save the chapter number as the last chapter and possibly the first
 								// chapter number in the range.
-								if (currentRange.StartChapter == 0)
+								if (currentRange!.StartChapter == 0)
 									currentRange.StartChapter = chapter;
 								currentRange.EndChapter = chapter;
 							}
@@ -729,7 +729,7 @@ namespace SIL.LCModel.DomainServices
 							if (firstVerse == -1)
 								firstVerse = firstRef.Verse;
 						}
-						else if (!markerMapping.IsExcluded && m_doStrictFileChecking &&
+						else if (!markerMapping!.IsExcluded && m_doStrictFileChecking &&
 							markerMapping.MappingTarget == MappingTargetType.Figure)
 						{
 							// First, we need to consider whether any following lines also need
@@ -782,7 +782,7 @@ namespace SIL.LCModel.DomainServices
 						}
 					}
 					// Mark this mapping as "in-use" because it was found in the scanned file
-					markerMapping.SetIsInUse(m_domain, m_wsId, m_noteType, true);
+					markerMapping!.SetIsInUse(m_domain, m_wsId, m_noteType, true);
 
 					if (m_scanInlineBackslashMarkers)
 						lineIn = lineText;

@@ -375,7 +375,7 @@ namespace SIL.LCModel.DomainImpl
 			{
 				CreateDefaultTemplate();
 			}
-			return m_cache.LanguageProject.DiscourseDataOA.ConstChartTemplOA.PossibilitiesOS[0];
+			return m_cache.LanguageProject.DiscourseDataOA!.ConstChartTemplOA!.PossibilitiesOS[0];
 		}
 
 		/// <summary>
@@ -470,7 +470,7 @@ namespace SIL.LCModel.DomainImpl
 			{
 				MakeDefaultChartMarkers();
 			}
-			return m_cache.LangProject.DiscourseDataOA.ChartMarkersOA.PossibilitiesOS[0];
+			return m_cache.LangProject.DiscourseDataOA!.ChartMarkersOA!.PossibilitiesOS[0];
 		}
 
 		/// <summary>

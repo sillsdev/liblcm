@@ -100,8 +100,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 				m_fi = fi;
 				m_sName = xrdr.Name;
 				m_sState = xrdr.ReadState.ToString();
-				if (xrdr is IXmlLineInfo)
-					m_line = (xrdr as IXmlLineInfo).LineNumber;
+				if (xrdr is IXmlLineInfo info)
+					m_line = info.LineNumber;
 				else
 					m_line = 0;
 				if (linkAttribute != null)
@@ -256,7 +256,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 		{
 			Debug.Assert(m_wrtrLog != null);
 			Debug.Assert(!string.IsNullOrEmpty(sMsg));
-			m_wrtrLog.WriteLine(sMsg);
+			m_wrtrLog?.WriteLine(sMsg);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -394,9 +394,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 			{
 				foreach (IMoMorphSynAnalysis msa in le.MorphoSyntaxAnalysesOC)
 				{
-					if (msa is IMoUnclassifiedAffixMsa)
+					if (msa is IMoUnclassifiedAffixMsa msaUncl)
 					{
-						IMoUnclassifiedAffixMsa msaUncl = msa as IMoUnclassifiedAffixMsa;
 						if (msaUncl.PartOfSpeechRA == null &&
 							msaUncl.ComponentsRS.Count == 0 &&
 							msaUncl.GlossBundleRS.Count == 0 &&
@@ -406,8 +405,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 						}
 					}
 				}
-				if (m_factUnclAffMsa == null)
-					m_factUnclAffMsa = m_cache.ServiceLocator.GetInstance<IMoUnclassifiedAffixMsaFactory>();
+				m_factUnclAffMsa ??= m_cache.ServiceLocator.GetInstance<IMoUnclassifiedAffixMsaFactory>();
 				IMoUnclassifiedAffixMsa msaT = m_factUnclAffMsa.Create();
 				le.MorphoSyntaxAnalysesOC.Add(msaT);
 				return msaT;
@@ -416,9 +414,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 			{
 				foreach (IMoMorphSynAnalysis msa in le.MorphoSyntaxAnalysesOC)
 				{
-					if (msa is IMoStemMsa)
+					if (msa is IMoStemMsa msaStem)
 					{
-						IMoStemMsa msaStem = msa as IMoStemMsa;
 						if (msaStem.PartOfSpeechRA == null &&
 							msaStem.ComponentsRS.Count == 0 &&
 							msaStem.GlossBundleRS.Count == 0 &&
@@ -593,7 +590,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			Debug.Assert(mdc != null);
 			ISilDataAccessManaged sda = m_cache.DomainDataByFlid as ISilDataAccessManaged;
 			Debug.Assert(sda != null);
-			foreach (int flid in mdc.GetFields(cmoOld.ClassID, true, (int)CellarPropertyTypeFilter.All))
+			foreach (int flid in mdc!.GetFields(cmoOld.ClassID, true, (int)CellarPropertyTypeFilter.All))
 			{
 				if (!mdc.IsCustom(flid))
 					continue;
@@ -605,7 +602,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 					case CellarPropertyType.Boolean:
 						break;
 					case CellarPropertyType.Integer:
-						int val = sda.get_IntProp(cmoOld.Hvo, flid);
+						int val = sda!.get_IntProp(cmoOld.Hvo, flid);
 						sda.SetInt(cmoNew.Hvo, flid, val);
 						fHandled = true;
 						break;
@@ -620,25 +617,25 @@ namespace SIL.LCModel.Application.ApplicationServices
 					case CellarPropertyType.Image:
 					case CellarPropertyType.Binary:
 						byte[] rgb;
-						int cb = sda.get_Binary(cmoOld.Hvo, flid, out rgb);
+						int cb = sda!.get_Binary(cmoOld.Hvo, flid, out rgb);
 						if (cb > 0)
 							sda.SetBinary(cmoNew.Hvo, flid, rgb, cb);
 						fHandled = true;
 						break;
 					case CellarPropertyType.GenDate:
-						GenDate date = sda.get_GenDateProp(cmoOld.Hvo, flid);
+						GenDate date = sda!.get_GenDateProp(cmoOld.Hvo, flid);
 						sda.SetGenDate(cmoNew.Hvo, flid, date);
 						fHandled = true;
 						break;
 					case CellarPropertyType.String:
-						tss = sda.get_StringProp(cmoOld.Hvo, flid);
+						tss = sda!.get_StringProp(cmoOld.Hvo, flid);
 						if (tss != null && tss.Text != null)
 							sda.SetString(cmoNew.Hvo, flid, tss);
 						fHandled = true;
 						break;
 					case CellarPropertyType.MultiString:
 					case CellarPropertyType.MultiUnicode:
-						ITsMultiString tms = sda.get_MultiStringProp(cmoOld.Hvo, flid);
+						ITsMultiString tms = sda!.get_MultiStringProp(cmoOld.Hvo, flid);
 						for (int i = 0; i < tms.StringCount; ++i)
 						{
 							int ws;
@@ -649,14 +646,14 @@ namespace SIL.LCModel.Application.ApplicationServices
 						fHandled = true;
 						break;
 					case CellarPropertyType.Unicode:
-						s = sda.get_UnicodeProp(cmoOld.Hvo, flid);
+						s = sda!.get_UnicodeProp(cmoOld.Hvo, flid);
 						if (!String.IsNullOrEmpty(s))
 							sda.SetUnicode(cmoNew.Hvo, flid, s, s.Length);
 						fHandled = true;
 						break;
 					case CellarPropertyType.OwningAtomic:
 						{
-							int hvo = sda.get_ObjectProp(cmoOld.Hvo, flid);
+							int hvo = sda!.get_ObjectProp(cmoOld.Hvo, flid);
 							if (hvo != 0)
 								sda.MoveOwn(cmoOld.Hvo, flid, hvo, cmoNew.Hvo, flid, 0);
 							fHandled = true;
@@ -664,7 +661,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 						break;
 					case CellarPropertyType.ReferenceAtomic:
 						{
-							int hvo = sda.get_ObjectProp(cmoOld.Hvo, flid);
+							int hvo = sda!.get_ObjectProp(cmoOld.Hvo, flid);
 							if (hvo != 0)
 								sda.SetObjProp(cmoNew.Hvo, flid, hvo);
 							fHandled = true;
@@ -674,7 +671,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 						break;
 					case CellarPropertyType.ReferenceCollection:
 						{
-							int[] hvosOld = sda.VecProp(cmoOld.Hvo, flid);
+							int[] hvosOld = sda!.VecProp(cmoOld.Hvo, flid);
 							int[] hvosNew = sda.VecProp(cmoNew.Hvo, flid);
 							List<int> hvosMerged = new List<int>(hvosNew);
 							foreach (int hvoOld in hvosOld)
@@ -1095,7 +1092,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			}
 			if (!String.IsNullOrEmpty(sId))
 			{
-				m_mapIdGuid.Add(sId, cmo.Guid);
+				m_mapIdGuid.Add(sId, cmo!.Guid);
 				m_mapGuidId.Add(cmo.Guid, sId);
 			}
 			if (m_phonology)
@@ -1124,14 +1121,14 @@ namespace SIL.LCModel.Application.ApplicationServices
 			{
 				if (m_mapFormEntry == null)
 					FillEntryMap();
-				ILexEntry le = cmo as ILexEntry;
+				ILexEntry le = (ILexEntry)cmo;
 				ILexEntry leDup;
 				StoreEntryInMap(le, fNewObject, true, out leDup);
 				if (leDup != null)
 				{
 					MergeRedundantEntries(leDup, le);
 					List<WsString> delKeys = new List<WsString>();
-					foreach (var x in m_mapFormEntry)
+					foreach (var x in m_mapFormEntry!)
 					{
 						if (x.Value == leDup)
 							delKeys.Add(x.Key);
@@ -1300,7 +1297,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 							FieldInfo fiBack = fiParent;
 							while (fiBack != null && fiBack.Owner != realOwner)
 								fiBack = fiBack.ParentOfOwner;
-							if (fiBack.Owner == realOwner)
+							if (fiBack != null && fiBack.Owner == realOwner)
 								fi = new FieldInfo(realOwner, flid, cpt, fiBack.OwnerIsNew, fiBack.ParentOfOwner);
 						}
 						else
@@ -1399,7 +1396,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 							int i = 0;
 							do
 							{
-								if (i < para.SegmentsOS.Count)
+								if (i < para!.SegmentsOS.Count)
 									ReadXmlObject(xrdr, fi, para.SegmentsOS[i]);
 								else
 									ReadXmlObject(xrdr, fi, null);
@@ -1440,11 +1437,11 @@ namespace SIL.LCModel.Application.ApplicationServices
 						s = s.Replace("\r\n", "\n");
 						s = s.Replace('\r', '\n');
 						s = s.Replace('\n', StringUtils.kChHardLB);
-						if (fi.Owner is ILexEntry)
+						if (fi?.Owner is ILexEntry)
 						{
 							AppendMessageToImportResidue(fi.Owner, s, m_cache.DefaultUserWs);
 						}
-						else if (fi.Owner is ILexSense)
+						else if (fi?.Owner is ILexSense)
 						{
 							// Review gjm: Why do we do nothing in this case?! (we could replace all this
 							// if - else if stuff with the one "AppendMessage..." line.
@@ -2257,7 +2254,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 					}
 					if (fJoinWithPrev)
 					{
-						if (!lrPrev.TargetsRS.Contains(cmoTarget))
+						if (lrPrev != null && !lrPrev.TargetsRS.Contains(cmoTarget))
 							lrPrev.TargetsRS.Add(cmoTarget);
 					}
 					else
@@ -3245,7 +3242,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			if (m_mapPathMediaFile == null)
 				CreatePathMediaFileMap();
 			int hvo;
-			if (m_mapPathMediaFile.TryGetValue(sPath, out hvo))
+			if (m_mapPathMediaFile!.TryGetValue(sPath, out hvo))
 				return hvo;
 			ICmFolder folder = GetDesiredCmFolder("Local Media", m_cache.LangProject.MediaOC);
 			if (m_factCmFile == null)
@@ -3289,7 +3286,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			if (m_mapPathPictureFile == null)
 				CreatePathPictureFileMap();
 			int hvo;
-			if (m_mapPathPictureFile.TryGetValue(sPath, out hvo))
+			if (m_mapPathPictureFile!.TryGetValue(sPath, out hvo))
 				return hvo;
 			ICmFolder folder = GetDesiredCmFolder("Local Pictures", m_cache.LangProject.PicturesOC);
 			if (m_factCmFile == null)
@@ -3390,7 +3387,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 				m_wsManager = m_cache.ServiceLocator.GetInstance<WritingSystemManager>();
 			var wsstr = new WsString(wsHvo, sForm);
 			IReversalIndexEntry rie;
-			if (m_mapFormReversal.TryGetValue(wsstr, out rie))
+			if (m_mapFormReversal!.TryGetValue(wsstr, out rie))
 				return rie;
 			// Find (or create) the proper reversal index.
 			IReversalIndex riWs = null;

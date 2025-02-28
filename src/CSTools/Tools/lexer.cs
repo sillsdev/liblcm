@@ -6,7 +6,9 @@ using System.Collections;
 using System.IO;
 using System.Text;
 using System.Globalization;
+using System.Diagnostics.CodeAnalysis;
 //using System.Runtime.Serialization.Formatters.Binary;
+
 
 namespace SIL.LCModel.Tools
 {
@@ -384,7 +386,7 @@ namespace SIL.LCModel.Tools
 				yyl.tokens.erh.Error(new CSToolsException(6,yyl,cls_name,String.Format("no factory for {0}",cls_name)));
 			try
 			{
-				return cr(yyl);
+				return cr!(yyl);
 			}
 			catch (CSToolsException x)
 			{
@@ -605,7 +607,7 @@ namespace SIL.LCModel.Tools
 				s = (SYMBOL)d;
 			try
 			{
-				rv =(int)d;
+				rv =(int)d!;
 			}
 			catch(Exception e)
 			{
@@ -638,8 +640,8 @@ namespace SIL.LCModel.Tools
 				string s = string.Format("No parsinginfo for symbol {0}",yyname());
 				syms.erh.Error(new CSToolsFatalException(9,yylx,yyname(),s));
 			}
-			bool r = pi.m_parsetable.Contains(snum);
-			entry = r?((ParserEntry)pi.m_parsetable[snum]):null;
+			bool r = pi != null && pi.m_parsetable.Contains(snum);
+			entry = pi != null && r ? ((ParserEntry)pi.m_parsetable[snum]) : null;
 			return r;
 		}
 		public virtual string yyname() { return "SYMBOL"; }
@@ -675,8 +677,8 @@ namespace SIL.LCModel.Tools
 			ParsingInfo pi = (ParsingInfo)syms.literalInfo[m_str];
 			if (pi==null)
 				syms.erh.Error(new CSToolsException(10,yylx,m_str,String.Format("Parser does not recognise literal <{0}>",m_str)));
-			bool r = pi.m_parsetable.Contains(snum);
-			entry = r?((ParserEntry)pi.m_parsetable[snum]):null;
+			bool r = pi != null && pi.m_parsetable.Contains(snum);
+			entry = pi != null && r ? ((ParserEntry)pi.m_parsetable[snum]) : null;
 			return r;
 		}
 		public override bool IsTerminal() { return true; }
@@ -970,21 +972,23 @@ namespace SIL.LCModel.Tools
 		public virtual void Error(Exception e)
 		{
 			counter++;
-			if (throwExceptions || (e is CSToolsFatalException))
-				throw(e);
-			if (e is CSToolsException)
+			if (throwExceptions)
+				throw e;
+			if (e is CSToolsException x)
 			{
-				CSToolsException x = (CSToolsException)e;
 				if (x.handled)
 					return;
 				x.handled = true;
-//				if (x.nLine !=0 || x.nChar!=0)
-//				{
-//					Console.WriteLine("line	"+x.nLine+", char "+x.nChar+": "+x.Message);
-//					return;
-//				}
+
 			}
 			Console.WriteLine(e.Message);
+		}
+
+		[DoesNotReturn]
+		public virtual void Error(CSToolsFatalException e)
+		{
+			counter++;
+			throw e;
 		}
 	}
 }

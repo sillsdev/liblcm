@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Text;
+using System.Diagnostics.CodeAnalysis;
 using SIL.LCModel.Tools;
 
 public class PrecReference : TOKEN
@@ -777,12 +778,12 @@ public class ParserGenerate : SymbolsGen
 		{
 			erh.Error(new CSToolsFatalException(45,tok,string.Format("Syntax error in Parser script - possibly extra semicolon?",e.Message)));
 		}
-		m_tok = lhs;
+		m_tok = lhs!;
 		if (m_tok.IsTerminal())
 			Error(39,m_tok.pos,string.Format("Illegal left hand side <{0}> for production",m_tok.yytext));
 		if (m_symbols.m_startSymbol==null)
 			m_symbols.m_startSymbol = lhs;
-		if (lhs.m_symtype==CSymbol.SymType.unknown)
+		if (lhs!.m_symtype==CSymbol.SymType.unknown)
 			lhs.m_symtype = CSymbol.SymType.nonterminal;
 		if ((!lhs.m_defined) && lhs.m_prods.Count==0)
 		{ // lhs not defined in %symbol statement and not previously a lhs

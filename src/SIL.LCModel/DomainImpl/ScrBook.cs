@@ -428,7 +428,7 @@ namespace SIL.LCModel.DomainImpl
 
 			if (tag == ScrSectionTags.kflidHeading)
 			{
-				footnote = section.HeadingOA.FindNextFootnote(ref iParagraph, ref ich,
+				footnote = section!.HeadingOA.FindNextFootnote(ref iParagraph, ref ich,
 					fSkipCurrentPos);
 				if (footnote == null)
 				{
@@ -441,7 +441,7 @@ namespace SIL.LCModel.DomainImpl
 
 			if (tag == ScrSectionTags.kflidContent)
 			{
-				footnote = section.ContentOA.FindNextFootnote(ref iParagraph, ref ich,
+				footnote = section!.ContentOA.FindNextFootnote(ref iParagraph, ref ich,
 					fSkipCurrentPos);
 			}
 
@@ -520,7 +520,7 @@ namespace SIL.LCModel.DomainImpl
 
 			if (tagTmp == ScrSectionTags.kflidContent)
 			{
-				footnote = section.ContentOA.FindPreviousFootnote(ref iParagraphTmp,
+				footnote = section!.ContentOA.FindPreviousFootnote(ref iParagraphTmp,
 					ref ichTmp, fSkipFirstRun);
 				if (footnote == null)
 				{
@@ -533,7 +533,7 @@ namespace SIL.LCModel.DomainImpl
 
 			if (tagTmp == ScrSectionTags.kflidHeading)
 			{
-				footnote = section.HeadingOA.FindPreviousFootnote(ref iParagraphTmp,
+				footnote = section!.HeadingOA.FindPreviousFootnote(ref iParagraphTmp,
 					ref ichTmp, fSkipFirstRun);
 				while (footnote == null && iSectionTmp > 0)
 				{
@@ -841,7 +841,6 @@ namespace SIL.LCModel.DomainImpl
 		public void InitTitlePara()
 		{
 			IStText titleText = TitleOA;
-			Debug.Assert(titleText != null && titleText.ParagraphsOS.Count == 0);
 			IStTxtPara para = titleText.AddNewTextPara(ScrStyleNames.MainBookTitle);
 
 			// set the title text to the vernacular writing system.
@@ -1297,8 +1296,8 @@ namespace SIL.LCModel.DomainImpl
 			}
 			else
 			{
-				ScrReference firstScrSecRefMin = new ScrReference(firstScrSec.VerseRefMin, versification);
-				ScrReference firstRevSecRefMin = new ScrReference(firstRevScrSec.VerseRefMin, versification);
+				ScrReference firstScrSecRefMin = new ScrReference(firstScrSec!.VerseRefMin, versification);
+				ScrReference firstRevSecRefMin = new ScrReference(firstRevScrSec!.VerseRefMin, versification);
 				if (firstScrSecRefMin.Verse <= 0)
 					firstScrSecRefMin.Verse = 1;
 				if (firstRevSecRefMin.Verse <= 0)

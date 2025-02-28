@@ -73,7 +73,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			{
 				if (m_nMappingType < 0)
 				{
-					var lrt = m_lexRef.Owner as ILexRefType;
+					var lrt = (ILexRefType)m_lexRef.Owner;
 					m_nMappingType = lrt.MappingType;
 				}
 				return m_nMappingType;
@@ -202,13 +202,13 @@ namespace SIL.LCModel.Application.ApplicationServices
 		/// <returns></returns>
 		public string CrossReference(int ws)
 		{
-			if (CrossRefObject is ILexEntry)
+			if (CrossRefObject is ILexEntry e)
 			{
-				return (CrossRefObject as ILexEntry).HeadWordForWs(ws).Text;
+				return e.HeadWordForWs(ws).Text;
 			}
-			else if (CrossRefObject is ILexSense)
+			else if (CrossRefObject is ILexSense s)
 			{
-				return (CrossRefObject as ILexSense).OwnerOutlineNameForWs(ws).Text;
+				return s.OwnerOutlineNameForWs(ws).Text;
 			}
 			else
 			{
@@ -223,9 +223,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 		/// <returns></returns>
 		public string CrossReferenceGloss(int ws)
 		{
-			if (CrossRefObject is ILexEntry)
+			if (CrossRefObject is ILexEntry le)
 			{
-				var le = CrossRefObject as ILexEntry;
 				if (le.SensesOS.Count > 0)
 				{
 					return le.SensesOS[0].Gloss.get_String(ws).Text;
@@ -235,9 +234,9 @@ namespace SIL.LCModel.Application.ApplicationServices
 					return "";
 				}
 			}
-			else if (CrossRefObject is ILexSense)
+			else if (CrossRefObject is ILexSense s)
 			{
-				return (CrossRefObject as ILexSense).Gloss.get_String(ws).Text;
+				return s.Gloss.get_String(ws).Text;
 			}
 			else
 			{
@@ -273,9 +272,9 @@ namespace SIL.LCModel.Application.ApplicationServices
 		{
 			get
 			{
-				return CrossRefObject is ILexEntry
-						? (CrossRefObject as ILexEntry).LIFTid
-						: (CrossRefObject is ILexSense ? (CrossRefObject as ILexSense).LIFTid : "???");
+				return CrossRefObject is ILexEntry e
+						? e.LIFTid
+						: (CrossRefObject is ILexSense sense ? sense.LIFTid : "???");
 			}
 		}
 

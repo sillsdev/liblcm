@@ -18,6 +18,7 @@ using System.Xml;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Infrastructure;
+using SIL.LCModel.Tools;
 using SIL.LCModel.Utils;
 
 namespace SIL.LCModel.Application.ApplicationServices
@@ -271,14 +272,14 @@ namespace SIL.LCModel.Application.ApplicationServices
 
 							// Additional CmSemanticDomain fields.
 							case "LouwNidaCodes":
-								if (poss is ICmSemanticDomain)
-									(poss as ICmSemanticDomain).LouwNidaCodes = ReadUnicodeFromXml(xrdrSub);
+								if (poss is ICmSemanticDomain domain)
+									domain.LouwNidaCodes = ReadUnicodeFromXml(xrdrSub);
 								else
 									SkipAndReportUnexpectedElement(xrdrSub);
 								break;
 							case "OcmCodes":
-								if (poss is ICmSemanticDomain)
-									(poss as ICmSemanticDomain).OcmCodes = ReadUnicodeFromXml(xrdrSub);
+								if (poss is ICmSemanticDomain domain1)
+									domain1.OcmCodes = ReadUnicodeFromXml(xrdrSub);
 								else
 									SkipAndReportUnexpectedElement(xrdrSub);
 								break;
@@ -297,8 +298,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 
 							// Additional PartOfSpeech fields.
 							case "CatalogSourceId":
-								if (poss is IPartOfSpeech)
-									(poss as IPartOfSpeech).CatalogSourceId = ReadUnicodeFromXml(xrdrSub);
+								if (poss is IPartOfSpeech speech)
+									speech.CatalogSourceId = ReadUnicodeFromXml(xrdrSub);
 								else
 									SkipAndReportUnexpectedElement(xrdrSub);
 								break;
@@ -424,6 +425,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 		private void LoadRelatedDomainsFromXml(XmlReader xrdr, ICmSemanticDomain dom)
 		{
 			Debug.Assert(dom != null);
+			if (dom == null)
+				throw new NullReferenceException("ICmSemanticDomain dom cannot be null");
 			if (xrdr.ReadToDescendant("Link"))
 			{
 				do

@@ -363,7 +363,7 @@ namespace SIL.LCModel.DomainServices
 				foreach (IAnalysis previous in counts.Keys)
 				{
 					IAnalysis best = null;
-					// Use counts[previous].Keys instead of wordform.AnalysesOC 
+					// Use counts[previous].Keys instead of wordform.AnalysesOC
 					// because counts[previous].Keys may include lowercase analyses.
 					foreach (IAnalysis key in counts[previous].Keys)
 					{
@@ -961,9 +961,9 @@ namespace SIL.LCModel.DomainServices
 			{
 				// get the main entry or sense.
 				var component = entryRef.ComponentLexemesRS[0] as IVariantComponentLexeme;
-				if (component is ILexSense)
+				if (component is ILexSense sense1)
 				{
-					sense = component as ILexSense;
+					sense = sense1;
 					mainEntry = sense.Entry;
 				}
 				else

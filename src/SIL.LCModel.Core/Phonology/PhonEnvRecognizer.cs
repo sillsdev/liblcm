@@ -155,7 +155,7 @@ namespace SIL.LCModel.Core.Phonology
 		public static bool CanInsertItem(string sEnv, int ichEnd, int ichAnchor)
 		{
 			Debug.Assert(sEnv != null);
-			Debug.Assert(ichEnd <= sEnv.Length && ichAnchor <= sEnv.Length);
+			Debug.Assert(ichEnd <= sEnv!.Length && ichAnchor <= sEnv.Length);
 			if (ichEnd < 0 || ichAnchor < 0)
 				return false;
 			int ichSlash = sEnv.IndexOf('/');
@@ -199,7 +199,7 @@ namespace SIL.LCModel.Core.Phonology
 		public static bool CanInsertHashMark(string sEnv, int ichEnd, int ichAnchor)
 		{
 			Debug.Assert(sEnv != null);
-			Debug.Assert(ichEnd <= sEnv.Length && ichAnchor <= sEnv.Length);
+			Debug.Assert(ichEnd <= sEnv!.Length && ichAnchor <= sEnv.Length);
 			if (ichEnd < 0 || ichAnchor < 0)
 				return false;
 			int ichSlash = sEnv.IndexOf('/');

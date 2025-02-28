@@ -120,7 +120,7 @@ namespace SIL.LCModel.DomainImpl
 		private Dictionary<IAnalysisReference, int> m_finalEndIndexAdjustments;
 
 		private List<ISegment> m_segsToMove; // In HandleMoveDest, the segments to move entirely to the destination.
-		// In HandleMoveDest, the analyses to move to the destination (from the incompletely moved seg).
+											 // In HandleMoveDest, the analyses to move to the destination (from the incompletely moved seg).
 		private List<IAnalysis> m_analysesToMove;
 		private ISegment m_segPartlyMoved; // the sourceof m_analysesToMove, if any incomplete segment overlaps the move.
 		private bool m_changedFontOnly;
@@ -134,12 +134,12 @@ namespace SIL.LCModel.DomainImpl
 		private void PrintDebugInfo()
 		{
 			Debug.Print("************Begin Offsets********************");
-			if(m_oldContents != null)
+			if (m_oldContents != null)
 			{
 				Debug.Print("oldContents string:");
 				PrintOffsetLines(m_oldContents.Text, m_oldBeginOffsets, m_oldEndOffsets);
 			}
-			if(m_newContents != null)
+			if (m_newContents != null)
 			{
 				Debug.Print("newContents string:");
 				PrintOffsetLines(m_newContents.Text, m_newBeginOffsets, null);
@@ -193,7 +193,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			Debug.Print(text);
 			PrintOneOffsetLine(text, begin, ": begin offsets");
-			if(end != null)
+			if (end != null)
 				PrintOneOffsetLine(text, end, ": end offsets");
 		}
 
@@ -227,7 +227,7 @@ namespace SIL.LCModel.DomainImpl
 			m_oldContents = oldContents;
 			m_newContents = m_para.Contents;
 			m_changedFontOnly = false;
-			if(diffInfo != null && ( diffInfo.IchFirstDiff != 0 || diffInfo.CchDeleteFromOld != diffInfo.CchInsert ||
+			if (diffInfo != null && (diffInfo.IchFirstDiff != 0 || diffInfo.CchDeleteFromOld != diffInfo.CchInsert ||
 				m_oldContents == null || m_newContents == null || m_oldContents.Length == 0 ||
 				!m_oldContents.GetChars(0, m_oldContents.Length).Equals(m_newContents.GetChars(0, m_newContents.Length))))
 			{
@@ -243,7 +243,7 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>for tests</summary>
-		internal AnalysisAdjuster() {}
+		internal AnalysisAdjuster() { }
 		#endregion
 
 		#region Public methods
@@ -527,7 +527,7 @@ namespace SIL.LCModel.DomainImpl
 			{
 				var endSeg = iar.EndRef().Segment;
 				var begSeg = iar.BegRef().Segment;
-				if(begSeg == null || endSeg == null)
+				if (begSeg == null || endSeg == null)
 				{
 					var logString = String.Format("Found a corrupt IAnalysisReference when trying to update and adjust. Removed the reference with GUID {0}",
 						iar.Guid);
@@ -540,7 +540,7 @@ namespace SIL.LCModel.DomainImpl
 				var iendSeg = endSeg.IndexInOwner;
 				if (iendSeg < m_iSegFirstModified ||
 					(iendSeg == m_iSegFirstModified && iend < m_iFirstAnalysisToFix))
-						continue; // The whole IAnalysisReference is before the change, so no change.
+					continue; // The whole IAnalysisReference is before the change, so no change.
 				var ifirstAnalysisInSegToFix = 0;
 				var ibeg = iar.BegRef().Index;
 				var ibegSeg = begSeg.IndexInOwner;
@@ -560,7 +560,7 @@ namespace SIL.LCModel.DomainImpl
 					// BegRef section
 					if (ibegSeg >= m_iSegFirstModified && ibeg >= ifirstAnalysisInSegToFix)
 					{
-						if(CheckForDeleteableIAR(iar, ifirstAnalysisInSegToFix, m_cRemovedAnalyses, m_cAddedAnalyses))
+						if (CheckForDeleteableIAR(iar, ifirstAnalysisInSegToFix, m_cRemovedAnalyses, m_cAddedAnalyses))
 						{
 							refsToDelete.Add(iar);
 							continue;
@@ -733,12 +733,12 @@ namespace SIL.LCModel.DomainImpl
 			{
 				if (iar is ITextTag)
 				{
-					var owner = iar.Owner as IStText;
+					var owner = (IStText)iar.Owner;
 					owner.TagsOC.Remove(iar as ITextTag);
 				}
 				else
 				{
-					var owner = iar.Owner as IConstChartRow;
+					var owner = (IConstChartRow)iar.Owner;
 					owner.CellsOS.Remove(iar as IConstituentChartCellPart);
 				}
 				m_oldParaRefs.Remove(iar);
@@ -843,7 +843,7 @@ namespace SIL.LCModel.DomainImpl
 								if (punctTsStr.Length > 0)
 								{
 									IPunctuationForm pf = WfiWordformServices.FindOrCreatePunctuationform(m_para.Cache, punctTsStr);
-									m_punctRemainingFromLastDeletedSegment = new List<IAnalysis> {pf};
+									m_punctRemainingFromLastDeletedSegment = new List<IAnalysis> { pf };
 								}
 							}
 						}
@@ -901,7 +901,7 @@ namespace SIL.LCModel.DomainImpl
 						// which can bring it about. It's no good 'correcting' the index to something still invalid,
 						// so if that is what we're about to do, we delete it instead, as unrepairable.
 						// Eventually we may figure out something better to do.
-						if(iar.BegRef().Index + cOldAnalyses < 0 || iar.BegRef().Index + cOldAnalyses < 0)
+						if (iar.BegRef().Index + cOldAnalyses < 0 || iar.BegRef().Index + cOldAnalyses < 0)
 						{
 							DiscardDeletedRefs(newSeg); //It should be gone, we can't fix it, get rid of it.
 							continue;
@@ -949,7 +949,7 @@ namespace SIL.LCModel.DomainImpl
 					newSeg = m_para.SegmentsOS[iFirstSegmentSurviving - 1]; // Get segment before deleted one
 					cNewAnalyses = newSeg.AnalysesRS.Count;
 					iar.ChangeToDifferentSegment(newSeg, false, true);
-					if(cOldAnalyses > 0 && cNewAnalyses > cOldAnalyses)
+					if (cOldAnalyses > 0 && cNewAnalyses > cOldAnalyses)
 					{
 						// A segment break was deleted (i.e. two segments merged); we will try to preserve
 						// the index position in the new (combined) segment.
@@ -1010,7 +1010,7 @@ namespace SIL.LCModel.DomainImpl
 		private static void DeleteChartRefs(IEnumerable<IConstituentChartCellPart> cellList)
 		{
 			foreach (var cellPart in cellList)
-				((IConstChartRow) cellPart.Owner).CellsOS.Remove(cellPart);
+				((IConstChartRow)cellPart.Owner).CellsOS.Remove(cellPart);
 		}
 
 		private void DeleteTextTags(IEnumerable<ICmObject> tagList)
@@ -1153,7 +1153,7 @@ namespace SIL.LCModel.DomainImpl
 				if (ichStartWordBL == m_baseline.Length)
 					break;
 				var token = m_baseline.Substring(ichStartWordBL, ichEndWordBL - ichStartWordBL); // wordform or punct
-				//Debug.Assert(startWord < endWord);
+																								 //Debug.Assert(startWord < endWord);
 				if (ichStartWordBL >= ichLimSegBL)
 				{
 					isegment++;
@@ -1260,7 +1260,7 @@ namespace SIL.LCModel.DomainImpl
 				iLastAnalysisToFix = GetLastAnalysisToFix(out iTokenIndex);
 			}
 			else
-			{	// if the font changed, but text did not change, we want the wordform analyses to be completely replaced,
+			{   // if the font changed, but text did not change, we want the wordform analyses to be completely replaced,
 				// but the segment annotations to remain. GetLastAnalysisToFix was retaining some of the old
 				// analyses (typically a wordform and end punctuation). Later this causes problems in
 				// OverridesCellar ParsedParagraphOffsetsMethod.AdvancePastWord() which returns 0 for the
@@ -1448,7 +1448,7 @@ namespace SIL.LCModel.DomainImpl
 			// Find entire segments to move.
 			m_segsToMove = new List<ISegment>();
 			m_segPartlyMoved = null;
-			foreach(ISegment seg in source.SegmentsOS)
+			foreach (ISegment seg in source.SegmentsOS)
 			{
 				if (seg.BeginOffset >= ichSource)
 					m_segsToMove.Add(seg);
@@ -1511,26 +1511,29 @@ namespace SIL.LCModel.DomainImpl
 		{
 			Debug.Assert(m_segPartlyMoved != null, "Nothing to do! I shouldn't have been called.");
 			var refsMoved = new List<IAnalysisReference>();
-			var oldPara = (IStTxtPara)m_segPartlyMoved.Owner;
-			var oldReferences = oldPara.GetTags().Cast<IAnalysisReference>().ToList();
-			oldReferences.AddRange(oldPara.GetChartCellRefs().Cast<IAnalysisReference>());
-			foreach (var iar in oldReferences)
+			if (m_segPartlyMoved != null)
 			{
-				var fchgMade = false;
-				if (iar.BegRef().Segment == m_segPartlyMoved && iar.BegRef().Index >= canalysesLeftBehind)
+				var oldPara = (IStTxtPara)m_segPartlyMoved.Owner;
+				var oldReferences = oldPara.GetTags().Cast<IAnalysisReference>().ToList();
+				oldReferences.AddRange(oldPara.GetChartCellRefs().Cast<IAnalysisReference>());
+				foreach (var iar in oldReferences)
 				{
-					iar.ChangeToDifferentSegment(newSeg, true, false);
-					iar.ChangeToDifferentIndex(iar.BegRef().Index - canalysesLeftBehind, true, false);
-					fchgMade = true;
+					var fchgMade = false;
+					if (iar.BegRef().Segment == m_segPartlyMoved && iar.BegRef().Index >= canalysesLeftBehind)
+					{
+						iar.ChangeToDifferentSegment(newSeg, true, false);
+						iar.ChangeToDifferentIndex(iar.BegRef().Index - canalysesLeftBehind, true, false);
+						fchgMade = true;
+					}
+					if (iar.EndRef().Segment == m_segPartlyMoved && iar.EndRef().Index >= canalysesLeftBehind)
+					{
+						iar.ChangeToDifferentSegment(newSeg, false, true);
+						iar.ChangeToDifferentIndex(iar.EndRef().Index - canalysesLeftBehind, false, true);
+						fchgMade = true;
+					}
+					if (fchgMade)
+						refsMoved.Add(iar);
 				}
-				if (iar.EndRef().Segment == m_segPartlyMoved && iar.EndRef().Index >= canalysesLeftBehind)
-				{
-					iar.ChangeToDifferentSegment(newSeg, false, true);
-					iar.ChangeToDifferentIndex(iar.EndRef().Index - canalysesLeftBehind, false, true);
-					fchgMade = true;
-				}
-				if (fchgMade)
-					refsMoved.Add(iar);
 			}
 			return refsMoved;
 		}

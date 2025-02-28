@@ -2023,7 +2023,8 @@ namespace SIL.LCModel.DomainServices
 		/// <returns></returns>
 		public static IEnumerable<ILexEntryRef> GetVariantRefs(ILexEntry variantEntry)
 		{
-			Debug.Assert(variantEntry != null, "Variant Entry shouldn't be null.");
+			if (variantEntry == null)
+				throw new NullReferenceException("variantEntry: Variant Entry shouldn't be null.");
 			return from entryRef in variantEntry.EntryRefsOS
 				   where entryRef.RefType == LexEntryRefTags.krtVariant &&
 // Is this necessary:    entryRef.VariantEntryTypesRS != null && entryRef.VariantEntryTypesRS.Count > 0 &&

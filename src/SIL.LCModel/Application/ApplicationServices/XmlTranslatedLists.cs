@@ -382,7 +382,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 												{
 													using (var xrdrT = XmlReader.Create(srdr))
 													{
-												SetMultiUnicodeFromXml(xrdrT, (poss as ICmPerson).Alias);
+												SetMultiUnicodeFromXml(xrdrT, ((ICmPerson)poss).Alias);
 												xrdrT.Close();
 											}
 												}
@@ -393,7 +393,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 												{
 													using (var xrdrT = XmlReader.Create(srdr))
 													{
-												SetMultiUnicodeFromXml(xrdrT, (poss as ICmLocation).Alias);
+												SetMultiUnicodeFromXml(xrdrT, ((ICmLocation)poss).Alias);
 												xrdrT.Close();
 											}
 												}
@@ -412,7 +412,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 												{
 													using (var xrdrT = XmlReader.Create(srdr))
 													{
-												SetMultiUnicodeFromXml(xrdrT, (poss as ILexEntryType).ReverseAbbr);
+												SetMultiUnicodeFromXml(xrdrT, ((ILexEntryType)poss).ReverseAbbr);
 												xrdrT.Close();
 											}
 												}
@@ -431,7 +431,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 												{
 													using (var xrdrT = XmlReader.Create(srdr))
 													{
-												SetMultiUnicodeFromXml(xrdrT, (poss as ILexRefType).ReverseAbbreviation);
+												SetMultiUnicodeFromXml(xrdrT, ((ILexRefType)poss).ReverseAbbreviation);
 												xrdrT.Close();
 											}
 												}
@@ -450,7 +450,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 												{
 													using (var xrdrT = XmlReader.Create(srdr))
 													{
-												SetMultiUnicodeFromXml(xrdrT, (poss as ILexRefType).ReverseName);
+												SetMultiUnicodeFromXml(xrdrT, ((ILexRefType)poss).ReverseName);
 												xrdrT.Close();
 											}
 												}
@@ -507,9 +507,9 @@ namespace SIL.LCModel.Application.ApplicationServices
 
 							case "Alias":
 								if (poss is ICmPerson)
-									SetMultiUnicodeFromXml(xrdrSub, (poss as ICmPerson).Alias);
+									SetMultiUnicodeFromXml(xrdrSub, ((ICmPerson)poss).Alias);
 								else if (poss is ICmLocation)
-									SetMultiUnicodeFromXml(xrdrSub, (poss as ICmLocation).Alias);
+									SetMultiUnicodeFromXml(xrdrSub, ((ICmLocation)poss).Alias);
 								else if (poss == null)
 									aliasXml = GetXmlOfElement(xrdrSub);
 								else
@@ -518,7 +518,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 
 							case "ReverseAbbr":
 								if (poss is ILexEntryType)
-									SetMultiUnicodeFromXml(xrdrSub, (poss as ILexEntryType).ReverseAbbr);
+									SetMultiUnicodeFromXml(xrdrSub, ((ILexEntryType)poss).ReverseAbbr);
 								else if (poss == null)
 									revabbrXml = GetXmlOfElement(xrdrSub);
 								else
@@ -527,7 +527,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 
 							case "ReverseAbbreviation":
 								if (poss is ILexRefType)
-									SetMultiUnicodeFromXml(xrdrSub, (poss as ILexRefType).ReverseAbbreviation);
+									SetMultiUnicodeFromXml(xrdrSub, ((ILexRefType)poss).ReverseAbbreviation);
 								else if (poss == null)
 									revabbrevXml = GetXmlOfElement(xrdrSub);
 								else
@@ -536,7 +536,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 
 							case "ReverseName":
 								if (poss is ILexRefType)
-									SetMultiUnicodeFromXml(xrdrSub, (poss as ILexRefType).ReverseName);
+									SetMultiUnicodeFromXml(xrdrSub, ((ILexRefType)poss).ReverseName);
 								else if (poss == null)
 									revnameXml = GetXmlOfElement(xrdrSub);
 								else

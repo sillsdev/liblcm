@@ -323,7 +323,7 @@ namespace SIL.LCModel.DomainImpl
 				return bldr.GetString();
 			int idx = this.IndexInOwner + 1;
 			bldr.Replace(0, 0, String.Format("{0}.", idx.ToString()), null);
-			return (Owner as RnGenericRec).SubrecordIndexTSS(bldr);
+			return ((RnGenericRec)Owner).SubrecordIndexTSS(bldr);
 		}
 
 		partial void ValidateFurtherQuestionsOA(ref IStText newObjValue) { CheckNotNull(newObjValue);}
