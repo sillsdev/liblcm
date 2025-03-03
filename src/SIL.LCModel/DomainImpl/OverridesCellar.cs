@@ -3988,14 +3988,18 @@ namespace SIL.LCModel.DomainImpl
 
 		private string FeatureSpecKey(IFsFeatureSpecification spec)
 		{
+			// specs with features in the type go first (because they begin with 0),
+			// then specs with features (because they begin with 1),
+			// then specs without features (because they begin with 2).
 			if (spec.FeatureRA == null)
-				return "";
+				return "2" + spec.Guid.ToString();
 			if (TypeRA != null)
 			{
 				int index = TypeRA.FeaturesRS.IndexOf(spec.FeatureRA);
 				if (index >= 0)
 				{
-					return index.ToString("000");
+					// This won't work properly if there are more than 999 features in TypeRA.
+					return index.ToString("0000");
 				}
 			}
 			return "1" + spec.FeatureRA.Name.BestAnalysisAlternative.Text;
