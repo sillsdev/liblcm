@@ -2275,9 +2275,7 @@ namespace SIL.LCModel.DomainImpl
 					if (sValue == null || sValue.Length == 0)
 						sValue = ValueRA.Name.BestAnalysisAlternative.Text;
 					if (!fLongForm)
-					{
 						sValue = sValue + ValueRA.RightGlossSep.AnalysisDefaultWritingSystem.Text;
-					}
 				}
 			}
 			else
