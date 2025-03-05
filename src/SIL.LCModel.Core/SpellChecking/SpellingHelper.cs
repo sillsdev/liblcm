@@ -310,7 +310,7 @@ namespace SIL.LCModel.Core.SpellChecking
 		/// to indicate that other words should be keep-case also.
 		/// </summary>
 		internal const string PrototypeWord = "XXPatternWordDoNotDeleteXX";
-		private const string keepCaseFlag = "C";
+		internal const char keepCaseFlag = 'C';
 
 		internal static void EnsureDictionary(string dictId)
 		{
