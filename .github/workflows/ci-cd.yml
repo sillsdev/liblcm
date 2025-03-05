@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-latest, ubuntu-22.04]
     runs-on: ${{ matrix.os }}
     env:
       DOTNET_NOLOGO: true
@@ -34,13 +34,13 @@ jobs:
 
     - name: Install mono-devel package
       run: sudo apt-get install mono-devel
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-22.04'
 
     - name: Install icu-fw package
       run: wget -qO - http://linux.lsdev.sil.org/downloads/sil-testing.gpg | sudo tee /etc/apt/trusted.gpg.d/linux-lsdev-sil-org.asc &&
         sudo add-apt-repository "deb http://linux.lsdev.sil.org/ubuntu $(lsb_release -sc)-experimental main" &&
         sudo apt-get install icu-fw
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-22.04'
 
     # Solve problems with CustomIcuFallbackTests: the current windows-latest image (2022) includes this file that breaks our tests.
     - name: Solve problems
@@ -68,11 +68,11 @@ jobs:
       run: |
         . environ
         dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-22.04'
 
     - name: Test on Windows
       run: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
-      if: matrix.os != 'ubuntu-latest'
+      if: matrix.os != 'ubuntu-22.04'
     - name: Upload test results
       if: always()
       uses: actions/upload-artifact@v4
@@ -85,10 +85,10 @@ jobs:
 
     - name: Publish to Nuget
       run: dotnet nuget push artifacts/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{secrets.SILLSDEV_PUBLISH_NUGET_ORG}} --skip-duplicate
-      if: github.event_name == 'push' && matrix.os == 'ubuntu-latest'
+      if: github.event_name == 'push' && matrix.os == 'ubuntu-22.04'
 
     - name: Publish to Github packages
-      if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest'
+      if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-22.04'
       run: dotnet nuget push artifacts/*.nupkg -s https://nuget.pkg.github.com/sillsdev/index.json -k ${{secrets.GITHUB_TOKEN}} --skip-duplicate
 
     - name: Publish Artifacts
@@ -98,7 +98,7 @@ jobs:
         path: artifacts/*.nupkg
       if: github.event_name == 'pull_request'
   publish-test-results:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: build
     if: always()
     steps:
