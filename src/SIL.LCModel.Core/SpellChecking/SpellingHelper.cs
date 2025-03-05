@@ -31,7 +31,7 @@ namespace SIL.LCModel.Core.SpellChecking
 			#if NETFRAMEWORK
 			false;
 			#else
-			true;
+			!Platform.IsDotNetFramework;
 			#endif
 		// A helper object used to ensure that the spelling engines are properly disposed of
 		private sealed class SingletonToDispose : IDisposable
