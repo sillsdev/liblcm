@@ -1,4 +1,3 @@
-# Test
 # LCModel Library
 
 ## Description
