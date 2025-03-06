@@ -89,20 +89,8 @@ namespace SIL.LCModel.Core.SpellChecking
 		/// <inheritdoc />
 		public abstract bool Check(string word);
 
-		private bool _isVernacular;
-		private bool _gotIsVernacular;
-		public bool IsVernacular
-		{
-			get
-			{
-				if (_gotIsVernacular)
-					return _isVernacular;
-
-				_isVernacular = Check(SpellingHelper.PrototypeWord);
-				_gotIsVernacular = true;
-				return _isVernacular;
-			}
-		}
+		private bool? _isVernacular;
+		public bool IsVernacular => _isVernacular ??= Check(SpellingHelper.PrototypeWord);
 
 		/// <inheritdoc />
 		public abstract ICollection<string> Suggest(string badWord);
