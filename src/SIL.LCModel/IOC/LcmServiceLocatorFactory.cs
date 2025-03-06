@@ -430,6 +430,14 @@ namespace SIL.LCModel.IOC
 			}
 		}
 
+		public IDataReader DataReader
+		{
+			get
+			{
+				return GetInstance<IDataReader>();
+			}
+		}
+
 		/// <summary>
 		/// Get the specified object instance; short for getting ICmObjectRepository and asking it to GetObject.
 		/// </summary>

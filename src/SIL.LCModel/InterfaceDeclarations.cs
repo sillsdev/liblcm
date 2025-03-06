@@ -638,6 +638,12 @@ namespace SIL.LCModel
 		/// </summary>
 		/// <returns>A new, unowned, ICmObject with a Guid, but no Hvo.</returns>
 		T Create();
+
+		/// <summary>
+		/// Basic creation method for an ICmObject with the given guid.
+		/// </summary>
+		/// <returns>A new, unowned, ICmObject with the given guid.</returns>
+		T Create(Guid guid);
 	}
 	#endregion
 

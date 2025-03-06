@@ -96,6 +96,7 @@ namespace SIL.LCModel
 		IdentityMap IdentityMap { get; }
 		LoadingServices LoadingServices { get; }
 		IUnitOfWorkService UnitOfWorkService { get; }
+		IDataReader DataReader { get; }
 	}
 
 	/// <summary>

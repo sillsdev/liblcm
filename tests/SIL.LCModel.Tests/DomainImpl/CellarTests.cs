@@ -640,7 +640,7 @@ namespace SIL.LCModel.DomainImpl
 			pos.AddInflectableFeatsFromXml(itemAorist);
 			featStruct.AddFeatureFromXml(itemAorist, msfs);
 			// Check for correct LongName
-			Assert.AreEqual("[sbj:[gen:f pers:1] asp:aor]", featStruct.LongName, "Incorrect LongName for complex and closed");
+			Assert.AreEqual("[asp:aor sbj:[gen:f pers:1]]", featStruct.LongName, "Incorrect LongName for complex and closed");
 			// Now add the features in the featurs struct in a different order
 			pos.DefaultFeaturesOA = null;
 			pos.DefaultFeaturesOA = Cache.ServiceLocator.GetInstance<IFsFeatStrucFactory>().Create();
@@ -649,9 +649,9 @@ namespace SIL.LCModel.DomainImpl
 			featStruct.AddFeatureFromXml(item1st, msfs);
 			featStruct.AddFeatureFromXml(itemFem, msfs);
 			// check for correct short name
-			Assert.AreEqual("aor 1 f", featStruct.ShortName, "Incorrect ShortName for complex");
+			Assert.AreEqual("aor f 1", featStruct.ShortName, "Incorrect ShortName for complex");
 			// Check for correct LongName
-			Assert.AreEqual("[asp:aor sbj:[pers:1 gen:f]]", featStruct.LongName, "Incorrect LongName for complex and closed");
+			Assert.AreEqual("[asp:aor sbj:[gen:f pers:1]]", featStruct.LongName, "Incorrect LongName for complex and closed");
 			// Now create another feature structure with different values and merge it into the first feature structure
 			pos.InherFeatValOA = Cache.ServiceLocator.GetInstance<IFsFeatStrucFactory>().Create();
 			IFsFeatStruc featStruct2 = pos.InherFeatValOA;
@@ -665,7 +665,7 @@ namespace SIL.LCModel.DomainImpl
 			featStruct2.AddFeatureFromXml(itemSg, msfs);
 			featStruct.PriorityUnion(featStruct2);
 			// Check for correct LongName
-			Assert.AreEqual("[asp:aor sbj:[pers:1 gen:n num:sg]]", featStruct.LongName, "Incorrect LongName for merged feature struture");
+			Assert.AreEqual("[asp:aor sbj:[gen:n num:sg pers:1]]", featStruct.LongName, "Incorrect LongName for merged feature struture");
 			Assert.AreEqual("[asp:aor sbj:[gen:n num:sg pers:1]]", featStruct.LongNameSorted, "Incorrect LongNameSorted for merged feature struture");
 		}
 
