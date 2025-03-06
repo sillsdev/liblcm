@@ -329,33 +329,63 @@ namespace SIL.LCModel.DomainServices
 				// Fill in GuessTable.
 				guessTable[form] = GetContextCounts(form);
 				if (lowercaseForm != null)
-					// Add lowercase analyses to counts.
-					GetAnalysisCounts(lowercaseForm, true, counts);
+					GetContextCounts(lowercaseForm, true, guessTable[form]);
+				// Move uncontexted counts from previousWordform to wordform.
+				if (guessTable[form].previousWordform.ContainsKey(m_nullWAG))
+				{
+					guessTable[form].wordform = guessTable[form].previousWordform[m_nullWAG];
+					guessTable[form].previousWordform.Remove(m_nullWAG);
+					guessTable[form].nextWordform.Remove(m_nullWAG);
+				} else
+				{
+					guessTable[form].wordform = new Dictionary<IAnalysis, PriorityCount>();
+				}
+			}
+			return guessTable;
+		}
+
+		/// <summary>
+		/// Get the best analysis from counts given context of occurrence.
+		/// </summary>
+		/// <param name="counts"></param>
+		/// <param name="occurrence"></param>
+		/// <returns></returns>
+		private IAnalysis GetBestAnalysis(ContextCount counts, AnalysisOccurrence occurrence)
+		{
+			IAnalysis best = null;
+			foreach (IAnalysis key in counts.wordform.Keys)
+			{
+				if (best == null || ComparePriorityCounts(key, best, occurrence, counts) < 0)
+				{
+					best = key;
+				}
+			}
+			return best;
+		}
+
+		/// <summary>
+		/// Get the context counts for form.
+		/// </summary>
+		/// <param name="form"></param>
+		/// <param name="lowercased">whether form is lowercased</param>
+		/// <param name="counts">existing context counts</param>
+		/// <returns></returns>
+		private ContextCount GetContextCounts(IAnalysis form, bool lowercased = false, ContextCount counts = null)
+		{
+			if (counts == null)
+				counts = new ContextCount();
+			if (form is IWfiWordform wordform)
+			{
+				counts.previousWordform = GetAnalysisCounts(wordform, lowercased, true, counts.previousWordform);
+				counts.nextWordform = GetAnalysisCounts(wordform, lowercased, false, counts.nextWordform);
 			}
 			else if (form is IWfiAnalysis analysis)
 			{
 				// Get default glosses.
-				counts = GetGlossCounts(analysis);
+				counts.previousWordform = GetGlossCounts(analysis, true);
+				counts.nextWordform = GetGlossCounts(analysis, false);
 			}
-			if (counts != null)
-			{
-				// Get the best analysis for each key in counts.
-				foreach (IAnalysis previous in counts.Keys)
-				{
-					IAnalysis best = null;
-					// Use counts[previous].Keys instead of wordform.AnalysesOC
-					// because counts[previous].Keys may include lowercase analyses.
-					foreach (IAnalysis key in counts[previous].Keys)
-					{
-						if (best == null || ComparePriorityCounts(key, best, previous, counts) < 0)
-						{
-							best = key;
-							defaults[previous] = best;
-						}
-					}
-				}
-			}
-			return defaults;
+			return counts;
 		}
 
 		/// <summary>
