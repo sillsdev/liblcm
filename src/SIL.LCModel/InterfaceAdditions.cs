@@ -5627,6 +5627,12 @@ namespace SIL.LCModel
 		List<string> AllNaturalClassAbbrs();
 
 		/// <summary>
+		/// Get the PhonemeSet.
+		/// Hides the fact that the data structure used to allow more than one.
+		/// </summary>
+		IPhPhonemeSet GetPhonemeSet();
+
+		/// <summary>
 		/// Rebuild the list of PhonRuleFeats
 		/// </summary>
 		/// <param name="members">list of items to become PhPhonRuleFeats</param>

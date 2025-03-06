@@ -5,7 +5,7 @@
 using System;
 using System.IO;
 using NUnit.Framework;
-using Rhino.Mocks;
+using SIL.LCModel.Tests.Rhino.Mocks;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Scripture;
 using SIL.LCModel.DomainServices;

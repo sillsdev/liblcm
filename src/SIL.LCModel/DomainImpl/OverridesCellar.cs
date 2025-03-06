@@ -2462,7 +2462,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			get
 			{
-				return GetFeatureValueStringSorted();
+				return GetFeatureValueString(true);
 			}
 		}
 		/// <summary>
@@ -2493,17 +2493,6 @@ namespace SIL.LCModel.DomainImpl
 			var sValue = GetValueString(fLongForm);
 			tisb.Append(sFeature);
 			tisb.Append(sValue);
-			return tisb.GetString();
-		}
-
-		private ITsString GetFeatureValueStringSorted()
-		{
-			var tisb = TsStringUtils.MakeIncStrBldr();
-			tisb.SetIntPropValues((int)FwTextPropType.ktptWs,
-				0, Cache.DefaultAnalWs);
-			var sFeature = GetFeatureString(true);
-			tisb.Append(sFeature);
-			tisb.AppendTsString((ValueOA as FsFeatStruc)?.GetFeatureValueStringSorted());
 			return tisb.GetString();
 		}
 
@@ -3796,7 +3785,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			get
 			{
-				return GetFeatureValueStringSorted();
+				return GetFeatureValueString(true);
 			}
 		}
 		/// <summary>
@@ -3950,7 +3939,10 @@ namespace SIL.LCModel.DomainImpl
 				tisb.Append("[");
 			}
 			var count = 0;
-			foreach (var spec in FeatureSpecsOC)
+			var sortedSpecs = from s in FeatureSpecsOC
+							  orderby FeatureSpecKey(s)
+							  select s;
+			foreach (var spec in sortedSpecs)
 			{
 				if (count++ > 0)
 				{
@@ -3996,54 +3988,25 @@ namespace SIL.LCModel.DomainImpl
 			return tisb.GetString();
 		}
 
-		internal ITsString GetFeatureValueStringSorted()
+		private string FeatureSpecKey(IFsFeatureSpecification spec)
 		{
-			var tisb = TsStringUtils.MakeIncStrBldr();
-			var iCount = FeatureSpecsOC.Count;
-			if (iCount > 0)
+			// specs with features in the type go first (because they begin with 0),
+			// then specs with features (because they begin with 1),
+			// then specs without features (because they begin with 2).
+			if (spec.FeatureRA == null)
+				return "2" + spec.Guid.ToString();
+			if (TypeRA != null)
 			{
-				tisb.SetIntPropValues((int)FwTextPropType.ktptWs, (int)FwTextPropVar.ktpvDefault,
-					m_cache.DefaultAnalWs);
-				tisb.Append("[");
-			}
-			var count = 0;
-			var sortedSpecs = from s in FeatureSpecsOC
-							  orderby s.FeatureRA.Name.BestAnalysisAlternative.Text
-							  select s;
-			foreach (var spec in sortedSpecs)
-			{
-				if (count++ > 0)
+				int index = TypeRA.FeaturesRS.IndexOf(spec.FeatureRA);
+				if (index >= 0)
 				{
-					tisb.SetIntPropValues((int)FwTextPropType.ktptWs, (int)FwTextPropVar.ktpvDefault,
-						m_cache.DefaultAnalWs);
-					tisb.Append(" "); // insert space except for first item
-				}
-				if (spec is IFsClosedValue cv)
-				{
-					tisb.AppendTsString(((FsClosedValue)cv).LongNameTSS);
-				}
-				else
-				{
-					if (spec is IFsComplexValue complex)
-					{
-						tisb.AppendTsString(((FsComplexValue)complex).LongNameSortedTSS);
-					}
+					// This won't work properly if there are more than 999 features in TypeRA.
+					return index.ToString("0000");
 				}
 			}
-			if (iCount > 0)
-			{
-				tisb.SetIntPropValues((int)FwTextPropType.ktptWs, (int)FwTextPropVar.ktpvDefault,
-					m_cache.DefaultAnalWs);
-				tisb.Append("]");
-			}
-			if (tisb.Text == null)
-			{
-				// Ensure that we have a ws for the empty string!  See FWR-1122.
-				tisb.SetIntPropValues((int)FwTextPropType.ktptWs, (int)FwTextPropVar.ktpvDefault,
-					m_cache.DefaultAnalWs);
-			}
-			return tisb.GetString();
+			return "1" + spec.FeatureRA.Name.BestAnalysisAlternative.Text;
 		}
+
 		/// <summary>
 		/// Provide a "Name" for this (is a long name)
 		/// </summary>

@@ -90,6 +90,17 @@ namespace SIL.LCModel.DomainServices
 				m_cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem = vernWritingSystem);
 		}
 
+		private void TestProjects(string directory)
+		{
+			foreach (string subdir in Directory.GetDirectories(directory))
+				foreach (string file in Directory.GetFiles(subdir, "*.fwdata"))
+				{
+					CreateTestCache();
+					TestProject(subdir, file);
+					DestroyTestCache();
+				}
+		}
+
 		private void TestProject(string projectsDirectory, string dbFileName)
 		{
 			var projectId = new TestProjectId(BackendProviderType.kXML, dbFileName);
@@ -98,6 +109,15 @@ namespace SIL.LCModel.DomainServices
 			using (var cache = LcmCache.CreateCacheFromExistingData(projectId, "en", m_ui, m_lcmDirectories, new LcmSettings(),
 					new DummyProgressDlg()))
 			{
+				// Create PhonemeSet if necessary.
+				NonUndoableUnitOfWorkHelper.Do(m_cache.ActionHandlerAccessor, () =>
+				{
+					if (m_cache.LangProject.PhonologicalDataOA.PhonemeSetsOS.Count == 0)
+					{
+						var phonemeset = m_cache.ServiceLocator.GetInstance<IPhPhonemeSetFactory>().Create();
+						m_cache.LangProject.PhonologicalDataOA.PhonemeSetsOS.Add(phonemeset);
+					}
+				});
 				// Export project as XML.
 				var services = new PhonologyServices(cache);
 				XDocument xdoc = services.ExportPhonologyAsXml();
@@ -109,6 +129,7 @@ namespace SIL.LCModel.DomainServices
 					var vernWs = cache.ServiceLocator.WritingSystemManager.Get(cache.DefaultVernWs);
 					SetDefaultVernacularWritingSystem(m_cache, vernWs);
 					var services2 = new PhonologyServices(m_cache, vernWs.Id);
+					services2.DeletePhonology();
 					services2.ImportPhonologyFromXml(rdr);
 					xdoc2 = services2.ExportPhonologyAsXml();
 				}
@@ -125,8 +146,16 @@ namespace SIL.LCModel.DomainServices
 			{
 				m_cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem =
 					m_cache.ServiceLocator.WritingSystemManager.Get(vernWs);
+				if (m_cache.LangProject.PhonologicalDataOA.PhonemeSetsOS.Count == 0)
+				{
+					var phonemeset = m_cache.ServiceLocator.GetInstance<IPhPhonemeSetFactory>().Create();
+					m_cache.LangProject.PhonologicalDataOA.PhonemeSetsOS.Add(phonemeset);
+				}
 			});
+			ILcmOwningSequence<IPhPhonemeSet> phonemeList = m_cache.LangProject.PhonologicalDataOA.PhonemeSetsOS;
+			IPhPhonemeSet phonemeSet = m_cache.LangProject.PhonologicalDataOA.GetPhonemeSet();
 			var services = new PhonologyServices(m_cache);
+			services.DeletePhonology();
 			using (var rdr = new StringReader(xml))
 			{
 				services.ImportPhonologyFromXml(rdr);
@@ -134,6 +163,22 @@ namespace SIL.LCModel.DomainServices
 				var xml2 = xdoc2.ToString();
 				TestXml(xdoc, xdoc2);
 			}
+			// Verify that the references to the PhonemeSet didn't change.
+			Assert.IsTrue(ReferenceEquals(phonemeList, m_cache.LangProject.PhonologicalDataOA.PhonemeSetsOS));
+			Assert.IsTrue(ReferenceEquals(phonemeSet, m_cache.LangProject.PhonologicalDataOA.GetPhonemeSet()));
+			// Verify that the boundary markers exist with the right GUIDs.
+			bool hasMorphBdry = false;
+			bool hasWordBdry = false;
+			foreach (var marker in m_cache.LangProject.PhonologicalDataOA.GetPhonemeSet().BoundaryMarkersOC)
+			{
+				if (marker.Guid == LangProjectTags.kguidPhRuleMorphBdry)
+					hasMorphBdry = true;
+				if (marker.Guid == LangProjectTags.kguidPhRuleWordBdry)
+					hasWordBdry = true;
+			}
+			Assert.IsTrue(hasMorphBdry);
+			Assert.IsTrue(hasWordBdry);
+			Assert.IsTrue(m_cache.LangProject.PhonologicalDataOA.GetPhonemeSet().BoundaryMarkersOC.Count == 2);
 		}
 
 		private void TestXml(XDocument xdoc, XDocument xdoc2)
@@ -1188,6 +1233,16 @@ namespace SIL.LCModel.DomainServices
 				var xml2 = xdoc2.ToString();
 				TestXml(xdoc, xdoc2);
 			}
+		}
+
+		private string PhonologyProjectsDirectory => Path.Combine(TestDirectoryFinder.RootDirectory, "tests", "SIL.LCModel.Tests", "DomainServices", "TestData", "PhonologyProjects");
+
+		[Test]
+		public void TestPhonologyProjects()
+		{
+			// You can test your personal projects with something like
+			// TestProjects("C:\\Users\\[MyAccount]\\FieldWorks\\DistFiles\\Projects")
+			TestProjects(PhonologyProjectsDirectory);
 		}
 	}
 }

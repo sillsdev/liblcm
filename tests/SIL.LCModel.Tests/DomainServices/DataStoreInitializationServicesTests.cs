@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using Rhino.Mocks;
+using SIL.LCModel.Tests.Rhino.Mocks;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Scripture;
 using SIL.LCModel.Core.Text;
@@ -317,7 +317,7 @@ namespace SIL.LCModel.DomainServices
 			m_para.Stub(p => p.Id).Return(paraId);
 			m_para.Contents = TsStringUtils.EmptyString(Cache.DefaultVernWs);
 
-			GetBtDelegate getBtDelegate = () =>
+			Func<ICmTranslation> getBtDelegate = () =>
 				m_para.TranslationsOC.FirstOrDefault(trans => trans.TypeRA != null &&
 					trans.TypeRA.Guid == CmPossibilityTags.kguidTranBackTranslation);
 			m_para.Stub(p => p.GetBT()).Do(getBtDelegate);

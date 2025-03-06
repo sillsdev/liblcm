@@ -4632,4 +4632,28 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 	}
+
+	internal partial class MoStratum
+	{
+		/// <summary>
+		/// The shortest, non abbreviated label for the content of this object.
+		/// </summary>
+		public override string ShortName
+		{
+			get
+			{
+				var result = ShortNameTSS.Text;
+				return String.IsNullOrEmpty(result) ? Strings.ksQuestions : result;
+			}
+		}
+
+		/// <summary>
+		/// Shortest reasonable name for the object.
+		/// </summary>
+		public override ITsString ShortNameTSS
+		{
+			get { return Name.BestAnalysisVernacularAlternative; }
+		}
+
+	}
 }

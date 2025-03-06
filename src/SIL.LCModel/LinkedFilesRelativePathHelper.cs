@@ -274,6 +274,8 @@ namespace SIL.LCModel
 			try
 			{
 				var rootOfPath = Path.GetPathRoot(path);
+				// dotnet 8 on linux, when path contains invalid characters rootOfPath will be null
+				if (rootOfPath is null) return path.ToLowerInvariant();
 				return rootOfPath.ToLowerInvariant()
 					+ path.Substring(rootOfPath.Length, path.Length - rootOfPath.Length);
 			}
