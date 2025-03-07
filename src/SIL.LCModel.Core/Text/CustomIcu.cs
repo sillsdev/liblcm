@@ -178,7 +178,7 @@ namespace SIL.LCModel.Core.Text
 			// application (e.g. Flex & Paratext)
 			if (Platform.IsWindows)
 			{
-				var executingAssemblyFolder = Uri.UnescapeDataString(new UriBuilder(Assembly.GetExecutingAssembly().CodeBase).Path);
+				var executingAssemblyFolder = Uri.UnescapeDataString(new UriBuilder(Assembly.GetExecutingAssembly().Location).Path);
 				var assemblyDir = Path.GetDirectoryName(executingAssemblyFolder);
 				if (assemblyDir == null)
 					throw new InvalidOperationException("Could not get assembly directory from " + executingAssemblyFolder);

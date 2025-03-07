@@ -1002,7 +1002,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 					else
 						cmo = factory.Create(guid, (IPhPhonemeSet)fi.Owner);
 					// Remove the default code added by PhTerminalUnit.SetDefaultValuesAfterInit in OverridesLing_Lex.
-					(cmo as PhBdryMarker).CodesOS.Clear();
+					((PhBdryMarker)cmo).CodesOS.Clear();
 					break;
 				case "PhPhonData":
 					cmo = m_cache.LangProject.PhonologicalDataOA;
