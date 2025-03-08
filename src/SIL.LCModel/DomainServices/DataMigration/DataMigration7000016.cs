@@ -64,7 +64,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		{
 			DataMigrationServices.CheckVersionNumber(repoDTO, 7000015);
 
-			DomainObjectDTO dtoList = repoDTO.GetDTO(ksguidRecTypesList);
+			DomainObjectXMLDTO dtoList = repoDTO.GetDTO(ksguidRecTypesList);
 			XElement xeList = XElement.Parse(dtoList.Xml);
 			XElement xeListPossibilities = xeList.XPathSelectElement("Possibilities");
 			if (xeListPossibilities == null)
@@ -73,10 +73,10 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				xeList.Add(xeListPossibilities);
 			}
 			// The user can edit the list, so these might possibly have been deleted (or moved).  :-(
-			DomainObjectDTO dtoObservation = GetDTOIfItExists(repoDTO, ksguidObservation);
-			DomainObjectDTO dtoConversation = GetDTOIfItExists(repoDTO, ksguidConversation);
-			DomainObjectDTO dtoInterview = GetDTOIfItExists(repoDTO, ksguidInterview);
-			DomainObjectDTO dtoPerformance = GetDTOIfItExists(repoDTO, ksguidPerformance);
+			DomainObjectXMLDTO dtoObservation = GetDTOIfItExists(repoDTO, ksguidObservation);
+			DomainObjectXMLDTO dtoConversation = GetDTOIfItExists(repoDTO, ksguidConversation);
+			DomainObjectXMLDTO dtoInterview = GetDTOIfItExists(repoDTO, ksguidInterview);
+			DomainObjectXMLDTO dtoPerformance = GetDTOIfItExists(repoDTO, ksguidPerformance);
 
 			// Create the new Event, Methodology, and Weather record types.
 			var nowStr = DateTime.Now.ToLCMTimeFormatWithMillisString();
@@ -90,7 +90,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.AppendFormat("<DateModified val=\"{0}\"/>", nowStr);
 			sb.Append("</rt>");
 			XElement xeEvent = XElement.Parse(sb.ToString());
-			var dtoEvent = new DomainObjectDTO(ksguidEvent, "CmPossibility", xeEvent.ToString());
+			var dtoEvent = new DomainObjectXMLDTO(ksguidEvent, "CmPossibility", xeEvent.ToString());
 			repoDTO.Add(dtoEvent);
 			xeListPossibilities.AddFirst(DataMigrationServices.CreateOwningObjSurElement(ksguidEvent));
 
@@ -102,7 +102,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.AppendFormat("<DateCreated val=\"{0}\"/>", nowStr);
 			sb.AppendFormat("<DateModified val=\"{0}\"/>", nowStr);
 			sb.Append("</rt>");
-			var dtoMethod = new DomainObjectDTO(ksguidMethodology, "CmPossibility", sb.ToString());
+			var dtoMethod = new DomainObjectXMLDTO(ksguidMethodology, "CmPossibility", sb.ToString());
 			repoDTO.Add(dtoMethod);
 			xeListPossibilities.LastNode.AddAfterSelf(DataMigrationServices.CreateOwningObjSurElement(ksguidMethodology));
 
@@ -114,7 +114,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.AppendFormat("<DateCreated val=\"{0}\"/>", nowStr);
 			sb.AppendFormat("<DateModified val=\"{0}\"/>", nowStr);
 			sb.Append("</rt>");
-			var dtoWeather = new DomainObjectDTO(ksguidWeather, "CmPossibility", sb.ToString());
+			var dtoWeather = new DomainObjectXMLDTO(ksguidWeather, "CmPossibility", sb.ToString());
 			repoDTO.Add(dtoWeather);
 			xeListPossibilities.LastNode.AddAfterSelf(DataMigrationServices.CreateOwningObjSurElement(ksguidWeather));
 
@@ -133,7 +133,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			DataMigrationServices.IncrementVersionNumber(repoDTO);
 		}
 
-		private void ChangeOwner(IDomainObjectDTORepository repoDTO, DomainObjectDTO dto, string sGuidNew,
+		private void ChangeOwner(IDomainObjectDTORepository repoDTO, DomainObjectXMLDTO dto, string sGuidNew,
 			string xpathNew)
 		{
 			XElement xe = XElement.Parse(dto.Xml);
@@ -151,7 +151,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			DataMigrationServices.UpdateDTO(repoDTO, dto, xe.ToString());
 			if (sGuidOld != null)
 			{
-				DomainObjectDTO dtoOldOwner = repoDTO.GetDTO(sGuidOld);
+				DomainObjectXMLDTO dtoOldOwner = repoDTO.GetDTO(sGuidOld);
 				XElement xeOldOwner = XElement.Parse(dtoOldOwner.Xml);
 				string xpathOld = string.Format(".//objsur[@t='o' and @guid='{0}']", dto.Guid);
 				XElement xeOldRef = xeOldOwner.XPathSelectElement(xpathOld);
@@ -183,7 +183,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					DataMigrationServices.UpdateDTO(repoDTO, dtoOldOwner, xeOldOwner.ToString());
 				}
 			}
-			DomainObjectDTO dtoNewOwner = repoDTO.GetDTO(sGuidNew);
+			DomainObjectXMLDTO dtoNewOwner = repoDTO.GetDTO(sGuidNew);
 			XElement xeNewOwner = XElement.Parse(dtoNewOwner.Xml);
 			XElement xeNewField = xeNewOwner.XPathSelectElement(xpathNew);
 			if (xeNewField == null)
@@ -243,7 +243,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			return null;
 		}
 
-		private static DomainObjectDTO GetDTOIfItExists(IDomainObjectDTORepository dtoRepository, string sGuid)
+		private static DomainObjectXMLDTO GetDTOIfItExists(IDomainObjectDTORepository dtoRepository, string sGuid)
 		{
 			try
 			{

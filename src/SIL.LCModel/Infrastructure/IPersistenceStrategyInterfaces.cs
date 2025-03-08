@@ -246,7 +246,7 @@ namespace SIL.LCModel.Infrastructure
 		ICmObjectOrId GetObjectOrIdWithHvoFromGuid(Guid guid);
 
 		/// <summary>
-		/// Get the HVO associatd with the given ID or object. May actually create the
+		/// Get the HVO associated with the given ID or object. May actually create the
 		/// association, though it is more normal for it to be created in a call to
 		/// GetObjectOrIdWithHvoFromGuid.
 		/// </summary>
@@ -257,7 +257,7 @@ namespace SIL.LCModel.Infrastructure
 	/// <summary>
 	/// Persist the given objects.
 	/// This may be create new ones, modify previously persisted ones,
-	/// or delete presiously persisted ones.
+	/// or delete previously persisted ones.
 	/// </summary>
 	/// <remarks>
 	/// Implementors should not assume an object to be in only one of the given sets,

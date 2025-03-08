@@ -36,8 +36,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			// Verification Phase
 			Assert.AreEqual(7000017, repoDTO.CurrentModelVersion, "Wrong updated version.");
 
-			DomainObjectDTO dtoLP = null;
-			foreach (DomainObjectDTO dto in repoDTO.AllInstancesSansSubclasses("LangProject"))
+			DomainObjectXMLDTO dtoLP = null;
+			foreach (DomainObjectXMLDTO dto in repoDTO.AllInstancesSansSubclasses("LangProject"))
 			{
 				Assert.IsNull(dtoLP, "Only one LangProject object should exist");
 				dtoLP = dto;
@@ -47,8 +47,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.IsFalse(sXml.Contains("<WeatherConditions>"), "The <WeatherConditions> element should have disappeared");
 			string sLpOwnerGuid = GetGuidAsOwnerGuid(sXml);
 
-			DomainObjectDTO dtoNbk = null;
-			foreach (DomainObjectDTO dto in repoDTO.AllInstancesSansSubclasses("RnResearchNbk"))
+			DomainObjectXMLDTO dtoNbk = null;
+			foreach (DomainObjectXMLDTO dto in repoDTO.AllInstancesSansSubclasses("RnResearchNbk"))
 			{
 				Assert.IsNull(dtoNbk, "Only one RnResearchNbk should exist");
 				Assert.IsTrue(dto.Xml.Contains(sLpOwnerGuid), "The RnResearchNbk should be owned by the LangProject");
@@ -57,7 +57,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.NotNull(dtoNbk, "The RnResearchNbk should exist");
 			string sNbkOwnerGuid = GetGuidAsOwnerGuid(dtoNbk.Xml);
 			int cList = 0;
-			foreach (DomainObjectDTO dto in repoDTO.AllInstancesSansSubclasses("CmPossibilityList"))
+			foreach (DomainObjectXMLDTO dto in repoDTO.AllInstancesSansSubclasses("CmPossibilityList"))
 			{
 				sXml = dto.Xml;
 				Assert.IsTrue(sXml.Contains(sNbkOwnerGuid), "Possibility List must be owned by Data Notebook");
@@ -65,7 +65,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 			Assert.AreEqual(1, cList, "Only one CmPossibilityList should exist");
 
-			foreach (DomainObjectDTO dto in repoDTO.AllInstancesWithSubclasses("RnGenericRec"))
+			foreach (DomainObjectXMLDTO dto in repoDTO.AllInstancesWithSubclasses("RnGenericRec"))
 			{
 				Assert.IsFalse(dto.Xml.Contains("<Weather"), "Any <Weather> element should have disappeared");
 				Assert.IsFalse(dto.Xml.Contains("<Custom name="), "No <Custom> element should have been created");
@@ -138,8 +138,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			// Verification Phase
 			Assert.AreEqual(7000017, repoDTO.CurrentModelVersion, "Wrong updated version.");
 
-			DomainObjectDTO dtoLP = null;
-			foreach (DomainObjectDTO dto in repoDTO.AllInstancesSansSubclasses("LangProject"))
+			DomainObjectXMLDTO dtoLP = null;
+			foreach (DomainObjectXMLDTO dto in repoDTO.AllInstancesSansSubclasses("LangProject"))
 			{
 				Assert.IsNull(dtoLP, "Only one LangProject object should exist");
 				dtoLP = dto;
@@ -149,8 +149,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.IsFalse(sXml.Contains("<WeatherConditions>"), "The <WeatherConditions> element should have disappeared");
 			string sLpOwnerGuid = GetGuidAsOwnerGuid(sXml);
 
-			DomainObjectDTO dtoNbk = null;
-			foreach (DomainObjectDTO dto in repoDTO.AllInstancesSansSubclasses("RnResearchNbk"))
+			DomainObjectXMLDTO dtoNbk = null;
+			foreach (DomainObjectXMLDTO dto in repoDTO.AllInstancesSansSubclasses("RnResearchNbk"))
 			{
 				Assert.IsNull(dtoNbk, "Only one RnResearchNbk should exist");
 				Assert.IsTrue(dto.Xml.Contains(sLpOwnerGuid), "The RnResearchNbk should be owned by the LangProject");
@@ -159,8 +159,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.NotNull(dtoNbk, "The RnResearchNbk should exist");
 			string sNbkOwnerGuid = GetGuidAsOwnerGuid(dtoNbk.Xml);
 			int cList = 0;
-			DomainObjectDTO dtoTypeList = null;
-			foreach (DomainObjectDTO dto in repoDTO.AllInstancesSansSubclasses("CmPossibilityList"))
+			DomainObjectXMLDTO dtoTypeList = null;
+			foreach (DomainObjectXMLDTO dto in repoDTO.AllInstancesSansSubclasses("CmPossibilityList"))
 			{
 				sXml = dto.Xml;
 				if (sXml.Contains(" ownerguid="))
@@ -173,7 +173,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 			Assert.AreEqual(2, cList, "Two CmPossibilityList objects should still exist");
 
-			foreach (DomainObjectDTO dto in repoDTO.AllInstancesWithSubclasses("RnGenericRec"))
+			foreach (DomainObjectXMLDTO dto in repoDTO.AllInstancesWithSubclasses("RnGenericRec"))
 			{
 				sXml = dto.Xml;
 				Assert.IsFalse(sXml.Contains("<Weather"), "Any <Weather> element should have disappeared");

@@ -39,7 +39,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			File.WriteAllText(otherFile, "rubbish", Encoding.UTF8);
 
 			var mockMDC = new MockMDCForDataMigration(); // no classes to migrate here
-			var dtos = new HashSet<DomainObjectDTO>(); // no objects to migrate
+			var dtos = new HashSet<DomainObjectXMLDTO>(); // no objects to migrate
 			IDomainObjectDTORepository dtoRepos = new DomainObjectDtoRepository(7000059, dtos, mockMDC, projectFolder,
 				TestDirectoryFinder.LcmDirectories);
 			// Do the migration.

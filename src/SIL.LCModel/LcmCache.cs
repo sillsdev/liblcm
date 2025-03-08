@@ -353,6 +353,7 @@ namespace SIL.LCModel
 		///  7. A set of IWritingSystem to provide additional vernacular writing systems (default: no more)
 		///  8. OCM Data filename. (default: OCM-Frame.xml if available; else, null)
 		///  9. Indicates whether or not to use a memory-only writing system manager (default: false)
+		///  10. Specifies the <code>BackendProvider</code> type to use in creating the project (default: kXML)
 		/// </param>
 		/// <returns>Path of the newly created project file.</returns>
 		/// <remarks>Override DisplayUi to prevent progress dialog from showing.</remarks>
@@ -377,7 +378,14 @@ namespace SIL.LCModel
 				progressDlg.Message = Properties.Resources.kstidCreatingDB;
 			}
 
-			var dbFileName = CreateNewDbFile(dirs.ProjectsDirectory, dirs.TemplateDirectory, ref projectName);
+			// Default to xml as the historical choice
+			BackendProviderType projectType = BackendProviderType.kXML;
+			if (parameters.Length > 10)
+			{
+				BackendProviderType.TryParse((string)parameters[10], out projectType);
+			}
+
+			var dbFileName = CreateNewDbFile(dirs.ProjectsDirectory, dirs.TemplateDirectory, ref projectName, projectType);
 
 			if (progressDlg != null)
 			{
@@ -386,7 +394,8 @@ namespace SIL.LCModel
 			}
 
 			bool useMemoryOnlyWsManager = parameters.Length > 9 && (bool) parameters[9];
-			var projectId = new SimpleProjectId(useMemoryOnlyWsManager ? BackendProviderType.kXMLWithMemoryOnlyWsMgr : BackendProviderType.kXML, dbFileName);
+			var adjustedProjType = GetProjTypeForWsManager(useMemoryOnlyWsManager, projectType);
+			var projectId = new SimpleProjectId(adjustedProjType, dbFileName);
 			using (LcmCache cache = CreateCacheInternal(projectId, userIcuLocale, new SilentLcmUI(synchronizeInvoke), dirs, new LcmSettings(),
 				dataSetup => dataSetup.StartupExtantLanguageProject(projectId, true, progressDlg)))
 			{
@@ -506,6 +515,31 @@ namespace SIL.LCModel
 				}
 			}
 			return dbFileName;
+		}
+
+		private static BackendProviderType GetProjTypeForWsManager(bool useMemoryOnlyWsManager, BackendProviderType projectType)
+		{
+			switch (projectType)
+			{
+				case BackendProviderType.kXML:
+					return useMemoryOnlyWsManager
+						? BackendProviderType.kXMLWithMemoryOnlyWsMgr
+						: BackendProviderType.kXML;
+				case BackendProviderType.kXMLWithMemoryOnlyWsMgr:
+					Debug.Assert(useMemoryOnlyWsManager, "Mismatched project type and memory manager.");
+					return BackendProviderType.kXMLWithMemoryOnlyWsMgr;
+				case BackendProviderType.kSharedXML:
+					return useMemoryOnlyWsManager
+						? BackendProviderType.kSharedXMLWithMemoryOnlyWsMgr
+						: BackendProviderType.kSharedXML;
+				case BackendProviderType.kSharedXMLWithMemoryOnlyWsMgr:
+					Debug.Assert(useMemoryOnlyWsManager, "Mismatched project type and memory manager.");
+					return BackendProviderType.kSharedXMLWithMemoryOnlyWsMgr;
+				case BackendProviderType.kMemoryOnly:
+					return BackendProviderType.kMemoryOnly;
+				default:
+					throw new NotImplementedException($"{projectType} does not yet have project creation logic.");
+			}
 		}
 
 		/// <summary>Share Writing System data with SLDR by default (LT-19632)</summary>
@@ -671,38 +705,49 @@ namespace SIL.LCModel
 		/// Build the file name for the new project and copy the template file (NewLangProj.fwdata).
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		private static string CreateNewDbFile(string projectsDir, string templateDir, ref string projectName)
+		private static string CreateNewDbFile(string projectsDir, string templateDir, ref string projectName, BackendProviderType projectType)
 		{
 			projectName = MiscUtils.FilterForFileName(projectName, MiscUtils.FilenameFilterStrength.kFilterProjName);
 			if (ProjectInfo.GetProjectInfoByName(projectsDir, projectName) != null)
 				throw new ArgumentException("The specified project already exists.", "projectName");
 			string dbDirName = Path.Combine(projectsDir, projectName);
-			string dbFileName = Path.Combine(dbDirName, LcmFileHelper.GetXmlDataFileName(projectName));
+			string dbFileName;
 			try
 			{
 				Directory.CreateDirectory(dbDirName);
 				CreateProjectSubfolders(dbDirName);
-				// Make a copy of the template database that will become the new database
-				File.Copy(Path.Combine(templateDir,
-					LcmFileHelper.GetXmlDataFileName("NewLangProj")), dbFileName, false);
-				File.SetAttributes(dbFileName, FileAttributes.Normal);
-				// Change the LangProject Guid to a new one to make it unique between projects, so Lift Bridge won't get cross with FLEx.
-				var doc = XDocument.Load(dbFileName);
-				var lpElement = doc.Element("languageproject").Elements("rt")
-					.Where(rtEl => rtEl.Attribute("class").Value == "LangProject")
-					.First();
-				var newLpGuid = Guid.NewGuid().ToString().ToLowerInvariant();
-				var guidAttr = lpElement.Attribute("guid");
-				var oldLpGuid = guidAttr.Value.ToLowerInvariant();
-				guidAttr.Value = newLpGuid;
-
-				// Change all of the LP's owned stuff, so their ownerguid attrs are updated.
-				foreach (var ownedEl in doc.Element("languageproject").Elements("rt").Where(ownedRt => ownedRt.Attribute("ownerguid") != null && ownedRt.Attribute("ownerguid").Value.ToLowerInvariant() == oldLpGuid))
+				switch (projectType)
 				{
-					ownedEl.Attribute("ownerguid").Value = newLpGuid;
-				}
+					case BackendProviderType.kXML:
+					case BackendProviderType.kSharedXML:
+						dbFileName = Path.Combine(dbDirName, LcmFileHelper.GetXmlDataFileName(projectName));
+						// Make a copy of the template database that will become the new database
+						File.Copy(Path.Combine(templateDir,
+							LcmFileHelper.GetXmlDataFileName("NewLangProj")), dbFileName, false);
+						File.SetAttributes(dbFileName, FileAttributes.Normal);
+						// Change the LangProject Guid to a new one to make it unique between projects, so Lift Bridge won't get cross with FLEx.
+						var doc = XDocument.Load(dbFileName);
+						var lpElement = doc.Element("languageproject").Elements("rt")
+							.Where(rtEl => rtEl.Attribute("class").Value == "LangProject")
+							.First();
+						var newLpGuid = Guid.NewGuid().ToString().ToLowerInvariant();
+						var guidAttr = lpElement.Attribute("guid");
+						var oldLpGuid = guidAttr.Value.ToLowerInvariant();
+						guidAttr.Value = newLpGuid;
 
-				doc.Save(dbFileName);
+						// Change all of the LP's owned stuff, so their ownerguid attrs are updated.
+						foreach (var ownedEl in doc.Element("languageproject").Elements("rt").Where(ownedRt => ownedRt.Attribute("ownerguid") != null && ownedRt.Attribute("ownerguid").Value.ToLowerInvariant() == oldLpGuid))
+						{
+							ownedEl.Attribute("ownerguid").Value = newLpGuid;
+						}
+
+						doc.Save(dbFileName);
+						break;
+					default:
+						throw new ArgumentException(
+							"Unhandled project type.",
+							nameof(projectType));
+				}
 			}
 			catch (Exception e)
 			{
