@@ -601,7 +601,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 		private void WriteLdml(XmlWriter writer)
 		{
-			Debug.Assert(writer != null);
+			if (writer == null)
+				throw new NullReferenceException("writer cannot be null.");
 			writer.WriteStartElement("ldml");
 			WriteIdentityElement(writer);
 			WriteLayoutElement(writer);

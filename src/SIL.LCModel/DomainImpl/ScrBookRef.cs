@@ -53,7 +53,6 @@ namespace SIL.LCModel.DomainImpl
 				// UBS book code
 				if (string.IsNullOrEmpty(sBookAbbrev) || sBookAbbrev == BookAbbrev.NotFoundTss.Text)
 					sBookAbbrev = ScrReference.NumberToBookCode(IndexInOwner + 1);
-				System.Diagnostics.Debug.Assert(sBookAbbrev != null && sBookAbbrev != String.Empty);
 
 				return sBookAbbrev.Trim();
 			}
@@ -80,7 +79,6 @@ namespace SIL.LCModel.DomainImpl
 				// UBS code, if all else fails.
 				if (string.IsNullOrEmpty(sBookName) || sBookName == BookName.NotFoundTss.Text)
 					sBookName = ScrReference.NumberToBookCode(IndexInOwner + 1);
-				System.Diagnostics.Debug.Assert(sBookName != null && sBookName != String.Empty);
 
 				return sBookName.Trim();
 			}

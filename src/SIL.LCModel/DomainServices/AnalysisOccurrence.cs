@@ -225,9 +225,9 @@ namespace SIL.LCModel.DomainServices
 				// Need to copy out end of first segment, any segments in between and beginning of second segment
 				return CopyOutAnalysesFromMultipleSegments(point2);
 			}
-			var para1 = Segment.Owner as IStTxtPara;
+			var para1 = (IStTxtPara)Segment.Owner;
 			var para2 = point2.Segment.Owner as IStTxtPara;
-			if (!(para1.Owner as IStText).ParagraphsOS.Contains(para2))
+			if (!((IStText)para1.Owner).ParagraphsOS.Contains(para2))
 			{
 				throw new ArgumentOutOfRangeException("point2", "AnalysisOccurrences are not within the same Text!");
 			}
@@ -348,7 +348,7 @@ namespace SIL.LCModel.DomainServices
 		{
 			// Need to copy out end of first segment, any segments in between and beginning of second segment
 			var result = new List<IAnalysis>();
-			var paraSegs = (Segment.Owner as IStTxtPara).SegmentsOS;
+			var paraSegs = ((IStTxtPara)Segment.Owner).SegmentsOS;
 			if (paraSegs == null)
 				throw new NullReferenceException("Unexpected error!");
 			for (var i = Segment.IndexInOwner; i <= point2.Segment.IndexInOwner; i++)

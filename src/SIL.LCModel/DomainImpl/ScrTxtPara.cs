@@ -1945,7 +1945,7 @@ namespace SIL.LCModel.DomainImpl
 
 			if ((originalValue == null && newValue != null) ||
 				(originalValue != null && newValue == null) ||
-				(originalValue != null && originalValue.Text != newValue.Text))
+				(originalValue != null && originalValue.Text != newValue!.Text))
 			{
 				MarkBackTranslationsAsUnfinished();
 			}

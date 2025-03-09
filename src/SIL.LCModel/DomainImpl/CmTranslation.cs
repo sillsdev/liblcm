@@ -33,7 +33,7 @@ namespace SIL.LCModel.DomainImpl
 
 			// This check only applies if the translation belongs to a paragraph.
 			if (Cache.FullyInitializedAndReadyToRock && Owner is IStTxtPara &&
-				newObjValue.Guid != LangProjectTags.kguidTranBackTranslation)
+				newObjValue?.Guid != LangProjectTags.kguidTranBackTranslation)
 			{
 				throw new ArgumentException("Back translations are the only type of translation allowed for paragraphs");
 			}
@@ -80,7 +80,7 @@ namespace SIL.LCModel.DomainImpl
 				TypeRA.Guid == CmPossibilityTags.kguidTranBackTranslation &&
 				((originalValue == null && newValue != null) ||
 				(originalValue != null && newValue == null) ||
-				(originalValue != null && originalValue.Text != newValue.Text)))
+				(originalValue != null && originalValue.Text != newValue?.Text)))
 			{
 				BtConverter.ConvertCmTransToInterlin(para, alternativeWs.Handle);
 				MarkAsUnfinished(alternativeWs.Handle);

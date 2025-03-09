@@ -407,11 +407,13 @@ namespace SIL.LCModel.DomainServices
 			// Determine appropriate owner of copy
 			// If source's owner has also been copied, we want to add this copy to the copy!
 			// If a delegate has not been set, use the source's owner as the copy's owner.
-			ICmObject copied;
-			if (!m_sourceToCopyMap.TryGetValue(srcObj.Owner.Hvo, out copied))
+
+			if (!m_sourceToCopyMap.TryGetValue(srcObj.Owner.Hvo, out ICmObject copied))
 				copied = (m_topLevelOwnerFunct == kAddToSourceOwner) ? srcObj.Owner : null;
 
 			Debug.Assert(copied != null, "Non top-level objects should have their owner already copied");
+			if (copied == null)
+				throw new ArgumentNullException("srcObj", "Can't find copy of source object's owner in copy map. Non top-level objects should have their owner already copied.");
 
 			int ord;
 			switch (owningFlidType)

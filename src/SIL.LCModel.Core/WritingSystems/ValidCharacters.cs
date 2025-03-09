@@ -596,7 +596,8 @@ namespace SIL.LCModel.Core.WritingSystems
 				{
 					foreach (XmlNode charNode in charsList)
 					{
-						string codepointStr = charNode.Attributes["val"].InnerText;
+						string codepointStr = charNode.Attributes?["val"]?.InnerText;
+						if (codepointStr == null) throw new InvalidOperationException("Could not get codepoint from " + charNode.OuterXml);
 						int codepoint = Convert.ToInt32(codepointStr, 16);
 						var c = (char) codepoint;
 						result.Add(c.ToString(CultureInfo.InvariantCulture));

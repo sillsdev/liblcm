@@ -582,7 +582,6 @@ namespace SIL.LCModel.DomainServices
 		/// -----------------------------------------------------------------------------------
 		public virtual void Delete(int hvoStyle)
 		{
-			Debug.Assert(m_cache != null);
 			m_ttpNormalFont = null;  // may have been changed, recompute if needed.
 
 			foreach (BaseStyleInfo styleInfo in m_StyleInfos)
@@ -1064,7 +1063,9 @@ namespace SIL.LCModel.DomainServices
 		/// -----------------------------------------------------------------------------------
 		private ITsTextProps ComputeInheritance(ITsTextProps ttpBase, BaseStyleInfo styleInfo)
 		{
-			Debug.Assert(ttpBase != null);
+			if (ttpBase == null)
+				throw new NullReferenceException("Base style properties are null");
+				
 			ITsTextProps ttpOverride = styleInfo.TextProps;
 			if (ttpOverride == null)
 				return ttpBase;

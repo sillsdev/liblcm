@@ -178,7 +178,7 @@ namespace SIL.LCModel.DomainImpl
 
 			// create a LexSense that has the given definition and semantic domain
 			// Needs to be LexSense, since later calls use non-interface methods.
-			LexSense ls = Create() as LexSense;
+			LexSense ls = (LexSense)Create();
 			le.SensesOS.Add(ls);
 
 #pragma warning disable 219
@@ -979,8 +979,8 @@ namespace SIL.LCModel.DomainImpl
 				throw new ArgumentException("Invalid begPoint.");
 			if (endPoint == null || !endPoint.IsValid)
 				throw new ArgumentException("Invalid endPoint.");
-			var txt = begPoint.Segment.Paragraph.Owner as IStText;
-			Debug.Assert(txt != null);
+			var txt = (IStText)begPoint.Segment.Paragraph.Owner;
+			// Debug.Assert(txt != null);
 			var newby = Create();
 			txt.TagsOC.Add(newby);
 			newby.BeginSegmentRA = begPoint.Segment;

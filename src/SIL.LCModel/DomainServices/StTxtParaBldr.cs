@@ -43,8 +43,7 @@ namespace SIL.LCModel.DomainServices
 		/// ------------------------------------------------------------------------------------
 		public StTxtParaBldr(LcmCache cache)
 		{
-			System.Diagnostics.Debug.Assert(cache != null);
-			m_cache = cache;
+			m_cache = cache ?? throw new ArgumentNullException("cache");
 
 			m_ParaStrBldr = TsStringUtils.MakeStrBldr();
 
@@ -167,7 +166,8 @@ namespace SIL.LCModel.DomainServices
 			// the props when the user begins to enter text in an empty para.
 			if (sRun != string.Empty || Length == 0)
 			{
-				System.Diagnostics.Debug.Assert(props != null);
+				if (props == null)
+					throw new NullReferenceException("TsTextProps is null");
 				int var;
 				int ws = props.GetIntPropValues((int)FwTextPropType.ktptWs, out var);
 

@@ -1018,12 +1018,11 @@ namespace SIL.LCModel.Core.Text
 		public override int CompareTo(object obj)
 		{
 			// if they give us a UCDCharacter, compare Properties
-			if (obj is UCDCharacter)
+			if (obj is UCDCharacter c)
 			{
-				UCDCharacter ucdChar = obj as UCDCharacter;
-				if (SameRegion(ucdChar))
-					return MiscUtils.CompareHex(CodePoint, ucdChar.CodePoint);
-				return CompareRegions(ucdChar.Property);
+				if (SameRegion(c))
+					return MiscUtils.CompareHex(CodePoint, c.CodePoint);
+				return CompareRegions(c.Property);
 			}
 				// if they give us a string, assume its a codepoint
 			else if (obj is string)

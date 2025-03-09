@@ -328,7 +328,7 @@ namespace SIL.LCModel.DomainImpl
 				}
 				else
 				{
-					sNumber = (Owner as LexSense).SenseNumber;
+					sNumber = ((LexSense)Owner).SenseNumber;
 				}
 				return m_cache.MakeUserTss(sNumber);
 			}

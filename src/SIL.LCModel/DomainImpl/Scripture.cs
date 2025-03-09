@@ -1042,7 +1042,7 @@ namespace SIL.LCModel.DomainImpl
 			{
 				IScrFootnote footnote = Services.GetInstance<IScrFootnoteRepository>().GetObject(stText.Hvo);
 				string footnoteRefStr = ContainingRefAsString(footnote);
-				ScrBook book = footnote.Owner as ScrBook;
+				ScrBook book = (ScrBook)footnote.Owner;
 				ITsString tssBook = book.Name.get_String(ws);
 				if (tssBook.Length > 0)
 				{

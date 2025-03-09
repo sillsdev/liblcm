@@ -305,7 +305,7 @@ namespace SIL.LCModel.DomainServices
 							if (ScrImportFileInfo.CheckForOverlap(file1, file2))
 							{
 								Debug.Assert(m_resolver != null, "Must set OverlappingFileResolver before calling CheckForOverlappingFilesInRange.");
-								removedList.Add(m_resolver.ChooseFileToRemove(file1, file2));
+								removedList.Add(m_resolver!.ChooseFileToRemove(file1, file2));
 							}
 						}
 					}

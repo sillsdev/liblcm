@@ -301,6 +301,11 @@ namespace SIL.LCModel.DomainServices
 			Debug.Assert(cache != null);
 			Debug.Assert(fullForm != null);
 
+			if (fullForm == null)
+				throw new NullReferenceException("fullForm");
+			if (cache == null)
+				throw new NullReferenceException("cache");
+
 			clsidForm = MoStemAllomorphTags.kClassId;	// default
 			IMoMorphType mt = null;
 			fullForm = fullForm.Trim();
@@ -664,14 +669,14 @@ namespace SIL.LCModel.DomainServices
 		/// <param name="mainOrFirstSense"></param>
 		public static void GetMainEntryAndSenseStack(IVariantComponentLexeme mainEntryOrSense, out ILexEntry mainEntry, out ILexSense mainOrFirstSense)
 		{
-			if (mainEntryOrSense is ILexEntry)
+			if (mainEntryOrSense is ILexEntry entry)
 			{
-				mainEntry = mainEntryOrSense as ILexEntry;
+				mainEntry = entry;
 				mainOrFirstSense = mainEntry.SensesOS.Count > 0 ? mainEntry.SensesOS[0] : null;
 			}
-			else if (mainEntryOrSense is ILexSense)
+			else if (mainEntryOrSense is ILexSense sense)
 			{
-				mainOrFirstSense = mainEntryOrSense as ILexSense;
+				mainOrFirstSense = sense;
 				mainEntry = mainOrFirstSense.Entry;
 			}
 			else
@@ -741,7 +746,7 @@ namespace SIL.LCModel.DomainServices
 			const string sSeparator = kDefaultSeparatorLexEntryInflTypeGlossAffix;
 
 			foreach (var leit in variantEntryTypesRs.Where(let => (let as ILexEntryInflType) != null)
-				.Select(let => (let as ILexEntryInflType)))
+				.Select(let => (ILexEntryInflType)let))
 			{
 				var cache = leit.Cache;
 				var wsUser = cache.ServiceLocator.WritingSystemManager.UserWritingSystem;

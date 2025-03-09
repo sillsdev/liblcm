@@ -1504,7 +1504,7 @@ namespace SIL.LCModel.Tools
 								newtop = pe.m_action.Action(this); // before we change the stack
 							m_ungot = top.m_value;
 							Pop(ref top,((ParserReduce)pe).m_depth,er);
-							newtop.pos = top.m_value.pos;
+							newtop!.pos = top.m_value.pos;
 							top.m_value = newtop;
 						}
 						else
@@ -1554,7 +1554,7 @@ namespace SIL.LCModel.Tools
 			ParseStackEntry top = new ParseStackEntry(this,0,NextSym());
 			for (;;)
 			{
-				string cnm = top.m_value.yyname();
+				string cnm = top.m_value!.yyname();
 				if (m_debug)
 				{
 					if (cnm.Equals("TOKEN"))
@@ -1693,7 +1693,7 @@ namespace SIL.LCModel.Tools
 				yyp.m_symbols.erh.Error(new CSToolsException(16,yyp.m_lexer,"no factory for {"+cls_name+")"));
 			try
 			{
-				return cr(yyp);
+				return cr!(yyp);
 			}
 			catch (CSToolsException e)
 			{

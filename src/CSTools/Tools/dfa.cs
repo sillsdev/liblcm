@@ -602,7 +602,7 @@ namespace SIL.LCModel.Tools
 			if (m_sub!=null)
 				a = m_sub.Match(str, pos, max);
 			if (m_alt!=null)
-				b = m_sub.Match(str, pos, max);
+				b = m_alt.Match(str, pos, max);
 			return (a>b)?a:b;
 		}
 		public override void Build(Nfa nfa)

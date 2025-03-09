@@ -521,7 +521,7 @@ namespace SIL.LCModel.DomainServices
 				{
 					// The segment division is already in the correct location, so move on to the next
 					// segment division.
-					if (!segCurr.IsLabel && segOldBaseLine.Text[0] == StringUtils.kChObject)
+					if (!segCurr.IsLabel && segOldBaseLine!.Text[0] == StringUtils.kChObject)
 					{
 						// The segment is only ORC(s) so copy the ORC(s) to the free translation
 						// and, if needed, make puctuation forms for them.
@@ -543,7 +543,7 @@ namespace SIL.LCModel.DomainServices
 					bool fAppend = (iSegment > 0); // Always assume appending if not the first segment
 					ISegment segDest = (fAppend) ? para.SegmentsOS[iSegment - 1] : para.SegmentsOS[iSegment + 1];
 
-					if (segOldBaseLine.Text.Contains(StringUtils.kChObject))
+					if (segOldBaseLine!.Text.Contains(StringUtils.kChObject))
 					{
 						// The segment contains ORC(s), which need to be moved into the preceding or following segment.
 						if (fAppend)
@@ -574,7 +574,7 @@ namespace SIL.LCModel.DomainServices
 					int iSegmentInsert = iSegment;
 					Segment insertedSegment = (Segment)segFactory.Create();
 					para.SegmentsOS.Insert(iSegmentInsert, insertedSegment);
-					insertedSegment.BeginOffset = segExpected.IchMin;
+					insertedSegment.BeginOffset = segExpected!.IchMin;
 					ITsString insertedSegBaseLine = insertedSegment.BaselineText;
 					if (insertedSegBaseLine.Text[0] == StringUtils.kChObject)
 					{

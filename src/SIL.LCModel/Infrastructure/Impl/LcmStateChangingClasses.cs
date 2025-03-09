@@ -1460,7 +1460,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 												 m_originalValue.Length);
 
 				// Old value was not null, but new value is null
-				return new ChangeInformation(m_changedObject, m_modifiedFlid, 0, 0, m_originalValue.Length);
+				return new ChangeInformation(m_changedObject, m_modifiedFlid, 0, 0, m_originalValue!.Length);
 			}
 		}
 
@@ -1743,7 +1743,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 					return new ChangeInformation(m_changedObject, ModifiedFlid, 0, 0, 0);
 
 				// Old value was not null, but new value is null
-				return new ChangeInformation(m_changedObject, ModifiedFlid, 0, 0, m_originalValue.Length);
+				return new ChangeInformation(m_changedObject, ModifiedFlid, 0, 0, m_originalValue!.Length);
 			}
 		}
 

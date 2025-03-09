@@ -1991,7 +1991,7 @@ namespace SIL.LCModel.DomainImpl
 			Insert(eventArgs);
 			// Owning Insert may have Removed from a previous owner
 			if (removeEventArgs != null && removeEventArgs.DelaySideEffects)
-				((ICmObjectInternal) oldOwner).RemoveObjectSideEffects(removeEventArgs);
+				((ICmObjectInternal) oldOwner)!.RemoveObjectSideEffects(removeEventArgs);
 		}
 
 		/// ------------------------------------------------------------------------------------
