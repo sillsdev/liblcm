@@ -26,10 +26,12 @@ namespace SIL.LCModel.Core.SpellChecking
 			SpellEngine spellEngine = null;
 			try
 			{
-				if (Platform.IsWindows)
-					spellEngine = CreateSpellEngineWindows(affixPath, dictPath, exceptionPath);
-				else
-					spellEngine = CreateSpellEngineLinux(affixPath, dictPath, exceptionPath);
+				if (SpellingHelper.UseWeCantSpell)
+				{
+					spellEngine = new SpellEngineWeCantSpell(affixPath, dictPath, exceptionPath);
+				} else {
+					spellEngine = Platform.IsWindows ? CreateSpellEngineWindows(affixPath, dictPath, exceptionPath) : CreateSpellEngineLinux(affixPath, dictPath, exceptionPath);
+				}
 
 				spellEngine.Initialize();
 			}
@@ -87,9 +89,8 @@ namespace SIL.LCModel.Core.SpellChecking
 		/// <inheritdoc />
 		public abstract bool Check(string word);
 
-
-		/// <inheritdoc />
-		public abstract bool IsVernacular { get; }
+		private bool? _isVernacular;
+		public bool IsVernacular => _isVernacular ??= Check(SpellingHelper.PrototypeWord);
 
 		/// <inheritdoc />
 		public abstract ICollection<string> Suggest(string badWord);
