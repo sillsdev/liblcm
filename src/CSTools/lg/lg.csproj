@@ -5,7 +5,6 @@
     <RootNamespace>SIL.LCModel.Tools</RootNamespace>
     <Description>Lexer Generator</Description>
     <PackageOutputPath>../../../artifacts</PackageOutputPath>
-    <AssemblyOriginatorKeyFile>../../../liblcm.snk</AssemblyOriginatorKeyFile>
     <IsPackable>false</IsPackable>
     <OutputType>Exe</OutputType>
     <NoWarn>1701;1702;0162</NoWarn>
