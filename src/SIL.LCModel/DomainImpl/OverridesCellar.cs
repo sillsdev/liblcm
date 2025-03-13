@@ -2269,14 +2269,20 @@ namespace SIL.LCModel.DomainImpl
 			var sValue = "";
 			if (ValueRA != null)
 			{
-				if (fLongForm || ValueRA.ShowInGloss)
+				// per LT-21206, ShowInGloss now means "show as abbreviation".
+				// If ShowInGloss is false, then use the name instead.
+				if (ValueRA.ShowInGloss)
 				{
 					sValue = ValueRA.Abbreviation.BestAnalysisAlternative.Text;
 					if (sValue == null || sValue.Length == 0)
 						sValue = ValueRA.Name.BestAnalysisAlternative.Text;
-					if (!fLongForm)
-						sValue = sValue + ValueRA.RightGlossSep.AnalysisDefaultWritingSystem.Text;
 				}
+				else
+				{
+					sValue = ValueRA.Name.BestAnalysisAlternative.Text;
+				}
+				if (!fLongForm)
+					sValue = sValue + ValueRA.RightGlossSep.AnalysisDefaultWritingSystem.Text;
 			}
 			else
 				sValue = m_ksUnknown;
