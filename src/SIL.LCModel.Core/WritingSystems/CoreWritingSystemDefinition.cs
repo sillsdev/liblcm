@@ -67,14 +67,14 @@ namespace SIL.LCModel.Core.WritingSystems
 			switch (e.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
-					AddWordFormingOverrides(e.NewItems!.Cast<string>());
+					AddWordFormingOverrides(e.NewItems.Cast<string>());
 					break;
 				case NotifyCollectionChangedAction.Remove:
-					RemoveWordFormingOverrides(e.OldItems!.Cast<string>());
+					RemoveWordFormingOverrides(e.OldItems.Cast<string>());
 					break;
 				case NotifyCollectionChangedAction.Replace:
-					RemoveWordFormingOverrides(e.OldItems!.Cast<string>());
-					AddWordFormingOverrides(e.NewItems!.Cast<string>());
+					RemoveWordFormingOverrides(e.OldItems.Cast<string>());
+					AddWordFormingOverrides(e.NewItems.Cast<string>());
 					break;
 				case NotifyCollectionChangedAction.Reset:
 					m_wordFormingOverrides.Clear();

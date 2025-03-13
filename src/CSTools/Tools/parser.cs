@@ -1693,7 +1693,8 @@ namespace SIL.LCModel.Tools
 				yyp.m_symbols.erh.Error(new CSToolsException(16,yyp.m_lexer,"no factory for {"+cls_name+")"));
 			try
 			{
-				return cr!(yyp);
+				if (cr != null)
+					return cr(yyp);
 			}
 			catch (CSToolsException e)
 			{

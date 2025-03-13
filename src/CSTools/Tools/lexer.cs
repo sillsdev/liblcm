@@ -972,7 +972,7 @@ namespace SIL.LCModel.Tools
 		public virtual void Error(Exception e)
 		{
 			counter++;
-			if (throwExceptions)
+			if (throwExceptions || (e is CSToolsFatalException))
 				throw e;
 			if (e is CSToolsException x)
 			{

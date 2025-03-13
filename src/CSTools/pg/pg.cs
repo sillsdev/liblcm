@@ -778,7 +778,7 @@ public class ParserGenerate : SymbolsGen
 		{
 			erh.Error(new CSToolsFatalException(45,tok,string.Format("Syntax error in Parser script - possibly extra semicolon?",e.Message)));
 		}
-		m_tok = lhs!;
+		m_tok = lhs;
 		if (m_tok.IsTerminal())
 			Error(39,m_tok.pos,string.Format("Illegal left hand side <{0}> for production",m_tok.yytext));
 		if (m_symbols.m_startSymbol==null)

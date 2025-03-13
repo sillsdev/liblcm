@@ -587,10 +587,10 @@ namespace SIL.LCModel.Application.ApplicationServices
 		{
 			Debug.Assert(cmoOld.ClassID == cmoNew.ClassID);
 			IFwMetaDataCacheManaged mdc = m_cache.MetaDataCache as IFwMetaDataCacheManaged;
-			Debug.Assert(mdc != null);
+			if (mdc == null) throw new Exception("Cannot cast MetaDataCache to IFwMetaDataCacheManaged");
 			ISilDataAccessManaged sda = m_cache.DomainDataByFlid as ISilDataAccessManaged;
-			Debug.Assert(sda != null);
-			foreach (int flid in mdc!.GetFields(cmoOld.ClassID, true, (int)CellarPropertyTypeFilter.All))
+			if (sda == null) throw new Exception("Cannot cast DomainDataByFlid to ISilDataAccessManaged");
+			foreach (int flid in mdc.GetFields(cmoOld.ClassID, true, (int)CellarPropertyTypeFilter.All))
 			{
 				if (!mdc.IsCustom(flid))
 					continue;
@@ -1002,7 +1002,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 					else
 						cmo = factory.Create(guid, (IPhPhonemeSet)fi.Owner);
 					// Remove the default code added by PhTerminalUnit.SetDefaultValuesAfterInit in OverridesLing_Lex.
-					((PhBdryMarker)cmo).CodesOS.Clear();
+					(cmo as PhBdryMarker)?.CodesOS.Clear();
 					break;
 				case "PhPhonData":
 					cmo = m_cache.LangProject.PhonologicalDataOA;
