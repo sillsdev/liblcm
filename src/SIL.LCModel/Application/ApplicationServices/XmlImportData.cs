@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
@@ -1143,7 +1144,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 				{
 					MergeRedundantEntries(leDup, le);
 					List<WsString> delKeys = new List<WsString>();
-					foreach (var x in m_mapFormEntry!)
+					foreach (var x in m_mapFormEntry)
 					{
 						if (x.Value == leDup)
 							delKeys.Add(x.Key);
@@ -1407,11 +1408,11 @@ namespace SIL.LCModel.Application.ApplicationServices
 						if (flid == StTxtParaTags.kflidSegments)
 						{
 							IStTxtPara para = cmoOwner as IStTxtPara;
-							Debug.Assert(para != null);
+							if (para == null) throw new NullReferenceException("cmoOwner as IStTxtPara");
 							int i = 0;
 							do
 							{
-								if (i < para!.SegmentsOS.Count)
+								if (i < para.SegmentsOS.Count)
 									ReadXmlObject(xrdr, fi, para.SegmentsOS[i]);
 								else
 									ReadXmlObject(xrdr, fi, null);
@@ -2897,6 +2898,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			}
 		}
 
+		[MemberNotNull(nameof(m_mapFormEntry))]
 		private void FillEntryMap()
 		{
 			if (m_mapFormEntry == null)
@@ -3257,7 +3259,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			if (m_mapPathMediaFile == null)
 				CreatePathMediaFileMap();
 			int hvo;
-			if (m_mapPathMediaFile!.TryGetValue(sPath, out hvo))
+			if (m_mapPathMediaFile.TryGetValue(sPath, out hvo))
 				return hvo;
 			ICmFolder folder = GetDesiredCmFolder("Local Media", m_cache.LangProject.MediaOC);
 			if (m_factCmFile == null)
@@ -3275,6 +3277,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			return file.Hvo;
 		}
 
+		[MemberNotNull(nameof(m_mapPathMediaFile))]
 		private void CreatePathMediaFileMap()
 		{
 			m_mapPathMediaFile = new Dictionary<string, int>();
@@ -3402,7 +3405,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 				m_wsManager = m_cache.ServiceLocator.GetInstance<WritingSystemManager>();
 			var wsstr = new WsString(wsHvo, sForm);
 			IReversalIndexEntry rie;
-			if (m_mapFormReversal!.TryGetValue(wsstr, out rie))
+			if (m_mapFormReversal.TryGetValue(wsstr, out rie))
 				return rie;
 			// Find (or create) the proper reversal index.
 			IReversalIndex riWs = null;
@@ -3435,6 +3438,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			return rie;
 		}
 
+		[MemberNotNull(nameof(m_mapFormReversal))]
 		private void CreateFormReversalMap()
 		{
 			m_mapFormReversal = new Dictionary<WsString, IReversalIndexEntry>();

@@ -3859,17 +3859,11 @@ namespace SIL.LCModel.DomainImpl
 				}
 				else
 				{
-					var complex = myFeatureValues.First() as IFsComplexValue;
-					if (complex != null)
+					if (myFeatureValues.First() is IFsComplexValue complex &&
+					    spec is IFsComplexValue newComplexValue &&
+					    complex.ValueOA is IFsFeatStruc fs)
 					{
-						if (spec is IFsComplexValue newComplexValue)
-						{
-							if (complex.ValueOA is IFsFeatStruc fs)
-							{
-								fs.PriorityUnion(newComplexValue.ValueOA as IFsFeatStruc);
-							}
-
-						}
+						fs.PriorityUnion(newComplexValue.ValueOA as IFsFeatStruc);
 					}
 				}
 			}

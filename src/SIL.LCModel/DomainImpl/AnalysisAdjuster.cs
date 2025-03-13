@@ -1509,31 +1509,28 @@ namespace SIL.LCModel.DomainImpl
 
 		private List<IAnalysisReference> MoveReferencesFromOldPara(ISegment newSeg, int canalysesLeftBehind)
 		{
-			Debug.Assert(m_segPartlyMoved != null, "Nothing to do! I shouldn't have been called.");
+			if (m_segPartlyMoved == null) throw new NullReferenceException("m_segPartlyMoved");
 			var refsMoved = new List<IAnalysisReference>();
-			if (m_segPartlyMoved != null)
+			var oldPara = (IStTxtPara)m_segPartlyMoved.Owner;
+			var oldReferences = oldPara.GetTags().Cast<IAnalysisReference>().ToList();
+			oldReferences.AddRange(oldPara.GetChartCellRefs().Cast<IAnalysisReference>());
+			foreach (var iar in oldReferences)
 			{
-				var oldPara = (IStTxtPara)m_segPartlyMoved.Owner;
-				var oldReferences = oldPara.GetTags().Cast<IAnalysisReference>().ToList();
-				oldReferences.AddRange(oldPara.GetChartCellRefs().Cast<IAnalysisReference>());
-				foreach (var iar in oldReferences)
+				var fchgMade = false;
+				if (iar.BegRef().Segment == m_segPartlyMoved && iar.BegRef().Index >= canalysesLeftBehind)
 				{
-					var fchgMade = false;
-					if (iar.BegRef().Segment == m_segPartlyMoved && iar.BegRef().Index >= canalysesLeftBehind)
-					{
-						iar.ChangeToDifferentSegment(newSeg, true, false);
-						iar.ChangeToDifferentIndex(iar.BegRef().Index - canalysesLeftBehind, true, false);
-						fchgMade = true;
-					}
-					if (iar.EndRef().Segment == m_segPartlyMoved && iar.EndRef().Index >= canalysesLeftBehind)
-					{
-						iar.ChangeToDifferentSegment(newSeg, false, true);
-						iar.ChangeToDifferentIndex(iar.EndRef().Index - canalysesLeftBehind, false, true);
-						fchgMade = true;
-					}
-					if (fchgMade)
-						refsMoved.Add(iar);
+					iar.ChangeToDifferentSegment(newSeg, true, false);
+					iar.ChangeToDifferentIndex(iar.BegRef().Index - canalysesLeftBehind, true, false);
+					fchgMade = true;
 				}
+				if (iar.EndRef().Segment == m_segPartlyMoved && iar.EndRef().Index >= canalysesLeftBehind)
+				{
+					iar.ChangeToDifferentSegment(newSeg, false, true);
+					iar.ChangeToDifferentIndex(iar.EndRef().Index - canalysesLeftBehind, false, true);
+					fchgMade = true;
+				}
+				if (fchgMade)
+					refsMoved.Add(iar);
 			}
 			return refsMoved;
 		}

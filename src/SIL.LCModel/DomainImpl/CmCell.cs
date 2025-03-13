@@ -258,11 +258,12 @@ namespace SIL.LCModel.DomainImpl
 						return (val.Length == 0 && m_matchEmpty);
 
 					case ComparisonTypes.kMatches:
-						Debug.Assert(m_matchValues != null,
-									 "Illegal to call MatchesCriteria without first setting a match values list");
+						if (m_matchValues == null)
+							throw new NullReferenceException(
+								"Illegal to call MatchesCriteria without first setting a match values list");
 						foreach (int hvoRefObj in val)
 						{
-							if (m_matchValues != null && m_matchValues.Contains(hvoRefObj))
+							if (m_matchValues.Contains(hvoRefObj))
 								return true;
 						}
 						return (val.Length == 0 && m_matchEmpty);

@@ -700,10 +700,10 @@ namespace SIL.LCModel.DomainImpl
 		/// ------------------------------------------------------------------------------------
 		public virtual void MergeObject(ICmObject objSrc, bool fLoseNoStringData)
 		{
-			Debug.Assert(m_cache != null);
+			if (m_cache == null) throw new NullReferenceException("m_cache");
 			// We don't allow merging items of different classes.
 			Debug.Assert(ClassID == objSrc.ClassID);
-			if (m_cache == null || ClassID != objSrc.ClassID)
+			if (ClassID != objSrc.ClassID)
 				return;
 
 			var mdc = (IFwMetaDataCacheManaged)m_cache.MetaDataCache;
@@ -1033,7 +1033,7 @@ namespace SIL.LCModel.DomainImpl
 							// TODO-Linux: System.Boolean System.Type::op_Equality(System.Type,System.Type)
 							// is marked with [MonoTODO] and might not work as expected in 4.0.
 							else if (fLoseNoStringData && nType == (int)CellarPropertyType.OwningAtomic && srcObj != null
-								&& currentObj!.GetType() == srcObj.GetType())
+								&& currentObj?.GetType() == srcObj.GetType())
 							{
 								// merge the child objects.
 								currentObj.MergeObject(srcObj, true);
