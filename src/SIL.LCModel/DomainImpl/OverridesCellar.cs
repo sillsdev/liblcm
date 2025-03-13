@@ -2299,15 +2299,20 @@ namespace SIL.LCModel.DomainImpl
 					sFeature = FeatureRA.Abbreviation.BestAnalysisAlternative.Text;
 					if (sFeature == null || sFeature.Length == 0)
 						sFeature = FeatureRA.Name.BestAnalysisAlternative.Text;
-					if (fLongForm)
-						sFeature = sFeature + ":";
-					else
-						sFeature = sFeature + FeatureRA.RightGlossSep.BestAnalysisAlternative.Text;
+					sFeature = sFeature + GetSeparator(FeatureRA, fLongForm);
 				}
 			}
 			else
 				sFeature = m_ksUnknown;
 			return sFeature;
+		}
+
+		internal static string GetSeparator(IFsFeatDefn feature, bool longForm)
+		{
+			string sep = feature.RightGlossSep.BestAnalysisAlternative.Text;
+			if (longForm || sep == "***")
+				return ":";
+			return sep;
 		}
 
 		/// <summary>
@@ -2526,7 +2531,7 @@ namespace SIL.LCModel.DomainImpl
 					sFeature = FeatureRA.Abbreviation.BestAnalysisAlternative.Text;
 					if (string.IsNullOrEmpty(sFeature))
 						sFeature = FeatureRA.Name.BestAnalysisAlternative.Text;
-					sFeature = fLongForm ? sFeature + ":" : sFeature + FeatureRA.RightGlossSep.BestAnalysisAlternative.Text;
+					sFeature = sFeature + FsClosedValue.GetSeparator(FeatureRA, fLongForm);
 				}
 			}
 			else
