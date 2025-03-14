@@ -25,7 +25,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void DataMigration7000002Test()
 		{
-			var dtos = new HashSet<DomainObjectDTO>();
+			var dtos = new HashSet<DomainObjectXMLDTO>();
 			var sb = new StringBuilder();
 			// 1. Add barebones LP.
 			sb.Append("<rt class=\"LangProject\" guid=\"9719A466-2240-4DEA-9722-9FE0746A30A6\">");
@@ -39,18 +39,18 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("</TranslatedScripture>");
 			sb.Append("</LangProject>");
 			sb.Append("</rt>");
-			var lpDto = new DomainObjectDTO("9719A466-2240-4DEA-9722-9FE0746A30A6",
+			var lpDto = new DomainObjectXMLDTO("9719A466-2240-4DEA-9722-9FE0746A30A6",
 											"LangProject",
 											sb.ToString());
 			dtos.Add(lpDto);
 
 			// Add text dto.
-			var txtDto = new DomainObjectDTO(lpTextsGuids.textGuid.ToString(),
+			var txtDto = new DomainObjectXMLDTO(lpTextsGuids.textGuid.ToString(),
 											 "StText",
 											 lpTextsGuids.textXml);
 			dtos.Add(txtDto);
 			// Add text para dto.
-			var txtParaDto = new DomainObjectDTO(lpTextsGuids.paraGuid.ToString(),
+			var txtParaDto = new DomainObjectXMLDTO(lpTextsGuids.paraGuid.ToString(),
 												 "StTxtPara",
 												 lpTextsGuids.paraXml);
 			dtos.Add(txtParaDto);
@@ -64,7 +64,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("</Books>");
 			sb.Append("</Scripture>");
 			sb.Append("</rt>");
-			var scrDto = new DomainObjectDTO("2c5c1f5f-1f08-41d7-99fe-23893ee4ceef",
+			var scrDto = new DomainObjectXMLDTO("2c5c1f5f-1f08-41d7-99fe-23893ee4ceef",
 											 "Scripture",
 											 sb.ToString());
 			dtos.Add(scrDto);
@@ -89,29 +89,29 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("</Footnotes>");
 			sb.Append("</ScrBook>");
 			sb.Append("</rt>");
-			var bookDto = new DomainObjectDTO("f213db11-7007-4a2f-9b94-06d6c96014ca",
+			var bookDto = new DomainObjectXMLDTO("f213db11-7007-4a2f-9b94-06d6c96014ca",
 											  "ScrBook",
 											  sb.ToString());
 			dtos.Add(bookDto);
 
 			// Add title
-			var titleDto = new DomainObjectDTO(titleTextGuids.textGuid.ToString(),
+			var titleDto = new DomainObjectXMLDTO(titleTextGuids.textGuid.ToString(),
 											   "StText",
 											   titleTextGuids.textXml);
 			dtos.Add(titleDto);
 			// Title para
-			var titleParaDto = new DomainObjectDTO(titleTextGuids.paraGuid.ToString(),
+			var titleParaDto = new DomainObjectXMLDTO(titleTextGuids.paraGuid.ToString(),
 												   "StTxtPara",
 												   titleTextGuids.paraXml);
 			dtos.Add(titleParaDto);
 
 			// Add footnote
-			var footnoteDto = new DomainObjectDTO(footnoteGuids.textGuid.ToString(),
+			var footnoteDto = new DomainObjectXMLDTO(footnoteGuids.textGuid.ToString(),
 												  "StFootnote",
 												  footnoteGuids.textXml);
 			dtos.Add(footnoteDto);
 			// Footnote para
-			var footnoteParaDto = new DomainObjectDTO(footnoteGuids.paraGuid.ToString(),
+			var footnoteParaDto = new DomainObjectXMLDTO(footnoteGuids.paraGuid.ToString(),
 													  "StTxtPara",
 													  footnoteGuids.paraXml);
 			dtos.Add(footnoteParaDto);
@@ -131,29 +131,29 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("</Heading>");
 			sb.Append("</ScrSection>");
 			sb.Append("</rt>");
-			var sectionDto = new DomainObjectDTO("834e1bf8-3a25-47d6-9f92-806b38b5f815",
+			var sectionDto = new DomainObjectXMLDTO("834e1bf8-3a25-47d6-9f92-806b38b5f815",
 												 "ScrSection",
 												 sb.ToString());
 			dtos.Add(sectionDto);
 
 			// Add the contents
-			var contentsDto = new DomainObjectDTO(contentsTextGuids.textGuid.ToString(),
+			var contentsDto = new DomainObjectXMLDTO(contentsTextGuids.textGuid.ToString(),
 												  "StText",
 												  contentsTextGuids.textXml);
 			dtos.Add(contentsDto);
 			// Contents para
-			var contentsParaDto = new DomainObjectDTO(contentsTextGuids.paraGuid.ToString(),
+			var contentsParaDto = new DomainObjectXMLDTO(contentsTextGuids.paraGuid.ToString(),
 													  "StTxtPara",
 													  contentsTextGuids.paraXml);
 			dtos.Add(contentsParaDto);
 
 			// Add the heading to the xml
-			var headingDto = new DomainObjectDTO(headingTextGuids.textGuid.ToString(),
+			var headingDto = new DomainObjectXMLDTO(headingTextGuids.textGuid.ToString(),
 												 "StText",
 												 headingTextGuids.textXml);
 			dtos.Add(headingDto);
 			// heading para
-			var headingParaDto = new DomainObjectDTO(headingTextGuids.paraGuid.ToString(),
+			var headingParaDto = new DomainObjectXMLDTO(headingTextGuids.paraGuid.ToString(),
 													 "StTxtPara",
 													 headingTextGuids.paraXml);
 			dtos.Add(headingParaDto);

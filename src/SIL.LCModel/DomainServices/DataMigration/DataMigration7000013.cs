@@ -28,7 +28,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 			// 1) Select the ConstChartWordGroup class objects.
 			// 2) Convert any with null BeginSegment reference to ConstChartTag objects with null Tag reference.
-			var objsToChangeClasses = new List<DomainObjectDTO>();
+			var objsToChangeClasses = new List<DomainObjectXMLDTO>();
 			foreach (var cellPartDto in domainObjectDtoRepository.AllInstancesSansSubclasses("ConstChartWordGroup"))
 			{
 				var rtElement = XElement.Parse(cellPartDto.Xml);
@@ -72,7 +72,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// <param name="objElement">Name of the object containing fieldToDelete.</param>
 		/// <param name="fieldToDelete">The name of the field to delete.</param>
 		/// ------------------------------------------------------------------------------------
-		private void RemoveField(DomainObjectDTO dto, XElement objElement, string fieldToDelete)
+		private void RemoveField(DomainObjectXMLDTO dto, XElement objElement, string fieldToDelete)
 		{
 			XElement rmElement = objElement.Element(fieldToDelete);
 			if (rmElement != null)

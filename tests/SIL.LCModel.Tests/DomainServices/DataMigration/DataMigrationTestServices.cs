@@ -15,9 +15,9 @@ namespace SIL.LCModel.DomainServices.DataMigration
 	/// </summary>
 	internal static class DataMigrationTestServices
 	{
-		internal static void CheckDtoRemoved(IDomainObjectDTORepository dtoRepos, DomainObjectDTO goner)
+		internal static void CheckDtoRemoved(IDomainObjectDTORepository dtoRepos, DomainObjectXMLDTO goner)
 		{
-			DomainObjectDTO dto;
+			DomainObjectXMLDTO dto;
 			if (dtoRepos.TryGetValue(goner.Guid, out dto))
 			{
 				Assert.Fail("Still has deleted (or zombie) DTO.");
@@ -31,12 +31,12 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// It looks in the TestData directory for the specified project file.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		internal static HashSet<DomainObjectDTO> ParseProjectFile(string filename)
+		internal static HashSet<DomainObjectXMLDTO> ParseProjectFile(string filename)
 		{
 			var lpElement = XElement.Load(Path.Combine(TestDirectoryFinder.TestDataDirectory, filename));
-			return new HashSet<DomainObjectDTO>(
+			return new HashSet<DomainObjectXMLDTO>(
 				from elem in lpElement.Elements("rt")
-				select new DomainObjectDTO(elem.Attribute("guid").Value, elem.Attribute("class").Value,
+				select new DomainObjectXMLDTO(elem.Attribute("guid").Value, elem.Attribute("class").Value,
 										   elem.ToString()));
 		}
 	}

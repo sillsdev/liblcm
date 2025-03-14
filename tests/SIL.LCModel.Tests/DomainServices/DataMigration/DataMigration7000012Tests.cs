@@ -63,7 +63,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.AreEqual(40, dtoRepos.AllInstancesWithSubclasses("UserViewField").Count());
 
 			// Collect the UserViewField values.
-			var userViewFieldDtos = new Dictionary<string, DomainObjectDTO>();
+			var userViewFieldDtos = new Dictionary<string, DomainObjectXMLDTO>();
 			foreach (var uvfDto in dtoRepos.AllInstancesWithSubclasses("UserViewField"))
 				userViewFieldDtos.Add(uvfDto.Guid.ToUpper(), uvfDto);
 

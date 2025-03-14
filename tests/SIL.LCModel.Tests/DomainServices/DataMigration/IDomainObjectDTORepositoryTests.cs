@@ -59,7 +59,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void NullmdcParamTest()
 		{
-			Assert.That(() => new DomainObjectDtoRepository(1, new HashSet<DomainObjectDTO>(), null, null, TestDirectoryFinder.LcmDirectories),
+			Assert.That(() => new DomainObjectDtoRepository(1, new HashSet<DomainObjectXMLDTO>(), null, null, TestDirectoryFinder.LcmDirectories),
 				Throws.TypeOf<ArgumentNullException>());
 		}
 
@@ -73,7 +73,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		{
 			IDomainObjectDTORepository dtoRepos = new DomainObjectDtoRepository(
 				1,
-				new HashSet<DomainObjectDTO>(),
+				new HashSet<DomainObjectXMLDTO>(),
 				m_mdc,
 				null, TestDirectoryFinder.LcmDirectories);
 			Assert.That(() => dtoRepos.GetDTO(Guid.NewGuid().ToString()),
@@ -88,7 +88,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void ExtantGuidFindsDTOTest()
 		{
-			var dtos = new HashSet<DomainObjectDTO>();
+			var dtos = new HashSet<DomainObjectXMLDTO>();
 			// 1. Add barebones LP.
 			const string lpGuid = "9719A466-2240-4DEA-9722-9FE0746A30A6";
 			var lpDto = CreatoDTO(dtos, lpGuid, "LangProject", null);
@@ -105,12 +105,12 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void TryGetValueTests()
 		{
-			var dtos = new HashSet<DomainObjectDTO>();
+			var dtos = new HashSet<DomainObjectXMLDTO>();
 			// 1. Add barebones LP.
 			const string lpGuid = "9719A466-2240-4DEA-9722-9FE0746A30A6";
 			CreatoDTO(dtos, lpGuid, "LangProject", null);
 			IDomainObjectDTORepository dtoRepos = new DomainObjectDtoRepository(1, dtos, m_mdc, null, TestDirectoryFinder.LcmDirectories);
-			DomainObjectDTO dto;
+			DomainObjectXMLDTO dto;
 			var retval = dtoRepos.TryGetValue(Guid.NewGuid().ToString().ToLower(), out dto);
 			Assert.IsNull(dto, "Oops.It does exist.");
 			Assert.IsFalse(retval, "Reportedly, it does exist.");
@@ -120,12 +120,12 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			Assert.IsTrue(retval, "Reportedly, it does not exist.");
 		}
 
-		private static DomainObjectDTO CreatoDTO(ICollection<DomainObjectDTO> dtos, string guid, string classname, string ownerGuid)
+		private static DomainObjectXMLDTO CreatoDTO(ICollection<DomainObjectXMLDTO> dtos, string guid, string classname, string ownerGuid)
 		{
 			var xml = ownerGuid == null
 						? string.Format("<rt class=\"{0}\" guid=\"{1}\" />", classname, guid)
 						: string.Format("<rt class=\"{0}\" guid=\"{1}\" ownerguid=\"{2}\" />", classname, guid, ownerGuid);
-			var dto = new DomainObjectDTO(
+			var dto = new DomainObjectXMLDTO(
 				guid,
 				classname,
 				xml);
@@ -142,14 +142,14 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void DtosByClassButNoSubclassesTest()
 		{
-			var dtos = new HashSet<DomainObjectDTO>();
+			var dtos = new HashSet<DomainObjectXMLDTO>();
 			// 1. Add barebones LP.
 			const string lpGuid = "9719A466-2240-4DEA-9722-9FE0746A30A6";
 			CreatoDTO(dtos, lpGuid, "LangProject", null);
 			IDomainObjectDTORepository dtoRepos = new DomainObjectDtoRepository(1, dtos, m_mdc, null, TestDirectoryFinder.LcmDirectories);
-			var result = new List<DomainObjectDTO>(dtoRepos.AllInstancesSansSubclasses("CmObject"));
+			var result = new List<DomainObjectXMLDTO>(dtoRepos.AllInstancesSansSubclasses("CmObject"));
 			Assert.AreEqual(0, result.Count, "Wrong number of DTOs (expected 0).");
-			result = new List<DomainObjectDTO>(dtoRepos.AllInstancesSansSubclasses("LangProject"));
+			result = new List<DomainObjectXMLDTO>(dtoRepos.AllInstancesSansSubclasses("LangProject"));
 			Assert.AreEqual(1, result.Count, "Wrong number of DTOs (expected 1).");
 		}
 
@@ -161,14 +161,14 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void DtosByClassWithSubclassesTest()
 		{
-			var dtos = new HashSet<DomainObjectDTO>();
+			var dtos = new HashSet<DomainObjectXMLDTO>();
 			// 1. Add barebones LP.
 			const string lpGuid = "9719A466-2240-4DEA-9722-9FE0746A30A6";
 			CreatoDTO(dtos, lpGuid, "LangProject", null);
 			const string lexDbGuid = "6C84F84A-5B99-4CF5-A7D5-A308DDC604E0";
 			CreatoDTO(dtos, lexDbGuid, "LexDb", null);
 			IDomainObjectDTORepository dtoRepos = new DomainObjectDtoRepository(1, dtos, m_mdc, null, TestDirectoryFinder.LcmDirectories);
-			var result = new List<DomainObjectDTO>(dtoRepos.AllInstancesWithSubclasses("CmObject"));
+			var result = new List<DomainObjectXMLDTO>(dtoRepos.AllInstancesWithSubclasses("CmObject"));
 			Assert.AreEqual(2, result.Count, "Wrong number of DTOs (expected 2).");
 		}
 
@@ -180,7 +180,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void OwningDtoTest()
 		{
-			var dtos = new HashSet<DomainObjectDTO>();
+			var dtos = new HashSet<DomainObjectXMLDTO>();
 			// 1. Add barebones LP.
 			const string lpGuid = "9719A466-2240-4DEA-9722-9FE0746A30A6";
 			var lpDto = CreatoDTO(dtos, lpGuid, "LangProject", null);
@@ -202,7 +202,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void AddNewDtoTest()
 		{
-			var dtos = new HashSet<DomainObjectDTO>();
+			var dtos = new HashSet<DomainObjectXMLDTO>();
 			// 1. Add barebones LP.
 			const string lpGuid = "9719A466-2240-4DEA-9722-9FE0746A30A6";
 			CreatoDTO(dtos, lpGuid, "LangProject", null);
@@ -212,7 +212,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 			// Create new DTO and add it.
 			var newGuid = Guid.NewGuid();
-			var newby = new DomainObjectDTO(newGuid.ToString(), "LexEntry", "<rt />");
+			var newby = new DomainObjectXMLDTO(newGuid.ToString(), "LexEntry", "<rt />");
 			dtoRepos.Add(newby);
 			Assert.AreSame(newby, dtoRepos.GetDTO(newGuid.ToString()), "Wrong new DTO from guid.");
 			Assert.AreSame(newby, dtoRepos.AllInstancesSansSubclasses("LexEntry").First(), "Wrong new DTO from class.");
@@ -227,7 +227,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void RemoveDtoTest()
 		{
-			var dtos = new HashSet<DomainObjectDTO>();
+			var dtos = new HashSet<DomainObjectXMLDTO>();
 			// 1. Add barebones LP.
 			const string lpGuid = "9719A466-2240-4DEA-9722-9FE0746A30A6";
 			var lpDto = CreatoDTO(dtos, lpGuid, "LangProject", null);
@@ -248,7 +248,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void UpdateDtoTest()
 		{
-			var dtos = new HashSet<DomainObjectDTO>();
+			var dtos = new HashSet<DomainObjectXMLDTO>();
 			// 1. Add barebones LP.
 			const string lpGuid = "9719A466-2240-4DEA-9722-9FE0746A30A6";
 			var lpDto = CreatoDTO(dtos, lpGuid, "LangProject", null);
@@ -266,14 +266,14 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void UpdateUnknownDtoTest()
 		{
-			var dtos = new HashSet<DomainObjectDTO>();
+			var dtos = new HashSet<DomainObjectXMLDTO>();
 			// 1. Add barebones LP.
 			const string lpGuid = "9719A466-2240-4DEA-9722-9FE0746A30A6";
 			CreatoDTO(dtos, lpGuid, "LangProject", null);
 			IDomainObjectDTORepository dtoRepos = new DomainObjectDtoRepository(1, dtos, m_mdc, null, TestDirectoryFinder.LcmDirectories);
 
 			var newGuid = Guid.NewGuid();
-			var newby = new DomainObjectDTO(newGuid.ToString(), "LexEntry", "<rt />");
+			var newby = new DomainObjectXMLDTO(newGuid.ToString(), "LexEntry", "<rt />");
 			Assert.That(() => dtoRepos.Update(newby), Throws.TypeOf<InvalidOperationException>());
 		}
 	}

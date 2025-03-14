@@ -83,7 +83,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			//-------------------------------------------------
 			var langProjectGuid = langProjElement.Attribute("guid").Value;
 			var filePathsInTsStringsElement = AddFilePathsInTsStringsElement(langProjElement);
-			DomainObjectDTO cmFolderDto;
+			DomainObjectXMLDTO cmFolderDto;
 			var cmFolderXElement = MakeCmFolder(domainObjectDtoRepository, langProjectGuid, filePathsInTsStringsElement, CmFolderTags.LocalFilePathsInTsStrings,
 				out cmFolderDto);
 			UpdateDto(domainObjectDtoRepository, langProjDto, langProjElement);
@@ -128,7 +128,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		//    </Files>
 		//</rt>
 		private XElement MakeCmFolder(IDomainObjectDTORepository domainObjectDtoRepository, string langProjectGuid,
-			XElement filePathsInTsStringsCmFolder, string name, out DomainObjectDTO folderDto)
+			XElement filePathsInTsStringsCmFolder, string name, out DomainObjectXMLDTO folderDto)
 		{
 			string cmFolderGuid;
 			cmFolderGuid = Guid.NewGuid().ToString();
@@ -138,7 +138,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 										 new XAttribute("ownerguid", langProjectGuid),
 										 MakeMultiUnicode("Name", name),
 										 new XElement("Files"));
-			folderDto = new DomainObjectDTO(cmFolderGuid, "CmFolder", cmFolderXML.ToString());
+			folderDto = new DomainObjectXMLDTO(cmFolderGuid, "CmFolder", cmFolderXML.ToString());
 			domainObjectDtoRepository.Add(folderDto);
 			filePathsInTsStringsCmFolder.Add(MakeOwningSurrogate(cmFolderGuid));
 			return cmFolderXML;
@@ -162,7 +162,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 										 new XAttribute("class", "CmFile"),
 										 new XAttribute("ownerguid", langCmFolderGuid),
 										 MakeUnicode("InternalPath", path));
-			var dtoConfirmed = new DomainObjectDTO(cmFileGuid, "CmFile", cmFileXElement.ToString());
+			var dtoConfirmed = new DomainObjectXMLDTO(cmFileGuid, "CmFile", cmFileXElement.ToString());
 			domainObjectDtoRepository.Add(dtoConfirmed);
 			langCmFolder.Element("Files").Add(MakeOwningSurrogate(cmFileGuid));
 		}
@@ -249,7 +249,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// Given that the element has been changed to represent the desired new state of the DTO,
 		/// save the change.
 		/// </summary>
-		private void UpdateDto(IDomainObjectDTORepository domainObjectDtoRepository, DomainObjectDTO dto, XElement element)
+		private void UpdateDto(IDomainObjectDTORepository domainObjectDtoRepository, DomainObjectXMLDTO dto, XElement element)
 		{
 			dto.Xml = element.ToString();
 			domainObjectDtoRepository.Update(dto);

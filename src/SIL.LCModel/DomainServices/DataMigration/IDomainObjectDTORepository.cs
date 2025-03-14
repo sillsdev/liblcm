@@ -38,52 +38,52 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Get the <see cref="DomainObjectDTO"/> with the specified Guid (as string).
+		/// Get the <see cref="DomainObjectXMLDTO"/> with the specified Guid (as string).
 		/// </summary>
-		/// <param name="guid">The guid of the <see cref="DomainObjectDTO"/> as a string.</param>
+		/// <param name="guid">The guid of the <see cref="DomainObjectXMLDTO"/> as a string.</param>
 		/// <returns>
-		/// The <see cref="DomainObjectDTO"/> with the given <paramref name="guid"/>.
+		/// The <see cref="DomainObjectXMLDTO"/> with the given <paramref name="guid"/>.
 		/// </returns>
 		/// <exception cref="ArgumentException">
 		/// Thrown if the requested object is not in the repository.
 		/// </exception>
 		/// ------------------------------------------------------------------------------------
-		DomainObjectDTO GetDTO(string guid);
+		DomainObjectXMLDTO GetDTO(string guid);
 
 		/// <summary>
-		/// Try to get the <see cref="DomainObjectDTO"/> with the given
+		/// Try to get the <see cref="DomainObjectXMLDTO"/> with the given
 		/// <paramref name="guid"/>.
 		/// </summary>
-		/// <param name="guid">The guid for the sought after <see cref="DomainObjectDTO"/>.</param>
-		/// <param name="dtoWithGuid">The sought after <see cref="DomainObjectDTO"/>,
+		/// <param name="guid">The guid for the sought after <see cref="DomainObjectXMLDTO"/>.</param>
+		/// <param name="dtoWithGuid">The sought after <see cref="DomainObjectXMLDTO"/>,
 		/// or null, if not found.</param>
 		/// <returns>'true' if the object exists, otherwise 'false'.</returns>
-		bool TryGetValue(string guid, out DomainObjectDTO dtoWithGuid);
+		bool TryGetValue(string guid, out DomainObjectXMLDTO dtoWithGuid);
 
 		/// <summary>
-		/// Try to get the owning DTO <see cref="DomainObjectDTO"/> of the given
+		/// Try to get the owning DTO <see cref="DomainObjectXMLDTO"/> of the given
 		/// <paramref name="guid"/>.
 		/// </summary>
-		/// <param name="guid">The guid for the sought after owning <see cref="DomainObjectDTO"/>.</param>
-		/// <param name="owningDto">The sought after <see cref="DomainObjectDTO"/>,
+		/// <param name="guid">The guid for the sought after owning <see cref="DomainObjectXMLDTO"/>.</param>
+		/// <param name="owningDto">The sought after <see cref="DomainObjectXMLDTO"/>,
 		/// or null, if no onwer at all.</param>
 		/// <returns>'true' if the owner exists, otherwise 'false'.</returns>
-		bool TryGetOwner(string guid, out DomainObjectDTO owningDto);
+		bool TryGetOwner(string guid, out DomainObjectXMLDTO owningDto);
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Get the owner <see cref="DomainObjectDTO"/> for the specified object.
+		/// Get the owner <see cref="DomainObjectXMLDTO"/> for the specified object.
 		/// </summary>
-		/// <param name="ownedObj">The owned <see cref="DomainObjectDTO"/>.</param>
+		/// <param name="ownedObj">The owned <see cref="DomainObjectXMLDTO"/>.</param>
 		/// <returns>
-		/// The owner <see cref="DomainObjectDTO"/> for the given <paramref name="ownedObj"/>,
+		/// The owner <see cref="DomainObjectXMLDTO"/> for the given <paramref name="ownedObj"/>,
 		/// or null, if there is no owner.
 		/// </returns>
 		/// <exception cref="ArgumentException">
 		/// Thrown if the owned object is not in the repository.
 		/// </exception>
 		/// ------------------------------------------------------------------------------------
-		DomainObjectDTO GetOwningDTO(DomainObjectDTO ownedObj);
+		DomainObjectXMLDTO GetOwningDTO(DomainObjectXMLDTO ownedObj);
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -91,13 +91,13 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		/// <param name="guid">The owning guid.</param>
 		/// <returns>
-		/// An enumeration of zero, or more <see cref="DomainObjectDTO"/> owned objects.
+		/// An enumeration of zero, or more <see cref="DomainObjectXMLDTO"/> owned objects.
 		/// </returns>
 		/// <exception cref="ArgumentException">
 		/// Thrown if the Guid is not in the repository.
 		/// </exception>
 		/// ------------------------------------------------------------------------------------
-		IEnumerable<DomainObjectDTO> GetDirectlyOwnedDTOs(string guid);
+		IEnumerable<DomainObjectXMLDTO> GetDirectlyOwnedDTOs(string guid);
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -106,11 +106,11 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		/// <param name="classname">The class of instances to get.</param>
 		/// <returns>
-		/// An enumeration of zero, or more <see cref="DomainObjectDTO"/> instances
+		/// An enumeration of zero, or more <see cref="DomainObjectXMLDTO"/> instances
 		/// of the given class.
 		/// </returns>
 		/// ------------------------------------------------------------------------------------
-		IEnumerable<DomainObjectDTO> AllInstancesSansSubclasses(string classname);
+		IEnumerable<DomainObjectXMLDTO> AllInstancesSansSubclasses(string classname);
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -119,7 +119,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		/// <param name="classname">The class of instances to get, including subclasses.</param>
 		/// <returns>
-		/// An enumeration of zero, or more <see cref="DomainObjectDTO"/> instances
+		/// An enumeration of zero, or more <see cref="DomainObjectXMLDTO"/> instances
 		/// of the given class.
 		/// </returns>
 		/// <remarks>
@@ -127,35 +127,35 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// which may not match that of the data bieng migrated.
 		/// </remarks>
 		/// ------------------------------------------------------------------------------------
-		IEnumerable<DomainObjectDTO> AllInstancesWithSubclasses(string classname);
+		IEnumerable<DomainObjectXMLDTO> AllInstancesWithSubclasses(string classname);
 
 		/// <summary>
 		/// Equivalent to AllInstancesWithSubclasses("CmObject") but more efficient and less
 		/// likely to cause out-of-memory through large object heap fragmentation.
 		/// </summary>
 		/// <returns></returns>
-		IEnumerable<DomainObjectDTO> AllInstancesWithValidClasses();
+		IEnumerable<DomainObjectXMLDTO> AllInstancesWithValidClasses();
 
 		/// <summary>
 		/// Get all instances, including ones that are no longer in the model.
 		/// This will not return DTOs that have been deleted, however.
 		/// </summary>
-		IEnumerable<DomainObjectDTO> AllInstances();
+		IEnumerable<DomainObjectXMLDTO> AllInstances();
 
 		/// <summary>
-		/// Add a new <see cref="DomainObjectDTO"/> to the repository.
+		/// Add a new <see cref="DomainObjectXMLDTO"/> to the repository.
 		/// </summary>
 		/// <param name="newby">The new object to add.</param>
-		void Add(DomainObjectDTO newby);
+		void Add(DomainObjectXMLDTO newby);
 
 		/// <summary>
-		/// Remove a 'deleted' <see cref="DomainObjectDTO"/> from the repository.
+		/// Remove a 'deleted' <see cref="DomainObjectXMLDTO"/> from the repository.
 		///
 		/// The deletion of the underlying CmObject object won't happen,
 		/// until the entire current migration is finished.
 		/// </summary>
 		/// <param name="goner">The object being deleted.</param>
-		void Remove(DomainObjectDTO goner);
+		void Remove(DomainObjectXMLDTO goner);
 
 		/// <summary>
 		/// Let the Repository know that <paramref name="dirtball"/> has been modified.
@@ -165,7 +165,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// The underlying CmObject won't be changed, until the end of the current
 		/// migration is finished.
 		/// </remarks>
-		void Update(DomainObjectDTO dirtball);
+		void Update(DomainObjectXMLDTO dirtball);
 
 		/// <summary>
 		/// Let the Repository know that <paramref name="dirtball"/> has been modified,
@@ -178,9 +178,9 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// The underlying CmObject won't be changed, until the end of the current
 		/// migration is finished.
 		/// </remarks>
-		void Update(DomainObjectDTO dirtball, ClassStructureInfo oldClassStructure, ClassStructureInfo newClassStructure);
+		void Update(DomainObjectXMLDTO dirtball, ClassStructureInfo oldClassStructure, ClassStructureInfo newClassStructure);
 
-		void ChangeClass(DomainObjectDTO dirtball, string oldClassName);
+		void ChangeClass(DomainObjectXMLDTO dirtball, string oldClassName);
 
 		/// <summary>
 		/// Get the count of dtos in the repository.
@@ -222,8 +222,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 	internal sealed class DomainObjectDtoRepository : IDomainObjectDTORepository
 	{
-		private readonly HashSet<DomainObjectDTO> m_dtos;
-		private readonly Dictionary<string, DomainObjectDTO> m_dtoByGuid;
+		private readonly HashSet<DomainObjectXMLDTO> m_dtos;
+		private readonly Dictionary<string, DomainObjectXMLDTO> m_dtoByGuid;
 		private readonly Dictionary<string, HashSet<string>> m_classesAndTheirDirectSubclasses = new Dictionary<string, HashSet<string>>();
 		/// <summary>Class name is the key, superclass is the value of that.</summary>
 		private readonly Dictionary<string, string> m_classAndSuperClass = new Dictionary<string, string>();
@@ -231,12 +231,12 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// For each class name that occurs on an element in the DTO collection, store a hash set of the instances
 		/// which have exactly that class. (Unlike an earlier version, does NOT include instances of subclasses.)
 		/// </summary>
-		private readonly Dictionary<string, HashSet<DomainObjectDTO>> m_dtosByClass = new Dictionary<string, HashSet<DomainObjectDTO>>();
-		private readonly HashSet<DomainObjectDTO> m_newbies = new HashSet<DomainObjectDTO>();
-		private readonly HashSet<DomainObjectDTO> m_dirtballs = new HashSet<DomainObjectDTO>();
-		private readonly HashSet<DomainObjectDTO> m_goners = new HashSet<DomainObjectDTO>();
+		private readonly Dictionary<string, HashSet<DomainObjectXMLDTO>> m_dtosByClass = new Dictionary<string, HashSet<DomainObjectXMLDTO>>();
+		private readonly HashSet<DomainObjectXMLDTO> m_newbies = new HashSet<DomainObjectXMLDTO>();
+		private readonly HashSet<DomainObjectXMLDTO> m_dirtballs = new HashSet<DomainObjectXMLDTO>();
+		private readonly HashSet<DomainObjectXMLDTO> m_goners = new HashSet<DomainObjectXMLDTO>();
 		private int m_currentModelVersionNumber;
-		private readonly HashSet<DomainObjectDTO> m_oldTimers = new HashSet<DomainObjectDTO>();
+		private readonly HashSet<DomainObjectXMLDTO> m_oldTimers = new HashSet<DomainObjectXMLDTO>();
 		private readonly string m_projectFolder;
 		private readonly ILcmDirectories m_dirs;
 
@@ -255,7 +255,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// your thoughts!).</param>
 		/// <param name="dirs"></param>
 		/// ------------------------------------------------------------------------------------
-		internal DomainObjectDtoRepository(int startingModelVersionNumber, HashSet<DomainObjectDTO> dtos,
+		internal DomainObjectDtoRepository(int startingModelVersionNumber, HashSet<DomainObjectXMLDTO> dtos,
 			IFwMetaDataCacheManaged mdc, string projectFolder, ILcmDirectories dirs)
 		{
 			if (dtos == null) throw new ArgumentNullException("dtos");
@@ -272,7 +272,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			{
 				// Leaf classes will have nothing in 'subclasses'.
 				var className = mdc.GetClassName(clsid);
-				m_dtosByClass.Add(className, new HashSet<DomainObjectDTO>());
+				m_dtosByClass.Add(className, new HashSet<DomainObjectXMLDTO>());
 				if (className == "CmObject")
 					m_classAndSuperClass.Add(className, null);
 				var subclasses = new HashSet<string>();
@@ -311,7 +311,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			foreach (var dto in m_dtos)
 				m_dtoByGuid.Add(dto.Guid.ToLower(), dto);
 #else
-			m_dtoByGuid = new Dictionary<string, DomainObjectDTO>(m_dtos.Count);
+			m_dtoByGuid = new Dictionary<string, DomainObjectXMLDTO>(m_dtos.Count);
 			foreach (var dto in m_dtos)
 			{
 				m_dtoByGuid.Add(dto.Guid.ToLower(), dto);
@@ -335,7 +335,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// <summary>
 		/// Only to be called by BEP.
 		/// </summary>
-		internal HashSet<DomainObjectDTO> Newbies
+		internal HashSet<DomainObjectXMLDTO> Newbies
 		{
 			get { return m_newbies; }
 		}
@@ -343,7 +343,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// <summary>
 		/// Only to be called by BEP.
 		/// </summary>
-		internal HashSet<DomainObjectDTO> Dirtballs
+		internal HashSet<DomainObjectXMLDTO> Dirtballs
 		{
 			get { return m_dirtballs; }
 		}
@@ -351,7 +351,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// <summary>
 		/// Only to be called by BEP.
 		/// </summary>
-		internal HashSet<DomainObjectDTO> Goners
+		internal HashSet<DomainObjectXMLDTO> Goners
 		{
 			get { return m_goners; }
 		}
@@ -377,48 +377,48 @@ namespace SIL.LCModel.DomainServices.DataMigration
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Get the <see cref="DomainObjectDTO"/> with the specified Guid (as string).
+		/// Get the <see cref="DomainObjectXMLDTO"/> with the specified Guid (as string).
 		/// </summary>
-		/// <param name="guid">The guid of the <see cref="DomainObjectDTO"/> as a string.</param>
+		/// <param name="guid">The guid of the <see cref="DomainObjectXMLDTO"/> as a string.</param>
 		/// <returns>
-		/// The <see cref="DomainObjectDTO"/> with the given <paramref name="guid"/>.
+		/// The <see cref="DomainObjectXMLDTO"/> with the given <paramref name="guid"/>.
 		/// </returns>
 		/// <exception cref="ArgumentException">
 		/// Thrown if the requested object is not in the repository.
 		/// </exception>
 		/// ------------------------------------------------------------------------------------
-		DomainObjectDTO IDomainObjectDTORepository.GetDTO(string guid)
+		DomainObjectXMLDTO IDomainObjectDTORepository.GetDTO(string guid)
 		{
-			DomainObjectDTO retval;
+			DomainObjectXMLDTO retval;
 			if (!m_dtoByGuid.TryGetValue(guid.ToLower(), out retval))
 				throw new ArgumentException("No object with the given guid", "guid");
 			return retval;
 		}
 
 		/// <summary>
-		/// Try to get the <see cref="DomainObjectDTO"/> with the given
+		/// Try to get the <see cref="DomainObjectXMLDTO"/> with the given
 		/// <paramref name="guid"/>.
 		/// </summary>
-		/// <param name="guid">The guid for the sought after <see cref="DomainObjectDTO"/>.</param>
-		/// <param name="dtoWithGuid">The sought after <see cref="DomainObjectDTO"/>,
+		/// <param name="guid">The guid for the sought after <see cref="DomainObjectXMLDTO"/>.</param>
+		/// <param name="dtoWithGuid">The sought after <see cref="DomainObjectXMLDTO"/>,
 		/// or null, if not found.</param>
 		/// <returns>'true' if the object exists, otherwise 'false'.</returns>
-		bool IDomainObjectDTORepository.TryGetValue(string guid, out DomainObjectDTO dtoWithGuid)
+		bool IDomainObjectDTORepository.TryGetValue(string guid, out DomainObjectXMLDTO dtoWithGuid)
 		{
 			return m_dtoByGuid.TryGetValue(guid.ToLower(), out dtoWithGuid);
 		}
 
 		/// <summary>
-		/// Try to get the owning DTO <see cref="DomainObjectDTO"/> of the given
+		/// Try to get the owning DTO <see cref="DomainObjectXMLDTO"/> of the given
 		/// <paramref name="guid"/>.
 		/// </summary>
-		/// <param name="guid">The guid for the sought after owning <see cref="DomainObjectDTO"/>.</param>
-		/// <param name="owningDto">The sought after <see cref="DomainObjectDTO"/>,
+		/// <param name="guid">The guid for the sought after owning <see cref="DomainObjectXMLDTO"/>.</param>
+		/// <param name="owningDto">The sought after <see cref="DomainObjectXMLDTO"/>,
 		/// or null, if no onwer at all.</param>
 		/// <returns>'true' if the owner exists, otherwise 'false'.</returns>
-		bool IDomainObjectDTORepository.TryGetOwner(string guid, out DomainObjectDTO owningDto)
+		bool IDomainObjectDTORepository.TryGetOwner(string guid, out DomainObjectXMLDTO owningDto)
 		{
-			DomainObjectDTO ownedDto;
+			DomainObjectXMLDTO ownedDto;
 			if (!m_dtoByGuid.TryGetValue(guid.ToLower(), out ownedDto))
 			{
 				// DTO of 'guid' not found.
@@ -441,18 +441,18 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		private static readonly byte[] OwnerGuid = Encoding.UTF8.GetBytes("ownerguid=");
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Get the owner <see cref="DomainObjectDTO"/> for the specified object.
+		/// Get the owner <see cref="DomainObjectXMLDTO"/> for the specified object.
 		/// </summary>
-		/// <param name="ownedObj">The owned <see cref="DomainObjectDTO"/>.</param>
+		/// <param name="ownedObj">The owned <see cref="DomainObjectXMLDTO"/>.</param>
 		/// <returns>
-		/// The owner <see cref="DomainObjectDTO"/> for the given <paramref name="ownedObj"/>,
+		/// The owner <see cref="DomainObjectXMLDTO"/> for the given <paramref name="ownedObj"/>,
 		/// or null, if there is no owner.
 		/// </returns>
 		/// <exception cref="ArgumentException">
 		/// Thrown if the owned object is not in the repository.
 		/// </exception>
 		/// ------------------------------------------------------------------------------------
-		DomainObjectDTO IDomainObjectDTORepository.GetOwningDTO(DomainObjectDTO ownedObj)
+		DomainObjectXMLDTO IDomainObjectDTORepository.GetOwningDTO(DomainObjectXMLDTO ownedObj)
 		{
 			if (ownedObj == null) throw new ArgumentNullException("ownedObj");
 
@@ -468,13 +468,13 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		/// <param name="guid">The owning guid.</param>
 		/// <returns>
-		/// An enumeration of zero, or more <see cref="DomainObjectDTO"/> owned objects.
+		/// An enumeration of zero, or more <see cref="DomainObjectXMLDTO"/> owned objects.
 		/// </returns>
 		/// <exception cref="ArgumentException">
 		/// Thrown if the Guid is not in the repository.
 		/// </exception>
 		/// ------------------------------------------------------------------------------------
-		IEnumerable<DomainObjectDTO> IDomainObjectDTORepository.GetDirectlyOwnedDTOs(string guid)
+		IEnumerable<DomainObjectXMLDTO> IDomainObjectDTORepository.GetDirectlyOwnedDTOs(string guid)
 		{
 			var dto = AsInterface.GetDTO(guid);
 			var rootElement = XElement.Parse(dto.Xml);
@@ -490,14 +490,14 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		/// <param name="classname">The class of instances to get.</param>
 		/// <returns>
-		/// An enumeration of zero, or more <see cref="DomainObjectDTO"/> instances
+		/// An enumeration of zero, or more <see cref="DomainObjectXMLDTO"/> instances
 		/// of the given class.
 		/// </returns>
 		/// ------------------------------------------------------------------------------------
-		IEnumerable<DomainObjectDTO> IDomainObjectDTORepository.AllInstancesSansSubclasses(string classname)
+		IEnumerable<DomainObjectXMLDTO> IDomainObjectDTORepository.AllInstancesSansSubclasses(string classname)
 		{
-			HashSet<DomainObjectDTO> dtos;
-			return m_dtosByClass.TryGetValue(classname, out dtos) ? dtos : Enumerable.Empty<DomainObjectDTO>();
+			HashSet<DomainObjectXMLDTO> dtos;
+			return m_dtosByClass.TryGetValue(classname, out dtos) ? dtos : Enumerable.Empty<DomainObjectXMLDTO>();
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -507,7 +507,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// </summary>
 		/// <param name="classname">The class of instances to get, including subclasses.</param>
 		/// <returns>
-		/// An enumeration of zero, or more <see cref="DomainObjectDTO"/> instances
+		/// An enumeration of zero, or more <see cref="DomainObjectXMLDTO"/> instances
 		/// of the given class.
 		/// </returns>
 		/// <remarks>
@@ -515,27 +515,27 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// which may not match that of the data being migrated.
 		/// </remarks>
 		/// ------------------------------------------------------------------------------------
-		IEnumerable<DomainObjectDTO> IDomainObjectDTORepository.AllInstancesWithSubclasses(string classname)
+		IEnumerable<DomainObjectXMLDTO> IDomainObjectDTORepository.AllInstancesWithSubclasses(string classname)
 		{
 			int cobj = 0;
 			var classList = new HashSet<string>();
 			AddClassnamesRecursively(classList, classname);
 			foreach (var name in classList)
 				cobj += m_dtosByClass[name].Count;
-			List<DomainObjectDTO> retval = new List<DomainObjectDTO>(cobj);
+			List<DomainObjectXMLDTO> retval = new List<DomainObjectXMLDTO>(cobj);
 			foreach (var name in classList)
 				retval.AddRange(m_dtosByClass[name]);
 			return retval;
 		}
 
-		List<DomainObjectDTO> m_dtosCopy = new List<DomainObjectDTO>();
+		List<DomainObjectXMLDTO> m_dtosCopy = new List<DomainObjectXMLDTO>();
 
 		/// <summary>
 		/// Equivalent to AllInstancesWithSubclasses("CmObject") but slightly more efficient and
 		/// less likely to cause out-of-memory through large object heap fragmentation.
 		/// </summary>
 		/// <returns></returns>
-		IEnumerable<DomainObjectDTO> IDomainObjectDTORepository.AllInstancesWithValidClasses()
+		IEnumerable<DomainObjectXMLDTO> IDomainObjectDTORepository.AllInstancesWithValidClasses()
 		{
 			m_dtosCopy.Clear();
 			int needed = m_dtos.Count - m_oldTimers.Count;
@@ -554,16 +554,16 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// Get all instances, including ones that are no longer in the model.
 		/// This will not return DTOs that have been deleted, however.
 		/// </summary>
-		IEnumerable<DomainObjectDTO> IDomainObjectDTORepository.AllInstances()
+		IEnumerable<DomainObjectXMLDTO> IDomainObjectDTORepository.AllInstances()
 		{
 			return m_dtos;
 		}
 
 		/// <summary>
-		/// Add a new <see cref="DomainObjectDTO"/> to the repository.
+		/// Add a new <see cref="DomainObjectXMLDTO"/> to the repository.
 		/// </summary>
 		/// <param name="newby">The new object to add.</param>
-		void IDomainObjectDTORepository.Add(DomainObjectDTO newby)
+		void IDomainObjectDTORepository.Add(DomainObjectXMLDTO newby)
 		{
 			if (newby == null) throw new ArgumentNullException("newby");
 
@@ -575,7 +575,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			m_newbies.Add(newby);
 		}
 
-		private void AddToClassList(DomainObjectDTO dto)
+		private void AddToClassList(DomainObjectXMLDTO dto)
 		{
 			var className = dto.Classname;
 			string superclassName;
@@ -589,23 +589,23 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			if (superclassName == null)
 				// Unknown class, so must be obsolete.
 				m_oldTimers.Add(dto);
-			HashSet<DomainObjectDTO> instances;
+			HashSet<DomainObjectXMLDTO> instances;
 			if (!m_dtosByClass.TryGetValue(className, out instances))
 			{
-				instances = new HashSet<DomainObjectDTO>();
+				instances = new HashSet<DomainObjectXMLDTO>();
 				m_dtosByClass.Add(className, instances);
 			}
 			instances.Add(dto);
 		}
 
 		/// <summary>
-		/// Remove a 'deleted' <see cref="DomainObjectDTO"/> from the repository.
+		/// Remove a 'deleted' <see cref="DomainObjectXMLDTO"/> from the repository.
 		///
 		/// The deletion of the underlying CmObject object won't happen,
 		/// until the entire current migration is finished.
 		/// </summary>
 		/// <param name="goner">The object being deleted.</param>
-		void IDomainObjectDTORepository.Remove(DomainObjectDTO goner)
+		void IDomainObjectDTORepository.Remove(DomainObjectXMLDTO goner)
 		{
 			if (goner == null) throw new ArgumentNullException("goner");
 
@@ -615,13 +615,13 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			RemoveFromClassList(goner);
 		}
 
-		private void RemoveFromClassList(DomainObjectDTO obj)
+		private void RemoveFromClassList(DomainObjectXMLDTO obj)
 		{
 			RemoveFromClassList(obj, obj.Classname);
 		}
-		private void RemoveFromClassList(DomainObjectDTO obj, string oldClassName)
+		private void RemoveFromClassList(DomainObjectXMLDTO obj, string oldClassName)
 		{
-			HashSet<DomainObjectDTO> instances;
+			HashSet<DomainObjectXMLDTO> instances;
 			if (m_dtosByClass.TryGetValue(oldClassName, out instances))
 				instances.Remove(obj);
 		}
@@ -634,7 +634,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// The underlying CmObject won't be changed, until the end of the current
 		/// migration is finished.
 		/// </remarks>
-		void IDomainObjectDTORepository.Update(DomainObjectDTO dirtball)
+		void IDomainObjectDTORepository.Update(DomainObjectXMLDTO dirtball)
 		{
 			if (dirtball == null) throw new ArgumentNullException("dirtball");
 			if (!m_dtoByGuid.ContainsKey(dirtball.Guid.ToLower())) throw new InvalidOperationException("Can't update DTO that isn't in the system.");
@@ -653,7 +653,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		/// The underlying CmObject won't be changed, until the end of the current
 		/// migration is finished.
 		/// </remarks>
-		public void Update(DomainObjectDTO dirtball, ClassStructureInfo oldClassStructure, ClassStructureInfo newClassStructure)
+		public void Update(DomainObjectXMLDTO dirtball, ClassStructureInfo oldClassStructure, ClassStructureInfo newClassStructure)
 		{
 			if (oldClassStructure == null) throw new ArgumentNullException("oldClassStructure");
 			if (newClassStructure == null) throw new ArgumentNullException("newClassStructure");
@@ -664,7 +664,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			AddToClassList(dirtball);
 		}
 
-		public void ChangeClass(DomainObjectDTO dirtball, string oldClassName)
+		public void ChangeClass(DomainObjectXMLDTO dirtball, string oldClassName)
 		{
 			RemoveFromClassList(dirtball, oldClassName);
 			AddToClassList(dirtball);

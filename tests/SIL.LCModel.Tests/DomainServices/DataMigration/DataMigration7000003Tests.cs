@@ -24,7 +24,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void DataMigration7000003Test()
 		{
-			var dtos = new HashSet<DomainObjectDTO>();
+			var dtos = new HashSet<DomainObjectXMLDTO>();
 			var sb = new StringBuilder();
 			// 1. Add barebones LP.
 			sb.Append("<rt class=\"LangProject\" guid=\"9719A466-2240-4DEA-9722-9FE0746A30A6\">");
@@ -34,7 +34,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("</TranslatedScripture>");
 			sb.Append("</LangProject>");
 			sb.Append("</rt>");
-			var lpDto = new DomainObjectDTO("9719A466-2240-4DEA-9722-9FE0746A30A6",
+			var lpDto = new DomainObjectXMLDTO("9719A466-2240-4DEA-9722-9FE0746A30A6",
 											"LangProject",
 											sb.ToString());
 			dtos.Add(lpDto);
@@ -48,7 +48,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("</Books>");
 			sb.Append("</Scripture>");
 			sb.Append("</rt>");
-			var scrDto = new DomainObjectDTO("2c5c1f5f-1f08-41d7-99fe-23893ee4ceef",
+			var scrDto = new DomainObjectXMLDTO("2c5c1f5f-1f08-41d7-99fe-23893ee4ceef",
 											 "Scripture",
 											 sb.ToString());
 			dtos.Add(scrDto);
@@ -66,17 +66,17 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("</Footnotes>");
 			sb.Append("</ScrBook>");
 			sb.Append("</rt>");
-			var bookDto = new DomainObjectDTO("f213db11-7007-4a2f-9b94-06d6c96014ca",
+			var bookDto = new DomainObjectXMLDTO("f213db11-7007-4a2f-9b94-06d6c96014ca",
 											  "ScrBook",
 											  sb.ToString());
 			dtos.Add(bookDto);
 			// Add footnote
-			var footnoteDto = new DomainObjectDTO(footnoteGuids.textGuid.ToString(),
+			var footnoteDto = new DomainObjectXMLDTO(footnoteGuids.textGuid.ToString(),
 												  "StFootnote",
 												  footnoteGuids.textXml);
 			dtos.Add(footnoteDto);
 			// Footnote para
-			var footnoteParaDto = new DomainObjectDTO(footnoteGuids.paraGuid.ToString(),
+			var footnoteParaDto = new DomainObjectXMLDTO(footnoteGuids.paraGuid.ToString(),
 													  "StTxtPara",
 													  footnoteGuids.paraXml);
 			dtos.Add(footnoteParaDto);

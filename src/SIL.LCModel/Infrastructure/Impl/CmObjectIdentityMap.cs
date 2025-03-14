@@ -598,9 +598,9 @@ namespace SIL.LCModel.Infrastructure.Impl
 			lock (SyncRoot)
 			{
 				ICmObjectOrSurrogate canonicalItem = m_IdentityMap[id];
-				if (canonicalItem is CmObjectSurrogate)
+				if (canonicalItem is ICmObjectSurrogate)
 				{
-					ICmObjectId canonicalId = ((CmObjectSurrogate) canonicalItem).Id;
+					ICmObjectId canonicalId = ((ICmObjectSurrogate) canonicalItem).Id;
 					if (canonicalId is CmObjectIdWithHvo)
 						return ((CmObjectIdWithHvo) canonicalId).Hvo;
 				}
@@ -631,8 +631,8 @@ namespace SIL.LCModel.Infrastructure.Impl
 			}
 			if (canonicalItem is ICmObject)
 				return (ICmObject)canonicalItem;
-			if (canonicalItem is CmObjectSurrogate)
-				return ((CmObjectSurrogate) canonicalItem).ObjectOrIdWithHvo;
+			if (canonicalItem is CmObjectXmlSurrogate)
+				return ((CmObjectXmlSurrogate) canonicalItem).ObjectOrIdWithHvo;
 			// If it's neither, it doesn't map to a valid object, and we don't want to
 			// assign it an HVO.
 			return null;

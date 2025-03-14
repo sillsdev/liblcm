@@ -425,7 +425,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		public IReconcileChanges CreateReconciler( List<ICmObjectSurrogate> foreignNewbies,
 			List<ICmObjectSurrogate> foreignDirtballs, List<ICmObjectId> foreignGoners)
 		{
-			return new ChangeReconciler(this, foreignNewbies, foreignDirtballs, foreignGoners);
+			return new XMLChangeReconciler(this, foreignNewbies, foreignDirtballs, foreignGoners);
 		}
 
 		public void GatherChanges(HashSet<ICmObjectId> newbies, HashSet<ICmObjectOrSurrogate> dirtballs, HashSet<ICmObjectId> goners)

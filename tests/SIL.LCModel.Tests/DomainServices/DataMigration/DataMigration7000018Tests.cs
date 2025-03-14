@@ -39,24 +39,24 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			// Verification Phase
 			Assert.AreEqual(7000018, repoDTO.CurrentModelVersion, "Wrong updated version.");
 
-			DomainObjectDTO dtoLP = null;
-			foreach (DomainObjectDTO dto in repoDTO.AllInstancesSansSubclasses("LangProject"))
+			DomainObjectXMLDTO dtoLP = null;
+			foreach (DomainObjectXMLDTO dto in repoDTO.AllInstancesSansSubclasses("LangProject"))
 			{
 				Assert.IsNull(dtoLP, "Only one Language Project object should exist");
 				dtoLP = dto;
 			}
 			Assert.NotNull(dtoLP, "The Language Project object should exist");
 
-			DomainObjectDTO dtoNtbk = null;
-			foreach (DomainObjectDTO dto in repoDTO.AllInstancesSansSubclasses("RnResearchNbk"))
+			DomainObjectXMLDTO dtoNtbk = null;
+			foreach (DomainObjectXMLDTO dto in repoDTO.AllInstancesSansSubclasses("RnResearchNbk"))
 			{
 				Assert.IsNull(dtoNtbk, "Only one Data Notebook object should exist");
 				dtoNtbk = dto;
 			}
 			Assert.NotNull(dtoNtbk, "The Data Notebook object should exist");
 
-			DomainObjectDTO dtoLexDb = null;
-			foreach (DomainObjectDTO dto in repoDTO.AllInstancesSansSubclasses("LexDb"))
+			DomainObjectXMLDTO dtoLexDb = null;
+			foreach (DomainObjectXMLDTO dto in repoDTO.AllInstancesSansSubclasses("LexDb"))
 			{
 				Assert.IsNull(dtoLexDb, "Only one Lexical Database object should exist");
 				dtoLexDb = dto;
@@ -87,7 +87,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			int cCustom = 0;
 			bool gotHeading3 = false;
 			bool gotHeading5 = false;
-			foreach (DomainObjectDTO dto in repoDTO.AllInstancesSansSubclasses("StStyle"))
+			foreach (DomainObjectXMLDTO dto in repoDTO.AllInstancesSansSubclasses("StStyle"))
 			{
 				Assert.That(dto.Guid.ToUpper(), Is.Not.EqualTo("71B2233D-8B14-42D5-A625-AAC8EDE7503B"),
 					"Heading 3 in LexDb duplicates one in LangProj and should have been deleted");
@@ -115,7 +115,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				}
 				string sXml = dto.Xml;
 				string sName = GetStyleName(sXml);
-				DomainObjectDTO dtoOwner = repoDTO.GetOwningDTO(dto);
+				DomainObjectXMLDTO dtoOwner = repoDTO.GetOwningDTO(dto);
 				if (dtoOwner.Classname != "LangProject")
 				{
 					Assert.AreEqual(dtoOwner.Classname, "Scripture", "Either LangProject or Scripture owns the style");
@@ -205,7 +205,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			int cWrtSysAbbr = 0;
 			int cHyperUsed = 0;
 			int cWSAUsed = 0;
-			foreach (DomainObjectDTO dto in repoDTO.AllInstancesSansSubclasses("StTxtPara"))
+			foreach (DomainObjectXMLDTO dto in repoDTO.AllInstancesSansSubclasses("StTxtPara"))
 			{
 				string sXml = dto.Xml;
 				Assert.False(sXml.Contains(" namedStyle=\"External Link\""), "The External Link style should no longer be used");
@@ -245,7 +245,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			int cExternal = 0;
 			int cInternal = 0;
 			int cLangCode = 0;
-			foreach (DomainObjectDTO dto in repoDTO.AllInstancesSansSubclasses("ScrTxtPara"))
+			foreach (DomainObjectXMLDTO dto in repoDTO.AllInstancesSansSubclasses("ScrTxtPara"))
 			{
 				string sXml = dto.Xml;
 				if (sXml.Contains(" namedStyle=\"External Link\""))
@@ -274,10 +274,10 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					xeObjsur = xeLink;
 					XAttribute xa = xeObjsur.Attribute("guid");
 					Assert.IsNotNull(xa, sRefName + "/objsur must have a guid attribute");
-					DomainObjectDTO dto;
+					DomainObjectXMLDTO dto;
 					Assert.IsTrue(repoDTO.TryGetValue(xa.Value, out dto), sRefName + " must point to a valid object");
 					Assert.AreEqual("StStyle", dto.Classname, sRefName + " must point to a style");
-					DomainObjectDTO dtoOwner;
+					DomainObjectXMLDTO dtoOwner;
 					Assert.IsTrue(repoDTO.TryGetOwner(xa.Value, out dtoOwner), sRefName + " must point to a style with a valid owner");
 					Assert.AreEqual("LangProject", dtoOwner.Classname, sRefName + " must point to a style owned by LangProject");
 				}
@@ -288,7 +288,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		private void VerifyNoDirectFormatting(IDomainObjectDTORepository repoDTO)
 		{
 			byte[] rgbRun = Encoding.UTF8.GetBytes("<Run ");
-			foreach (DomainObjectDTO dto in repoDTO.AllInstancesWithValidClasses())
+			foreach (DomainObjectXMLDTO dto in repoDTO.AllInstancesWithValidClasses())
 			{
 				if (dto.XmlBytes.IndexOfSubArray(rgbRun) <= 0)
 					continue;
@@ -305,7 +305,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				}
 			}
 			byte[] rgbStyleRules = Encoding.UTF8.GetBytes("<StyleRules>");
-			foreach (DomainObjectDTO dto in repoDTO.AllInstancesWithSubclasses("StTxtPara"))
+			foreach (DomainObjectXMLDTO dto in repoDTO.AllInstancesWithSubclasses("StTxtPara"))
 			{
 				if (dto.XmlBytes.IndexOfSubArray(rgbStyleRules) <= 0)
 					continue;

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2015 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -128,16 +128,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 		#region ICmObjectOrSurrogate Members
 
-		string ICmObjectOrSurrogate.XML
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		byte[] ICmObjectOrSurrogate.XMLBytes
-		{
-			get { throw new NotImplementedException(); }
-		}
-
 		ICmObjectId ICmObjectOrSurrogate.Id
 		{
 			get { return this; }
@@ -157,6 +147,8 @@ namespace SIL.LCModel.Infrastructure.Impl
 		{
 			get { return false; }
 		}
+
+		ICmObjectDTO ICmObjectOrSurrogate.DTO => throw new NotImplementedException();
 
 		#endregion
 	}

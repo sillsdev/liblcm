@@ -33,7 +33,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			// first change the class of all the known systemGuids
 			foreach (var systemGuid in irregularlyInflectedFormVariantTypeSystemGuids)
 			{
-				DomainObjectDTO dtoVariantType;
+				DomainObjectXMLDTO dtoVariantType;
 				// LT-13312 Note some projects may not have these guids.
 				if (domainObjectDtoRepository.TryGetValue(systemGuid, out dtoVariantType))
 				{
@@ -44,7 +44,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			DataMigrationServices.IncrementVersionNumber(domainObjectDtoRepository);
 		}
 
-		void ChangeClassOfOwnerAndChildren(IDomainObjectDTORepository dtoRepo, DomainObjectDTO dtoToChange, string oldClassname, string newClassname)
+		void ChangeClassOfOwnerAndChildren(IDomainObjectDTORepository dtoRepo, DomainObjectXMLDTO dtoToChange, string oldClassname, string newClassname)
 		{
 			// bail out if we've already changed the class name (assume we've already changed its children too).
 			if (!TryChangeOwnerClass(dtoRepo, dtoToChange, oldClassname, newClassname))
@@ -55,7 +55,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 		}
 
-		bool TryChangeOwnerClass(IDomainObjectDTORepository dtoRepo, DomainObjectDTO dtoToChange, string oldClassname, string newClassname)
+		bool TryChangeOwnerClass(IDomainObjectDTORepository dtoRepo, DomainObjectXMLDTO dtoToChange, string oldClassname, string newClassname)
 		{
 			XElement dtoToChangeElt = XElement.Parse(dtoToChange.Xml);
 			if (dtoToChangeElt.Attribute("class").Value != oldClassname)

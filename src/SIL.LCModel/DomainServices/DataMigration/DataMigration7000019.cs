@@ -60,8 +60,8 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			DataMigrationServices.CheckVersionNumber(domainObjectDtoRepository, 7000018);
 
 			// collect all writing system info
-			var guidToWsInfo = new Dictionary<string, Tuple<string, DomainObjectDTO, XElement>>();
-			foreach (DomainObjectDTO wsDto in domainObjectDtoRepository.AllInstancesSansSubclasses("LgWritingSystem").ToArray())
+			var guidToWsInfo = new Dictionary<string, Tuple<string, DomainObjectXMLDTO, XElement>>();
+			foreach (DomainObjectXMLDTO wsDto in domainObjectDtoRepository.AllInstancesSansSubclasses("LgWritingSystem").ToArray())
 			{
 				XElement wsElem = XElement.Parse(wsDto.Xml);
 				XElement icuLocaleElem = wsElem.Element("ICULocale");
@@ -71,11 +71,11 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 
 			// remove all CmSortSpec objects
-			foreach (DomainObjectDTO sortSpecDto in domainObjectDtoRepository.AllInstancesSansSubclasses("CmSortSpec").ToArray())
+			foreach (DomainObjectXMLDTO sortSpecDto in domainObjectDtoRepository.AllInstancesSansSubclasses("CmSortSpec").ToArray())
 				domainObjectDtoRepository.Remove(sortSpecDto);
 
 			// remove SortSpecs property from LangProject
-			DomainObjectDTO lpDto = domainObjectDtoRepository.AllInstancesSansSubclasses("LangProject").First();
+			DomainObjectXMLDTO lpDto = domainObjectDtoRepository.AllInstancesSansSubclasses("LangProject").First();
 			XElement lpElem = XElement.Parse(lpDto.Xml);
 			XElement sortSpecsElem = lpElem.Element("SortSpecs");
 			bool lpModified = false;
@@ -126,7 +126,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			ConvertAllIcuLocalesToLangTags(domainObjectDtoRepository, "ScrImportSource", referencedWsIds);
 
 			// convert all ICU locales to Language Tags and remove legacy magic font names
-			foreach (DomainObjectDTO dto in domainObjectDtoRepository.AllInstances())
+			foreach (DomainObjectXMLDTO dto in domainObjectDtoRepository.AllInstances())
 				UpdateStringsAndProps(domainObjectDtoRepository, dto, referencedWsIds);
 
 			var localStoreFolder = Path.Combine(domainObjectDtoRepository.ProjectFolder, LcmFileHelper.ksWritingSystemsDir);
@@ -136,7 +136,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			// extracting data from the obsolete writing system object's XML.
 			if (!string.IsNullOrEmpty(domainObjectDtoRepository.ProjectFolder))
 			{
-				foreach (Tuple<string, DomainObjectDTO, XElement> wsInfo in guidToWsInfo.Values)
+				foreach (Tuple<string, DomainObjectXMLDTO, XElement> wsInfo in guidToWsInfo.Values)
 				{
 					if (referencedWsIds.Contains(wsInfo.Item1))
 					{
@@ -168,7 +168,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					}
 				}
 			}
-			foreach (Tuple<string, DomainObjectDTO, XElement> wsInfo in guidToWsInfo.Values)
+			foreach (Tuple<string, DomainObjectXMLDTO, XElement> wsInfo in guidToWsInfo.Values)
 			{
 				// this should also remove all LgCollations as well
 				DataMigrationServices.RemoveIncludingOwnedObjects(domainObjectDtoRepository, wsInfo.Item2, false);
@@ -180,7 +180,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		private static void ConvertAllIcuLocalesToLangTags(IDomainObjectDTORepository domainObjectDtoRepository, string className,
 			HashSet<string> referencedWsIds)
 		{
-			foreach (DomainObjectDTO dto in domainObjectDtoRepository.AllInstancesWithSubclasses(className))
+			foreach (DomainObjectXMLDTO dto in domainObjectDtoRepository.AllInstancesWithSubclasses(className))
 			{
 				XElement elem = XElement.Parse(dto.Xml);
 				XElement icuLocaleElem = elem.Element("ICULocale");
@@ -196,7 +196,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 		}
 
-		private static void UpdateStringsAndProps(IDomainObjectDTORepository domainObjectDtoRepository, DomainObjectDTO dto,
+		private static void UpdateStringsAndProps(IDomainObjectDTORepository domainObjectDtoRepository, DomainObjectXMLDTO dto,
 			HashSet<string> referencedWsIds)
 		{
 			XElement objElem = XElement.Parse(dto.Xml);
@@ -286,9 +286,9 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		}
 
 		private static void ConvertAllRefsToStrings(IDomainObjectDTORepository domainObjectDtoRepository, string className,
-			Dictionary<string, Tuple<string, DomainObjectDTO, XElement>> guidToWsInfo, HashSet<string> referencedWsIds)
+			Dictionary<string, Tuple<string, DomainObjectXMLDTO, XElement>> guidToWsInfo, HashSet<string> referencedWsIds)
 		{
-			foreach (DomainObjectDTO dto in domainObjectDtoRepository.AllInstancesWithSubclasses(className))
+			foreach (DomainObjectXMLDTO dto in domainObjectDtoRepository.AllInstancesWithSubclasses(className))
 			{
 				XElement elem = XElement.Parse(dto.Xml);
 				if (ConvertRefToString(elem.Element("WritingSystem"), guidToWsInfo, referencedWsIds))
@@ -296,7 +296,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 		}
 
-		private static bool ConvertRefToString(XElement refElem, Dictionary<string, Tuple<string, DomainObjectDTO, XElement>> guidToWsInfo,
+		private static bool ConvertRefToString(XElement refElem, Dictionary<string, Tuple<string, DomainObjectXMLDTO, XElement>> guidToWsInfo,
 			HashSet<string> referencedWsIds)
 		{
 			if (refElem == null)
@@ -474,7 +474,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				if (surElem != null)
 				{
 					var guid = (string) surElem.Attribute("guid");
-					DomainObjectDTO collDto = domainObjectDtoRepository.GetDTO(guid);
+					DomainObjectXMLDTO collDto = domainObjectDtoRepository.GetDTO(guid);
 					XElement collElem = XElement.Parse(collDto.Xml);
 					string sortRules = GetUnicode(collElem, "ICURules");
 					if (!string.IsNullOrEmpty(sortRules))

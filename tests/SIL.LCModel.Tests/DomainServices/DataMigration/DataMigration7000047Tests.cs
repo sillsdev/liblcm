@@ -23,7 +23,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		[Test]
 		public void DataMigration7000047Test()
 		{
-			var dtos = new HashSet<DomainObjectDTO>();
+			var dtos = new HashSet<DomainObjectXMLDTO>();
 			var sb = new StringBuilder();
 			// Add Lang Project dto.
 			const string sLpGuid = "9719A466-2240-4DEA-9722-9FE0746A30A6";
@@ -32,7 +32,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("<objsur guid=\"" + LangProjectTags.kguidChkKeyTermsList + "\" t=\"o\" />");
 			sb.Append("</CheckLists>");
 			sb.Append("</rt>");
-			dtos.Add(new DomainObjectDTO(sLpGuid, "LangProject", sb.ToString()));
+			dtos.Add(new DomainObjectXMLDTO(sLpGuid, "LangProject", sb.ToString()));
 			sb.Length = 0;
 
 			// Add Key Terms List dto.
@@ -42,7 +42,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("<objsur t=\"o\" guid=\"5E3D9C56-404C-44C5-B3CB-99BF390E322E\" />");
 			sb.Append("</Possibilities>");
 			sb.Append("</rt>");
-			dtos.Add(new DomainObjectDTO(LangProjectTags.kguidChkKeyTermsList.ToString(), "CmPossibilityList", sb.ToString()));
+			dtos.Add(new DomainObjectXMLDTO(LangProjectTags.kguidChkKeyTermsList.ToString(), "CmPossibilityList", sb.ToString()));
 			sb.Length = 0;
 
 			// Add Key Term 1 dto.
@@ -52,7 +52,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("<objsur t=\"o\" guid=\"5E3D9C56-404C-44C5-B3CB-99BF390E322E\" />"); // valid rendering
 			sb.Append("</Renderings>");
 			sb.Append("</rt>");
-			DomainObjectDTO term1 = new DomainObjectDTO("22E6AF17-34BD-4433-BFDA-16C736E1F3F0", "ChkTerm", sb.ToString());
+			DomainObjectXMLDTO term1 = new DomainObjectXMLDTO("22E6AF17-34BD-4433-BFDA-16C736E1F3F0", "ChkTerm", sb.ToString());
 			dtos.Add(term1);
 			sb.Length = 0;
 
@@ -63,12 +63,12 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("<objsur t=\"o\" guid=\"B86AD2DF-98D0-4ec7-93DC-723D90A209EC\" />"); // bogus rendering 3
 			sb.Append("</Renderings>");
 			sb.Append("</rt>");
-			DomainObjectDTO term2 = new DomainObjectDTO("B6C6C9B1-664A-4033-9937-DDA00C4000A7", "ChkTerm", sb.ToString());
+			DomainObjectXMLDTO term2 = new DomainObjectXMLDTO("B6C6C9B1-664A-4033-9937-DDA00C4000A7", "ChkTerm", sb.ToString());
 			dtos.Add(term2);
 			sb.Length = 0;
 
 			// Add bogus ChkRendering 1 dto.
-			DomainObjectDTO bogusRendering1 = new DomainObjectDTO("27C32299-3B41-4FAD-A85C-F47657BCF95A", "ChkRendering",
+			DomainObjectXMLDTO bogusRendering1 = new DomainObjectXMLDTO("27C32299-3B41-4FAD-A85C-F47657BCF95A", "ChkRendering",
 				"<rt class=\"ChkRendering\" guid=\"27C32299-3B41-4FAD-A85C-F47657BCF95A\" ownerguid=\"22E6AF17-34BD-4433-BFDA-16C736E1F3F0\"/>");
 			dtos.Add(bogusRendering1);
 
@@ -78,17 +78,17 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("<objsur guid=\"BD8B2BE2-BDC7-476a-A627-5B59480A6490\" t=\"r\" />");
 			sb.Append("</SurfaceForm>");
 			sb.Append("</rt>");
-			DomainObjectDTO validRendering = new DomainObjectDTO("5E3D9C56-404C-44C5-B3CB-99BF390E322E", "ChkRendering", sb.ToString());
+			DomainObjectXMLDTO validRendering = new DomainObjectXMLDTO("5E3D9C56-404C-44C5-B3CB-99BF390E322E", "ChkRendering", sb.ToString());
 			dtos.Add(validRendering);
 			sb.Length = 0;
 
 			// Add bogus ChkRendering 2 dto.
-			DomainObjectDTO bogusRendering2 = new DomainObjectDTO("5FB86AAE-5E05-4d57-92B8-FFD0B67545CA", "ChkRendering",
+			DomainObjectXMLDTO bogusRendering2 = new DomainObjectXMLDTO("5FB86AAE-5E05-4d57-92B8-FFD0B67545CA", "ChkRendering",
 				"<rt class=\"ChkRendering\" guid=\"5FB86AAE-5E05-4d57-92B8-FFD0B67545CA\" ownerguid=\"B6C6C9B1-664A-4033-9937-DDA00C4000A7\"/>");
 			dtos.Add(bogusRendering2);
 
 			// Add bogus ChkRendering 3 dto.
-			DomainObjectDTO bogusRendering3 = new DomainObjectDTO("B86AD2DF-98D0-4ec7-93DC-723D90A209EC", "ChkRendering",
+			DomainObjectXMLDTO bogusRendering3 = new DomainObjectXMLDTO("B86AD2DF-98D0-4ec7-93DC-723D90A209EC", "ChkRendering",
 				"<rt class=\"ChkRendering\" guid=\"B86AD2DF-98D0-4ec7-93DC-723D90A209EC\" ownerguid=\"B6C6C9B1-664A-4033-9937-DDA00C4000A7\"/>");
 			dtos.Add(bogusRendering3);
 
@@ -98,7 +98,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			sb.Append("<AUni ws=\"es\">carro</AUni>");
 			sb.Append("</Form>");
 			sb.Append("</rt>");
-			DomainObjectDTO wordForm = new DomainObjectDTO("BD8B2BE2-BDC7-476a-A627-5B59480A6490", "WfiWordform", sb.ToString());
+			DomainObjectXMLDTO wordForm = new DomainObjectXMLDTO("BD8B2BE2-BDC7-476a-A627-5B59480A6490", "WfiWordform", sb.ToString());
 			dtos.Add(wordForm);
 			sb.Length = 0;
 

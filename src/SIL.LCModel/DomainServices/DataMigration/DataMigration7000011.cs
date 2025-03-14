@@ -22,16 +22,16 @@ namespace SIL.LCModel.DomainServices.DataMigration
 		{
 			DataMigrationServices.CheckVersionNumber(domainObjectDtoRepository, 7000010);
 
-			DomainObjectDTO nbkDto = domainObjectDtoRepository.AllInstancesSansSubclasses("RnResearchNbk").First();
+			DomainObjectXMLDTO nbkDto = domainObjectDtoRepository.AllInstancesSansSubclasses("RnResearchNbk").First();
 			XElement nbkElem = XElement.Parse(nbkDto.Xml);
 			var recTypesGuid = (string) nbkElem.XPathSelectElement("RnResearchNbk/RecTypes/objsur").Attribute("guid");
-			var stack = new Stack<DomainObjectDTO>(domainObjectDtoRepository.GetDirectlyOwnedDTOs(recTypesGuid));
-			IEnumerable<DomainObjectDTO> recDtos = domainObjectDtoRepository.AllInstancesSansSubclasses("RnGenericRec");
-			IEnumerable<DomainObjectDTO> overlayDtos = domainObjectDtoRepository.AllInstancesSansSubclasses("CmOverlay");
+			var stack = new Stack<DomainObjectXMLDTO>(domainObjectDtoRepository.GetDirectlyOwnedDTOs(recTypesGuid));
+			IEnumerable<DomainObjectXMLDTO> recDtos = domainObjectDtoRepository.AllInstancesSansSubclasses("RnGenericRec");
+			IEnumerable<DomainObjectXMLDTO> overlayDtos = domainObjectDtoRepository.AllInstancesSansSubclasses("CmOverlay");
 			while (stack.Count > 0)
 			{
-				DomainObjectDTO dto = stack.Pop();
-				foreach (DomainObjectDTO childDto in domainObjectDtoRepository.GetDirectlyOwnedDTOs(dto.Guid))
+				DomainObjectXMLDTO dto = stack.Pop();
+				foreach (DomainObjectXMLDTO childDto in domainObjectDtoRepository.GetDirectlyOwnedDTOs(dto.Guid))
 					stack.Push(childDto);
 				XElement posElem = XElement.Parse(dto.Xml);
 				XElement uniElem = posElem.XPathSelectElement("CmPossibility/Abbreviation/AUni[@ws='en']");
@@ -70,7 +70,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				}
 			}
 
-			DomainObjectDTO recTypesDto = domainObjectDtoRepository.GetDTO(recTypesGuid);
+			DomainObjectXMLDTO recTypesDto = domainObjectDtoRepository.GetDTO(recTypesGuid);
 			DataMigrationServices.ChangeGuid(domainObjectDtoRepository, recTypesDto, "D9D55B12-EA5E-11DE-95EF-0013722F8DEC", overlayDtos);
 			DataMigrationServices.IncrementVersionNumber(domainObjectDtoRepository);
 		}
