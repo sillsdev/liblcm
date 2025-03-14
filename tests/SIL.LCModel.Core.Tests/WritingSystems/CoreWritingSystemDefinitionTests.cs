@@ -42,7 +42,7 @@ namespace SIL.LCModel.Core.WritingSystems
 			CoreWritingSystemDefinition copyable = CreateNewCloneable();
 			MethodInfo getAllFields = null;
 			var type = GetType().BaseType;
-			while(getAllFields == null && type != null)
+			while(getAllFields == null)
 			{
 				getAllFields = type.GetMethod("GetAllFields", BindingFlags.NonPublic | BindingFlags.Static);
 				type = type.BaseType;

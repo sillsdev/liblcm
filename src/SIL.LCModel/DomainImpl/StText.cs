@@ -224,9 +224,8 @@ namespace SIL.LCModel.DomainImpl
 					}
 				}
 			}
-			else if (Owner is IText)
+			else if (Owner is IText text)
 			{
-				IText text = Owner as IText;
 				tssTitle = text.Name.get_String(ws);
 			}
 			return tssTitle ?? TsStringUtils.EmptyString(Cache.DefaultAnalWs);

@@ -67,12 +67,16 @@ namespace SIL.LCModel.Core.WritingSystems
 			switch (e.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
+					if (e.NewItems == null) throw new NullReferenceException("e.NewItems");
 					AddWordFormingOverrides(e.NewItems.Cast<string>());
 					break;
 				case NotifyCollectionChangedAction.Remove:
+					if (e.OldItems == null) throw new NullReferenceException("e.OldItems");
 					RemoveWordFormingOverrides(e.OldItems.Cast<string>());
 					break;
 				case NotifyCollectionChangedAction.Replace:
+					if (e.NewItems == null) throw new NullReferenceException("e.NewItems");
+					if (e.OldItems == null) throw new NullReferenceException("e.OldItems");
 					RemoveWordFormingOverrides(e.OldItems.Cast<string>());
 					AddWordFormingOverrides(e.NewItems.Cast<string>());
 					break;

@@ -97,7 +97,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 						metadata = new CommitLogMetadata();
 
 					using (Process curProcess = Process.GetCurrentProcess())
-						metadata.Peers[m_peerID] = new CommitLogPeer { ProcessID = curProcess.Id, Generation = metadata.FileGeneration };
+						metadata!.Peers[m_peerID] = new CommitLogPeer { ProcessID = curProcess.Id, Generation = metadata.FileGeneration };
 
 					if (metadata.Master == Guid.Empty)
 					{

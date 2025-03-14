@@ -178,9 +178,10 @@ namespace SIL.LCModel.Core.Text
 			// application (e.g. Flex & Paratext)
 			if (Platform.IsWindows)
 			{
-				var executingAssemblyFolder = Uri.UnescapeDataString(new UriBuilder(Assembly.GetExecutingAssembly().CodeBase).Path);
+				var executingAssemblyFolder = Uri.UnescapeDataString(new UriBuilder(Assembly.GetExecutingAssembly().Location).Path);
 				var assemblyDir = Path.GetDirectoryName(executingAssemblyFolder);
-				// ReSharper disable once AssignNullToNotNullAttribute -- The directory of the executing assembly will not be null
+				if (assemblyDir == null)
+					throw new InvalidOperationException("Could not get assembly directory from " + executingAssemblyFolder);
 				var icu32Path = Path.Combine(assemblyDir, "lib", "win-x86");
 				var icu64Path = Path.Combine(assemblyDir, "lib", "win-x64");
 				var flexIcu32Path = Path.Combine(assemblyDir, "lib", "x86");

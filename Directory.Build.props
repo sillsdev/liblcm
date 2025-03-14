@@ -28,5 +28,7 @@ See full changelog at https://github.com/sillsdev/liblcm/blob/develop/CHANGELOG.
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
     <ChangelogFile>$(MSBuildThisFileDirectory)/CHANGELOG.md</ChangelogFile>
     <BuildInParallel>false</BuildInParallel>
+	<LangVersion>9.0</LangVersion>
+	<Nullable>warnings</Nullable>
   </PropertyGroup>
 </Project>

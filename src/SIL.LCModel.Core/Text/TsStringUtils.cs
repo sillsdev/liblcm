@@ -1387,12 +1387,13 @@ namespace SIL.LCModel.Core.Text
 		/// ------------------------------------------------------------------------------------
 		public static ITsString MergeString(ITsString source, ITsString dest, bool fConcatenateIfBoth)
 		{
-			string destText = (dest != null) ? dest.Text : null;
-			string sourceText = (source != null) ? source.Text : null;
-
-			if (string.IsNullOrEmpty(destText) && !string.IsNullOrEmpty(sourceText))
+			if (dest == null && source == null)
+				return null;
+			if (dest == null || string.IsNullOrEmpty(dest.Text))
 				return source;
-			else if (fConcatenateIfBoth && !string.IsNullOrEmpty(destText) && !string.IsNullOrEmpty(sourceText) && !dest.Equals(source))
+			if (source == null || string.IsNullOrEmpty(source.Text))
+				return dest;
+			if (fConcatenateIfBoth && !dest.Equals(source))
 			{
 				// concatenate
 				ITsStrBldr tsb = dest.GetBldr();
@@ -1633,6 +1634,12 @@ namespace SIL.LCModel.Core.Text
 			Justification = "If a tss is null, crunBoth will be 0, so we'll never try to access it.")]
 		public static TsStringDiffInfo GetDiffsInTsStrings(ITsString tssOld, ITsString tssNew)
 		{
+			if (tssOld == null && tssNew == null)
+				return null;
+			if (tssOld == null)
+				return new TsStringDiffInfo(0, tssNew.Length, 0, true);
+			if (tssNew == null)
+				return new TsStringDiffInfo(0, 0, tssOld.Length, true);
 			// no diff found
 			var ichMin = -1;
 
@@ -1640,16 +1647,10 @@ namespace SIL.LCModel.Core.Text
 			int crunOld = 0;
 			int crunNew = 0;
 			int cchNew = 0;
-			if (tssNew != null)
-			{
-				cchNew = tssNew.Length;
-				crunNew = tssNew.RunCount;
-			}
-			if (tssOld != null)
-			{
-				cchOld = tssOld.Length;
-				crunOld = tssOld.RunCount;
-			}
+			cchNew = tssNew.Length;
+			crunNew = tssNew.RunCount;
+			cchOld = tssOld.Length;
+			crunOld = tssOld.RunCount;
 			var crunBoth = Math.Min(crunOld, crunNew);
 
 			// Set ichMin to the index of the first character that is different or has different properties.

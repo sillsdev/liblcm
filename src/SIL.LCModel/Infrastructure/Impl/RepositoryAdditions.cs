@@ -206,7 +206,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		public int GetClsid(int hvo)
 		{
 			ICmObject obj = m_dataReader.GetObject(hvo);
-			Debug.Assert(obj != null, "We assume that GetObject will throw an exception if the object doesn't exist");
+			// We assume that GetObject will throw an exception if the object doesn't exist
 			return obj.ClassID;
 		}
 
@@ -370,7 +370,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			SimpleBag<ICmObject> chartCells = new SimpleBag<ICmObject>();
 			foreach (IReferenceSource referrer in target.ReferringObjects)
 			{
-				if ((referrer as CmObject).ClassID != 5123 /* "DsConstChart" */)
+				if (((CmObject)referrer).ClassID != 5123 /* "DsConstChart" */)
 				{
 					if (referrer.RefersTo(target, ConstituentChartCellPartTags.kflidColumn))
 						chartCells.Add(referrer.Source);
@@ -1401,7 +1401,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 					if (fMatchLexForms)
 						lexemeHomograph = StringServices.LexemeFormStatic(le);
 					Debug.Assert(le != null);
-					if (le.Hvo != hvo && (homographForm == sForm || lexemeHomograph == sForm))
+					if (le!.Hvo != hvo && (homographForm == sForm || lexemeHomograph == sForm))
 					{
 						var types = le.MorphTypes;
 						foreach (var mmt in types)
@@ -1628,7 +1628,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// </summary>
 		public IEnumerable<ILexSense> InstancesWithSemanticDomain(ICmSemanticDomain domain)
 		{
-			return (domain as CmSemanticDomain).ReferringSenses;
+			return ((CmSemanticDomain)domain).ReferringSenses;
 		}
 
 		/// <summary>
@@ -1636,7 +1636,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// </summary>
 		public IEnumerable<ILexSense> InstancesWithReversalEntry(IReversalIndexEntry entry)
 		{
-			return (entry as ReversalIndexEntry).SensesRS;
+			return ((ReversalIndexEntry)entry).SensesRS;
 		}
 	}
 	#endregion

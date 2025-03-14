@@ -81,7 +81,7 @@ namespace SIL.LCModel.DomainImpl
 			if (!fUsingAbbreviation)
 				tssName = stText.Title.BestVernacularAnalysisAlternative;
 
-			ITsStrBldr bldr = tssName.GetBldr();
+			ITsStrBldr bldr = tssName!.GetBldr();
 			// If we didn't find a "best", reset to an empty string.
 			if (bldr.Length > 0 && bldr.Text == stText.Title.NotFoundTss.Text)
 				bldr.ReplaceTsString(0, bldr.Length, null);

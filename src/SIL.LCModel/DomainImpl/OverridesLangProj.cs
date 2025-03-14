@@ -369,13 +369,14 @@ namespace SIL.LCModel.DomainImpl
 		/// ------------------------------------------------------------------------------------
 		public virtual ICmPossibility GetDefaultChartTemplate()
 		{
+			ICmPossibility defaultTemplate = null;
 			if (m_cache.LanguageProject.DiscourseDataOA == null
 				|| m_cache.LanguageProject.DiscourseDataOA.ConstChartTemplOA == null
 				|| m_cache.LanguageProject.DiscourseDataOA.ConstChartTemplOA.PossibilitiesOS.Count == 0)
 			{
-				CreateDefaultTemplate();
+				defaultTemplate = CreateDefaultTemplate();
 			}
-			return m_cache.LanguageProject.DiscourseDataOA.ConstChartTemplOA.PossibilitiesOS[0];
+			return m_cache.LanguageProject.DiscourseDataOA?.ConstChartTemplOA?.PossibilitiesOS[0] ?? defaultTemplate;
 		}
 
 		/// <summary>
@@ -464,13 +465,15 @@ namespace SIL.LCModel.DomainImpl
 		/// ------------------------------------------------------------------------------------
 		public ICmPossibility GetDefaultChartMarkers()
 		{
+			ICmPossibilityList defaultMarkers = null;
 			if (m_cache.LangProject.DiscourseDataOA == null
 				|| m_cache.LangProject.DiscourseDataOA.ChartMarkersOA == null
 				|| m_cache.LangProject.DiscourseDataOA.ChartMarkersOA.PossibilitiesOS.Count == 0)
 			{
-				MakeDefaultChartMarkers();
+				defaultMarkers = MakeDefaultChartMarkers();
 			}
-			return m_cache.LangProject.DiscourseDataOA.ChartMarkersOA.PossibilitiesOS[0];
+			return m_cache.LangProject.DiscourseDataOA?.ChartMarkersOA?.PossibilitiesOS[0] ??
+			       defaultMarkers!.PossibilitiesOS[0];
 		}
 
 		/// <summary>

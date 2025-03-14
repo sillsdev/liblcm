@@ -1033,8 +1033,8 @@ namespace SIL.LCModel.Application
 		public void SetOverrideMdc(IFwMetaDataCacheManaged mdc)
 		{
 			m_mdc = mdc;
-			if (m_domainDataByFlid is DomainDataByFlidDecoratorBase)
-				(m_domainDataByFlid as DomainDataByFlidDecoratorBase).SetOverrideMdc(mdc);
+			if (m_domainDataByFlid is DomainDataByFlidDecoratorBase @base)
+				@base.SetOverrideMdc(mdc);
 		}
 
 		/// <summary>Member GetOutlineNumber</summary>

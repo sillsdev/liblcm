@@ -389,18 +389,16 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		public static int FirstDiff(string first, string second)
 		{
-			int lenFirst = 0;
-			if (first != null)
-				lenFirst = first.Length;
-			int lenSecond = 0;
-			if (second != null)
-				lenSecond = second.Length;
-			int lenBoth = Math.Min(lenFirst, lenSecond);
+			if (first == second)
+				return -1;
+			if (first == null || second == null)
+				return 0;
+			int lenBoth = Math.Min(first.Length, second.Length);
 			for (int ich = 0; ich < lenBoth; ich++)
 				if (first[ich] != second[ich])
 					return ich;
 			// equal as far as len.
-			if (lenFirst != lenSecond)
+			if (first.Length != second.Length)
 				return lenBoth;
 			return -1;
 		}
@@ -414,12 +412,13 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		public static int LastDiff(string first, string second)
 		{
-			int lenFirst = 0;
-			if (first != null)
-				lenFirst = first.Length;
-			int lenSecond = 0;
-			if (second != null)
-				lenSecond = second.Length;
+			if (first == second)
+				return -1;
+			if (first == null || second == null)
+				return 0;
+
+			var lenFirst = first.Length;
+			var lenSecond = second.Length;
 			int diffLen = lenFirst - lenSecond;
 			// how much first is longer; what to add to position in first for corresponding in second.
 			int ichEnd = Math.Max(diffLen, 0);

@@ -7,6 +7,7 @@
     <IsPackable>false</IsPackable>
     <OutputType>Exe</OutputType>
     <UpdateAssemblyInfo>false</UpdateAssemblyInfo>
+	  <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

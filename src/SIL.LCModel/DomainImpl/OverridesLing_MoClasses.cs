@@ -191,9 +191,9 @@ namespace SIL.LCModel.DomainImpl
 				return false;
 			}
 			var allMoMorphAdhocProhib = servLoc.GetInstance<IMoMorphAdhocProhibRepository>().AllInstances();
-			var mapCount = (allMoMorphAdhocProhib.Where(map => map.FirstMorphemeRA == this
+			var mapCount = allMoMorphAdhocProhib.Where(map => map.FirstMorphemeRA == this
 															   || map.MorphemesRS.Contains(this)
-															   || map.RestOfMorphsRS.Contains(this))).Count();
+															   || map.RestOfMorphsRS.Contains(this)).Count();
 			if (mapCount > 0) return false;
 
 			int msaCount = servLoc.GetInstance<IMoMorphSynAnalysisRepository>().AllInstances().Count(msa => msa.ComponentsRS.Contains(this));
@@ -405,7 +405,7 @@ namespace SIL.LCModel.DomainImpl
 		/// </remarks>
 		public virtual IMoMorphSynAnalysis UpdateOrReplace(SandboxGenericMSA sandboxMsa)
 		{
-			ILexEntry le = Owner as ILexEntry;
+			ILexEntry le = (ILexEntry)Owner;
 			foreach (MoMorphSynAnalysis msa in le.MorphoSyntaxAnalysesOC)
 			{
 				// Check other extant MSAs to see if they match the updated one.
@@ -502,16 +502,12 @@ namespace SIL.LCModel.DomainImpl
 		{
 			foreach (var obj in sourceMsa.ReferringObjects)
 			{
-				if (obj is IWfiMorphBundle)
+				if (obj is IWfiMorphBundle wmb)
 				{
-					IWfiMorphBundle wmb = obj as IWfiMorphBundle;
-					Debug.Assert(wmb.MsaRA == sourceMsa);
 					wmb.MsaRA = this;
 				}
-				else if (obj is ILexSense)
+				else if (obj is ILexSense sense)
 				{
-					ILexSense sense = obj as ILexSense;
-					Debug.Assert(sense.MorphoSyntaxAnalysisRA == sourceMsa);
 					sense.MorphoSyntaxAnalysisRA = this;
 				}
 				else
@@ -739,7 +735,7 @@ namespace SIL.LCModel.DomainImpl
 
 			var derivMsa = (IMoDerivAffMsa)msa;
 
-			return (DomainObjectServices.AreEquivalent(FromMsFeaturesOA, derivMsa.FromMsFeaturesOA)
+			return DomainObjectServices.AreEquivalent(FromMsFeaturesOA, derivMsa.FromMsFeaturesOA)
 					&& DomainObjectServices.AreEquivalent(ToMsFeaturesOA, derivMsa.ToMsFeaturesOA)
 					&& FromPartOfSpeechRA == derivMsa.FromPartOfSpeechRA
 					&& ToPartOfSpeechRA == derivMsa.ToPartOfSpeechRA
@@ -747,7 +743,7 @@ namespace SIL.LCModel.DomainImpl
 					&& FromStemNameRA == derivMsa.FromStemNameRA
 					&& ToInflectionClassRA == derivMsa.ToInflectionClassRA
 					&& FromProdRestrictRC.IsEquivalent(derivMsa.FromProdRestrictRC)
-					&& ToProdRestrictRC.IsEquivalent(derivMsa.ToProdRestrictRC));
+					&& ToProdRestrictRC.IsEquivalent(derivMsa.ToProdRestrictRC);
 		}
 
 		/// <summary>
@@ -1190,7 +1186,7 @@ namespace SIL.LCModel.DomainImpl
 		/// <returns>true, if the field is required.</returns>
 		public override bool IsFieldRequired(int flid)
 		{
-			return (flid == MoStemMsaTags.kflidPartOfSpeech);
+			return flid == MoStemMsaTags.kflidPartOfSpeech;
 		}
 
 		/// <summary>
@@ -1309,7 +1305,7 @@ namespace SIL.LCModel.DomainImpl
 					return CmPossibility.BestAnalysisOrVernName(m_cache, PartOfSpeechRA);
 
 				var userWs = m_cache.DefaultUserWs;
-				var entry = Owner as ILexEntry;
+				var entry = (ILexEntry)Owner;
 				foreach (var form in entry.AllAllomorphs)
 				{
 					// LT-7075 was crashing when it was null,
@@ -1548,7 +1544,7 @@ namespace SIL.LCModel.DomainImpl
 
 			try
 			{
-				ILexEntry entry = Owner as ILexEntry;
+				var entry = (ILexEntry)Owner;
 
 				propsToMonitor.Add(new Tuple<int, int>(entry.Hvo, LexEntryTags.kflidLexemeForm));
 				propsToMonitor.Add(new Tuple<int, int>(entry.Hvo, LexEntryTags.kflidAlternateForms));
@@ -1618,7 +1614,7 @@ namespace SIL.LCModel.DomainImpl
 			switch (e.Flid)
 			{
 				case MoInflAffMsaTags.kflidSlots:
-					var target = ((IMoInflAffixSlot) e.ObjectAdded);
+					var target = (IMoInflAffixSlot) e.ObjectAdded;
 					var flid = m_cache.MetaDataCache.GetFieldId2(MoInflAffixSlotTags.kClassId, "Affixes", false);
 
 					var newGuids = (from msa in target.Affixes select msa.Guid).ToArray();
@@ -1637,7 +1633,7 @@ namespace SIL.LCModel.DomainImpl
 			switch (e.Flid)
 			{
 				case MoInflAffMsaTags.kflidSlots:
-					var target = ((IMoInflAffixSlot)e.ObjectRemoved);
+					var target = (IMoInflAffixSlot)e.ObjectRemoved;
 					var flid = m_cache.MetaDataCache.GetFieldId2(MoInflAffixSlotTags.kClassId, "Affixes", false);
 
 					var newGuids = (from msa in target.Affixes select msa.Guid).ToArray();
@@ -1785,7 +1781,7 @@ namespace SIL.LCModel.DomainImpl
 
 			// TODO: Add checks for other properties, when we support using them.
 			if (msa.Slot == null)
-				return (SlotsRC.Count == 0);
+				return SlotsRC.Count == 0;
 			else
 				return SlotsRC.Count == 1 && SlotsRC.Contains(msa.Slot);
 		}
@@ -1805,7 +1801,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			get
 			{
-				var entry = Owner as ILexEntry;
+				var entry = (ILexEntry)Owner;
 				var sb = new StringBuilder();
 				sb.Append(entry.CitationFormWithAffixType);
 				sb.Append(" ");
@@ -1885,9 +1881,9 @@ namespace SIL.LCModel.DomainImpl
 		{
 			get
 			{
-				var entry = Owner as ILexEntry;
+				var entry = (LexEntry)Owner;
 				var tisb = TsStringUtils.MakeIncStrBldr();
-				(entry as LexEntry).CitationFormWithAffixTypeTss(tisb);
+				entry.CitationFormWithAffixTypeTss(tisb);
 				tisb.Append(" ");
 				var tssGloss = GetFirstGlossOfMSAThatMatchesTss(entry.SensesOS);
 				if (tssGloss == null || tssGloss.Length == 0)
@@ -2639,12 +2635,12 @@ namespace SIL.LCModel.DomainImpl
 		/// <returns></returns>
 		private IEnumerable<ICmObject> GetAllSlots()
 		{
-			var pos = ((IPartOfSpeech) OwnerOfClass(PartOfSpeechTags.kClassId));
+			var pos = (IPartOfSpeech) OwnerOfClass(PartOfSpeechTags.kClassId);
 			while (pos != null)
 			{
 				foreach (var slot in pos.AffixSlotsOC)
 					yield return slot;
-				pos = ((IPartOfSpeech) pos.OwnerOfClass(PartOfSpeechTags.kClassId));
+				pos = (IPartOfSpeech) pos.OwnerOfClass(PartOfSpeechTags.kClassId);
 			}
 		}
 		private IEnumerable<ICmObject> GetPrefixSlots()
@@ -2676,7 +2672,7 @@ namespace SIL.LCModel.DomainImpl
 				bool fStopLooking = false;
 				foreach (var affix in slot.Affixes)
 				{
-					LexEntry lex = affix.Owner as LexEntry;
+					LexEntry lex = (LexEntry)affix.Owner;
 					foreach (var morphType in lex.MorphTypes)
 					{
 						bool fIsCorrectType;
@@ -2753,9 +2749,9 @@ namespace SIL.LCModel.DomainImpl
 			get
 			{
 				((ICmObjectRepositoryInternal)Services.ObjectRepository).EnsureCompleteIncomingRefsFrom(MoInflAffMsaTags.kflidSlots);
-				return (from msa in m_incomingRefs
+				return from msa in m_incomingRefs
 						where msa.Source is IMoInflAffMsa && ((IMoInflAffMsa) msa.Source).SlotsRC.Contains(this)
-						select (IMoInflAffMsa) msa.Source);
+						select (IMoInflAffMsa) msa.Source;
 			}
 		}
 
@@ -2766,11 +2762,11 @@ namespace SIL.LCModel.DomainImpl
 		{
 			get
 			{
-				return (from le in Services.GetInstance<ILexEntryRepository>().AllInstances()
+				return from le in Services.GetInstance<ILexEntryRepository>().AllInstances()
 						where le.MorphoSyntaxAnalysesOC.Any(msa => msa is IMoInflAffMsa)
 							&& !le.MorphoSyntaxAnalysesOC.Any(
 							msa => msa is IMoInflAffMsa && ((IMoInflAffMsa) msa).SlotsRC.Contains(this))
-						select le);
+						select le;
 			}
 		}
 
@@ -2982,7 +2978,7 @@ namespace SIL.LCModel.DomainImpl
 			ClearMonomorphemicMorphData();
 			if (Owner is LexEntry && Owner.IsValidObject)
 			{
-				var entry = ((LexEntry) Owner);
+				var entry = (LexEntry) Owner;
 				// Now we have to figure out the old PrimaryMorphType of the entry.
 				// It is determined by the first item in this list which HAD a morph type (if any)
 				var morphs = entry.AlternateFormsOS.Reverse().ToList();
@@ -2993,7 +2989,7 @@ namespace SIL.LCModel.DomainImpl
 				{
 					// If the morpheme is this, the one that is changing, then we consider
 					// the old value that this is changing from, in determining the old PMT.
-					var mt = (morph == this ? oldObjValue : morph.MorphTypeRA);
+					var mt = morph == this ? oldObjValue : morph.MorphTypeRA;
 					if (mt != null)
 					{
 						oldPrimaryType = mt;
@@ -3023,7 +3019,7 @@ namespace SIL.LCModel.DomainImpl
 				return; // this IS the lexeme form, we can't usefully copy anything from it.
 
 			//When adding an allomorph we want the morphtype to match that of the LexemeForm for the LexEntry
-			m_MorphTypeRA = (Owner as LexEntry).LexemeFormOA.MorphTypeRA;
+			m_MorphTypeRA = ((LexEntry)Owner).LexemeFormOA.MorphTypeRA;
 		}
 
 		/// <summary>
@@ -3384,10 +3380,8 @@ namespace SIL.LCModel.DomainImpl
 						m_cache.DefaultAnalWs);
 					tisb.Append(post);
 				}
-				if (Owner is ILexEntry)
+				if (Owner is ILexEntry le)
 				{
-					var le = Owner as ILexEntry;
-
 					tisb.Append(" (");
 					if (le.SensesOS.Count > 0)
 					{
@@ -3434,7 +3428,7 @@ namespace SIL.LCModel.DomainImpl
 			get
 			{
 				var tss = Form.VernacularDefaultWritingSystem;
-				if (tss != null || tss.Length > 0)
+				if (tss?.Length > 0)
 					return tss;
 
 				return TsStringUtils.MakeString(
@@ -3596,12 +3590,12 @@ namespace SIL.LCModel.DomainImpl
 					var stemNames = new HashSet<ICmObject>();
 					if (Owner.ClassID == LexEntryTags.kClassId)
 					{
-						ILexEntry entry = Owner as ILexEntry;
+						var entry = (ILexEntry)Owner;
 						foreach (IMoMorphSynAnalysis msa in entry.MorphoSyntaxAnalysesOC)
 						{
 							if (msa.ClassID == MoStemMsaTags.kClassId)
 							{
-								IMoStemMsa infstemmsa = msa as IMoStemMsa;
+								var infstemmsa = (IMoStemMsa)msa;
 								IPartOfSpeech pos = infstemmsa.PartOfSpeechRA;
 								if (pos != null)
 									stemNames.UnionWith(pos.AllStemNames.Cast<ICmObject>());
@@ -3727,7 +3721,7 @@ namespace SIL.LCModel.DomainImpl
 						{
 							if (msa is IMoInflAffMsa)
 							{
-								var infafxmsa = msa as IMoInflAffMsa;
+								var infafxmsa = (IMoInflAffMsa)msa;
 								var pos = infafxmsa.PartOfSpeechRA;
 								if (pos != null)
 									classes.UnionWith(pos.AllInflectionClasses.Cast<ICmObject>());
@@ -3739,7 +3733,7 @@ namespace SIL.LCModel.DomainImpl
 							// may have the inflection classes, one or more of which this allomorph may go with.
 							else if (msa is IMoDerivAffMsa)
 							{
-								var drvafxmsa = msa as IMoDerivAffMsa;
+								var drvafxmsa = (IMoDerivAffMsa)msa;
 								var pos = drvafxmsa.FromPartOfSpeechRA;
 								if (pos != null)
 									classes.UnionWith(pos.AllInflectionClasses.Cast<ICmObject>());
@@ -3768,7 +3762,7 @@ namespace SIL.LCModel.DomainImpl
 			// entry include an inflectional affix MSA.
 
 			// Todo JohnT: SupportsInflectionClasses should possibly return propsToMonitor info.
-			ILexEntry entry = Owner as ILexEntry;
+			var entry = (ILexEntry)Owner;
 			return entry.SupportsInflectionClasses() && base.IsFieldRelevant(flid, propsToMonitor);
 		}
 	}
@@ -3868,13 +3862,13 @@ namespace SIL.LCModel.DomainImpl
 					switch (mapping.ClassID)
 					{
 						case MoCopyFromInputTags.kClassId:
-							var copy = mapping as IMoCopyFromInput;
+							var copy = (IMoCopyFromInput)mapping;
 							if (copy.ContentRA == ctxtOrVar)
 								OutputOS.Remove(copy);
 							break;
 
 						case MoModifyFromInputTags.kClassId:
-							var modify = mapping as IMoModifyFromInput;
+							var modify = (IMoModifyFromInput)mapping;
 							if (modify.ContentRA == ctxtOrVar)
 								OutputOS.Remove(modify);
 							break;
@@ -4030,9 +4024,9 @@ namespace SIL.LCModel.DomainImpl
 		/// <returns>true, if the field is required.</returns>
 		public override bool IsFieldRequired(int flid)
 		{
-			return ((flid == MoMorphAdhocProhibTags.kflidFirstMorpheme)
+			return (flid == MoMorphAdhocProhibTags.kflidFirstMorpheme)
 					|| (flid == MoMorphAdhocProhibTags.kflidRestOfMorphs)
-				   );
+				   ;
 		}
 
 		/// <summary>
@@ -4058,7 +4052,7 @@ namespace SIL.LCModel.DomainImpl
 
 		partial void FirstMorphemeRASideEffects(IMoMorphSynAnalysis oldObjValue, IMoMorphSynAnalysis newObjValue)
 		{
-			if (oldObjValue == newObjValue || (oldObjValue == null || !oldObjValue.CanDelete))
+			if (oldObjValue == newObjValue || oldObjValue == null || !oldObjValue.CanDelete)
 				return; // Nothing to do.
 
 			// Wipe out the old MSA.
@@ -4194,9 +4188,9 @@ namespace SIL.LCModel.DomainImpl
 		/// <returns>true, if the field is required.</returns>
 		public override bool IsFieldRequired(int flid)
 		{
-			return ((flid == (int)MoAlloAdhocProhibTags.kflidFirstAllomorph)
+			return (flid == (int)MoAlloAdhocProhibTags.kflidFirstAllomorph)
 					|| (flid == (int)MoAlloAdhocProhibTags.kflidRestOfAllos)
-				   );
+				   ;
 		}
 
 		/// <summary>
@@ -4416,7 +4410,6 @@ namespace SIL.LCModel.DomainImpl
 		/// <returns>True, if the two morph types are ambiguous, otherwise false.</returns>
 		public bool IsAmbiguousWith(IMoMorphType other)
 		{
-			Debug.Assert(other != null);
 			var areAmbiguous = false;
 
 			switch (Guid.ToString())
@@ -4436,34 +4429,34 @@ namespace SIL.LCModel.DomainImpl
 					}
 					break;
 				case MoMorphTypeTags.kMorphPhrase:
-					areAmbiguous = (other.Guid == MoMorphTypeTags.kguidMorphDiscontiguousPhrase);
+					areAmbiguous = other.Guid == MoMorphTypeTags.kguidMorphDiscontiguousPhrase;
 					break;
 				case MoMorphTypeTags.kMorphDiscontiguousPhrase:
-					areAmbiguous = (other.Guid == MoMorphTypeTags.kguidMorphPhrase);
+					areAmbiguous = other.Guid == MoMorphTypeTags.kguidMorphPhrase;
 					break;
 				case MoMorphTypeTags.kMorphBoundStem:
-					areAmbiguous = (other.Guid == MoMorphTypeTags.kguidMorphBoundRoot);
+					areAmbiguous = other.Guid == MoMorphTypeTags.kguidMorphBoundRoot;
 					break;
 				case MoMorphTypeTags.kMorphBoundRoot:
-					areAmbiguous = (other.Guid == MoMorphTypeTags.kguidMorphBoundStem);
+					areAmbiguous = other.Guid == MoMorphTypeTags.kguidMorphBoundStem;
 					break;
 				case MoMorphTypeTags.kMorphInfix:
-					areAmbiguous = (other.Guid == MoMorphTypeTags.kguidMorphInfixingInterfix);
+					areAmbiguous = other.Guid == MoMorphTypeTags.kguidMorphInfixingInterfix;
 					break;
 				case MoMorphTypeTags.kMorphInfixingInterfix:
-					areAmbiguous = (other.Guid == MoMorphTypeTags.kguidMorphInfix);
+					areAmbiguous = other.Guid == MoMorphTypeTags.kguidMorphInfix;
 					break;
 				case MoMorphTypeTags.kMorphPrefix:
-					areAmbiguous = (other.Guid == MoMorphTypeTags.kguidMorphPrefixingInterfix);
+					areAmbiguous = other.Guid == MoMorphTypeTags.kguidMorphPrefixingInterfix;
 					break;
 				case MoMorphTypeTags.kMorphPrefixingInterfix:
-					areAmbiguous = (other.Guid == MoMorphTypeTags.kguidMorphPrefix);
+					areAmbiguous = other.Guid == MoMorphTypeTags.kguidMorphPrefix;
 					break;
 				case MoMorphTypeTags.kMorphSuffix:
-					areAmbiguous = (other.Guid == MoMorphTypeTags.kguidMorphSuffixingInterfix);
+					areAmbiguous = other.Guid == MoMorphTypeTags.kguidMorphSuffixingInterfix;
 					break;
 				case MoMorphTypeTags.kMorphSuffixingInterfix:
-					areAmbiguous = (other.Guid == MoMorphTypeTags.kguidMorphSuffix);
+					areAmbiguous = other.Guid == MoMorphTypeTags.kguidMorphSuffix;
 					break;
 				default:
 					break;
