@@ -2269,14 +2269,20 @@ namespace SIL.LCModel.DomainImpl
 			var sValue = "";
 			if (ValueRA != null)
 			{
-				if (fLongForm || ValueRA.ShowInGloss)
+				// per LT-21206, ShowInGloss now means "show as abbreviation".
+				// If ShowInGloss is false, then use the name instead.
+				if (ValueRA.ShowInGloss)
 				{
 					sValue = ValueRA.Abbreviation.BestAnalysisAlternative.Text;
 					if (sValue == null || sValue.Length == 0)
 						sValue = ValueRA.Name.BestAnalysisAlternative.Text;
-					if (!fLongForm)
-						sValue = sValue + ValueRA.RightGlossSep.AnalysisDefaultWritingSystem.Text;
 				}
+				else
+				{
+					sValue = ValueRA.Name.BestAnalysisAlternative.Text;
+				}
+				if (!fLongForm)
+					sValue = sValue + ValueRA.RightGlossSep.AnalysisDefaultWritingSystem.Text;
 			}
 			else
 				sValue = m_ksUnknown;
@@ -2293,15 +2299,20 @@ namespace SIL.LCModel.DomainImpl
 					sFeature = FeatureRA.Abbreviation.BestAnalysisAlternative.Text;
 					if (sFeature == null || sFeature.Length == 0)
 						sFeature = FeatureRA.Name.BestAnalysisAlternative.Text;
-					if (fLongForm)
-						sFeature = sFeature + ":";
-					else
-						sFeature = sFeature + FeatureRA.RightGlossSep.BestAnalysisAlternative.Text;
+					sFeature = sFeature + GetSeparator(FeatureRA, fLongForm);
 				}
 			}
 			else
 				sFeature = m_ksUnknown;
 			return sFeature;
+		}
+
+		internal static string GetSeparator(IFsFeatDefn feature, bool longForm)
+		{
+			string sep = feature.RightGlossSep.BestAnalysisAlternative.Text;
+			if (longForm || sep == "***")
+				return ":";
+			return sep;
 		}
 
 		/// <summary>
@@ -2522,7 +2533,7 @@ namespace SIL.LCModel.DomainImpl
 					sFeature = FeatureRA.Abbreviation.BestAnalysisAlternative.Text;
 					if (string.IsNullOrEmpty(sFeature))
 						sFeature = FeatureRA.Name.BestAnalysisAlternative.Text;
-					sFeature = fLongForm ? sFeature + ":" : sFeature + FeatureRA.RightGlossSep.BestAnalysisAlternative.Text;
+					sFeature = sFeature + FsClosedValue.GetSeparator(FeatureRA, fLongForm);
 				}
 			}
 			else

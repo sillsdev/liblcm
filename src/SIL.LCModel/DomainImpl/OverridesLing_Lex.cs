@@ -7638,15 +7638,23 @@ namespace SIL.LCModel.DomainImpl
 				if (removedCtxt != null)
 				{
 					var featConstrs = GetFeatureConstraintsExcept(removedCtxt);
-					foreach (var constr in removedCtxt.PlusConstrRS)
+					foreach (var constr in removedCtxt.PlusConstrRS.ToList())
 					{
 						if (!featConstrs.Contains(constr))
+						{
+							// Remove constr from removedCtxt first to avoid deleting removedCtxt twice (fixes LT-21729).
+							removedCtxt.PlusConstrRS.Remove(constr);
 							m_cache.LanguageProject.PhonologicalDataOA.FeatConstraintsOS.Remove(constr);
+						}
 					}
-					foreach (var constr in removedCtxt.MinusConstrRS)
+					foreach (var constr in removedCtxt.MinusConstrRS.ToList())
 					{
 						if (!featConstrs.Contains(constr))
+						{
+							// Remove constr from removedCtxt first to avoid deleting removedCtxt twice.
+							removedCtxt.MinusConstrRS.Remove(constr);
 							m_cache.LanguageProject.PhonologicalDataOA.FeatConstraintsOS.Remove(constr);
+						}
 					}
 				}
 			}
