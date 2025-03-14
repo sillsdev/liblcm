@@ -502,14 +502,12 @@ namespace SIL.LCModel.DomainImpl
 		{
 			foreach (var obj in sourceMsa.ReferringObjects)
 			{
-				if (obj is IWfiMorphBundle)
+				if (obj is IWfiMorphBundle wmb)
 				{
-					var wmb = (IWfiMorphBundle)obj;
 					wmb.MsaRA = this;
 				}
-				else if (obj is ILexSense)
+				else if (obj is ILexSense sense)
 				{
-					var sense = (ILexSense)obj;
 					sense.MorphoSyntaxAnalysisRA = this;
 				}
 				else
@@ -1883,9 +1881,9 @@ namespace SIL.LCModel.DomainImpl
 		{
 			get
 			{
-				var entry = Owner as ILexEntry;
+				var entry = (LexEntry)Owner;
 				var tisb = TsStringUtils.MakeIncStrBldr();
-				(entry as LexEntry)!.CitationFormWithAffixTypeTss(tisb);
+				entry.CitationFormWithAffixTypeTss(tisb);
 				tisb.Append(" ");
 				var tssGloss = GetFirstGlossOfMSAThatMatchesTss(entry.SensesOS);
 				if (tssGloss == null || tssGloss.Length == 0)
@@ -3430,7 +3428,7 @@ namespace SIL.LCModel.DomainImpl
 			get
 			{
 				var tss = Form.VernacularDefaultWritingSystem;
-				if (tss.Length > 0)
+				if (tss?.Length > 0)
 					return tss;
 
 				return TsStringUtils.MakeString(

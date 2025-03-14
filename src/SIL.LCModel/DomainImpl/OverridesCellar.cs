@@ -2421,11 +2421,11 @@ namespace SIL.LCModel.DomainImpl
 
 			var otherValue = (other as IFsComplexValue)?.ValueOA;
 			var thisValue = ValueOA;
-			if (otherValue == null && thisValue != null)
-				return false;
 			if (otherValue == null && thisValue == null)
 				return true;
-			return otherValue!.IsEquivalent(thisValue);
+			if (otherValue == null || thisValue == null)
+				return false;
+			return otherValue.IsEquivalent(thisValue);
 		}
 
 		/// <summary>

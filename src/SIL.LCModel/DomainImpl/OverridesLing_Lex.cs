@@ -3077,7 +3077,7 @@ namespace SIL.LCModel.DomainImpl
 				if (ler.ComponentLexemesRS.Count == 1)
 				{
 					// next see if we can match on the same variant lexeme form
-					ILexEntry variantEntry = (ILexEntry)((CmObject)ler).Owner;
+					ILexEntry variantEntry = (ILexEntry)ler.Owner;
 					if (variantEntry.LexemeFormOA == null || variantEntry.LexemeFormOA.Form == null)
 						continue;
 					int wsTargetVariant = TsStringUtils.GetWsAtOffset(targetVariantLexemeForm, 0);
@@ -3422,13 +3422,12 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		public override void MergeObject(ICmObject objSrc, bool fLoseNoStringData)
 		{
-			if (!(objSrc is ILexEntry))
+			if (objSrc is not ILexEntry le)
 				return;
 
 			var homoForm = HomographFormKey;
-			var le = objSrc as ILexEntry;
 			// If the lexeme forms don't match, and they both have content in the vernacular, make the other LF an allomorph.
-			if (LexemeFormOA != null && le!.LexemeFormOA != null &&
+			if (LexemeFormOA != null && le.LexemeFormOA != null &&
 				LexemeFormOA.Form.VernacularDefaultWritingSystem != null && le.LexemeFormOA.Form.VernacularDefaultWritingSystem != null
 				&& LexemeFormOA.Form.VernacularDefaultWritingSystem.Text != le.LexemeFormOA.Form.VernacularDefaultWritingSystem.Text
 				&& LexemeFormOA.Form.VernacularDefaultWritingSystem.Text != null && le.LexemeFormOA.Form.VernacularDefaultWritingSystem.Text != null)
@@ -3604,10 +3603,9 @@ namespace SIL.LCModel.DomainImpl
 			get
 			{
 				var stemNames = new HashSet<IMoStemName>(StemNamesOC);
-				if (Owner.ClassID == PartOfSpeechTags.kClassId)
+				if (Owner is IPartOfSpeech pos)
 				{
-					var owner = Owner as IPartOfSpeech;
-					stemNames.UnionWith(owner!.AllStemNames);
+					stemNames.UnionWith(pos.AllStemNames);
 				}
 				return stemNames;
 			}
@@ -3623,10 +3621,9 @@ namespace SIL.LCModel.DomainImpl
 			get
 			{
 				var classes = new HashSet<IMoInflClass>(InflectionClassesOC);
-				if (Owner.ClassID == PartOfSpeechTags.kClassId)
+				if (Owner is IPartOfSpeech pos)
 				{
-					var owner = Owner as IPartOfSpeech;
-					classes.UnionWith(owner!.AllInflectionClasses);
+					classes.UnionWith(pos.AllInflectionClasses);
 				}
 				return classes;
 			}
@@ -3642,10 +3639,9 @@ namespace SIL.LCModel.DomainImpl
 			get
 			{
 				var slots = new HashSet<IMoInflAffixSlot>(AffixSlotsOC);
-				if (Owner.ClassID == PartOfSpeechTags.kClassId)
+				if (Owner is IPartOfSpeech pos)
 				{
-					var owner = Owner as IPartOfSpeech;
-					slots.UnionWith(owner!.AllAffixSlots);
+					slots.UnionWith(pos.AllAffixSlots);
 				}
 				return slots;
 			}
@@ -5835,9 +5831,8 @@ namespace SIL.LCModel.DomainImpl
 			{
 				string number = "";
 
-				if (Owner is ILexEntry)
+				if (Owner is ILexEntry le)
 				{
-					var le = (ILexEntry)Owner;
 					int idx = le.SensesOS.IndexOf(this) + 1;
 					number = idx.ToString();
 				}
