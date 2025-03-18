@@ -15,7 +15,7 @@
     <OutputPath>$(MSBuildThisFileDirectory)artifacts/$(Configuration)/$(TargetFramework)</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <PackageOutputPath>$(MSBuildThisFileDirectory)/artifacts</PackageOutputPath>
-	<WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
+    <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
 	<IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
