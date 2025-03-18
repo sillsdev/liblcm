@@ -1284,7 +1284,7 @@ namespace SIL.LCModel.DomainImpl
 			{
 				// All revision sections are new to the current. So everything is fine.
 			}
-			else if (firstScrSec == null && firstRevScrSec == null)
+			else if (firstScrSec == null || firstRevScrSec == null)
 			{
 				// There are no scripture sections in either the current or the revision, so
 				// lets just give up!
@@ -1292,8 +1292,8 @@ namespace SIL.LCModel.DomainImpl
 			}
 			else
 			{
-				ScrReference firstScrSecRefMin = new ScrReference(firstScrSec!.VerseRefMin, versification);
-				ScrReference firstRevSecRefMin = new ScrReference(firstRevScrSec!.VerseRefMin, versification);
+				ScrReference firstScrSecRefMin = new ScrReference(firstScrSec.VerseRefMin, versification);
+				ScrReference firstRevSecRefMin = new ScrReference(firstRevScrSec.VerseRefMin, versification);
 				if (firstScrSecRefMin.Verse <= 0)
 					firstScrSecRefMin.Verse = 1;
 				if (firstRevSecRefMin.Verse <= 0)
