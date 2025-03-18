@@ -422,13 +422,10 @@ namespace SIL.LCModel.DomainImpl
 			}
 
 			ILcmOwningSequence<IScrSection> sections = SectionsOS;
-			IScrSection section = null;
-			if (footnote == null)
-				section = sections[iSection];
 
 			if (tag == ScrSectionTags.kflidHeading)
 			{
-				footnote = section!.HeadingOA.FindNextFootnote(ref iParagraph, ref ich,
+				footnote = sections[iSection].HeadingOA.FindNextFootnote(ref iParagraph, ref ich,
 					fSkipCurrentPos);
 				if (footnote == null)
 				{
@@ -441,15 +438,14 @@ namespace SIL.LCModel.DomainImpl
 
 			if (tag == ScrSectionTags.kflidContent)
 			{
-				footnote = section!.ContentOA.FindNextFootnote(ref iParagraph, ref ich,
+				footnote = sections[iSection].ContentOA.FindNextFootnote(ref iParagraph, ref ich,
 					fSkipCurrentPos);
 			}
 
 			while (footnote == null && iSection < sections.Count - 1)
 			{
 				iSection++;
-				section = sections[iSection];
-				footnote = section.FindFirstFootnote(out iParagraph, out ich, out tag);
+				footnote = sections[iSection].FindFirstFootnote(out iParagraph, out ich, out tag);
 			}
 
 			if (footnote != null)
