@@ -327,6 +327,28 @@ namespace SIL.LCModel
 				{
 					var dataSetup = cache.ServiceLocator.GetInstance<IDataSetup>();
 					Assert.IsTrue(dataSetup is SharedXMLBackendProvider, "The project should have been opened as shared xml.");
+
+					using (var cache2 = LcmCache.CreateCacheFromExistingData(projectId, "en", m_ui, m_lcmDirectories, new LcmSettings(),
+						new DummyProgressDlg()))
+					{
+						Assert.AreEqual(5, cache.LangProject.AllPartsOfSpeech.Count);
+						Assert.AreEqual(5, cache2.LangProject.AllPartsOfSpeech.Count);
+
+						// Make a change to cache.
+						UndoableUnitOfWorkHelper.Do("undoit", "redoit", cache.ActionHandlerAccessor,
+							() => cache.LangProject.AllPartsOfSpeech[0].Delete()
+						);
+						Assert.AreEqual(4, cache.LangProject.AllPartsOfSpeech.Count);
+						var undoManager = cache.ServiceLocator.GetInstance<IUndoStackManager>();
+						undoManager.Save();
+
+						// Verify that the change affected cache2.
+						// cache2 only reads the change during a save.
+						Assert.AreEqual(5, cache2.LangProject.AllPartsOfSpeech.Count);
+						var undoManager2 = cache2.ServiceLocator.GetInstance<IUndoStackManager>();
+						undoManager2.Save();
+						Assert.AreEqual(4, cache2.LangProject.AllPartsOfSpeech.Count);
+					}
 				}
 			}
 			finally
