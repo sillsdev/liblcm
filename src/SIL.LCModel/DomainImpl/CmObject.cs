@@ -1020,7 +1020,9 @@ namespace SIL.LCModel.DomainImpl
 							var currentObj = myCurrentValue as ICmObject;
 							if (myCurrentValue == null)
 							{
-								if ((nType == (int)CellarPropertyType.OwningAtomic && mySetMethod != null) || mySetMethod != null)
+								if (nType == (int)CellarPropertyType.OwningAtomic &&
+								    mySetMethod == null) throw new NullReferenceException("Method cannot be null for OwningAtomic type.");
+								if (mySetMethod != null)
 								{
 									mySetMethod.Invoke(this, new object[] { srcObj });
 								}

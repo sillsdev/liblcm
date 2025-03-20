@@ -603,7 +603,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 					case CellarPropertyType.Boolean:
 						break;
 					case CellarPropertyType.Integer:
-						int val = sda!.get_IntProp(cmoOld.Hvo, flid);
+						int val = sda.get_IntProp(cmoOld.Hvo, flid);
 						sda.SetInt(cmoNew.Hvo, flid, val);
 						fHandled = true;
 						break;
@@ -618,25 +618,25 @@ namespace SIL.LCModel.Application.ApplicationServices
 					case CellarPropertyType.Image:
 					case CellarPropertyType.Binary:
 						byte[] rgb;
-						int cb = sda!.get_Binary(cmoOld.Hvo, flid, out rgb);
+						int cb = sda.get_Binary(cmoOld.Hvo, flid, out rgb);
 						if (cb > 0)
 							sda.SetBinary(cmoNew.Hvo, flid, rgb, cb);
 						fHandled = true;
 						break;
 					case CellarPropertyType.GenDate:
-						GenDate date = sda!.get_GenDateProp(cmoOld.Hvo, flid);
+						GenDate date = sda.get_GenDateProp(cmoOld.Hvo, flid);
 						sda.SetGenDate(cmoNew.Hvo, flid, date);
 						fHandled = true;
 						break;
 					case CellarPropertyType.String:
-						tss = sda!.get_StringProp(cmoOld.Hvo, flid);
+						tss = sda.get_StringProp(cmoOld.Hvo, flid);
 						if (tss != null && tss.Text != null)
 							sda.SetString(cmoNew.Hvo, flid, tss);
 						fHandled = true;
 						break;
 					case CellarPropertyType.MultiString:
 					case CellarPropertyType.MultiUnicode:
-						ITsMultiString tms = sda!.get_MultiStringProp(cmoOld.Hvo, flid);
+						ITsMultiString tms = sda.get_MultiStringProp(cmoOld.Hvo, flid);
 						for (int i = 0; i < tms.StringCount; ++i)
 						{
 							int ws;
@@ -647,14 +647,14 @@ namespace SIL.LCModel.Application.ApplicationServices
 						fHandled = true;
 						break;
 					case CellarPropertyType.Unicode:
-						s = sda!.get_UnicodeProp(cmoOld.Hvo, flid);
+						s = sda.get_UnicodeProp(cmoOld.Hvo, flid);
 						if (!String.IsNullOrEmpty(s))
 							sda.SetUnicode(cmoNew.Hvo, flid, s, s.Length);
 						fHandled = true;
 						break;
 					case CellarPropertyType.OwningAtomic:
 						{
-							int hvo = sda!.get_ObjectProp(cmoOld.Hvo, flid);
+							int hvo = sda.get_ObjectProp(cmoOld.Hvo, flid);
 							if (hvo != 0)
 								sda.MoveOwn(cmoOld.Hvo, flid, hvo, cmoNew.Hvo, flid, 0);
 							fHandled = true;
@@ -662,7 +662,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 						break;
 					case CellarPropertyType.ReferenceAtomic:
 						{
-							int hvo = sda!.get_ObjectProp(cmoOld.Hvo, flid);
+							int hvo = sda.get_ObjectProp(cmoOld.Hvo, flid);
 							if (hvo != 0)
 								sda.SetObjProp(cmoNew.Hvo, flid, hvo);
 							fHandled = true;
@@ -672,7 +672,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 						break;
 					case CellarPropertyType.ReferenceCollection:
 						{
-							int[] hvosOld = sda!.VecProp(cmoOld.Hvo, flid);
+							int[] hvosOld = sda.VecProp(cmoOld.Hvo, flid);
 							int[] hvosNew = sda.VecProp(cmoNew.Hvo, flid);
 							List<int> hvosMerged = new List<int>(hvosNew);
 							foreach (int hvoOld in hvosOld)

@@ -610,9 +610,9 @@ namespace SIL.LCModel.DomainImpl
 
 		protected override void OnBeforeObjectDeleted()
 		{
-			var repo = Services.GetInstance<IWfiWordformRepository>() as IWfiWordformRepositoryInternal;
+			var repo = (IWfiWordformRepositoryInternal)Services.GetInstance<IWfiWordformRepository>();
 			foreach (int ws in Form.AvailableWritingSystemIds)
-				repo?.RemoveForm(Form.get_String(ws), ws);
+				repo.RemoveForm(Form.get_String(ws), ws);
 			RegisterVirtualsModifiedForObjectDeletion(((IServiceLocatorInternal)m_cache.ServiceLocator).UnitOfWorkService);
 			base.OnBeforeObjectDeleted();
 		}

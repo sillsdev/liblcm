@@ -1554,7 +1554,9 @@ namespace SIL.LCModel.Tools
 			ParseStackEntry top = new ParseStackEntry(this,0,NextSym());
 			for (;;)
 			{
-				string cnm = top.m_value!.yyname();
+				if (top.m_value == null)
+					throw new NullReferenceException("Stack entry m_value cannot be null");
+				string cnm = top.m_value.yyname();
 				if (m_debug)
 				{
 					if (cnm.Equals("TOKEN"))
