@@ -422,13 +422,10 @@ namespace SIL.LCModel.DomainImpl
 			}
 
 			ILcmOwningSequence<IScrSection> sections = SectionsOS;
-			IScrSection section = null;
-			if (footnote == null)
-				section = sections[iSection];
 
 			if (tag == ScrSectionTags.kflidHeading)
 			{
-				footnote = section!.HeadingOA.FindNextFootnote(ref iParagraph, ref ich,
+				footnote = sections[iSection].HeadingOA.FindNextFootnote(ref iParagraph, ref ich,
 					fSkipCurrentPos);
 				if (footnote == null)
 				{
@@ -441,15 +438,14 @@ namespace SIL.LCModel.DomainImpl
 
 			if (tag == ScrSectionTags.kflidContent)
 			{
-				footnote = section!.ContentOA.FindNextFootnote(ref iParagraph, ref ich,
+				footnote = sections[iSection].ContentOA.FindNextFootnote(ref iParagraph, ref ich,
 					fSkipCurrentPos);
 			}
 
 			while (footnote == null && iSection < sections.Count - 1)
 			{
 				iSection++;
-				section = sections[iSection];
-				footnote = section.FindFirstFootnote(out iParagraph, out ich, out tag);
+				footnote = sections[iSection].FindFirstFootnote(out iParagraph, out ich, out tag);
 			}
 
 			if (footnote != null)
@@ -1288,7 +1284,7 @@ namespace SIL.LCModel.DomainImpl
 			{
 				// All revision sections are new to the current. So everything is fine.
 			}
-			else if (firstScrSec == null && firstRevScrSec == null)
+			else if (firstScrSec == null || firstRevScrSec == null)
 			{
 				// There are no scripture sections in either the current or the revision, so
 				// lets just give up!
@@ -1296,8 +1292,8 @@ namespace SIL.LCModel.DomainImpl
 			}
 			else
 			{
-				ScrReference firstScrSecRefMin = new ScrReference(firstScrSec!.VerseRefMin, versification);
-				ScrReference firstRevSecRefMin = new ScrReference(firstRevScrSec!.VerseRefMin, versification);
+				ScrReference firstScrSecRefMin = new ScrReference(firstScrSec.VerseRefMin, versification);
+				ScrReference firstRevSecRefMin = new ScrReference(firstRevScrSec.VerseRefMin, versification);
 				if (firstScrSecRefMin.Verse <= 0)
 					firstScrSecRefMin.Verse = 1;
 				if (firstRevSecRefMin.Verse <= 0)
