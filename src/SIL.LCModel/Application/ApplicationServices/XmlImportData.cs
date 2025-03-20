@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
@@ -100,8 +101,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 				m_fi = fi;
 				m_sName = xrdr.Name;
 				m_sState = xrdr.ReadState.ToString();
-				if (xrdr is IXmlLineInfo)
-					m_line = (xrdr as IXmlLineInfo).LineNumber;
+				if (xrdr is IXmlLineInfo info)
+					m_line = info.LineNumber;
 				else
 					m_line = 0;
 				if (linkAttribute != null)
@@ -256,7 +257,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 		{
 			Debug.Assert(m_wrtrLog != null);
 			Debug.Assert(!string.IsNullOrEmpty(sMsg));
-			m_wrtrLog.WriteLine(sMsg);
+			m_wrtrLog?.WriteLine(sMsg);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -394,9 +395,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 			{
 				foreach (IMoMorphSynAnalysis msa in le.MorphoSyntaxAnalysesOC)
 				{
-					if (msa is IMoUnclassifiedAffixMsa)
+					if (msa is IMoUnclassifiedAffixMsa msaUncl)
 					{
-						IMoUnclassifiedAffixMsa msaUncl = msa as IMoUnclassifiedAffixMsa;
 						if (msaUncl.PartOfSpeechRA == null &&
 							msaUncl.ComponentsRS.Count == 0 &&
 							msaUncl.GlossBundleRS.Count == 0 &&
@@ -406,8 +406,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 						}
 					}
 				}
-				if (m_factUnclAffMsa == null)
-					m_factUnclAffMsa = m_cache.ServiceLocator.GetInstance<IMoUnclassifiedAffixMsaFactory>();
+				m_factUnclAffMsa ??= m_cache.ServiceLocator.GetInstance<IMoUnclassifiedAffixMsaFactory>();
 				IMoUnclassifiedAffixMsa msaT = m_factUnclAffMsa.Create();
 				le.MorphoSyntaxAnalysesOC.Add(msaT);
 				return msaT;
@@ -416,9 +415,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 			{
 				foreach (IMoMorphSynAnalysis msa in le.MorphoSyntaxAnalysesOC)
 				{
-					if (msa is IMoStemMsa)
+					if (msa is IMoStemMsa msaStem)
 					{
-						IMoStemMsa msaStem = msa as IMoStemMsa;
 						if (msaStem.PartOfSpeechRA == null &&
 							msaStem.ComponentsRS.Count == 0 &&
 							msaStem.GlossBundleRS.Count == 0 &&
@@ -590,9 +588,9 @@ namespace SIL.LCModel.Application.ApplicationServices
 		{
 			Debug.Assert(cmoOld.ClassID == cmoNew.ClassID);
 			IFwMetaDataCacheManaged mdc = m_cache.MetaDataCache as IFwMetaDataCacheManaged;
-			Debug.Assert(mdc != null);
+			if (mdc == null) throw new Exception("Cannot cast MetaDataCache to IFwMetaDataCacheManaged");
 			ISilDataAccessManaged sda = m_cache.DomainDataByFlid as ISilDataAccessManaged;
-			Debug.Assert(sda != null);
+			if (sda == null) throw new Exception("Cannot cast DomainDataByFlid to ISilDataAccessManaged");
 			foreach (int flid in mdc.GetFields(cmoOld.ClassID, true, (int)CellarPropertyTypeFilter.All))
 			{
 				if (!mdc.IsCustom(flid))
@@ -1005,7 +1003,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 					else
 						cmo = factory.Create(guid, (IPhPhonemeSet)fi.Owner);
 					// Remove the default code added by PhTerminalUnit.SetDefaultValuesAfterInit in OverridesLing_Lex.
-					(cmo as PhBdryMarker).CodesOS.Clear();
+					(cmo as PhBdryMarker)?.CodesOS.Clear();
 					break;
 				case "PhPhonData":
 					cmo = m_cache.LangProject.PhonologicalDataOA;
@@ -1110,7 +1108,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			}
 			if (!String.IsNullOrEmpty(sId))
 			{
-				m_mapIdGuid.Add(sId, cmo.Guid);
+				m_mapIdGuid.Add(sId, cmo!.Guid);
 				m_mapGuidId.Add(cmo.Guid, sId);
 			}
 			if (m_phonology)
@@ -1139,7 +1137,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			{
 				if (m_mapFormEntry == null)
 					FillEntryMap();
-				ILexEntry le = cmo as ILexEntry;
+				ILexEntry le = (ILexEntry)cmo;
 				ILexEntry leDup;
 				StoreEntryInMap(le, fNewObject, true, out leDup);
 				if (leDup != null)
@@ -1315,7 +1313,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 							FieldInfo fiBack = fiParent;
 							while (fiBack != null && fiBack.Owner != realOwner)
 								fiBack = fiBack.ParentOfOwner;
-							if (fiBack.Owner == realOwner)
+							if (fiBack != null && fiBack.Owner == realOwner)
 								fi = new FieldInfo(realOwner, flid, cpt, fiBack.OwnerIsNew, fiBack.ParentOfOwner);
 						}
 						else
@@ -1410,7 +1408,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 						if (flid == StTxtParaTags.kflidSegments)
 						{
 							IStTxtPara para = cmoOwner as IStTxtPara;
-							Debug.Assert(para != null);
+							if (para == null) throw new NullReferenceException("cmoOwner as IStTxtPara");
 							int i = 0;
 							do
 							{
@@ -1455,11 +1453,11 @@ namespace SIL.LCModel.Application.ApplicationServices
 						s = s.Replace("\r\n", "\n");
 						s = s.Replace('\r', '\n');
 						s = s.Replace('\n', StringUtils.kChHardLB);
-						if (fi.Owner is ILexEntry)
+						if (fi?.Owner is ILexEntry)
 						{
 							AppendMessageToImportResidue(fi.Owner, s, m_cache.DefaultUserWs);
 						}
-						else if (fi.Owner is ILexSense)
+						else if (fi?.Owner is ILexSense)
 						{
 							// Review gjm: Why do we do nothing in this case?! (we could replace all this
 							// if - else if stuff with the one "AppendMessage..." line.
@@ -2272,7 +2270,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 					}
 					if (fJoinWithPrev)
 					{
-						if (!lrPrev.TargetsRS.Contains(cmoTarget))
+						if (lrPrev != null && !lrPrev.TargetsRS.Contains(cmoTarget))
 							lrPrev.TargetsRS.Add(cmoTarget);
 					}
 					else
@@ -2900,6 +2898,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			}
 		}
 
+		[MemberNotNull(nameof(m_mapFormEntry))]
 		private void FillEntryMap()
 		{
 			if (m_mapFormEntry == null)
@@ -3278,6 +3277,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			return file.Hvo;
 		}
 
+		[MemberNotNull(nameof(m_mapPathMediaFile))]
 		private void CreatePathMediaFileMap()
 		{
 			m_mapPathMediaFile = new Dictionary<string, int>();
@@ -3304,7 +3304,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			if (m_mapPathPictureFile == null)
 				CreatePathPictureFileMap();
 			int hvo;
-			if (m_mapPathPictureFile.TryGetValue(sPath, out hvo))
+			if (m_mapPathPictureFile!.TryGetValue(sPath, out hvo))
 				return hvo;
 			ICmFolder folder = GetDesiredCmFolder("Local Pictures", m_cache.LangProject.PicturesOC);
 			if (m_factCmFile == null)
@@ -3438,6 +3438,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			return rie;
 		}
 
+		[MemberNotNull(nameof(m_mapFormReversal))]
 		private void CreateFormReversalMap()
 		{
 			m_mapFormReversal = new Dictionary<WsString, IReversalIndexEntry>();

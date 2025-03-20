@@ -183,8 +183,8 @@ namespace SIL.LCModel.DomainServices
 			var text = existing.TextOA;
 			if (text == null || text.ParagraphsOS.Count != 1)
 				return false;
-			var para = text.ParagraphsOS[0] as IStTxtPara;
-			return para.Contents.Text == m_explanation; // we could get very picky and check the writing system etc, but I don't think it is necessary.
+			// we could get very picky and check the writing system etc, but I don't think it is necessary.
+			return text.ParagraphsOS[0] is IStTxtPara para && para.Contents.Text == m_explanation;
 		}
 	}
 }

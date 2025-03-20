@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Icu;
+using SIL.Extensions;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Scripture;
@@ -537,7 +538,8 @@ namespace SIL.LCModel.DomainServices
 		/// <returns></returns>
 		internal IList<ISegment> CollectSegments(ITsString tssText, out List<int> ichMinSegBreaks)
 		{
-			Debug.Assert(m_para != null);
+			if (m_para == null)
+				throw new InvalidOperationException("Paragraph not initialized");
 			// Get the information we need to reuse existing annotations if possible.
 			m_preExistingSegs.Clear();
 			m_preExistingSegs.AddRange(m_para.SegmentsOS);
@@ -860,7 +862,8 @@ namespace SIL.LCModel.DomainServices
 		/// <returns></returns>
 		static protected int IndexOfFirstUnusedId(List<int> ids)
 		{
-			Debug.Assert(ids != null);
+			if (ids == null)
+				throw new NullReferenceException("ids");
 			return IndexOfFirstUnusedId(ids.ToArray());
 		}
 
@@ -1022,7 +1025,7 @@ namespace SIL.LCModel.DomainServices
 					int iBestPossible = possibleIndices.IndexOf(iAnnClosest);
 					int cRemove = iBestPossible + (fUsedBestPossible ? 1 : 0);
 					if (cRemove > 0)
-						(possibleIndices as List<int>).RemoveRange(0, cRemove);
+						((List<int>)possibleIndices).RemoveRange(0, cRemove);
 					if (possibleIndices.Count == 0)
 					{
 						// remove its key from the Dictionary.
@@ -1466,7 +1469,7 @@ namespace SIL.LCModel.DomainServices
 			int lenA = tssA != null ? tssA.Length : 0;
 			return tssB != null && lenA > 0 &&
 				   lenA == tssB.Length &&
-				   (tssA.Equals(tssB) ||
+				   (tssA!.Equals(tssB) ||
 					(this.ToLower(tssA) == this.ToLower(tssB) &&
 					 WordWs(tssA) == WordWs(tssB)));
 		}

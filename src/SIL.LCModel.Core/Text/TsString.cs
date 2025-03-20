@@ -459,7 +459,7 @@ namespace SIL.LCModel.Core.Text
 							// Note that our local mapping is from the start of this segment, but we want to keep track of indexes from the start
 							// of the *string*. (Both the original string and the output, normalized string). So we adjust the indexes here.
 							if (mapping.isFirstCharOfDecomposition)
-								stringOffsetMapping[segmentMin + mapping.origIdx] = outputLenSoFar + mapping.normIdx;
+								stringOffsetMapping![segmentMin + mapping.origIdx] = outputLenSoFar + mapping.normIdx;
 						}
 					}
 				}
@@ -489,7 +489,7 @@ namespace SIL.LCModel.Core.Text
 							resultBuilder.SetProperties(outputIdx, outputIdx + size, origProperties);
 							// And if we also need to fix up offsets at the end, we keep track of the ones we'll need
 							if (willFixOffsets && mapping.isFirstCharOfDecomposition)
-								stringOffsetMapping[segmentMin + mapping.origIdx] = outputLenSoFar + mapping.normIdx;
+								stringOffsetMapping![segmentMin + mapping.origIdx] = outputLenSoFar + mapping.normIdx;
 						}
 					}
 
@@ -526,11 +526,11 @@ namespace SIL.LCModel.Core.Text
 			}
 			if (willFixOffsets)
 			{
-				stringOffsetMapping[segmentMin] = resultBuilder.Length;
+				stringOffsetMapping![segmentMin] = resultBuilder.Length;
 				int ptrSize = Marshal.SizeOf(typeof(IntPtr));
 				for (int i = 0; i < numOffsetsToFix; i++)
 				{
-					IntPtr offsetPtr = Marshal.ReadIntPtr(oldOffsetsToFix.IntPtr, i * ptrSize);
+					IntPtr offsetPtr = Marshal.ReadIntPtr(oldOffsetsToFix!.IntPtr, i * ptrSize);
 					int oldOffset = Marshal.ReadInt32(offsetPtr);
 					int newOffset;
 					if (stringOffsetMapping.TryGetValue(oldOffset, out newOffset))

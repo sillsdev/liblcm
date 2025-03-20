@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Diagnostics.CodeAnalysis;
 using YYClass;
 
 namespace SIL.LCModel.Tools
@@ -169,12 +170,8 @@ namespace SIL.LCModel.Tools
 			}
 			m_outFile.WriteLine("}");
 		}
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="n"></param>
-		/// <param name="p"></param>
-		/// <param name="str"></param>
+		
+		[DoesNotReturn]
 		public void Error(int n,int p,string str)
 		{
 			Console.WriteLine(str);
@@ -185,6 +182,7 @@ namespace SIL.LCModel.Tools
 			}
 			erh.Error(new CSToolsFatalException(n,line(p),position(p),"",str));
 		}
+
 		public virtual int line(int pos) { return 0; }
 		public virtual int position(int pos) { return pos; }
 		public virtual string Saypos(int pos) { return "at "+pos+": "; }

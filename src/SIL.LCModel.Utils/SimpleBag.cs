@@ -108,10 +108,10 @@ namespace SIL.LCModel.Utils
 			{
 				if (m_contents is T)
 					return 1;
-				if (m_contents is ConcurrentDictionary<T, int>)
+				if (m_contents is ConcurrentDictionary<T, int> dict)
 				{
 					int result = 0;
-					foreach (var kvp in (m_contents as ConcurrentDictionary<T, int>))
+					foreach (var kvp in dict)
 					{
 						result += kvp.Value;
 					}
@@ -133,10 +133,10 @@ namespace SIL.LCModel.Utils
 					return 1;
 				else
 					return 0;
-			if (m_contents is ConcurrentDictionary<T, int>)
+			if (m_contents is ConcurrentDictionary<T, int> dict)
 			{
 				int result;
-				(m_contents as ConcurrentDictionary<T, int>).TryGetValue(item, out result);
+				dict.TryGetValue(item, out result);
 				return result;
 			}
 			return 0;
@@ -166,9 +166,9 @@ namespace SIL.LCModel.Utils
 		{
 			if (m_contents is T)
 				yield return (T)m_contents;
-			if (m_contents is ConcurrentDictionary<T, int>)
+			if (m_contents is ConcurrentDictionary<T, int> dict)
 			{
-				foreach (var kvp in (m_contents as ConcurrentDictionary<T, int>))
+				foreach (var kvp in dict)
 				{
 					for (int i = 0; i < kvp.Value; i++)
 						yield return kvp.Key;

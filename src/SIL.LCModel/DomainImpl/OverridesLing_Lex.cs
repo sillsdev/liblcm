@@ -928,7 +928,7 @@ namespace SIL.LCModel.DomainImpl
 					if (sequence == null)
 						continue;
 					if (sequence.Flid == LexEntryRefTags.kflidComponentLexemes &&
-						(sequence.MainObject as ILexEntryRef).RefType == LexEntryRefTags.krtComplexForm)
+						((ILexEntryRef)sequence.MainObject).RefType == LexEntryRefTags.krtComplexForm)
 					{
 						yield return sequence.MainObject as ILexEntryRef;
 					}
@@ -950,7 +950,7 @@ namespace SIL.LCModel.DomainImpl
 					if (sequence == null)
 						continue;
 					if (sequence.Flid == LexEntryRefTags.kflidPrimaryLexemes &&
-						(sequence.MainObject as ILexEntryRef).RefType == LexEntryRefTags.krtComplexForm)
+						((ILexEntryRef)sequence.MainObject).RefType == LexEntryRefTags.krtComplexForm)
 					{
 						yield return sequence.MainObject as ILexEntryRef;
 					}
@@ -969,7 +969,7 @@ namespace SIL.LCModel.DomainImpl
 					if (sequence == null)
 						continue;
 					if (sequence.Flid == LexEntryRefTags.kflidShowComplexFormsIn &&
-						(sequence.MainObject as ILexEntryRef).RefType == LexEntryRefTags.krtComplexForm)
+						((ILexEntryRef)sequence.MainObject).RefType == LexEntryRefTags.krtComplexForm)
 					{
 						yield return sequence.MainObject as ILexEntryRef;
 					}
@@ -1331,8 +1331,8 @@ namespace SIL.LCModel.DomainImpl
 		{
 			foreach (IMoMorphSynAnalysis item in MorphoSyntaxAnalysesOC)
 			{
-				if ((item is IMoInflAffMsa && (item as IMoInflAffMsa).PartOfSpeechRA != null)
-					|| (item is IMoDerivAffMsa && (item as IMoDerivAffMsa).FromInflectionClassRA != null))
+				if ((item is IMoInflAffMsa infl && infl.PartOfSpeechRA != null)
+					|| (item is IMoDerivAffMsa deriv && deriv.FromInflectionClassRA != null))
 				{
 					return true;
 				}
@@ -1411,14 +1411,14 @@ namespace SIL.LCModel.DomainImpl
 		{
 			// save the environment references, if any.
 			IEnumerable<IPhEnvironment> envs = null;
-			if (mfOld is IMoStemAllomorph)
-				envs = (mfOld as IMoStemAllomorph).PhoneEnvRC.ToArray();
-			else if (mfOld is IMoAffixAllomorph)
-				envs = (mfOld as IMoAffixAllomorph).PhoneEnvRC.ToArray();
+			if (mfOld is IMoStemAllomorph stem)
+				envs = stem.PhoneEnvRC.ToArray();
+			else if (mfOld is IMoAffixAllomorph affix)
+				envs = affix.PhoneEnvRC.ToArray();
 
 			IEnumerable<IMoInflClass> inflClasses = null;
-			if (mfOld is IMoAffixForm)
-				inflClasses = (mfOld as IMoAffixForm).InflectionClassesRC.ToArray();
+			if (mfOld is IMoAffixForm affix2)
+				inflClasses = affix2.InflectionClassesRC.ToArray();
 
 			// if we are converting from one affix form to another, we should save the morph type
 			IMoMorphType oldAffMorphType = null;
@@ -1454,10 +1454,10 @@ namespace SIL.LCModel.DomainImpl
 			{
 				foreach (var env in envs)
 				{
-					if (mfNew is IMoStemAllomorph)
-						(mfNew as IMoStemAllomorph).PhoneEnvRC.Add(env);
-					else if (mfNew is IMoAffixAllomorph)
-						(mfNew as IMoAffixAllomorph).PhoneEnvRC.Add(env);
+					if (mfNew is IMoStemAllomorph newStem)
+						newStem.PhoneEnvRC.Add(env);
+					else if (mfNew is IMoAffixAllomorph affix3)
+						affix3.PhoneEnvRC.Add(env);
 				}
 			}
 
@@ -1465,13 +1465,13 @@ namespace SIL.LCModel.DomainImpl
 			{
 				foreach (var inflClass in inflClasses)
 				{
-					if (mfNew is IMoAffixForm)
-						(mfNew as IMoAffixForm).InflectionClassesRC.Add(inflClass);
+					if (mfNew is IMoAffixForm affixForm)
+						affixForm.InflectionClassesRC.Add(inflClass);
 				}
 			}
 
-			if (oldAffMorphType != null && mfNew is IMoAffixForm)
-				mfNew.MorphTypeRA = oldAffMorphType;
+			if (oldAffMorphType != null && mfNew is IMoAffixForm affixFormNew)
+				affixFormNew.MorphTypeRA = oldAffMorphType;
 		}
 
 		/// <summary>
@@ -1571,14 +1571,14 @@ namespace SIL.LCModel.DomainImpl
 		private IMoMorphSynAnalysis FindOrCreateMatchingStemMsa(IMoMorphSynAnalysis msa)
 		{
 			IPartOfSpeech POS = null;
-			if (msa is IMoInflAffMsa)
-				POS = (msa as IMoInflAffMsa).PartOfSpeechRA;
-			else if (msa is IMoDerivAffMsa)
-				POS = (msa as IMoDerivAffMsa).ToPartOfSpeechRA;
-			else if (msa is IMoDerivStepMsa)
-				POS = (msa as IMoDerivStepMsa).PartOfSpeechRA;
-			else if (msa is IMoUnclassifiedAffixMsa)
-				POS = (msa as IMoUnclassifiedAffixMsa).PartOfSpeechRA;
+			if (msa is IMoInflAffMsa inflAffMsa)
+    			POS = inflAffMsa.PartOfSpeechRA;
+			else if (msa is IMoDerivAffMsa derivAffMsa)
+				POS = derivAffMsa.ToPartOfSpeechRA;
+			else if (msa is IMoDerivStepMsa { PartOfSpeechRA: var pos })
+				POS = pos;
+			else if (msa is IMoUnclassifiedAffixMsa unclassifiedAffMsa)
+				POS = unclassifiedAffMsa.PartOfSpeechRA;
 			foreach (var msaT in MorphoSyntaxAnalysesOC)
 			{
 				var msaStem = msaT as IMoStemMsa;
@@ -1762,7 +1762,7 @@ namespace SIL.LCModel.DomainImpl
 		public static void UpdateReferencesForSenseMove(ILexEntry leSource, ILexEntry leTarget, ILexSense ls)
 		{
 			var msaCorrespondence = new Dictionary<IMoMorphSynAnalysis, IMoMorphSynAnalysis>(4);
-			(leTarget as LexEntry).ReplaceMsasForSense(ls, msaCorrespondence, leSource);
+			((LexEntry)leTarget).ReplaceMsasForSense(ls, msaCorrespondence, leSource);
 			foreach (var sense in ls.AllSenses)
 			{
 				foreach (var source in sense.ReferringObjects)
@@ -1859,7 +1859,7 @@ namespace SIL.LCModel.DomainImpl
 					}
 				}
 				if (msaNew == null)
-				{ 
+				{
 					msaNew = CopyObject<IMoMorphSynAnalysis>.CloneLcmObject(msaOld,
 						newMsa => MorphoSyntaxAnalysesOC.Add(newMsa));
 				}
@@ -2472,7 +2472,7 @@ namespace SIL.LCModel.DomainImpl
 					sLiftId = ExtractAttributeFromLiftResidue(sResidue, "id");
 				if (String.IsNullOrEmpty(sLiftId))
 					return HeadWord.Text + "_" + Guid;
-				int idx = sLiftId.IndexOf('_');
+				int idx = sLiftId!.IndexOf('_');
 				if (idx >= 0)
 					return sLiftId.Substring(0, idx) + "_" + Guid;
 				else
@@ -2614,7 +2614,7 @@ namespace SIL.LCModel.DomainImpl
 			if (mmt != null)
 			{
 				// Append 11 digit sortkey after space. sortkey = morphtype number << 10 bits
-				sKey = (mmt as MoForm).SortKeyMorphType(sKey);
+				sKey = ((MoForm)mmt).SortKeyMorphType(sKey);
 			}
 
 			return sKey;
@@ -2968,7 +2968,7 @@ namespace SIL.LCModel.DomainImpl
 			}
 			// The following code for setting Ws and FontFamily are to fix LT-6238.
 			CoreWritingSystemDefinition defVernWs = Services.WritingSystems.DefaultVernacularWritingSystem;
-			var entry = form.Owner as ILexEntry;
+			var entry = (ILexEntry)form.Owner;
 			var hc = entry.Services.GetInstance<HomographConfiguration>();
 		    if (!string.IsNullOrEmpty(prefix))
 		    {
@@ -3077,7 +3077,7 @@ namespace SIL.LCModel.DomainImpl
 				if (ler.ComponentLexemesRS.Count == 1)
 				{
 					// next see if we can match on the same variant lexeme form
-					ILexEntry variantEntry = (ler as CmObject).Owner as ILexEntry;
+					ILexEntry variantEntry = (ILexEntry)ler.Owner;
 					if (variantEntry.LexemeFormOA == null || variantEntry.LexemeFormOA.Form == null)
 						continue;
 					int wsTargetVariant = TsStringUtils.GetWsAtOffset(targetVariantLexemeForm, 0);
@@ -3422,11 +3422,10 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		public override void MergeObject(ICmObject objSrc, bool fLoseNoStringData)
 		{
-			if (!(objSrc is ILexEntry))
+			if (objSrc is not ILexEntry le)
 				return;
 
 			var homoForm = HomographFormKey;
-			var le = objSrc as ILexEntry;
 			// If the lexeme forms don't match, and they both have content in the vernacular, make the other LF an allomorph.
 			if (LexemeFormOA != null && le.LexemeFormOA != null &&
 				LexemeFormOA.Form.VernacularDefaultWritingSystem != null && le.LexemeFormOA.Form.VernacularDefaultWritingSystem != null
@@ -3444,7 +3443,7 @@ namespace SIL.LCModel.DomainImpl
 			//  merge the LexemeForm objects first, if this is possible.  This is important, because otherwise the
 			// LexemeForm objects would not get merged, and that is needed for proper handling
 			// of references and back references.
-			if (LexemeFormOA != null && le.LexemeFormOA != null && LexemeFormOA.ClassID == le.LexemeFormOA.ClassID)
+			if (LexemeFormOA != null && le!.LexemeFormOA != null && LexemeFormOA.ClassID == le.LexemeFormOA.ClassID)
 			{
 				LexemeFormOA.MergeObject(le.LexemeFormOA, fLoseNoStringData);
 				le.LexemeFormOA = null;
@@ -3471,7 +3470,6 @@ namespace SIL.LCModel.DomainImpl
 			// base.MergeObject will call DeleteUnderlyingObject on objSrc,
 			// which, in turn, will reset homographs for any similar entries for objSrc.
 
-			Debug.Assert(m_cache != null);
 			// We don't allow merging items of different classes.
 			Debug.Assert(ClassID == objSrc.ClassID);
 			if (ClassID != objSrc.ClassID)
@@ -3591,7 +3589,7 @@ namespace SIL.LCModel.DomainImpl
 				{
 					foreach (ICmObject cmo in mfo.ReferringObjects)
 						if (cmo is IWfiMorphBundle)
-							count += (cmo.Owner as WfiAnalysis).OccurrencesInTexts.Count<ISegment>();
+							count += ((WfiAnalysis)cmo.Owner).OccurrencesInTexts.Count<ISegment>();
 				}
 				return count;
 			}
@@ -3605,10 +3603,9 @@ namespace SIL.LCModel.DomainImpl
 			get
 			{
 				var stemNames = new HashSet<IMoStemName>(StemNamesOC);
-				if (Owner.ClassID == PartOfSpeechTags.kClassId)
+				if (Owner is IPartOfSpeech pos)
 				{
-					var owner = Owner as IPartOfSpeech;
-					stemNames.UnionWith(owner.AllStemNames);
+					stemNames.UnionWith(pos.AllStemNames);
 				}
 				return stemNames;
 			}
@@ -3624,10 +3621,9 @@ namespace SIL.LCModel.DomainImpl
 			get
 			{
 				var classes = new HashSet<IMoInflClass>(InflectionClassesOC);
-				if (Owner.ClassID == PartOfSpeechTags.kClassId)
+				if (Owner is IPartOfSpeech pos)
 				{
-					var owner = Owner as IPartOfSpeech;
-					classes.UnionWith(owner.AllInflectionClasses);
+					classes.UnionWith(pos.AllInflectionClasses);
 				}
 				return classes;
 			}
@@ -3643,10 +3639,9 @@ namespace SIL.LCModel.DomainImpl
 			get
 			{
 				var slots = new HashSet<IMoInflAffixSlot>(AffixSlotsOC);
-				if (Owner.ClassID == PartOfSpeechTags.kClassId)
+				if (Owner is IPartOfSpeech pos)
 				{
-					var owner = Owner as IPartOfSpeech;
-					slots.UnionWith(owner.AllAffixSlots);
+					slots.UnionWith(pos.AllAffixSlots);
 				}
 				return slots;
 			}
@@ -3946,7 +3941,7 @@ namespace SIL.LCModel.DomainImpl
 				{
 					foreach (IMoMorphSynAnalysis msa in le.MorphoSyntaxAnalysesOC)
 					{
-						if (msa is IMoStemMsa && (msa as IMoStemMsa).PartOfSpeechRA == this)
+						if (msa is IMoStemMsa { PartOfSpeechRA: PartOfSpeech pos } && pos == this)
 						{
 							++cLex;
 							break;
@@ -4041,7 +4036,7 @@ namespace SIL.LCModel.DomainImpl
 					if (sequence == null)
 						continue;
 					if (sequence.Flid == LexEntryRefTags.kflidComponentLexemes &&
-						(sequence.MainObject as ILexEntryRef).RefType == LexEntryRefTags.krtComplexForm)
+					    ((ILexEntryRef)sequence.MainObject).RefType == LexEntryRefTags.krtComplexForm)
 					{
 						yield return sequence.MainObject as ILexEntryRef;
 					}
@@ -4064,7 +4059,7 @@ namespace SIL.LCModel.DomainImpl
 					if (sequence == null)
 						continue;
 					if (sequence.Flid == LexEntryRefTags.kflidPrimaryLexemes &&
-						(sequence.MainObject as ILexEntryRef).RefType == LexEntryRefTags.krtComplexForm)
+						((ILexEntryRef)sequence.MainObject).RefType == LexEntryRefTags.krtComplexForm)
 					{
 						yield return sequence.MainObject as ILexEntryRef;
 					}
@@ -4084,7 +4079,7 @@ namespace SIL.LCModel.DomainImpl
 					if (sequence == null)
 						continue;
 					if (sequence.Flid == LexEntryRefTags.kflidShowComplexFormsIn &&
-						(sequence.MainObject as ILexEntryRef).RefType == LexEntryRefTags.krtComplexForm)
+						((ILexEntryRef)sequence.MainObject).RefType == LexEntryRefTags.krtComplexForm)
 					{
 						yield return sequence.MainObject as ILexEntryRef;
 					}
@@ -4112,7 +4107,7 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
-		/// LT-18771 - Method to remove the duplicated references occurs on Undo process, 
+		/// LT-18771 - Method to remove the duplicated references occurs on Undo process,
 		/// the first one of duplicated item becomes invalid. So we removed here.
 		/// </summary>
 		private void RemoveDuplicateRefs()
@@ -4408,8 +4403,8 @@ namespace SIL.LCModel.DomainImpl
 		/// <param name="sense"></param>
 		private void TransferExtraFieldsToSense(ILexSense sense)
 		{
-			var sda = Cache.DomainDataByFlid as ISilDataAccessManaged;
-			var flids = (Cache.MetaDataCacheAccessor as LcmMetaDataCache).GetFields(LexSenseTags.kClassId, true,
+			var sda = (ISilDataAccessManaged)Cache.DomainDataByFlid;
+			var flids = ((LcmMetaDataCache)Cache.MetaDataCacheAccessor).GetFields(LexSenseTags.kClassId, true,
 				(int)CellarPropertyTypeFilter.AllMulti).Except(new int[] {LexSenseTags.kflidGloss, LexSenseTags.kflidDefinition});
 			CopyMergeMultiStringFields(sense.Hvo, flids, Hvo, sda);
 			foreach (var flid in ((LcmMetaDataCache)Cache.MetaDataCacheAccessor).GetFields(LexSenseTags.kClassId, true,
@@ -4446,7 +4441,7 @@ namespace SIL.LCModel.DomainImpl
 				}
 			}
 			var sda = Cache.DomainDataByFlid as ISilDataAccessManaged;
-			var flids = (Cache.MetaDataCacheAccessor as LcmMetaDataCache).GetFields(LexEntryTags.kClassId, true,
+			var flids = ((LcmMetaDataCache)Cache.MetaDataCacheAccessor).GetFields(LexEntryTags.kClassId, true,
 				(int)CellarPropertyTypeFilter.AllMulti).Except(new int[] {LexEntryTags.kflidCitationForm});
 			CopyMergeMultiStringFields(entry.Hvo, flids, OwningEntry.Hvo, sda);
 		}
@@ -4647,7 +4642,7 @@ namespace SIL.LCModel.DomainImpl
 		private void SensesChangedPosition(int startIndex)
 		{
 			for (int i = startIndex; i < SensesOS.Count; i++)
-				(SensesOS[i] as LexSense).LexSenseOutlineChanged();
+				((LexSense)SensesOS[i]).LexSenseOutlineChanged();
 		}
 
 		protected override void RemoveObjectSideEffectsInternal(RemoveObjectEventArgs e)
@@ -5120,7 +5115,7 @@ namespace SIL.LCModel.DomainImpl
 				var msaOld = MorphoSyntaxAnalysisRA;
 				foreach (var msa in entry.MorphoSyntaxAnalysesOC)
 				{
-					if ((msa as MoMorphSynAnalysis).EqualsMsa(value))
+					if (((MoMorphSynAnalysis)msa).EqualsMsa(value))
 					{
 						MorphoSyntaxAnalysisRA = msa; // setter handles deleting msaOld if it is no longer used.
 						return;
@@ -5209,8 +5204,8 @@ namespace SIL.LCModel.DomainImpl
 						break;
 					}
 				}
-				MorphoSyntaxAnalysisRA = Cache.ServiceLocator.GetInstance<IMoMorphSynAnalysisRepository>().GetObject(msaMatch.Hvo);
-				if (msaOld != null && msaOld.IsValidObject && entry is LexEntry && !(entry as LexEntry).UsesMsa(msaOld))
+				MorphoSyntaxAnalysisRA = Cache.ServiceLocator.GetInstance<IMoMorphSynAnalysisRepository>().GetObject(msaMatch!.Hvo);
+				if (msaOld != null && msaOld.IsValidObject && entry is LexEntry && !((LexEntry)entry).UsesMsa(msaOld))
 				{
 					ReplaceReferences(msaOld, msaMatch);
 					// ReplaceReferences may well delete this object for us.  See FWR-2855.
@@ -5239,7 +5234,7 @@ namespace SIL.LCModel.DomainImpl
 					sLiftId = LexEntry.ExtractAttributeFromLiftResidue(sResidue, "id");
 				if (String.IsNullOrEmpty(sLiftId))
 					return Guid.ToString();
-				int idx = sLiftId.IndexOf('_');
+				int idx = sLiftId!.IndexOf('_');
 				if (idx >= 0)
 					return sLiftId.Substring(0, idx) + "_" + Guid;
 				return Guid.ToString();
@@ -5438,10 +5433,10 @@ namespace SIL.LCModel.DomainImpl
 						if (rie.SubentriesOS.Count == 0 &&
 							Services.GetInstance<ILexSenseRepository>().InstancesWithReversalEntry(rie).FirstOrDefault() == null)
 						{
-							if (rie.Owner is ReversalIndex)
-								(rie.Owner as ReversalIndex).EntriesOC.Remove(rie);
+							if (rie.Owner is ReversalIndex index)
+								index.EntriesOC.Remove(rie);
 							else
-								(rie.Owner as ReversalIndexEntry).SubentriesOS.Remove(rie);
+								((ReversalIndexEntry)rie.Owner).SubentriesOS.Remove(rie);
 						}
 
 					}
@@ -5836,15 +5831,14 @@ namespace SIL.LCModel.DomainImpl
 			{
 				string number = "";
 
-				if (Owner is ILexEntry)
+				if (Owner is ILexEntry le)
 				{
-					var le = Owner as ILexEntry;
 					int idx = le.SensesOS.IndexOf(this) + 1;
 					number = idx.ToString();
 				}
 				else
 				{
-					var ls = Owner as LexSense;
+					var ls = (LexSense)Owner;
 					int idx = ls.SensesOS.IndexOf(this) + 1;
 					number = ls.SenseNumber + "." + idx.ToString();
 				}
@@ -6024,9 +6018,9 @@ namespace SIL.LCModel.DomainImpl
 			var allSegs = Cache.ServiceLocator.GetInstance<ISegmentRepository>().AllInstances();
 
 			var wg = (from gloss in allGlosses
-				let bundles = (gloss.Owner as IWfiAnalysis).MorphBundlesOS.Where(bundle => bundle.SenseRA != null)
+				let bundles = ((IWfiAnalysis)gloss.Owner).MorphBundlesOS.Where(bundle => bundle.SenseRA != null)
 				where bundles.Count() == 1 && bundles.First() == this && !allSegs.Any(seg => seg.AnalysesRS.Contains(gloss))
-					&& !(gloss.Owner as IWfiAnalysis).EvaluationsRC.Any(eval => eval.Approves && (eval.Owner as ICmAgent).Human)
+					&& !((IWfiAnalysis)gloss.Owner).EvaluationsRC.Any(eval => eval.Approves && ((ICmAgent)eval.Owner).Human)
 				select gloss).FirstOrDefault();
 
 			if (wg != null)
@@ -6072,7 +6066,7 @@ namespace SIL.LCModel.DomainImpl
 		/// <returns>the new variant entry reference</returns>
 		public ILexEntryRef CreateVariantEntryAndBackRef(ILexEntryType variantType, ITsString tssVariantLexemeForm)
 		{
-			var entry = Owner as LexEntry;
+			var entry = (LexEntry)Owner;
 			return entry.CreateVariantEntryAndBackRef(this, variantType, tssVariantLexemeForm);
 		}
 
@@ -6211,7 +6205,7 @@ namespace SIL.LCModel.DomainImpl
 				int count = 0;
 				foreach (ICmObject cmo in ReferringObjects)
 					if (cmo is IWfiMorphBundle)
-						count += (cmo.Owner as WfiAnalysis).OccurrencesInTexts.Count<ISegment>();
+						count += ((WfiAnalysis)cmo.Owner).OccurrencesInTexts.Count<ISegment>();
 				return count;
 			}
 		}
@@ -6724,7 +6718,7 @@ namespace SIL.LCModel.DomainImpl
 			switch (e.Flid)
 			{
 				case ReversalIndexEntryTags.kflidSenses:
-					var lexSense = e.ObjectAdded as LexSense;
+					var lexSense = (LexSense)e.ObjectAdded;
 					if (WritingSystem != 0) // defensive, mainly for tests
 						lexSense.ReversalEntriesBulkTextChanged(WritingSystem);
 					ReversalEntrySensesChanged(lexSense, true);
@@ -6737,7 +6731,7 @@ namespace SIL.LCModel.DomainImpl
 			switch (e.Flid)
 			{
 				case ReversalIndexEntryTags.kflidSenses:
-					var lexSense = e.ObjectRemoved as LexSense;
+					var lexSense = (LexSense)e.ObjectRemoved;
 					if (WritingSystem != 0) // defensive, mainly for tests
 						lexSense.ReversalEntriesBulkTextChanged(WritingSystem);
 					ReversalEntrySensesChanged(lexSense, false);
@@ -6931,7 +6925,7 @@ namespace SIL.LCModel.DomainImpl
 			{
 				foreach (var phonRuleFeat in phonRuleFeats.PossibilitiesOS)
 				{
-					var prf = phonRuleFeat as IPhPhonRuleFeat;
+					var prf = (IPhPhonRuleFeat)phonRuleFeat;
 					if (prf.ItemRA == null)
 						phonRuleFeats.PossibilitiesOS.Remove(prf);
 					else
@@ -7146,10 +7140,10 @@ namespace SIL.LCModel.DomainImpl
 			{
 				if (obj is IPhSimpleContextNC)
 				{
-					var ctx = obj as IPhSimpleContextNC;
+					var ctx = (IPhSimpleContextNC)obj;
 					if (ctx.FeatureStructureRA is IPhNCFeatures)
 					{
-						var feats = ctx.FeatureStructureRA as IPhNCFeatures;
+						var feats = (IPhNCFeatures)ctx.FeatureStructureRA;
 						if ((feats.FeaturesOA == null) &&
 							(ctx.MinusConstrRS.Count == 1 && ctx.MinusConstrRS.Contains(this) && ctx.PlusConstrRS.Count == 0) ||
 							(ctx.PlusConstrRS.Count == 1 && ctx.PlusConstrRS.Contains(this) && ctx.MinusConstrRS.Count == 0))
@@ -7463,7 +7457,7 @@ namespace SIL.LCModel.DomainImpl
 					{
 						if (refObj is MoAffixAllomorph)
 						{
-							var affixAllomorphReferrer = refObj as MoAffixAllomorph;
+							var affixAllomorphReferrer = (MoAffixAllomorph)refObj;
 							var oldForm = affixAllomorphReferrer.Form.get_String(vernWs).Text;
 							if (oldForm != null)
 							{
@@ -7475,7 +7469,7 @@ namespace SIL.LCModel.DomainImpl
 
 						if (refObj is MoStemAllomorph)
 						{
-							var stemAllomorphReferrer = refObj as MoStemAllomorph;
+							var stemAllomorphReferrer = (MoStemAllomorph)refObj;
 							var oldForm = stemAllomorphReferrer.Form.get_String(vernWs).Text;
 							if (oldForm != null)
 							{
@@ -7590,18 +7584,18 @@ namespace SIL.LCModel.DomainImpl
 			switch (ctxt.ClassID)
 			{
 				case PhSequenceContextTags.kClassId:
-					var seqCtxt = ctxt as IPhSequenceContext;
+					var seqCtxt = (IPhSequenceContext)ctxt;
 					foreach (var cur in seqCtxt.MembersRS)
 						CollectVars(cur as IPhSimpleContextNC, featureConstrs, excludeCtxt);
 					break;
 
 				case PhIterationContextTags.kClassId:
-					var iterCtxt = ctxt as IPhIterationContext;
+					var iterCtxt = (IPhIterationContext)ctxt;
 					CollectVars(iterCtxt.MemberRA, featureConstrs, excludeCtxt);
 					break;
 
 				case PhSimpleContextNCTags.kClassId:
-					var ncCtxt = ctxt as IPhSimpleContextNC;
+					var ncCtxt = (IPhSimpleContextNC)ctxt;
 					CollectVars(ncCtxt.PlusConstrRS, featureConstrs);
 					CollectVars(ncCtxt.MinusConstrRS, featureConstrs);
 					break;
@@ -7696,7 +7690,7 @@ namespace SIL.LCModel.DomainImpl
 					var poses = Cache.LangProject.PartsOfSpeechOA.ReallyReallyAllPossibilities;
 					foreach (var possibility in poses)
 					{
-						var pos = possibility as IPartOfSpeech;
+						var pos = (IPartOfSpeech)possibility;
 						CollectInflectionClassesAndSubclasses(result, pos.AllInflectionClasses);
 					}
 					var prodRestricts = Cache.LangProject.MorphologicalDataOA.ProdRestrictOA.PossibilitiesOS.Cast<ICmObject>();
@@ -7993,8 +7987,7 @@ namespace SIL.LCModel.DomainImpl
 
 		private int GetIndex(int index)
 		{
-			bool isMiddleWithLeftSwitch;
-			int[] indices = GetStrucChangeIndices(out isMiddleWithLeftSwitch);
+			int[] indices = GetStrucChangeIndices(out _);
 			return indices[index];
 		}
 
@@ -8098,8 +8091,7 @@ namespace SIL.LCModel.DomainImpl
 
 			set
 			{
-				bool isMiddleWithLeftSwitch;
-				int[] indices = GetStrucChangeIndices(out isMiddleWithLeftSwitch);
+				int[] indices = GetStrucChangeIndices(out _);
 				SetStrucChangeIndices(indices, value);
 			}
 		}
@@ -8250,7 +8242,7 @@ namespace SIL.LCModel.DomainImpl
 			base.PreRemovalSideEffects();
 			if (Owner != null && Owner.ClassID == PhMetathesisRuleTags.kClassId)
 			{
-				var rule = Owner as IPhMetathesisRule;
+				var rule = (IPhMetathesisRule)Owner;
 				var ctxtToRemove = rule.UpdateStrucChange(rule.GetStrucChangeIndex(this), IndexInOwner, false);
 				if (ctxtToRemove != null)
 					rule.StrucDescOS.Remove(ctxtToRemove);
@@ -8270,12 +8262,12 @@ namespace SIL.LCModel.DomainImpl
 				if (entry != null)
 					UpdateLexEntryReferences(entry, true);
 				UpdateMinimalLexReferences(null);
-				if (e.ObjectAdded is LexSense)
+				if (e.ObjectAdded is LexSense sense)
 				{
-					List<ICmObject> backrefs = ((LexSense)e.ObjectAdded).LexSenseReferences.Cast<ICmObject>().ToList();
-					Services.GetInstance<IUnitOfWorkService>().RegisterVirtualAsModified(e.ObjectAdded, "LexSenseReferences",
+					List<ICmObject> backrefs = sense.LexSenseReferences.Cast<ICmObject>().ToList();
+					Services.GetInstance<IUnitOfWorkService>().RegisterVirtualAsModified(sense, "LexSenseReferences",
 						backrefs);
-					entry = (e.ObjectAdded as LexSense).Entry;
+					entry = sense.Entry;
 				}
 				if (entry != null)
 					entry.DateModified = DateTime.Now;
@@ -8309,10 +8301,10 @@ namespace SIL.LCModel.DomainImpl
 				targets.Add(extraTarget);
 			foreach (var target in targets)
 			{
-				if (target is LexEntry)
-					uowService.RegisterVirtualAsModified(target, "MinimalLexReferences", ((LexEntry)target).MinimalLexReferences.Cast<ICmObject>());
-				else if (target is LexSense)
-					uowService.RegisterVirtualAsModified(target, "MinimalLexReferences", ((LexSense)target).MinimalLexReferences.Cast<ICmObject>());
+				if (target is LexEntry entry)
+					uowService.RegisterVirtualAsModified(entry, "MinimalLexReferences", entry.MinimalLexReferences.Cast<ICmObject>());
+				else if (target is LexSense sense)
+					uowService.RegisterVirtualAsModified(sense, "MinimalLexReferences", sense.MinimalLexReferences.Cast<ICmObject>());
 			}
 		}
 
@@ -8326,13 +8318,13 @@ namespace SIL.LCModel.DomainImpl
 				if (entry != null)
 					UpdateLexEntryReferences(entry, false);
 				UpdateMinimalLexReferences(e.ObjectRemoved);
-				if (e.ObjectRemoved is LexSense)
+				if (e.ObjectRemoved is LexSense sense)
 				{
-					List<ICmObject> backrefs = ((LexSense)e.ObjectRemoved).LexSenseReferences.Cast<ICmObject>().ToList();
+					List<ICmObject> backrefs = sense.LexSenseReferences.Cast<ICmObject>().ToList();
 					// don't use this.Services, since 'this' may already have been deleted (in case Replace reduces target set to one item).
-					e.ObjectRemoved.Services.GetInstance<IUnitOfWorkService>().RegisterVirtualAsModified(e.ObjectRemoved, "LexSenseReferences",
+					e.ObjectRemoved.Services.GetInstance<IUnitOfWorkService>().RegisterVirtualAsModified(sense, "LexSenseReferences",
 						backrefs);
-					entry = (e.ObjectRemoved as LexSense).Entry;
+					entry = sense.Entry;
 				}
 				if (entry != null)
 					entry.DateModified = DateTime.Now;
@@ -8412,7 +8404,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			get
 			{
-				var lrtOwner = Owner as ILexRefType;
+				var lrtOwner = (ILexRefType)Owner;
 				var analWs = m_cache.DefaultAnalWs;
 				var userWs = m_cache.DefaultUserWs;
 				var tisb = TsStringUtils.MakeIncStrBldr();
@@ -8478,7 +8470,7 @@ namespace SIL.LCModel.DomainImpl
 		/// <returns></returns>
 		public int SequenceIndex(int hvoMember)
 		{
-			var lrtOwner = Owner as ILexRefType;
+			var lrtOwner = (ILexRefType)Owner;
 			switch ((MappingTypes)lrtOwner.MappingType)
 			{
 				case MappingTypes.kmtEntryOrSenseSequence:
@@ -8504,7 +8496,7 @@ namespace SIL.LCModel.DomainImpl
 		/// <param name="member">The reference member which needs the abbreviation</param>
 		public string TypeAbbreviation(int ws, ICmObject member)
 		{
-			var lrtOwner = Owner as ILexRefType;
+			var lrtOwner = (ILexRefType)Owner;
 			var wsCode = SpecialWritingSystemCodes.DefaultAnalysis;
 			if (ws < 0)
 			{
@@ -9390,7 +9382,7 @@ namespace SIL.LCModel.DomainImpl
 			// Not, however, if it is still in ComponentLexemes, as may for example happen when they are being re-ordered.
 			if (ComponentLexemesRS.Contains(objRemoved))
 				return;
-				PrimaryLexemesRS.Remove(objRemoved);
+			PrimaryLexemesRS.Remove(objRemoved);
 			ShowComplexFormsInRS.Remove(objRemoved);
 		}
 
@@ -9730,12 +9722,12 @@ namespace SIL.LCModel.DomainImpl
 			{
 				if (obj.ClassID == WfiMorphBundleTags.kClassId)
 				{
-					var wfiMB = obj as IWfiMorphBundle;
+					var wfiMB = (IWfiMorphBundle)obj;
 					wfiMB.InflTypeRA = null;
 				}
 				else
 				{
-					var lexEntryRef = obj as ILexEntryRef;
+					var lexEntryRef = (ILexEntryRef)obj;
 					int i = lexEntryRef.VariantEntryTypesRS.IndexOf(lexEntryType);
 					lexEntryRef.VariantEntryTypesRS.RemoveAt(i);
 					lexEntryRef.VariantEntryTypesRS.Insert(i, this);

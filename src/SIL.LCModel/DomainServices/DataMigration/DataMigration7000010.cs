@@ -2171,7 +2171,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			if (xficsForCurrentOldSegment.Count > 0)
 			{
 				foreach (var key in xficsForCurrentOldSegment.Keys)
-					xficsForCurrentPara.Remove(key);
+					xficsForCurrentPara!.Remove(key);
 
 				// The one returned element is "Analyses" (or null, if no twfics/pfics).
 				// It will have one, or more, 'objsur' type 'r' elements in it.

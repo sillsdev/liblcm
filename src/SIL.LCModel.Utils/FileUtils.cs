@@ -441,6 +441,8 @@ namespace SIL.LCModel.Utils
 				return sPathname.Normalize(NormalizationForm.FormD);
 
 			string sDir = Path.GetDirectoryName(sPathname);
+			if (sDir == null)
+				throw new InvalidOperationException("Could not get directory name from path " + sPathname);
 			string sFile = Path.GetFileName(sPathname).Normalize();
 			if (!Platform.IsUnix) // Using IsUnix to decide if a file system is case sensitive
 			{					// isn't the best way since some Unix file systems are case
