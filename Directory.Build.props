@@ -11,13 +11,11 @@
     <PackageProjectUrl>https://github.com/sillsdev/liblcm</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Platform>Any CPU</Platform>
-	<Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <OutputPath>$(MSBuildThisFileDirectory)artifacts/$(Configuration)/$(TargetFramework)</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <PackageOutputPath>$(MSBuildThisFileDirectory)/artifacts</PackageOutputPath>
-    <SignAssembly>true</SignAssembly>
     <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
-    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)/liblcm.snk</AssemblyOriginatorKeyFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>

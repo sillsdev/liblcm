@@ -7,7 +7,6 @@
     <Description>SIL LCModel Lexer/Parser Tools</Description>
     <PackageOutputPath>../../../artifacts</PackageOutputPath>
     <ChangelogFile>../../../CHANGELOG.md</ChangelogFile>
-    <AssemblyOriginatorKeyFile>../../../liblcm.snk</AssemblyOriginatorKeyFile>
     <DefineConstants>TRACE;GENTIME</DefineConstants>
     <NoWarn>1701;1702;0162</NoWarn>
   </PropertyGroup>
