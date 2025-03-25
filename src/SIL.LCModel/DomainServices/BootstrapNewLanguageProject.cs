@@ -93,8 +93,7 @@ namespace SIL.LCModel.DomainServices
 		{
 			var servLoc = lp.Cache.ServiceLocator;
 			var dataReader = (IDataReader)servLoc.GetInstance<IDataSetup>();
-			var listFactory = servLoc.GetInstance<ICmPossibilityListFactory>() as ICmPossibilityListFactoryInternal;
-			Debug.Assert(listFactory != null, "ServiceLocator has no instance of ICmPossibilityListFactory.");
+			var listFactory = (ICmPossibilityListFactoryInternal)servLoc.GetInstance<ICmPossibilityListFactory>();
 
 			var list = listFactory.Create(
 				CmPossibilityListTags.kguidTranslationTypes,
@@ -102,8 +101,7 @@ namespace SIL.LCModel.DomainServices
 			lp.TranslationTagsOA = list;
 			lp.TranslationTagsOA.ItemClsid = CmPossibilityTags.kClassId;
 
-			var possFactory = servLoc.GetInstance<ICmPossibilityFactory>() as ICmPossibilityFactoryInternal;
-			Debug.Assert(possFactory != null, "ServiceLocator has no instance of ICmPossibilityFactory.");
+			var possFactory = (ICmPossibilityFactoryInternal)servLoc.GetInstance<ICmPossibilityFactory>();
 
 			// Back trans item.
 			possFactory.Create(
@@ -142,8 +140,7 @@ namespace SIL.LCModel.DomainServices
 		{
 			var servLoc = lp.Cache.ServiceLocator;
 			var dataReader = (IDataReader)servLoc.GetInstance<IDataSetup>();
-			var agentFactory = servLoc.GetInstance<ICmAgentFactory>() as ICmAgentFactoryInternal;
-			Debug.Assert(agentFactory != null, "ServiceLocator has no instance of ICmAgentFactory.");
+			var agentFactory = (ICmAgentFactoryInternal)servLoc.GetInstance<ICmAgentFactory>();
 			var agent = agentFactory.Create(
 				CmAgentTags.kguidAgentDefUser,
 				dataReader.GetNextRealHvo(),
@@ -198,7 +195,7 @@ namespace SIL.LCModel.DomainServices
 			var cache = posList.Cache;
 			var servLoc = cache.ServiceLocator;
 			var dataReader = (IDataReader)servLoc.GetInstance<IDataSetup>();
-			var posFactory = servLoc.GetInstance<ICmAnnotationDefnFactory>() as ICmAnnotationDefnFactoryInternal;
+			var posFactory = (ICmAnnotationDefnFactoryInternal)servLoc.GetInstance<ICmAnnotationDefnFactory>();
 			return posFactory.Create(
 				guid,
 				dataReader.GetNextRealHvo(),
@@ -211,7 +208,7 @@ namespace SIL.LCModel.DomainServices
 			var cache = owner.Cache;
 			var servLoc = cache.ServiceLocator;
 			var dataReader = (IDataReader)servLoc.GetInstance<IDataSetup>();
-			var posFactory = servLoc.GetInstance<ICmAnnotationDefnFactory>() as ICmAnnotationDefnFactoryInternal;
+			var posFactory = (ICmAnnotationDefnFactoryInternal)servLoc.GetInstance<ICmAnnotationDefnFactory>();
 			return posFactory.Create(
 				guid,
 				dataReader.GetNextRealHvo(),
@@ -271,7 +268,7 @@ namespace SIL.LCModel.DomainServices
 
 			AddMorphTypes(lexDb);
 
-			var listFactoryInternal = listFactory as ICmPossibilityListFactoryInternal;
+			var listFactoryInternal = (ICmPossibilityListFactoryInternal)listFactory;
 			lexDb.ComplexEntryTypesOA = listFactoryInternal.Create(
 				new Guid("1ee09905-63dd-4c7a-a9bd-1d496743ccd6"),
 				dataReader.GetNextRealHvo());
@@ -305,7 +302,7 @@ namespace SIL.LCModel.DomainServices
 			var wsMgr = servLoc.WritingSystemManager;
 			var eng = wsMgr.UserWritingSystem.Handle;
 			lexDb.PublicationTypesOA.Name.set_String(eng, "Publications");
-			var possibilityFactory = servLoc.GetInstance<ICmPossibilityFactory>() as ICmPossibilityFactoryInternal;
+			var possibilityFactory = (ICmPossibilityFactoryInternal)servLoc.GetInstance<ICmPossibilityFactory>();
 			var dataReader = (IDataReader)servLoc.GetInstance<IDataSetup>();
 			var poss = possibilityFactory.Create(
 				Guid.NewGuid(),
@@ -324,7 +321,7 @@ namespace SIL.LCModel.DomainServices
 			var eng = servLoc.WritingSystemManager.UserWritingSystem;
 
 			var typesList = lexDb.ExtendedNoteTypesOA;
-			var possibilityFactory = servLoc.GetInstance<ICmPossibilityFactory>() as ICmPossibilityFactoryInternal;
+			var possibilityFactory = (ICmPossibilityFactoryInternal)servLoc.GetInstance<ICmPossibilityFactory>();
 			for (var i = 1; i <= 5; i++)
 			{
 				var guid = Guid.Empty;
@@ -520,7 +517,7 @@ namespace SIL.LCModel.DomainServices
 			var cache = lexDb.Cache;
 			var servLoc = cache.ServiceLocator;
 			var dataReader = (IDataReader)servLoc.GetInstance<IDataSetup>();
-			var lexEntryTypeFactory = servLoc.GetInstance<IMoMorphTypeFactory>() as IMoMorphTypeFactoryInternal;
+			var lexEntryTypeFactory = (IMoMorphTypeFactoryInternal)servLoc.GetInstance<IMoMorphTypeFactory>();
 			var eng = servLoc.WritingSystemManager.UserWritingSystem;
 
 			var morphTypesList = servLoc.GetInstance<ICmPossibilityListFactory>().Create();

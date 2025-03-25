@@ -155,7 +155,7 @@ namespace SIL.LCModel.Core.Phonology
 		public static bool CanInsertItem(string sEnv, int ichEnd, int ichAnchor)
 		{
 			Debug.Assert(sEnv != null);
-			Debug.Assert(ichEnd <= sEnv.Length && ichAnchor <= sEnv.Length);
+			Debug.Assert(ichEnd <= sEnv!.Length && ichAnchor <= sEnv.Length);
 			if (ichEnd < 0 || ichAnchor < 0)
 				return false;
 			int ichSlash = sEnv.IndexOf('/');
@@ -199,7 +199,7 @@ namespace SIL.LCModel.Core.Phonology
 		public static bool CanInsertHashMark(string sEnv, int ichEnd, int ichAnchor)
 		{
 			Debug.Assert(sEnv != null);
-			Debug.Assert(ichEnd <= sEnv.Length && ichAnchor <= sEnv.Length);
+			Debug.Assert(ichEnd <= sEnv!.Length && ichAnchor <= sEnv.Length);
 			if (ichEnd < 0 || ichAnchor < 0)
 				return false;
 			int ichSlash = sEnv.IndexOf('/');
@@ -297,10 +297,10 @@ namespace SIL.LCModel.Core.Phonology
 				// there were XML reserved characters in the environment.
 				// until we get that fixed, at least don't crash, just draw squiggly under the entire word
 				xdoc.LoadXml(sXmlMessage);
-				XmlAttribute posAttr = xdoc.DocumentElement.Attributes["pos"];
+				XmlAttribute posAttr = xdoc.DocumentElement!.Attributes["pos"];
 				pos = (posAttr != null) ? Convert.ToInt32(posAttr.Value) : 0;
 				XmlAttribute statusAttr = xdoc.DocumentElement.Attributes["status"];
-				sStatus = statusAttr.InnerText;
+				sStatus = statusAttr!.InnerText;
 			}
 			catch
 			{

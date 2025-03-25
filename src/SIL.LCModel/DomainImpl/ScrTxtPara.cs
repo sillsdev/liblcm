@@ -1943,9 +1943,7 @@ namespace SIL.LCModel.DomainImpl
 			if (OwningSection != null)
 				((ScrSection)OwningSection).AdjustReferences();
 
-			if ((originalValue == null && newValue != null) ||
-				(originalValue != null && newValue == null) ||
-				(originalValue != null && originalValue.Text != newValue.Text))
+			if (!(originalValue == null && newValue == null) && originalValue?.Text != newValue?.Text)
 			{
 				MarkBackTranslationsAsUnfinished();
 			}

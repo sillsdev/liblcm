@@ -4,6 +4,7 @@
     <TargetFrameworks>net461;net8.0</TargetFrameworks>
     <RootNamespace>SIL.LCModel.FixData</RootNamespace>
     <IsPackable>false</IsPackable>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

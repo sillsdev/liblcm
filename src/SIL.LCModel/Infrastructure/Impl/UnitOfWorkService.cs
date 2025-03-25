@@ -403,7 +403,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 						}
 					}
 				}
-				if (mostRecentUnsavedChange == null)
+				if (mostRecentUnsavedChange == null || stackWithMostRecentChange == null)
 					break;
 				stackWithMostRecentChange.RevertUnsavedUnitOfWork();
 				if (!updatedStacks.Contains(stackWithMostRecentChange))

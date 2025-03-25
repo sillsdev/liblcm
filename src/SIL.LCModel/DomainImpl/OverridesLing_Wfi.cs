@@ -296,13 +296,13 @@ namespace SIL.LCModel.DomainImpl
 
 		partial void FormSideEffects(ITsString originalValue, ITsString newValue)
 		{
-			var repo = Services.GetInstance<IPunctuationFormRepository>() as IPunctuationFormRepositoryInternal;
+			var repo = (IPunctuationFormRepositoryInternal)Services.GetInstance<IPunctuationFormRepository>();
 			repo.UpdateForm(originalValue, this);
 		}
 
 		protected override void OnBeforeObjectDeleted()
 		{
-			var repo = Services.GetInstance<IPunctuationFormRepository>() as IPunctuationFormRepositoryInternal;
+			var repo = (IPunctuationFormRepositoryInternal)Services.GetInstance<IPunctuationFormRepository>();
 			repo.RemoveForm(Form);
 
 			base.OnBeforeObjectDeleted();
@@ -602,7 +602,7 @@ namespace SIL.LCModel.DomainImpl
 		{
 			if (multiAltFlid == WfiWordformTags.kflidForm)
 			{
-				var repo = Services.GetInstance<IWfiWordformRepository>() as IWfiWordformRepositoryInternal;
+				var repo = (IWfiWordformRepositoryInternal)Services.GetInstance<IWfiWordformRepository>();
 				repo.UpdateForm(originalValue, this, alternativeWs.Handle);
 			}
 			base.ITsStringAltChangedSideEffectsInternal(multiAltFlid, alternativeWs, originalValue, newValue);
@@ -610,7 +610,7 @@ namespace SIL.LCModel.DomainImpl
 
 		protected override void OnBeforeObjectDeleted()
 		{
-			var repo = Services.GetInstance<IWfiWordformRepository>() as IWfiWordformRepositoryInternal;
+			var repo = (IWfiWordformRepositoryInternal)Services.GetInstance<IWfiWordformRepository>();
 			foreach (int ws in Form.AvailableWritingSystemIds)
 				repo.RemoveForm(Form.get_String(ws), ws);
 			RegisterVirtualsModifiedForObjectDeletion(((IServiceLocatorInternal)m_cache.ServiceLocator).UnitOfWorkService);
@@ -958,9 +958,9 @@ namespace SIL.LCModel.DomainImpl
 				int annotationCount = 0;
 				foreach (ICmObject cmo in ReferringObjects)
 				{
-					if (cmo is ISegment)
+					if (cmo is ISegment segment)
 					{
-						foreach (var x in (cmo as ISegment).AnalysesRS)
+						foreach (var x in segment.AnalysesRS)
 						{
 							if (x == this)
 								++annotationCount;
@@ -1245,7 +1245,7 @@ namespace SIL.LCModel.DomainImpl
 				bool isParserApproved = false;
 				foreach (var eval in m_EvaluationsRC)
 				{
-					ICmAgent agent = eval.Owner as ICmAgent;
+					ICmAgent agent = (ICmAgent)eval.Owner;
 					if (!agent.Human && eval.Approves && !isParserApproved)
 						isParserApproved = true;
 				}
@@ -1253,9 +1253,9 @@ namespace SIL.LCModel.DomainImpl
 				// Note that this analysis may occur more than once in a single segment.
 				foreach (ICmObject cmo in ReferringObjects)
 				{
-					if (cmo is ISegment)
+					if (cmo is ISegment segment)
 					{
-						foreach (var x in (cmo as ISegment).AnalysesRS)
+						foreach (var x in segment.AnalysesRS)
 						{
 							if (x == this)
 								++annotationCount;
@@ -1270,9 +1270,9 @@ namespace SIL.LCModel.DomainImpl
 				{
 					foreach (ICmObject cmo in gloss.ReferringObjects)
 					{
-						if (cmo is ISegment)
+						if (cmo is ISegment segment)
 						{
-							foreach (var x in (cmo as ISegment).AnalysesRS)
+							foreach (var x in segment.AnalysesRS)
 							{
 								if (x == gloss)
 									++annotationCount;

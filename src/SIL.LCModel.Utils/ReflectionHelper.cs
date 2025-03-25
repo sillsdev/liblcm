@@ -100,7 +100,10 @@ namespace SIL.LCModel.Utils
 		{
 			Assembly assembly;
 			string location = Assembly.GetExecutingAssembly().Location;
-			string assemblyPath = Path.Combine(Path.GetDirectoryName(location), assemblyName);
+			var directoryName = Path.GetDirectoryName(location);
+			if (directoryName == null)
+				throw new InvalidOperationException("Could not get directory name from location " + location);
+			string assemblyPath = Path.Combine(directoryName, assemblyName);
 			try
 			{
 				assembly = Assembly.LoadFrom(assemblyPath);
@@ -183,7 +186,10 @@ namespace SIL.LCModel.Utils
 		public static Type GetType(string assemblyName, string className1)
 		{
 			Assembly assembly;
-			string baseDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase).Substring(Environment.OSVersion.Platform == PlatformID.Unix ? 5 : 6);
+			var codeBase = Assembly.GetExecutingAssembly().CodeBase;
+			string baseDir = Path.GetDirectoryName(codeBase)?.Substring(Environment.OSVersion.Platform == PlatformID.Unix ? 5 : 6);
+			if (baseDir == null)
+				throw new InvalidOperationException("Could not get assembly base directory from CodeBase " + codeBase);
 			string assemblyPath = Path.Combine(baseDir, assemblyName);
 			try
 			{
@@ -448,7 +454,7 @@ namespace SIL.LCModel.Utils
 
 			// If necessary, go up the inheritance chain until the name
 			// of the method, property or field is found.
-			Type type = (binding is Type ? binding as Type : binding.GetType());
+			Type type = binding as Type ?? binding.GetType();
 			// TODO-Linux: System.Boolean System.Type::op_Inequality(System.Type,System.Type)
 			// is marked with [MonoTODO] and might not work as expected in 4.0.
 			while (type.GetMember(name, flags).Length == 0 && type.BaseType != null)

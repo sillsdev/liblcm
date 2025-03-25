@@ -880,7 +880,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 									continue;
 								var multiString = currentInternal.GetITsMultiStringProperty(flid);
 								var oldValue = multiString.get_String(ws);
-								if ((tss == null && oldValue != null && oldValue.Length != 0) || !tss.Equals(oldValue))
+								if ((tss == null && oldValue != null && oldValue.Length != 0) || (!tss?.Equals(oldValue) ?? false))
 								{
 									if (processChangeRecord(new LcmMultiTsStringPropertyChanged(currentObj, flid, ws, oldValue, tss)))
 										return;

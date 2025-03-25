@@ -122,9 +122,11 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		public static int CompareHex(string sx, string sy)
 		{
-			if (sx != null && sx.StartsWith("0x", true, CultureInfo.InvariantCulture))
+			if (sx == null) throw new ArgumentNullException(nameof(sx));
+			if (sy == null) throw new ArgumentNullException(nameof(sy));
+			if (sx.StartsWith("0x", true, CultureInfo.InvariantCulture))
 				sx = sx.Substring(2);
-			if (sy != null && sy.StartsWith("0x", true, CultureInfo.InvariantCulture))
+			if (sy.StartsWith("0x", true, CultureInfo.InvariantCulture))
 				sy = sy.Substring(2);
 			int x = (sx == String.Empty) ? 0 :
 				int.Parse(sx, NumberStyles.HexNumber, null);

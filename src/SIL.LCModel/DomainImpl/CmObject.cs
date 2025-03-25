@@ -700,7 +700,7 @@ namespace SIL.LCModel.DomainImpl
 		/// ------------------------------------------------------------------------------------
 		public virtual void MergeObject(ICmObject objSrc, bool fLoseNoStringData)
 		{
-			Debug.Assert(m_cache != null);
+			if (m_cache == null) throw new NullReferenceException("m_cache");
 			// We don't allow merging items of different classes.
 			Debug.Assert(ClassID == objSrc.ClassID);
 			if (ClassID != objSrc.ClassID)
@@ -807,7 +807,7 @@ namespace SIL.LCModel.DomainImpl
 							}
 					}
 				}
-				Object myCurrentValue = null;
+				Object myCurrentValue = new object();
 				MethodInfo mySetMethod = null;
 				Object srcCurrentValue = null;
 
@@ -841,7 +841,6 @@ namespace SIL.LCModel.DomainImpl
 				}
 				if (srcCurrentValue == null)
 					continue; // Nothing to merge.
-				Debug.Assert(srcCurrentValue != null);
 
 				/*
 				 * NOTE: Each of the cases (except the exception, which can't be tested)
@@ -972,7 +971,7 @@ namespace SIL.LCModel.DomainImpl
 						{
 							if (MergeStringProp(flid, nType, objSrc, fLoseNoStringData, myCurrentValue, srcCurrentValue))
 								break;
-							var myMsa = myCurrentValue as IMultiStringAccessor;
+							var myMsa = (IMultiStringAccessor)myCurrentValue;
 							myMsa.MergeAlternatives(srcCurrentValue as IMultiStringAccessor, fLoseNoStringData);
 							break;
 						}
@@ -1008,7 +1007,7 @@ namespace SIL.LCModel.DomainImpl
 						{
 							if (MergeStringProp(flid, nType, objSrc, fLoseNoStringData, myCurrentValue, srcCurrentValue))
 								break;
-							var myMua = myCurrentValue as IMultiUnicode;
+							var myMua = (IMultiUnicode)myCurrentValue;
 							myMua.MergeAlternatives(srcCurrentValue as IMultiUnicode, fLoseNoStringData);
 							break;
 						}
@@ -1021,9 +1020,10 @@ namespace SIL.LCModel.DomainImpl
 							var currentObj = myCurrentValue as ICmObject;
 							if (myCurrentValue == null)
 							{
-								if (nType == (int)CellarPropertyType.OwningAtomic || mySetMethod != null)
+								if (nType == (int)CellarPropertyType.OwningAtomic &&
+								    mySetMethod == null) throw new NullReferenceException("Method cannot be null for OwningAtomic type.");
+								if (mySetMethod != null)
 								{
-									Debug.Assert(mySetMethod != null);
 									mySetMethod.Invoke(this, new object[] { srcObj });
 								}
 								else
@@ -1035,7 +1035,7 @@ namespace SIL.LCModel.DomainImpl
 							// TODO-Linux: System.Boolean System.Type::op_Equality(System.Type,System.Type)
 							// is marked with [MonoTODO] and might not work as expected in 4.0.
 							else if (fLoseNoStringData && nType == (int)CellarPropertyType.OwningAtomic && srcObj != null
-								&& currentObj.GetType() == srcObj.GetType())
+								&& currentObj?.GetType() == srcObj.GetType())
 							{
 								// merge the child objects.
 								currentObj.MergeObject(srcObj, true);
@@ -1057,7 +1057,7 @@ namespace SIL.LCModel.DomainImpl
 			}
 
 			// Now move all incoming references.
-			var cmObject = ((CmObject)objSrc);
+			var cmObject = (CmObject)objSrc;
 			cmObject.EnsureCompleteIncomingRefs();
 			ReplaceIncomingReferences(objSrc);
 			if (objSrc.IsValidObject) // possibly side effects of ReplaceIncomingReferences will have deleted it already.

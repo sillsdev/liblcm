@@ -433,31 +433,29 @@ tinyint - Integer data from 0 through 255. Storage size is 1 byte.
 
 		private bool DataNotNull(object o)
 		{
-			if (o is CmObjectIdWithHvo)
-				o = (o as CmObjectIdWithHvo).GetObject(m_cache.ServiceLocator.GetInstance<ICmObjectRepository>());
-			if (o is MultiUnicodeAccessor)
+			if (o is CmObjectIdWithHvo obj)
+				o = obj.GetObject(m_cache.ServiceLocator.GetInstance<ICmObjectRepository>());
+			if (o is MultiUnicodeAccessor accessor)
 			{
-				return (o as MultiUnicodeAccessor).StringCount > 0;
+				return accessor.StringCount > 0;
 			}
-			else if (o is IStText)
+			else if (o is IStText txt)
 			{
-				IStText txt = o as IStText;
 				if (txt.ParagraphsOS.Count > 1)
 					return true;
-				IStTxtPara para = txt.ParagraphsOS[0] as IStTxtPara;
-				return para != null && para.Contents != null && para.Contents.Length > 0;
+				return txt.ParagraphsOS[0] is IStTxtPara para && para.Contents != null && para.Contents.Length > 0;
 			}
-			else if (o is LcmSet<ICmObject>)
+			else if (o is LcmSet<ICmObject> set)
 			{
-				return (o as LcmSet<ICmObject>).Count > 0;
+				return set.Count > 0;
 			}
-			else if (o is GenDate)
+			else if (o is GenDate date)
 			{
-				return !((GenDate)o).IsEmpty;
+				return !date.IsEmpty;
 			}
-			else if (o is int)
+			else if (o is int v)
 			{
-				return (int)o != 0;
+				return v != 0;
 			}
 			return true;
 		}
@@ -505,7 +503,8 @@ tinyint - Integer data from 0 through 255. Storage size is 1 byte.
 		/// where each object in the array represents a row in the Field$ table.</returns>
 		public static IEnumerable<FieldDescription> FieldDescriptors(LcmCache cache)
 		{
-			Debug.Assert(cache != null);
+			if (cache == null)
+				return new List<FieldDescription>();
 			if (s_fieldDescriptors != null)
 				return s_fieldDescriptors;
 

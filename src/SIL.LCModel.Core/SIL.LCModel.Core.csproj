@@ -26,6 +26,10 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
     <ProjectReference Include="..\CSTools\Tools\Tools.csproj" />
     <ProjectReference Include="..\SIL.LCModel.Build.Tasks\SIL.LCModel.Build.Tasks.csproj" />
     <ProjectReference Include="..\SIL.LCModel.Utils\SIL.LCModel.Utils.csproj" />
+    <PackageReference Include="Nullable" Version="1.3.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

@@ -214,6 +214,10 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					break;
 				}
 			}
+
+			if (dtoWeatherList == null)
+				throw new NullReferenceException("repoDTO did not contain dtoWeatherList");
+
 			dtoWeatherList.Xml = RemoveOwnerGuid(dtoWeatherList.Xml);
 			repoDTO.Update(dtoWeatherList);
 

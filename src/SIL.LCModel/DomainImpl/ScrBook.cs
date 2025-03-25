@@ -422,13 +422,10 @@ namespace SIL.LCModel.DomainImpl
 			}
 
 			ILcmOwningSequence<IScrSection> sections = SectionsOS;
-			IScrSection section = null;
-			if (footnote == null)
-				section = sections[iSection];
 
 			if (tag == ScrSectionTags.kflidHeading)
 			{
-				footnote = section.HeadingOA.FindNextFootnote(ref iParagraph, ref ich,
+				footnote = sections[iSection].HeadingOA.FindNextFootnote(ref iParagraph, ref ich,
 					fSkipCurrentPos);
 				if (footnote == null)
 				{
@@ -441,15 +438,14 @@ namespace SIL.LCModel.DomainImpl
 
 			if (tag == ScrSectionTags.kflidContent)
 			{
-				footnote = section.ContentOA.FindNextFootnote(ref iParagraph, ref ich,
+				footnote = sections[iSection].ContentOA.FindNextFootnote(ref iParagraph, ref ich,
 					fSkipCurrentPos);
 			}
 
 			while (footnote == null && iSection < sections.Count - 1)
 			{
 				iSection++;
-				section = sections[iSection];
-				footnote = section.FindFirstFootnote(out iParagraph, out ich, out tag);
+				footnote = sections[iSection].FindFirstFootnote(out iParagraph, out ich, out tag);
 			}
 
 			if (footnote != null)
@@ -520,7 +516,7 @@ namespace SIL.LCModel.DomainImpl
 
 			if (tagTmp == ScrSectionTags.kflidContent)
 			{
-				footnote = section.ContentOA.FindPreviousFootnote(ref iParagraphTmp,
+				footnote = section!.ContentOA.FindPreviousFootnote(ref iParagraphTmp,
 					ref ichTmp, fSkipFirstRun);
 				if (footnote == null)
 				{
@@ -533,7 +529,7 @@ namespace SIL.LCModel.DomainImpl
 
 			if (tagTmp == ScrSectionTags.kflidHeading)
 			{
-				footnote = section.HeadingOA.FindPreviousFootnote(ref iParagraphTmp,
+				footnote = section!.HeadingOA.FindPreviousFootnote(ref iParagraphTmp,
 					ref ichTmp, fSkipFirstRun);
 				while (footnote == null && iSectionTmp > 0)
 				{
@@ -841,7 +837,6 @@ namespace SIL.LCModel.DomainImpl
 		public void InitTitlePara()
 		{
 			IStText titleText = TitleOA;
-			Debug.Assert(titleText != null && titleText.ParagraphsOS.Count == 0);
 			IStTxtPara para = titleText.AddNewTextPara(ScrStyleNames.MainBookTitle);
 
 			// set the title text to the vernacular writing system.
@@ -1289,7 +1284,7 @@ namespace SIL.LCModel.DomainImpl
 			{
 				// All revision sections are new to the current. So everything is fine.
 			}
-			else if (firstScrSec == null && firstRevScrSec == null)
+			else if (firstScrSec == null || firstRevScrSec == null)
 			{
 				// There are no scripture sections in either the current or the revision, so
 				// lets just give up!

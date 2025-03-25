@@ -764,7 +764,9 @@ namespace SIL.LCModel.DomainServices
 		public BaseStyleInfo(IStStyle style, CoreWritingSystemDefinition forceStyleInfo)
 			: this()
 		{
-			Debug.Assert(style != null);
+			if (style == null)
+				throw new ArgumentNullException("style");
+
 			SetPropertiesBasedOnStyle(style, forceStyleInfo);
 
 			m_cache = style.Cache;

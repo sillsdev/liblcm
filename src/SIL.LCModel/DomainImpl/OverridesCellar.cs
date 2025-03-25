@@ -456,12 +456,12 @@ namespace SIL.LCModel.DomainImpl
 	{
 		public bool Approves
 		{
-			get { return (Owner as CmAgent).ApprovesOA == this; }
+			get { return (Owner as CmAgent)?.ApprovesOA == this; }
 		}
 
 		public bool Human
 		{
-			get { return (Owner as CmAgent).Human; }
+			get { return (Owner as CmAgent)?.Human ?? false; }
 		}
 
 	}
@@ -499,7 +499,7 @@ namespace SIL.LCModel.DomainImpl
 					DisapprovesOA = Services.GetInstance<ICmAgentEvaluationFactory>().Create();
 				if (ApprovesOA == null)
 					ApprovesOA = Services.GetInstance<ICmAgentEvaluationFactory>().Create();
-				var analysis = target as IWfiAnalysis;
+				var analysis = (IWfiAnalysis)target;
 				if (opinion != Opinions.approves)
 					analysis.EvaluationsRC.Remove(ApprovesOA);
 				if (opinion != Opinions.disapproves)
@@ -1972,10 +1972,10 @@ namespace SIL.LCModel.DomainImpl
 			var flid = m_cache.MetaDataCache.GetFieldId2(CmPictureTags.kClassId, "PathNameTSS", false);
 			foreach (ICmPicture pict in m_cache.ServiceLocator.GetInstance<ICmPictureRepository>().AllInstances())
 			{
-				if (pict.PictureFileRA == this)
+				if (pict.PictureFileRA == this && pict is CmPicture cmPicture)
 				{
 					((IServiceLocatorInternal)m_cache.ServiceLocator).UnitOfWorkService.RegisterVirtualAsModified(pict,
-						flid, m_cache.MakeUserTss(""), (pict as CmPicture).PathNameTSS);
+						flid, m_cache.MakeUserTss(""), cmPicture.PathNameTSS);
 				}
 			}
 		}
@@ -2196,7 +2196,7 @@ namespace SIL.LCModel.DomainImpl
 			if (!base.IsEquivalent(other))
 				return false;
 
-			return (other as IFsClosedValue).ValueRA == ValueRA;
+			return (other as IFsClosedValue)?.ValueRA == ValueRA;
 		}
 
 		/// <summary>
@@ -2269,14 +2269,20 @@ namespace SIL.LCModel.DomainImpl
 			var sValue = "";
 			if (ValueRA != null)
 			{
-				if (fLongForm || ValueRA.ShowInGloss)
+				// per LT-21206, ShowInGloss now means "show as abbreviation".
+				// If ShowInGloss is false, then use the name instead.
+				if (ValueRA.ShowInGloss)
 				{
 					sValue = ValueRA.Abbreviation.BestAnalysisAlternative.Text;
 					if (sValue == null || sValue.Length == 0)
 						sValue = ValueRA.Name.BestAnalysisAlternative.Text;
-					if (!fLongForm)
-						sValue = sValue + ValueRA.RightGlossSep.AnalysisDefaultWritingSystem.Text;
 				}
+				else
+				{
+					sValue = ValueRA.Name.BestAnalysisAlternative.Text;
+				}
+				if (!fLongForm)
+					sValue = sValue + ValueRA.RightGlossSep.AnalysisDefaultWritingSystem.Text;
 			}
 			else
 				sValue = m_ksUnknown;
@@ -2293,15 +2299,20 @@ namespace SIL.LCModel.DomainImpl
 					sFeature = FeatureRA.Abbreviation.BestAnalysisAlternative.Text;
 					if (sFeature == null || sFeature.Length == 0)
 						sFeature = FeatureRA.Name.BestAnalysisAlternative.Text;
-					if (fLongForm)
-						sFeature = sFeature + ":";
-					else
-						sFeature = sFeature + FeatureRA.RightGlossSep.BestAnalysisAlternative.Text;
+					sFeature = sFeature + GetSeparator(FeatureRA, fLongForm);
 				}
 			}
 			else
 				sFeature = m_ksUnknown;
 			return sFeature;
+		}
+
+		internal static string GetSeparator(IFsFeatDefn feature, bool longForm)
+		{
+			string sep = feature.RightGlossSep.BestAnalysisAlternative.Text;
+			if (longForm || sep == "***")
+				return ":";
+			return sep;
 		}
 
 		/// <summary>
@@ -2419,10 +2430,12 @@ namespace SIL.LCModel.DomainImpl
 			if (!base.IsEquivalent(other))
 				return false;
 
-			var otherValue = (other as IFsComplexValue).ValueOA;
+			var otherValue = (other as IFsComplexValue)?.ValueOA;
 			var thisValue = ValueOA;
 			if (otherValue == null && thisValue == null)
 				return true;
+			if (otherValue == null || thisValue == null)
+				return false;
 			return otherValue.IsEquivalent(thisValue);
 		}
 
@@ -2520,7 +2533,7 @@ namespace SIL.LCModel.DomainImpl
 					sFeature = FeatureRA.Abbreviation.BestAnalysisAlternative.Text;
 					if (string.IsNullOrEmpty(sFeature))
 						sFeature = FeatureRA.Name.BestAnalysisAlternative.Text;
-					sFeature = fLongForm ? sFeature + ":" : sFeature + FeatureRA.RightGlossSep.BestAnalysisAlternative.Text;
+					sFeature = sFeature + FsClosedValue.GetSeparator(FeatureRA, fLongForm);
 				}
 			}
 			else
@@ -2534,7 +2547,7 @@ namespace SIL.LCModel.DomainImpl
 		internal override void SetMoreCloneProperties(ICmObject clone)
 		{
 			IFsComplexValue val = (IFsComplexValue)clone;
-			val.ValueOA = (ValueOA as FsAbstractStructure).CreateNewObject();
+			val.ValueOA = (ValueOA as FsAbstractStructure)?.CreateNewObject();
 			ValueOA.SetCloneProperties(val.ValueOA);
 		}
 
@@ -2992,22 +3005,22 @@ namespace SIL.LCModel.DomainImpl
 					switch (msa.ClassID)
 					{
 						case MoStemMsaTags.kClassId:
-							IMoStemMsa stemMsa = msa as IMoStemMsa;
+							IMoStemMsa stemMsa = (IMoStemMsa)msa;
 							pos = stemMsa.PartOfSpeechRA;
 							break;
 						case MoInflAffMsaTags.kClassId:
-							IMoInflAffMsa inflMsa = msa as IMoInflAffMsa;
+							IMoInflAffMsa inflMsa = (IMoInflAffMsa)msa;
 							pos = inflMsa.PartOfSpeechRA;
 							break;
 						case MoDerivAffMsaTags.kClassId:
-							IMoDerivAffMsa derivMsa = msa as IMoDerivAffMsa;
+							IMoDerivAffMsa derivMsa = (IMoDerivAffMsa)msa;
 							if (derivMsa.FromProdRestrictRC.Contains((ICmPossibility)fs))
 								pos = derivMsa.FromPartOfSpeechRA;
 							else
 								pos = derivMsa.ToPartOfSpeechRA;
 							break;
 						case MoUnclassifiedAffixMsaTags.kClassId:
-							IMoUnclassifiedAffixMsa unclassMsa = msa as IMoUnclassifiedAffixMsa;
+							IMoUnclassifiedAffixMsa unclassMsa = (IMoUnclassifiedAffixMsa)msa;
 							pos = unclassMsa.PartOfSpeechRA;
 							break;
 					}
@@ -3163,7 +3176,7 @@ namespace SIL.LCModel.DomainImpl
 			if (!base.IsEquivalent(other))
 				return false;
 
-			return (other as IFsNegatedValue).ValueRA == ValueRA;
+			return (other as IFsNegatedValue)?.ValueRA == ValueRA;
 		}
 
 		/// <summary>
@@ -3245,7 +3258,7 @@ namespace SIL.LCModel.DomainImpl
 			if (!base.IsEquivalent(other))
 				return false;
 
-			return (other as IFsDisjunctiveValue).ValueRC.IsEquivalent(ValueRC);
+			return (other as IFsDisjunctiveValue)?.ValueRC.IsEquivalent(ValueRC) ?? false;
 		}
 
 		/// <summary>
@@ -3324,9 +3337,9 @@ namespace SIL.LCModel.DomainImpl
 			if (!base.IsEquivalent(other))
 				return false;
 
-			var otherContents = (other as IFsFeatStrucDisj).ContentsOC;
+			var otherContents = (other as IFsFeatStrucDisj)?.ContentsOC;
 			var thisContents = ContentsOC;
-			if (otherContents.Count != thisContents.Count)
+			if (otherContents?.Count != thisContents.Count)
 				return false;
 			foreach (var fsOther in otherContents)
 			{
@@ -3366,7 +3379,7 @@ namespace SIL.LCModel.DomainImpl
 			IFsFeatStrucDisj disj = (IFsFeatStrucDisj)clone;
 			foreach (var oldFeat in ContentsOC)
 			{
-				IFsFeatStruc newFeat = (oldFeat as FsFeatStruc).CreateNewObject() as IFsFeatStruc;
+				IFsFeatStruc newFeat = (oldFeat as FsFeatStruc)?.CreateNewObject() as IFsFeatStruc;
 				disj.ContentsOC.Add(newFeat);
 				oldFeat.SetCloneProperties(newFeat);
 			}
@@ -3632,7 +3645,7 @@ namespace SIL.LCModel.DomainImpl
 				if (closedFeat != null)
 					closedValue.FeatureRA = closedFeat;
 
-				var fsfv = closedFeat.GetOrCreateSymbolicValueFromXml(feature, item);
+				var fsfv = closedFeat?.GetOrCreateSymbolicValueFromXml(feature, item);
 				if (fsfv != null)
 					closedValue.ValueRA = fsfv;
 			}
@@ -3670,7 +3683,7 @@ namespace SIL.LCModel.DomainImpl
 				return false;
 
 			var fs = other as IFsFeatStruc;
-			if (fs.TypeRA != TypeRA)
+			if (fs?.TypeRA != TypeRA)
 				return false;
 			var otherFeatures = fs.FeatureSpecsOC;
 			var thisFeatures = FeatureSpecsOC;
@@ -3836,8 +3849,8 @@ namespace SIL.LCModel.DomainImpl
 		{
 			var commonFeatures = from newItem in fsNew.FeatureSpecsOC
 								 from myitem in FeatureSpecsOC
-								 where (newItem is IFsClosedValue && (newItem as IFsClosedValue).FeatureRA.Name == myitem.FeatureRA.Name) ||
-								 (newItem is IFsComplexValue && (newItem as IFsComplexValue).FeatureRA.Name == myitem.FeatureRA.Name)
+								 where (newItem is IFsClosedValue closed && closed.FeatureRA.Name == myitem.FeatureRA.Name) ||
+								 (newItem is IFsComplexValue complex && complex.FeatureRA.Name == myitem.FeatureRA.Name)
 								 select newItem;
 			var nonCommonFeatures = from newItem in fsNew.FeatureSpecsOC
 									where !commonFeatures.Contains(newItem)
@@ -3857,16 +3870,11 @@ namespace SIL.LCModel.DomainImpl
 				}
 				else
 				{
-					var complex = myFeatureValues.First() as IFsComplexValue;
-					if (complex != null)
+					if (myFeatureValues.First() is IFsComplexValue complex &&
+					    spec is IFsComplexValue newComplexValue &&
+					    complex.ValueOA is IFsFeatStruc fs)
 					{
-						var newComplexValue = spec as IFsComplexValue;
-						if (newComplexValue != null)
-						{
-							var fs = complex.ValueOA as IFsFeatStruc;
-							if (fs != null)
-								fs.PriorityUnion((spec as IFsComplexValue).ValueOA as IFsFeatStruc);
-						}
+						fs.PriorityUnion(newComplexValue.ValueOA as IFsFeatStruc);
 					}
 				}
 			}
@@ -3952,7 +3960,7 @@ namespace SIL.LCModel.DomainImpl
 				{
 					if (fLongForm)
 					{
-						tisb.AppendTsString((cv as FsClosedValue).LongNameTSS);
+						tisb.AppendTsString((cv as FsClosedValue)?.LongNameTSS);
 					}
 					else
 					{
@@ -3961,11 +3969,10 @@ namespace SIL.LCModel.DomainImpl
 				}
 				else
 				{
-					var complex = spec as IFsComplexValue;
-					if (complex != null)
+					if (spec is IFsComplexValue complex)
 					{
 						if (fLongForm)
-							tisb.AppendTsString((complex as FsComplexValue).LongNameTSS);
+							tisb.AppendTsString(((FsComplexValue)complex).LongNameTSS);
 						else
 							tisb.AppendTsString(complex.ShortNameTSS);
 					}
@@ -4073,7 +4080,7 @@ namespace SIL.LCModel.DomainImpl
 			}
 			foreach (IFsFeatureSpecification oldSpec in FeatureSpecsOC)
 			{
-				var newSpec = (oldSpec as FsFeatureSpecification).CreateNewObject();
+				var newSpec = ((FsFeatureSpecification)oldSpec).CreateNewObject();
 				feat.FeatureSpecsOC.Add(newSpec);
 				oldSpec.SetCloneProperties(newSpec);
 			}
@@ -4113,13 +4120,13 @@ namespace SIL.LCModel.DomainImpl
 				m_backrefsToDelete.Clear();
 			foreach (ICmObject obj in ReferringObjects)
 			{
-				if (obj is IFsFeatureSpecification &&
-					(obj as IFsFeatureSpecification).FeatureRA == this)
+				if (obj is IFsFeatureSpecification spec &&
+					spec.FeatureRA == this)
 				{
 					m_backrefsToDelete.Add(obj);
 				}
-				else if (obj is IPhFeatureConstraint &&
-					(obj as IPhFeatureConstraint).FeatureRA == this)
+				else if (obj is IPhFeatureConstraint con &&
+					con.FeatureRA == this)
 				{
 					m_backrefsToDelete.Add(obj);
 				}
@@ -4158,16 +4165,16 @@ namespace SIL.LCModel.DomainImpl
 			if (obj != null && obj.IsValidObject)
 			{
 				bool fDelete = false;
-				if (obj is FsFeatStruc)
+				if (obj is FsFeatStruc fs)
 				{
-					int cDisj = (obj as FsFeatStruc).FeatureDisjunctionsOC.Count;
-					int cSpec = (obj as FsFeatStruc).FeatureSpecsOC.Count;
+					int cDisj = fs.FeatureDisjunctionsOC.Count;
+					int cSpec = fs.FeatureSpecsOC.Count;
 					if (cDisj + cSpec == 1)
 						fDelete = true;
 				}
-				else if (obj is FsFeatStrucDisj)
+				else if (obj is FsFeatStrucDisj fsd)
 				{
-					int cContents = (obj as FsFeatStrucDisj).ContentsOC.Count;
+					int cContents = fsd.ContentsOC.Count;
 					if (cContents == 1)
 						fDelete = true;
 				}
@@ -4248,7 +4255,7 @@ namespace SIL.LCModel.DomainImpl
 			DefaultFooterOA.InsideAlignedText = copyFrom.DefaultFooterOA.InsideAlignedText;
 
 
-			var owningDiv = Owner as IPubDivision;
+			var owningDiv = (IPubDivision)Owner;
 			if (owningDiv.DifferentFirstHF)
 			{
 				// if the header and the footer were null (if they are the same as the odd page)
