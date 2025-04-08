@@ -208,7 +208,7 @@ namespace SIL.LCModel.Core.Text
 		#region static accessor functions
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Fills a two-tiered hash table system with all the instances of this class that
+		/// Fills a two-tiered hash table system with all the categories and classes we expect
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private static void InitializeHashTables()
@@ -302,6 +302,8 @@ namespace SIL.LCModel.Core.Text
 					new UcdProperty("0", UcdCategories.canonicalCombiningClass));
 				canonicalCombiningClassDict.Add(1,
 					new UcdProperty("1", UcdCategories.canonicalCombiningClass));
+				canonicalCombiningClassDict.Add(2,
+					new UcdProperty("2", UcdCategories.canonicalCombiningClass));
 				canonicalCombiningClassDict.Add(7,
 					new UcdProperty("7", UcdCategories.canonicalCombiningClass));
 				canonicalCombiningClassDict.Add(8,
