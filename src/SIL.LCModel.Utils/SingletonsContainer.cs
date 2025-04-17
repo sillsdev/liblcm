@@ -2,6 +2,8 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -145,7 +147,7 @@ namespace SIL.LCModel.Utils
 			/// InvalidCastException is thrown.
 			/// </remarks>
 			/// --------------------------------------------------------------------------------
-			public T Get<T>(string key, Func<T> createFunc, Action initFunc)
+			public T Get<T>(string key, Func<T> createFunc, Action? initFunc)
 				where T : IDisposable
 			{
 				m_lock.EnterUpgradeableReadLock();
@@ -196,7 +198,7 @@ namespace SIL.LCModel.Utils
 		// ReSharper restore MemberHidesStaticFromOuterClass
 		#endregion // class SingletonsContainerImpl
 
-		private static SingletonsContainerImpl s_container;
+		private static SingletonsContainerImpl? s_container;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>Gets the SingletonsContainer instance.</summary>

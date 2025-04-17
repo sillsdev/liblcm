@@ -2,6 +2,8 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+#nullable enable
+
 using SIL.LCModel.Tools;
 
 namespace SIL.LCModel.Core.Phonology {
@@ -211,7 +213,7 @@ public static object Ident_factory(Lexer yyl) { return new Ident(yyl);}
 /// <param name='yytext'></param>
 /// <param name='action'></param>
 /// <param name='reject'></param>
-public override TOKEN OldAction(Lexer yym,string yytext, int action, ref bool reject) {
+public override TOKEN? OldAction(Lexer yym,string yytext, int action, ref bool reject) {
   switch(action) {
   case -1: break;
    case 8: ;

@@ -1,6 +1,8 @@
-﻿// Copyright (c) 2015-2017 SIL International
+﻿﻿// Copyright (c) 2015-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
+
+#nullable enable
 
 using System;
 using System.Collections;
@@ -37,7 +39,7 @@ namespace SIL.LCModel.Utils
 
 		#region Data Members
 
-		private RedBlackNode m_rootNode;
+		private RedBlackNode? m_rootNode;
 		private int m_nodeCount;
 		private readonly IComparer<TKey> m_comparer;
 
@@ -374,7 +376,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="key">The key whose value to get.</param>
 		/// <param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the <paramref name="value"/> parameter. This parameter is passed uninitialized.</param>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="key"/> is null.</exception>
-		public bool TryGetValue(TKey key, out TValue value)
+		public bool TryGetValue(TKey key, out TValue? value)
 		{
 			if (key == null)
 				throw new ArgumentNullException("key");
@@ -506,7 +508,7 @@ namespace SIL.LCModel.Utils
 			return InsertNode(pair, m_rootNode);
 		}
 
-		private bool TryGetNode(TKey key, out RedBlackNode node)
+		private bool TryGetNode(TKey key, out RedBlackNode? node)
 		{
 			node = null;
 
@@ -613,7 +615,7 @@ namespace SIL.LCModel.Utils
 			return true;
 		}
 
-		private void CheckNode(RedBlackNode current)
+		private void CheckNode(RedBlackNode? current)
 		{
 			if (current == null)
 				return;
@@ -941,7 +943,7 @@ namespace SIL.LCModel.Utils
 			}
 		}
 
-		private static RedBlackNode FindSuccessor(RedBlackNode node)
+		private static RedBlackNode? FindSuccessor(RedBlackNode node)
 		{
 			// The successor to a node is the node closest in value to it that is larger.
 			if (node.RightNode == null)
@@ -1130,7 +1132,7 @@ namespace SIL.LCModel.Utils
 
 		#region Tree Traversal Methods
 
-		private static IEnumerable<KeyValuePair<TKey, TValue>> InOrderTraversal(RedBlackNode node, Func<RedBlackNode, bool> breakPredicate)
+		private static IEnumerable<KeyValuePair<TKey, TValue>> InOrderTraversal(RedBlackNode? node, Func<RedBlackNode, bool>? breakPredicate)
 		{
 			if (node.LeftNode != null)
 			{
@@ -1175,11 +1177,11 @@ namespace SIL.LCModel.Utils
 
 			public KeyValuePair<TKey, TValue> Pair { get; set; }
 
-			public RedBlackNode ParentNode { get; set; }
+			public RedBlackNode? ParentNode { get; set; }
 
-			public RedBlackNode LeftNode { get; set; }
+			public RedBlackNode? LeftNode { get; set; }
 
-			public RedBlackNode RightNode { get; set; }
+			public RedBlackNode? RightNode { get; set; }
 
 			public Boolean IsRoot
 			{

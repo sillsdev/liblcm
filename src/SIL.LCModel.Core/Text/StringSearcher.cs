@@ -2,6 +2,8 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -212,7 +214,7 @@ namespace SIL.LCModel.Core.Text
 			if (tss.RunCount == 1) // VERY common special case
 				return Search(indexId, tss.get_WritingSystemAt(0), tss.Text) ?? Enumerable.Empty<T>();
 
-			IEnumerable<T> results = null;
+			IEnumerable<T>? results = null;
 			foreach (Tuple<int, string> wsStr in GetWsStrings(tss))
 			{
 				IEnumerable<T> items = Search(indexId, wsStr.Item1, wsStr.Item2);
@@ -252,7 +254,7 @@ namespace SIL.LCModel.Core.Text
 					}
 
 				case SearchType.FullText:
-					IEnumerable<T> results = null;
+					IEnumerable<T>? results = null;
 					string[] tokens = RemoveWhitespaceAndPunctTokens(m_tokenizer(wsId, text)).ToArray();
 					for (int i = 0; i < tokens.Length; i++)
 					{

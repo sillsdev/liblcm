@@ -1,6 +1,8 @@
-﻿// Copyright (c) 2015-2017 SIL International
+﻿﻿// Copyright (c) 2015-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
+
+#nullable enable
 
 using System;
 using System.Collections;
@@ -14,9 +16,11 @@ namespace SIL.LCModel.Utils
 	/// a few keys. It uses linear search and is optimized for a handful of items.
 	/// </summary>
 	public class SmallDictionary<Tkey, TValue> : IDictionary<Tkey, TValue>
+	    where Tkey : notnull
+	    where TValue : notnull
 	{
-		private KeyValuePair<Tkey, TValue> m_first;
-		private KeyValuePair<Tkey, TValue>[] m_others;
+		private KeyValuePair<Tkey, TValue> m_first = new(default!, default!);
+		private KeyValuePair<Tkey, TValue>[]? m_others;
 
 		#region IDictionary<Tkey,TValue> Members
 

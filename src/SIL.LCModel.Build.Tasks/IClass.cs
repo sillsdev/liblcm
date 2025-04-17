@@ -2,6 +2,8 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+#nullable enable
+
 namespace SIL.LCModel.Build.Tasks
 {
 	/// ----------------------------------------------------------------------------------------
@@ -25,7 +27,7 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value>The base class.</value>
 		/// ------------------------------------------------------------------------------------
-		Class BaseClass { get; }
+		Class? BaseClass { get; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>

@@ -2,6 +2,8 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+#nullable enable
+
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -132,7 +134,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="value">[out] value of the registry entry if it exists; null otherwise.</param>
 		/// <returns><c>true</c> if the registry entry exists, otherwise <c>false</c></returns>
 		/// ------------------------------------------------------------------------------------
-		public static bool RegEntryValueExists(RegistryKey key, string subKey, string regEntry, out object value)
+		public static bool RegEntryValueExists(RegistryKey key, string subKey, string regEntry, out object? value)
 		{
 			if (key == null)
 				throw new ArgumentNullException(nameof(key));
