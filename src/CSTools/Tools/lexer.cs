@@ -868,17 +868,11 @@ namespace SIL.LCModel.Tools
 				{ // last one might not be an old-style action
 					if (m_debug)
 						Console.WriteLine("creating a "+dfa.m_tokClass);
-					var createdToken = Tfactory.create(dfa.m_tokClass,this);
-					if (createdToken == null)
-					    throw new InvalidOperationException($"Failed to create token of type {dfa.m_tokClass}");
-					tok = (TOKEN)createdToken;
+					tok=(TOKEN)Tfactory.create(dfa.m_tokClass,this);
 				}
 				else
 				{
-					var oldActionToken = m_tokens.OldAction(this,yytext,action,ref reject);
-					if (oldActionToken == null)
-					    throw new InvalidOperationException("OldAction failed to create a valid token");
-					tok = oldActionToken;
+					tok = m_tokens.OldAction(this,yytext,action,ref reject);
 					if (m_debug && !reject)
 						Console.WriteLine("Old action "+action);
 				}
