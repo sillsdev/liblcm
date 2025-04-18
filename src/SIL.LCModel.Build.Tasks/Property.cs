@@ -85,7 +85,7 @@ namespace SIL.LCModel.Build.Tasks
 		{
 			get
 			{
-				return Parent.Number * 1000 + Convert.ToInt32(m_node.Attributes["num"].Value);
+				return Parent.Number * 1000 + Convert.ToInt32(m_node.Attributes["num"]!.Value);
 			}
 		}
 
@@ -99,7 +99,7 @@ namespace SIL.LCModel.Build.Tasks
 		{
 			get
 			{
-				string sig = m_node.Attributes["sig"].Value;
+				string sig = m_node.Attributes["sig"]!.Value;
 				//if (sig == "MultiString" || sig == "MultiUnicode")
 				//	sig += "Accessor";
 
@@ -152,7 +152,7 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value>The type info.</value>
 		/// ------------------------------------------------------------------------------------
-		protected virtual TypeInfo TypeInfo
+		protected virtual TypeInfo? TypeInfo
 		{
 			get { return TypeInfo.TypeInfos[Signature]; }
 		}
@@ -199,12 +199,12 @@ namespace SIL.LCModel.Build.Tasks
 			get
 			{
 				var context = (VelocityContext)
-					RuntimeSingleton.GetApplicationAttribute("LcmGenerate.Context");
-				var lcmGenerate = (LcmGenerateImpl)context.Get("lcmgenerate");
+					RuntimeSingleton.GetApplicationAttribute("LcmGenerate.Context")!;
+				var lcmGenerate = (LcmGenerateImpl)context.Get("lcmgenerate")!;
 
 				var className = Parent.Name;
-				return lcmGenerate.Overrides.ContainsKey(className)
-						&& lcmGenerate.Overrides[className].Contains(Name);
+				return lcmGenerate.Overrides!.ContainsKey(className) && 
+					   lcmGenerate.Overrides[className].Contains(Name);
 			}
 		}
 
@@ -220,11 +220,11 @@ namespace SIL.LCModel.Build.Tasks
 			get
 			{
 				var context = (VelocityContext)
-					RuntimeSingleton.GetApplicationAttribute("LcmGenerate.Context");
-				var lcmGenerate = (LcmGenerateImpl)context.Get("lcmgenerate");
+					RuntimeSingleton.GetApplicationAttribute("LcmGenerate.Context")!;
+				var lcmGenerate = (LcmGenerateImpl)context.Get("lcmgenerate")!;
 
 				var className = Parent.Name;
-				if (lcmGenerate.IntPropTypeOverrides.ContainsKey(className))
+				if (lcmGenerate.IntPropTypeOverrides!.ContainsKey(className))
 				{
 					if (lcmGenerate.IntPropTypeOverrides[className].ContainsKey(Name))
 					{

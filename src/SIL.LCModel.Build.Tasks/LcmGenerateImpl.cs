@@ -22,14 +22,14 @@ namespace SIL.LCModel.Build.Tasks
 	internal class LcmGenerateImpl
 	{
 		/// <summary></summary>
-		public static LcmGenerateImpl Generator;
+		public static LcmGenerateImpl? Generator;
 
 		private readonly string m_OutputDir;
 		private string? m_OutputFileName;
 		private readonly VelocityEngine m_Engine;
 		private readonly VelocityContext m_Context;
-		private Dictionary<string, List<string>> m_OverrideList;
-		private Dictionary<string, Dictionary<string, string>> m_IntPropTypeOverrideList;
+		private Dictionary<string, List<string>>? m_OverrideList;
+		private Dictionary<string, Dictionary<string, string>>? m_IntPropTypeOverrideList;
 		private readonly Model m_Model;
 		private readonly XmlDocument m_Document;
 
@@ -79,7 +79,7 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value>The list of override class names.</value>
 		/// ------------------------------------------------------------------------------------
-		public Dictionary<string, List<string>> Overrides
+		public Dictionary<string, List<string>>? Overrides
 		{
 			get { return m_OverrideList; }
 			set { m_OverrideList = value; }
@@ -92,7 +92,7 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value>The list of override class names.</value>
 		/// ------------------------------------------------------------------------------------
-		public Dictionary<string, Dictionary<string, string>> IntPropTypeOverrides
+		public Dictionary<string, Dictionary<string, string>>? IntPropTypeOverrides
 		{
 			get { return m_IntPropTypeOverrideList; }
 			set { m_IntPropTypeOverrideList = value; }

@@ -8,6 +8,7 @@ SIL.LCModel.Build.Tasks provides msbuild tasks for generating C# classes for the
     <BuildOutputTargetFolder>tools/$(TargetFramework)</BuildOutputTargetFolder>
 	<IsPackable>true</IsPackable>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
