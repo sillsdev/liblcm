@@ -116,7 +116,7 @@ namespace SIL.LCModel.Utils
 			IntPtr current = (IntPtr)unmanagedObj;
 			if (elementType.IsValueType)
 			{
-				foreach (object obj in array)
+				foreach (object? obj in array)
 				{
 					Marshal.StructureToPtr(obj, current, true);
 					current = (IntPtr)((ulong)current + (ulong)elemSize);
@@ -125,7 +125,7 @@ namespace SIL.LCModel.Utils
 			else
 			{
 				int i = 0;
-				foreach(object obj in array)
+				foreach(object? obj in array)
 				{
 					if (obj == null)
 						Marshal.WriteIntPtr(current, i * elemSize, IntPtr.Zero);
@@ -147,12 +147,12 @@ namespace SIL.LCModel.Utils
 		/// <remarks>This method is only necessary for [out] or [in,out] arrays. For
 		/// [in] arrays the .NET marshalling works.</remarks>
 		/// -----------------------------------------------------------------------------------
-		static public T[] NativeToArray<T>(ArrayPtr nativeData, int cElem)
+		static public T?[] NativeToArray<T>(ArrayPtr nativeData, int cElem)
 		{
 			var type = typeof(T);
 			int elemSize = SizeOf(type);
 			IntPtr current = (IntPtr)nativeData;
-			T[] array = new T[cElem];
+			T?[] array = new T[cElem];
 
 			if (type.IsValueType)
 			{

@@ -113,7 +113,7 @@ namespace SIL.LCModel.Utils
 			/// get disposed, causing the problem all this is aimed at preventing.
 			/// </remarks>
 			/// --------------------------------------------------------------------------------
-			public IDisposable Item(string key)
+			public IDisposable? Item(string key)
 			{
 				m_lock.EnterReadLock();
 				try
@@ -265,7 +265,7 @@ namespace SIL.LCModel.Utils
 		/// it is replaced, possibly breaking clients still using it, or it would never get
 		/// disposed, causing the problem all this is aimed at preventing.</remarks>
 		/// ------------------------------------------------------------------------------------
-		public static IDisposable Item(string key)
+		public static IDisposable? Item(string key)
 		{
 			if (s_container == null)
 				return null;
