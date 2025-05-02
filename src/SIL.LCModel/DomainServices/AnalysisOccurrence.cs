@@ -56,7 +56,7 @@ namespace SIL.LCModel.DomainServices
 		{
 			get
 			{
-				if (Segment?.AnalysesRS != null && Index < Segment.AnalysesRS.Count)
+				if (Segment != null && Segment.IsValidObject && Segment.AnalysesRS != null && Index < Segment.AnalysesRS.Count)
 					return Segment.AnalysesRS[Index];
 				return null;
 			}
