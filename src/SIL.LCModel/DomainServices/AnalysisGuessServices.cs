@@ -402,6 +402,7 @@ namespace SIL.LCModel.DomainServices
 			var segs = new HashSet<ISegment>();
 			foreach (ISegment seg in wordform.OccurrencesInTexts)
 			{
+				if (!seg.IsValidObject) continue;
 				if (segs.Contains(seg)) continue;
 				segs.Add(seg);
 				for (int i = 0; i < seg.AnalysesRS.Count; i++)
@@ -462,6 +463,7 @@ namespace SIL.LCModel.DomainServices
 				return counts;
 			foreach (ISegment seg in analysis.Wordform.OccurrencesInTexts)
 			{
+				if (!seg.IsValidObject) continue;
 				if (segs.Contains(seg)) continue;
 				segs.Add(seg);
 				for (int i = 0; i < seg.AnalysesRS.Count; i++)
@@ -731,6 +733,8 @@ namespace SIL.LCModel.DomainServices
 			if (occurrence == null)
 				return null;
 			if (onlyIndexZeroLowercaseMatching && occurrence.Index != 0)
+				return null;
+			if (occurrence.Segment == null || !occurrence.Segment.IsValidObject)
 				return null;
 			ITsString tssWfBaseline = occurrence.BaselineText;
 			var cf = new CaseFunctions(Cache.ServiceLocator.WritingSystemManager.Get(ws));
