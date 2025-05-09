@@ -170,6 +170,17 @@ namespace SIL.LCModel.DomainServices
 					" " + Words_para0[4].Form.BestVernacularAlternative.Text +
 					".", wsVern));
 				Para0.Contents = bldr4.GetString();
+				/* rAs ras */
+				IWfiWordform rAs = wfFactory.Create(TsStringUtils.MakeString("rAs", wsVern));
+				Words_para0.Add(rAs);
+				IWfiWordform ras = wfFactory.Create(TsStringUtils.MakeString("ras", wsVern));
+				Words_para0.Add(ras);
+				var bldr5 = Para0.Contents.GetIncBldr();
+				bldr5.AppendTsString(TsStringUtils.MakeString(
+					" " + Words_para0[20].Form.BestVernacularAlternative.Text +
+					" " + Words_para0[21].Form.BestVernacularAlternative.Text +
+					".", wsVern));
+				Para0.Contents = bldr5.GetString();
 				using (ParagraphParser pp = new ParagraphParser(Cache))
 				{
 					foreach (IStTxtPara para in StText.ParagraphsOS)
@@ -916,6 +927,21 @@ namespace SIL.LCModel.DomainServices
 			{
 				WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[5]);
 				var wagLowercaseB = new AnalysisOccurrence(setup.Para0.SegmentsOS[1], 0);
+				var guessActual = setup.GuessServices.GetBestGuess(wagLowercaseB);
+				Assert.AreEqual(new NullWAG(), guessActual);
+			}
+		}
+
+		/// <summary>
+		/// if a wordform is mixed case, don't look for lower case.
+		/// </summary>
+		[Test]
+		public void ExpectedAnalysisGuess_ForSentenceInitialMixedCase()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[21]); // ras
+				var wagLowercaseB = new AnalysisOccurrence(setup.Para0.SegmentsOS[5], 0); // rAs
 				var guessActual = setup.GuessServices.GetBestGuess(wagLowercaseB);
 				Assert.AreEqual(new NullWAG(), guessActual);
 			}
