@@ -67,6 +67,17 @@ namespace SIL.LCModel.DomainServices
 			public bool lowercased = false; // whether the word form of the analysis was lowercased
 			public int priority = 0; // the priority of the count
 			public int count = 0;
+
+			public PriorityCount Clone()
+			{
+				PriorityCount priorityCount = new()
+				{
+					lowercased = lowercased,
+					priority = priority,
+					count = count
+				};
+				return priorityCount;
+			}
 		}
 
 		class ContextCount
@@ -77,6 +88,37 @@ namespace SIL.LCModel.DomainServices
 			public IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> previousWordform;
 			public IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> nextWordform;
 			public IDictionary<IAnalysis, PriorityCount> wordform;
+
+			public ContextCount Clone()
+			{
+				ContextCount counts = new()
+				{
+					wordform = new Dictionary<IAnalysis, PriorityCount>()
+				};
+				foreach (var key in wordform.Keys)
+				{
+					counts.wordform[key] = wordform[key].Clone();
+				}
+				counts.previousWordform = CloneDictionary(previousWordform);
+				counts.nextWordform = CloneDictionary(nextWordform);
+				return counts;
+			}
+
+			private IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>>
+				CloneDictionary(IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> oldDict)
+			{
+				IDictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>> newDict;
+				newDict = new Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>>();
+				foreach (var key in oldDict.Keys)
+				{
+					newDict[key] = new Dictionary<IAnalysis, PriorityCount>();
+					foreach (var wf in oldDict[key].Keys)
+					{
+						newDict[key][wf] = oldDict[key][wf].Clone();
+					}
+				}
+				return newDict;
+			}
 		}
 
 		// Key of m_guessTable = word form (or analysis).
@@ -91,19 +133,6 @@ namespace SIL.LCModel.DomainServices
 				return m_guessTable;
 			}
 			set { m_guessTable = value; }
-		}
-
-		// CaselessGuessTable is like GuessTable, but for uppercase word forms that can have lowercase analyses.
-		private IDictionary<IAnalysis, ContextCount> m_caselessGuessTable;
-		IDictionary<IAnalysis, ContextCount> CaselessGuessTable
-		{
-			get
-			{
-				if (m_caselessGuessTable == null)
-					CaselessGuessTable = new Dictionary<IAnalysis, ContextCount>();
-				return m_caselessGuessTable;
-			}
-			set { m_caselessGuessTable = value; }
 		}
 
 		private readonly IAnalysis m_emptyWAG;  // Represents an empty word form.
@@ -161,7 +190,7 @@ namespace SIL.LCModel.DomainServices
 		/// </summary>
 		public bool UpdatingOccurrence(IAnalysis oldAnalysis, IAnalysis newAnalysis)
 		{
-			if (m_guessTable == null && m_caselessGuessTable == null)
+			if (m_guessTable == null)
 				return false; // already cleared, forget it.
 			if (oldAnalysis == newAnalysis)
 				return false; // nothing changed, no problem.
@@ -188,11 +217,6 @@ namespace SIL.LCModel.DomainServices
 			if (GuessTable.ContainsKey(oldAnalysis))
 			{
 				GuessTable.Remove(oldAnalysis);
-				result = true;
-			}
-			if (CaselessGuessTable.ContainsKey(oldAnalysis))
-			{
-				CaselessGuessTable.Remove(oldAnalysis);
 				result = true;
 			}
 			return result;
@@ -299,49 +323,27 @@ namespace SIL.LCModel.DomainServices
 		/// Use m_nullWAG as the previous word form if the previous word form is unknown.
 		/// </summary>
 		/// <param name="form">the form that you want an analysis for</param>
-		/// <param name="lowercaseForm">the lowercase version of form if its analyses should be included</param>
+		/// <param name="originalCaseWf">the original case version of form if its analyses should be included</param>
+		/// <param name="lowercaseWf">the lowercase version of form if its analyses should be included</param>
 		/// <param name="occurrence">where the form occurs (used for context)</param>
 		/// <param name="analysis">the resulting analysis</param>
 		/// <returns>bool</returns>
-		private bool TryGetContextAwareGuess(IAnalysis form, IWfiWordform lowercaseForm, AnalysisOccurrence occurrence, out IAnalysis analysis)
+		private bool TryGetContextAwareGuess(IAnalysis form, IWfiWordform originalCaseWf, IWfiWordform lowercaseWf,
+			AnalysisOccurrence occurrence, out IAnalysis analysis)
 		{
-			IDictionary<IAnalysis, ContextCount> guessTable = GetGuessTable(form, lowercaseForm);
-			analysis = GetBestAnalysis(guessTable[form], occurrence);
+			ContextCount contextCounts = GetContextCounts(form, originalCaseWf, lowercaseWf);
+			analysis = GetBestAnalysis(contextCounts, occurrence);
 			if (analysis == null)
 				return false;
 			if (analysis is IWfiAnalysis)
 			{
 				// Get the best gloss for analysis.
-				if (TryGetContextAwareGuess(analysis, null, occurrence, out IAnalysis gloss))
+				if (TryGetContextAwareGuess(analysis, null, null, occurrence, out IAnalysis gloss))
 				{
 					analysis = gloss;
 				}
 			}
 			return true;
-		}
-
-		private IDictionary<IAnalysis, ContextCount> GetGuessTable(IAnalysis form, IWfiWordform lowercaseForm)
-		{
-			IDictionary<IAnalysis, ContextCount> guessTable = lowercaseForm != null ? CaselessGuessTable : GuessTable;
-
-			if (!guessTable.ContainsKey(form))
-			{
-				// Fill in GuessTable.
-				guessTable[form] = GetContextCounts(form);
-				if (lowercaseForm != null)
-					GetContextCounts(lowercaseForm, true, guessTable[form]);
-				// Move uncontexted counts from previousWordform to wordform.
-				if (guessTable[form].previousWordform.ContainsKey(m_nullWAG))
-				{
-					guessTable[form].wordform = guessTable[form].previousWordform[m_nullWAG];
-					guessTable[form].previousWordform.Remove(m_nullWAG);
-					guessTable[form].nextWordform.Remove(m_nullWAG);
-				} else
-				{
-					guessTable[form].wordform = new Dictionary<IAnalysis, PriorityCount>();
-				}
-			}
-			return guessTable;
 		}
 
 		/// <summary>
@@ -361,6 +363,39 @@ namespace SIL.LCModel.DomainServices
 				}
 			}
 			return best;
+		}
+
+		private ContextCount GetContextCounts(IAnalysis form, IWfiWordform originalCaseWf, IWfiWordform lowercaseWf)
+		{
+			ContextCount contextCounts;
+
+			// Deal with duplicates.
+			if (lowercaseWf == form)
+			{
+				// The user chose the lowercase form.
+				// Switch to the original case so lowercase is marked correctly.
+				form = originalCaseWf;
+				originalCaseWf = null;
+			}
+			if (originalCaseWf == form)
+				originalCaseWf = null;
+			if (!GuessTable.ContainsKey(form))
+			{
+				// Fill in GuessTable.
+				GuessTable[form] = GetContextCounts(form);
+			}
+			contextCounts = GuessTable[form];
+			if (originalCaseWf != null || lowercaseWf != null)
+			{
+				contextCounts = contextCounts.Clone();
+				// Add original case counts.
+				if (originalCaseWf != null)
+					GetContextCounts(originalCaseWf, false, contextCounts);
+				// Add lowercase counts.
+				if (lowercaseWf != null)
+					GetContextCounts(lowercaseWf, true, contextCounts);
+			}
+			return contextCounts;
 		}
 
 		/// <summary>
@@ -384,6 +419,15 @@ namespace SIL.LCModel.DomainServices
 				// Get default glosses.
 				counts.previousWordform = GetGlossCounts(analysis, true);
 				counts.nextWordform = GetGlossCounts(analysis, false);
+			}
+			// Get uncontexted counts.
+			if (counts.previousWordform.ContainsKey(m_nullWAG))
+			{
+				counts.wordform = counts.previousWordform[m_nullWAG];
+			}
+			else
+			{
+				counts.wordform = new Dictionary<IAnalysis, PriorityCount>();
 			}
 			return counts;
 		}
@@ -648,7 +692,6 @@ namespace SIL.LCModel.DomainServices
 		public void ClearGuessData()
 		{
 			GuessTable = null;
-			CaselessGuessTable = null;
 		}
 
 		/// <summary>
@@ -671,7 +714,7 @@ namespace SIL.LCModel.DomainServices
 			if (!EntryGenerated(wf))
 				GenerateEntryGuesses(wf, ws);
 			IAnalysis wag;
-			if (TryGetContextAwareGuess(wf, null, null, out wag))
+			if (TryGetContextAwareGuess(wf, null, null, null, out wag))
 				return wag;
 			return new NullWAG();
 		}
@@ -684,7 +727,7 @@ namespace SIL.LCModel.DomainServices
 		public IAnalysis GetBestGuess(IWfiAnalysis wa)
 		{
 			IAnalysis wag;
-			if (TryGetContextAwareGuess(wa, null, null, out wag))
+			if (TryGetContextAwareGuess(wa, null, null, null, out wag))
 				return wag;
 			return new NullWAG();
 		}
@@ -707,31 +750,39 @@ namespace SIL.LCModel.DomainServices
 			if (ws == -1)
 				return new NullWAG(); // happens with empty translation lines
 
+			IWfiWordform originalCaseWf = null;
 			IWfiWordform lowercaseWf = null;
 			if (occurrence.Analysis is IWfiWordform wordform)
 			{
-				lowercaseWf = GetLowercaseWordform(occurrence, ws, onlyIndexZeroLowercaseMatching, wordform);
+				GetOccurrenceWordforms(occurrence, ws,onlyIndexZeroLowercaseMatching, out originalCaseWf, out lowercaseWf);
 				// Generate entries if necessary.
 				if (!EntryGenerated(wordform))
 					GenerateEntryGuesses(wordform, ws);
-				if (lowercaseWf != null && !EntryGenerated(lowercaseWf))
-					GenerateEntryGuesses(lowercaseWf, ws);
 			}
 			IAnalysis bestGuess;
-			if (TryGetContextAwareGuess(occurrence.Analysis, lowercaseWf, includeContext ? occurrence : null, out bestGuess))
+			if (TryGetContextAwareGuess(occurrence.Analysis, originalCaseWf, lowercaseWf, includeContext ? occurrence : null, out bestGuess))
 				return bestGuess;
 			return new NullWAG();
+		}
+
+		private void GetOccurrenceWordforms(AnalysisOccurrence occurrence, int ws, bool onlyIndexZeroLowercaseMatching,
+			out IWfiWordform originalCaseWf, out IWfiWordform lowercaseWf)
+		{
+			originalCaseWf = GetOriginalCaseWordform(occurrence, ws);
+			lowercaseWf = GetLowercaseWordform(occurrence, ws, onlyIndexZeroLowercaseMatching);
+			if (originalCaseWf != null && !EntryGenerated(originalCaseWf))
+				GenerateEntryGuesses(originalCaseWf, ws);
+			if (lowercaseWf != null && !EntryGenerated(lowercaseWf))
+				GenerateEntryGuesses(lowercaseWf, ws);
 		}
 
 		/// <summary>
 		/// Get the lowercase word form if the occurrence is uppercase.
 		/// </summary>
-		private IWfiWordform GetLowercaseWordform(AnalysisOccurrence occurrence, int ws,
-			bool onlyIndexZeroLowercaseMatching, IWfiWordform wordform)
+		private IWfiWordform GetLowercaseWordform(AnalysisOccurrence occurrence, int ws, bool onlyIndexZeroLowercaseMatching)
 		{
 			string sLower = GetLowercaseOfTitleCase(occurrence, ws, onlyIndexZeroLowercaseMatching);
-			// don't bother looking up the lowercased wordform if the instanceOf is already in lowercase form.
-			if (sLower != null && sLower != wordform.ShortName)
+			if (sLower != null)
 			{
 				return GetWordformIfNeeded(sLower, ws);
 			}
@@ -740,19 +791,13 @@ namespace SIL.LCModel.DomainServices
 
 		// <summary>
 		// Get a wordform with the original case of occurrence's text
-		// if it lowercases to the given wordform.
+		// if it is needed.
 		// Otherwise, return null.
 		// </summary>
-		private IWfiWordform GetOriginalCaseWordform(AnalysisOccurrence occurrence, IWfiWordform wordform,
-			int ws, bool onlyIndexZeroLowercaseMatching)
+		private IWfiWordform GetOriginalCaseWordform(AnalysisOccurrence occurrence, int ws)
 		{
-			string sLower = GetLowercaseOfTitleCase(occurrence, ws, onlyIndexZeroLowercaseMatching);
-			if (sLower == wordform.GetForm(ws).Text)
-			{
-				ITsString tssWfBaseline = occurrence.BaselineText;
-				return GetWordformIfNeeded(tssWfBaseline.Text, ws);
-			}
-			return null;
+			ITsString tssWfBaseline = occurrence.BaselineText;
+			return GetWordformIfNeeded(tssWfBaseline.Text, ws);
 		}
 
 		// <summary>
@@ -868,30 +913,25 @@ namespace SIL.LCModel.DomainServices
 		/// </summary>
 		private List<IWfiAnalysis> GetSortedAnalysisGuesses(IWfiWordform wordform, int ws, AnalysisOccurrence occurrence, bool onlyIndexZeroLowercaseMatching = true)
 		{
-			if (occurrence != null && (!onlyIndexZeroLowercaseMatching || occurrence.Index == 0))
-			{
-				// Sometimes the user selects a lowercase wordform for an uppercase word.
-				// Get the original case so that we can include uppercase analyses.
-				var originalCaseWf = GetOriginalCaseWordform(occurrence, wordform, ws, onlyIndexZeroLowercaseMatching);
-				if (originalCaseWf != null)
-					wordform = originalCaseWf;
-			}
-			IWfiWordform lowercaseWf = GetLowercaseWordform(occurrence, ws, onlyIndexZeroLowercaseMatching, wordform);
+			IWfiWordform originalCaseWf = null;
+			IWfiWordform lowercaseWf = null;
+			if (occurrence != null)
+				GetOccurrenceWordforms(occurrence, ws, onlyIndexZeroLowercaseMatching, out originalCaseWf, out lowercaseWf);
 
 			// Generate entries if necessary.
 			if (!EntryGenerated(wordform))
 				GenerateEntryGuesses(wordform, ws);
-			if (lowercaseWf != null && !EntryGenerated(lowercaseWf))
-				GenerateEntryGuesses(lowercaseWf, ws);
 
 			// Get analyses to sort.
 			List<IWfiAnalysis> analyses = wordform.AnalysesOC.ToList();
-			if (lowercaseWf != null)
+			if (originalCaseWf != null && originalCaseWf != wordform)
+				analyses.AddRange(originalCaseWf.AnalysesOC);
+			if (lowercaseWf != null && lowercaseWf != wordform)
 				analyses.AddRange(lowercaseWf.AnalysesOC);
 
 			// Sort analyses.
-			IDictionary<IAnalysis, ContextCount> guessTable = GetGuessTable(wordform, lowercaseWf);
-			analyses.Sort((x, y) => ComparePriorityCounts(x, y, occurrence, guessTable[wordform]));
+			ContextCount contextCounts = GetContextCounts(wordform, originalCaseWf, lowercaseWf);
+			analyses.Sort((x, y) => ComparePriorityCounts(x, y, occurrence, contextCounts));
 			return analyses;
 		}
 
@@ -901,8 +941,8 @@ namespace SIL.LCModel.DomainServices
 		public List<IWfiGloss> GetSortedGlossGuesses(IWfiAnalysis analysis, AnalysisOccurrence occurrence = null)
 		{
 			List<IWfiGloss> glosses = analysis.MeaningsOC.ToList();
-			IDictionary<IAnalysis, ContextCount> guessTable = GetGuessTable(analysis, null);
-			glosses.Sort((x, y) => ComparePriorityCounts(x, y, occurrence, guessTable[analysis]));
+			ContextCount contextCounts = GetContextCounts(analysis, null, null);
+			glosses.Sort((x, y) => ComparePriorityCounts(x, y, occurrence, contextCounts));
 			return glosses;
 		}
 
@@ -1130,8 +1170,6 @@ namespace SIL.LCModel.DomainServices
 							// Clear GuessTable entries.
 							if (GuessTable.ContainsKey(ww))
 								GuessTable.Remove(ww);
-							if (CaselessGuessTable.ContainsKey(ww))
-								CaselessGuessTable.Remove(ww);
 						});
 				}
 			}

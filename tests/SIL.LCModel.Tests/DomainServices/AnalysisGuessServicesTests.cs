@@ -933,17 +933,42 @@ namespace SIL.LCModel.DomainServices
 		}
 
 		/// <summary>
-		/// if a wordform is mixed case, don't look for lower case.
+		/// Test mixed case examples.
 		/// </summary>
 		[Test]
 		public void ExpectedAnalysisGuess_ForSentenceInitialMixedCase()
 		{
 			using (var setup = new AnalysisGuessBaseSetup(Cache))
 			{
-				WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[21]); // ras
-				var wagLowercaseB = new AnalysisOccurrence(setup.Para0.SegmentsOS[5], 0); // rAs
-				var guessActual = setup.GuessServices.GetBestGuess(wagLowercaseB);
+				var wagMixedCaseB = new AnalysisOccurrence(setup.Para0.SegmentsOS[5], 0); // rAs
+
+				// Don't guess lowercase even if it exists.
+				IWfiAnalysis ras = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[21]);
+				var guessActual = setup.GuessServices.GetBestGuess(wagMixedCaseB);
 				Assert.AreEqual(new NullWAG(), guessActual);
+
+				// Guess lowercase if the user has selected it.
+				wagMixedCaseB.Analysis = ras.Wordform;
+				guessActual = setup.GuessServices.GetBestGuess(wagMixedCaseB);
+				Assert.AreEqual(ras, guessActual);
+			}
+		}
+
+		/// <summary>
+		/// Test mixed case examples.
+		/// </summary>
+		[Test]
+		public void ExpectedAnalysisGuess_ForSentenceInitialMixedCaseWithUserLowercase()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var wagMixedCaseB = new AnalysisOccurrence(setup.Para0.SegmentsOS[5], 0); // rAs
+
+				// Guess mixed case if it exists even if the user selects lowercase.
+				IWfiAnalysis rAs = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[20]);
+				wagMixedCaseB.Analysis = setup.Words_para0[21];
+				var guessActual = setup.GuessServices.GetBestGuess(wagMixedCaseB);
+				Assert.AreEqual(rAs, guessActual);
 			}
 		}
 
