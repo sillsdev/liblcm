@@ -372,10 +372,16 @@ namespace SIL.LCModel.DomainServices
 			// Deal with duplicates.
 			if (lowercaseWf == form)
 			{
-				// The user chose the lowercase form.
-				// Switch to the original case so lowercase is marked correctly.
-				form = originalCaseWf;
-				originalCaseWf = null;
+				if (originalCaseWf != null)
+				{
+					// Switch form to the original case so lowercase is marked correctly.
+					form = originalCaseWf;
+					originalCaseWf = null;
+				}
+				else
+				{
+					lowercaseWf = null;
+				}
 			}
 			if (originalCaseWf == form)
 				originalCaseWf = null;
@@ -385,17 +391,29 @@ namespace SIL.LCModel.DomainServices
 				GuessTable[form] = GetContextCounts(form);
 			}
 			contextCounts = GuessTable[form];
-			if (originalCaseWf != null || lowercaseWf != null)
+			if (HasContextCounts(originalCaseWf) || HasContextCounts(lowercaseWf))
 			{
 				contextCounts = contextCounts.Clone();
 				// Add original case counts.
-				if (originalCaseWf != null)
+				if (HasContextCounts(originalCaseWf))
 					GetContextCounts(originalCaseWf, false, contextCounts);
 				// Add lowercase counts.
-				if (lowercaseWf != null)
+				if (HasContextCounts(lowercaseWf))
 					GetContextCounts(lowercaseWf, true, contextCounts);
 			}
 			return contextCounts;
+		}
+
+		private bool HasContextCounts(IWfiWordform wordform)
+		{
+			if (wordform == null)
+				return false;
+			if (!GuessTable.ContainsKey(wordform))
+			{
+				// Fill in GuessTable.
+				GuessTable[wordform] = GetContextCounts(wordform);
+			}
+			return GuessTable[wordform].wordform.Count > 0;
 		}
 
 		/// <summary>
@@ -754,7 +772,8 @@ namespace SIL.LCModel.DomainServices
 			IWfiWordform lowercaseWf = null;
 			if (occurrence.Analysis is IWfiWordform wordform)
 			{
-				GetOccurrenceWordforms(occurrence, ws,onlyIndexZeroLowercaseMatching, out originalCaseWf, out lowercaseWf);
+				// Include original case and lowercase of original case in guesses.
+				GetOccurrenceWordforms(occurrence, ws, onlyIndexZeroLowercaseMatching, out originalCaseWf, out lowercaseWf);
 				// Generate entries if necessary.
 				if (!EntryGenerated(wordform))
 					GenerateEntryGuesses(wordform, ws);
@@ -781,12 +800,42 @@ namespace SIL.LCModel.DomainServices
 		/// </summary>
 		private IWfiWordform GetLowercaseWordform(AnalysisOccurrence occurrence, int ws, bool onlyIndexZeroLowercaseMatching)
 		{
-			string sLower = GetLowercaseOfTitleCase(occurrence, ws, onlyIndexZeroLowercaseMatching);
-			if (sLower != null)
+			// TODO: make it look for the first word in the sentence...may not be at Index 0!
+			if (occurrence == null)
+				return null;
+			if (onlyIndexZeroLowercaseMatching && occurrence.Index != 0)
+				return null;
+			if (occurrence.Segment == null || !occurrence.Segment.IsValidObject)
+				return null;
+			ITsString tssWfBaseline = occurrence.BaselineText;
+			var cf = new CaseFunctions(Cache.ServiceLocator.WritingSystemManager.Get(ws));
+			// Try initial upper case before all upper case.
+			if (cf.StringCase(tssWfBaseline.Text.Substring(0, 1)) == StringCaseStatus.title)
 			{
-				return GetWordformIfNeeded(sLower, ws);
+				// Only lowercase the first letter.
+				string sLower = cf.ToLower(tssWfBaseline.Text.Substring(0, 1)) + tssWfBaseline.Text.Substring(1);
+				IWfiWordform wordform = GetWordformIfNeeded(sLower, ws);
+				if (wordform != null)
+					return wordform;
+			}
+			if (AllUpper(tssWfBaseline.Text, cf))
+			{
+				// Lowercase all the letters.
+				// This will miss some cases, but that will be rare
+				// and the user can fix them by changing the wordform.
+				return GetWordformIfNeeded(tssWfBaseline.Text.ToLower(), ws);
 			}
 			return null;
+		}
+
+		bool AllUpper(string word, CaseFunctions cf)
+		{
+			for (int i = 0; i < word.Length; i++)
+			{
+				if (cf.StringCase(word.Substring(i, 1)) != StringCaseStatus.title)
+					return false;
+			}
+			return true;
 		}
 
 		// <summary>
@@ -798,25 +847,6 @@ namespace SIL.LCModel.DomainServices
 		{
 			ITsString tssWfBaseline = occurrence.BaselineText;
 			return GetWordformIfNeeded(tssWfBaseline.Text, ws);
-		}
-
-		// <summary>
-		// Get the lowercase form of occurrence if it is Title case.
-		// </summary>
-		private string GetLowercaseOfTitleCase(AnalysisOccurrence occurrence, int ws, bool onlyIndexZeroLowercaseMatching)
-		{
-			// TODO: make it look for the first word in the sentence...may not be at Index 0!
-			if (occurrence == null)
-				return null;
-			if (onlyIndexZeroLowercaseMatching && occurrence.Index != 0)
-				return null;
-			if (occurrence.Segment == null || !occurrence.Segment.IsValidObject)
-				return null;
-			ITsString tssWfBaseline = occurrence.BaselineText;
-			var cf = new CaseFunctions(Cache.ServiceLocator.WritingSystemManager.Get(ws));
-			if (cf.StringCase(tssWfBaseline.Text) == StringCaseStatus.title)
-				return cf.ToLower(tssWfBaseline.Text);
-			return null;
 		}
 
 		/// <summary>
@@ -916,7 +946,10 @@ namespace SIL.LCModel.DomainServices
 			IWfiWordform originalCaseWf = null;
 			IWfiWordform lowercaseWf = null;
 			if (occurrence != null)
+			{
+				// Include original case and lowercase of original case in guesses.
 				GetOccurrenceWordforms(occurrence, ws, onlyIndexZeroLowercaseMatching, out originalCaseWf, out lowercaseWf);
+			}
 
 			// Generate entries if necessary.
 			if (!EntryGenerated(wordform))
