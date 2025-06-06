@@ -849,6 +849,25 @@ namespace SIL.LCModel.DomainServices
 			return GetWordformIfNeeded(tssWfBaseline.Text, ws);
 		}
 
+		// <summary>
+		// Get the lowercase form of occurrence if it is Title case.
+		// </summary>
+		private string GetLowercaseOfTitleCase(AnalysisOccurrence occurrence, int ws, bool onlyIndexZeroLowercaseMatching)
+		{
+			// TODO: make it look for the first word in the sentence...may not be at Index 0!
+			if (occurrence == null)
+				return null;
+			if (onlyIndexZeroLowercaseMatching && occurrence.Index != 0)
+				return null;
+			if (occurrence.Segment == null || !occurrence.Segment.IsValidObject)
+				return null;
+			ITsString tssWfBaseline = occurrence.BaselineText;
+			var cf = new CaseFunctions(Cache.ServiceLocator.WritingSystemManager.Get(ws));
+			if (cf.StringCase(tssWfBaseline.Text) == StringCaseStatus.title)
+				return cf.ToLower(tssWfBaseline.Text);
+			return null;
+		}
+
 		/// <summary>
 		/// Get a wordform for word if it already exists or
 		/// if it has an entry in the lexicon.
