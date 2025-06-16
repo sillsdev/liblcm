@@ -181,6 +181,22 @@ namespace SIL.LCModel.DomainServices
 					" " + Words_para0[21].Form.BestVernacularAlternative.Text +
 					".", wsVern));
 				Para0.Contents = bldr5.GetString();
+				/* RAs */
+				IWfiWordform RAs = wfFactory.Create(TsStringUtils.MakeString("RAs", wsVern));
+				Words_para0.Add(RAs);
+				var bldr6 = Para0.Contents.GetIncBldr();
+				bldr6.AppendTsString(TsStringUtils.MakeString(
+					" " + Words_para0[22].Form.BestVernacularAlternative.Text +
+					".", wsVern));
+				Para0.Contents = bldr6.GetString();
+				/* RAS */
+				IWfiWordform RAS = wfFactory.Create(TsStringUtils.MakeString("RAS", wsVern));
+				Words_para0.Add(RAS);
+				var bldr7 = Para0.Contents.GetIncBldr();
+				bldr7.AppendTsString(TsStringUtils.MakeString(
+					" " + Words_para0[23].Form.BestVernacularAlternative.Text +
+					".", wsVern));
+				Para0.Contents = bldr7.GetString();
 				using (ParagraphParser pp = new ParagraphParser(Cache))
 				{
 					foreach (IStTxtPara para in StText.ParagraphsOS)
@@ -933,17 +949,74 @@ namespace SIL.LCModel.DomainServices
 		}
 
 		/// <summary>
-		/// if a wordform is mixed case, don't look for lower case.
+		/// Test mixed case examples.
 		/// </summary>
 		[Test]
 		public void ExpectedAnalysisGuess_ForSentenceInitialMixedCase()
 		{
 			using (var setup = new AnalysisGuessBaseSetup(Cache))
 			{
-				WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[21]); // ras
-				var wagLowercaseB = new AnalysisOccurrence(setup.Para0.SegmentsOS[5], 0); // rAs
-				var guessActual = setup.GuessServices.GetBestGuess(wagLowercaseB);
+				var rAsOccurrence = new AnalysisOccurrence(setup.Para0.SegmentsOS[5], 0);
+
+				// Don't guess lowercase even if it exists.
+				IWfiAnalysis ras = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[21]);
+				var guessActual = setup.GuessServices.GetBestGuess(rAsOccurrence);
 				Assert.AreEqual(new NullWAG(), guessActual);
+
+				// Guess lowercase if the user has selected it.
+				rAsOccurrence.Analysis = ras.Wordform;
+				guessActual = setup.GuessServices.GetBestGuess(rAsOccurrence);
+				Assert.AreEqual(ras, guessActual);
+			}
+		}
+
+		/// <summary>
+		/// Test mixed case examples.
+		/// </summary>
+		[Test]
+		public void ExpectedAnalysisGuess_ForSentenceInitialTitleMixedCase()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var RAsOccurrence = new AnalysisOccurrence(setup.Para0.SegmentsOS[6], 0);
+
+				// Don't guess lowercase even if it exists.
+				IWfiAnalysis rAs = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[20]);
+				var guessActual = setup.GuessServices.GetBestGuess(RAsOccurrence);
+				Assert.AreEqual(rAs, guessActual);
+			}
+		}
+
+		/// <summary>
+		/// Test mixed case examples.
+		/// </summary>
+		[Test]
+		public void ExpectedAnalysisGuess_ForSentenceInitialMixedCaseWithUnrelatedWordform()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var rAsOccurrence = new AnalysisOccurrence(setup.Para0.SegmentsOS[5], 0);
+
+				// Guess mixed case if it exists even if the wordform is unrelated.
+				IWfiAnalysis rAs = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[20]);
+				rAsOccurrence.Analysis = setup.Words_para0[21]; // ras
+				var guessActual = setup.GuessServices.GetBestGuess(rAsOccurrence);
+				Assert.AreEqual(rAs, guessActual);
+			}
+		}
+
+		/// <summary>
+		/// Test all upper case.
+		/// </summary>
+		[Test]
+		public void ExpectedAnalysisGuess_ForAllUpperCase()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache))
+			{
+				var RASOccurrence = new AnalysisOccurrence(setup.Para0.SegmentsOS[7], 0);
+				IWfiAnalysis ras = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[21]);
+				var guessActual = setup.GuessServices.GetBestGuess(RASOccurrence);
+				Assert.AreEqual(ras, guessActual);
 			}
 		}
 
