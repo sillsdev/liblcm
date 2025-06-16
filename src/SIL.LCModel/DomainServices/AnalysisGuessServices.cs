@@ -385,11 +385,11 @@ namespace SIL.LCModel.DomainServices
 			}
 			if (originalCaseWf == form)
 				originalCaseWf = null;
-			if (!GuessTable.ContainsKey(form))
-			{
-				// Fill in GuessTable.
-				GuessTable[form] = GetContextCounts(form);
-			}
+
+			// Get context counts.
+			FillGuessTable(form);
+			FillGuessTable(originalCaseWf);
+			FillGuessTable(lowercaseWf);
 			contextCounts = GuessTable[form];
 			if (HasContextCounts(originalCaseWf) || HasContextCounts(lowercaseWf))
 			{
@@ -404,15 +404,20 @@ namespace SIL.LCModel.DomainServices
 			return contextCounts;
 		}
 
+		private void FillGuessTable(IAnalysis form)
+		{
+			if (form == null) return;
+			if (!GuessTable.ContainsKey(form))
+			{
+				// Fill in GuessTable.
+				GuessTable[form] = GetContextCounts(form);
+			}
+		}
+
 		private bool HasContextCounts(IWfiWordform wordform)
 		{
 			if (wordform == null)
 				return false;
-			if (!GuessTable.ContainsKey(wordform))
-			{
-				// Fill in GuessTable.
-				GuessTable[wordform] = GetContextCounts(wordform);
-			}
 			return GuessTable[wordform].wordform.Count > 0;
 		}
 
