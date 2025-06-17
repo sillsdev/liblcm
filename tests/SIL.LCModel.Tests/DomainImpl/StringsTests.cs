@@ -310,6 +310,7 @@ namespace SIL.LCModel.DomainImpl
 			using var ms = new MemoryStream();
 			using var xmlWriter = XmlServices.CreateWriter(ms);
 			((MultiAccessor)multiString).ToXMLString(xmlWriter);
+			xmlWriter.Flush();
 			return Encoding.UTF8.GetString(ms.ToArray());
 		}
 	}
