@@ -11,6 +11,7 @@
 using System;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
@@ -173,7 +174,7 @@ namespace SIL.LCModel.Core.Text
 						if (runText != string.Empty && runText.All(char.IsWhiteSpace))
 							writer.WriteAttributeString("xml", "space", "", "preserve");
 						// TODO: should we escape quotation marks? this is not necessary but different than the behavior of the C++ implementation
-						writer.WriteString(Normalizer.Normalize(runText, Normalizer.UNormalizationMode.UNORM_NFC));
+						writer.WriteString(StripInvalidXmlChars(Normalizer.Normalize(runText, Normalizer.UNormalizationMode.UNORM_NFC)));
 					}
 
 					writer.WriteEndElement();
@@ -185,6 +186,14 @@ namespace SIL.LCModel.Core.Text
 				writer.WriteEndElement();
 			}
 			return xml.ToString();
+		}
+
+		private static readonly Regex InvalidXmlRegex = new Regex(@"[^\x09\x0A\x0D\x20-\uD7FF\uE000-\uFFFD]", RegexOptions.Compiled);
+		public static string StripInvalidXmlChars(string text)
+		{
+			// Remove characters not allowed in XML:
+			// Valid are: #x9, #xA, #xD, #x20-#xD7FF, #xE000-#xFFFD.
+			return InvalidXmlRegex.Replace(text, string.Empty);
 		}
 
 		#endregion
