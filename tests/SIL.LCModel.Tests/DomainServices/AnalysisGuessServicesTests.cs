@@ -61,12 +61,12 @@ namespace SIL.LCModel.DomainServices
 
 			LcmCache Cache { get; set; }
 
-			internal AnalysisGuessBaseSetup(LcmCache cache) : this()
+			internal AnalysisGuessBaseSetup(LcmCache cache, bool prioritizeParser = false) : this()
 			{
 				Cache = cache;
 				UserAgent = Cache.LanguageProject.DefaultUserAgent;
 				ParserAgent = Cache.LangProject.DefaultParserAgent;
-				GuessServices = new AnalysisGuessServices(Cache);
+				GuessServices = new AnalysisGuessServices(Cache, prioritizeParser);
 				EntryFactory = Cache.ServiceLocator.GetInstance<ILexEntryFactory>();
 				DoDataSetup();
 			}
@@ -1248,6 +1248,22 @@ namespace SIL.LCModel.DomainServices
 				setup.UserAgent.SetEvaluation(newWagHumanApproves.Analysis, Opinions.approves);
 				var guessActual = setup.GuessServices.GetBestGuess(setup.Words_para0[1]);
 				Assert.AreEqual(newWagHumanApproves.Analysis, guessActual);
+			}
+		}
+
+		/// <summary>
+		/// </summary>
+		[Test]
+		public void ExpectedGuess_PreferParserApprovedAnalysisOverUserApprovedAnalysis()
+		{
+			using (var setup = new AnalysisGuessBaseSetup(Cache, true))
+			{
+				var newWagParserApproves = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[1]);
+				var newWagHumanApproves = WordAnalysisOrGlossServices.CreateNewAnalysisWAG(setup.Words_para0[1]);
+				setup.ParserAgent.SetEvaluation(newWagParserApproves.Analysis, Opinions.approves);
+				setup.UserAgent.SetEvaluation(newWagHumanApproves.Analysis, Opinions.approves);
+				var guessActual = setup.GuessServices.GetBestGuess(setup.Words_para0[1]);
+				Assert.AreEqual(newWagParserApproves.Analysis, guessActual);
 			}
 		}
 
