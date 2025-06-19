@@ -724,7 +724,7 @@ namespace SIL.LCModel
 
 		/// <summary>
 		/// If the given ID is valid, return true and put the corresponding object in the out param.
-		/// Otherwise return false and set the out arguement to null.
+		/// Otherwise return false and set the out argument to null.
 		/// </summary>
 		bool TryGetObject(Guid guid, out T obj);
 

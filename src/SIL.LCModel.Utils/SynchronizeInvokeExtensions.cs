@@ -73,7 +73,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		public static void InvokeAsync<T>(this ISynchronizeInvoke si, Action<T> action, T param1)
 		{
-			si.BeginInvoke(action, new object[] {param1});
+			si.BeginInvoke(action, new object?[] {param1});
 		}
 
 		/// <summary>
@@ -83,7 +83,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		public static void InvokeAsync<T1, T2>(this ISynchronizeInvoke si, Action<T1, T2> action, T1 param1, T2 param2)
 		{
-			si.BeginInvoke(action, new object[] {param1, param2});
+			si.BeginInvoke(action, new object?[] {param1, param2});
 		}
 
 		/// <summary>
@@ -93,7 +93,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		public static void InvokeAsync<T1, T2, T3>(this ISynchronizeInvoke si, Action<T1, T2, T3> action, T1 param1, T2 param2, T3 param3)
 		{
-			si.BeginInvoke(action, new object[] {param1, param2, param3});
+			si.BeginInvoke(action, new object?[] {param1, param2, param3});
 		}
 	}
 }

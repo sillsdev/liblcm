@@ -9,6 +9,7 @@
     <ChangelogFile>../../../CHANGELOG.md</ChangelogFile>
     <DefineConstants>TRACE;GENTIME</DefineConstants>
     <NoWarn>1701;1702;0162</NoWarn>
+	  <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
