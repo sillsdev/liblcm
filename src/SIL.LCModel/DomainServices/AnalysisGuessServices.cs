@@ -29,11 +29,21 @@ namespace SIL.LCModel.DomainServices
 		///
 		/// </summary>
 		/// <param name="cache"></param>
-		public AnalysisGuessServices(LcmCache cache)
+		public AnalysisGuessServices(LcmCache cache) : this(cache, false)
+		{
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="cache"></param>
+		/// <param name="prioritizeParser">whether parser approval should be prioritized over human approval</param>
+		public AnalysisGuessServices(LcmCache cache, bool prioritizeParser)
 		{
 			Cache = cache;
 			m_emptyWAG = new EmptyWAG();
 			m_nullWAG = new NullWAG();
+			PrioritizeParser = prioritizeParser;
 		}
 
 		/// <summary>
@@ -56,6 +66,8 @@ namespace SIL.LCModel.DomainServices
 		}
 
 		public AnalysisOccurrence IgnoreOccurrence { get; set; }
+
+		public bool PrioritizeParser { get; set; }
 
 		LcmCache Cache { get; set; }
 
@@ -644,6 +656,21 @@ namespace SIL.LCModel.DomainServices
 		/// </summary>
 		private int ComparePriorityCounts(IAnalysis a1, IAnalysis a2, AnalysisOccurrence occurrence, ContextCount contextCount)
 		{
+			if (PrioritizeParser)
+			{
+				// Sort by parser approval.
+				IWfiAnalysis wfi1 = a1 as IWfiAnalysis;
+				IWfiAnalysis wfi2 = a2 as IWfiAnalysis;
+				if (wfi1 != null && wfi2 != null)
+				{
+					int p1 = IsParserApproved(wfi1) ? 3 : IsParserDisapproved(wfi1) ? 1 : 2;
+					int p2 = IsParserApproved(wfi2) ? 3 : IsParserDisapproved(wfi2) ? 1 : 2;
+					if (p1 < p2)
+						return 1;
+					if (p1 > p2)
+						return -1;
+				}
+			}
 			// Compare contexted counts.
 			if (occurrence != null)
 			{
