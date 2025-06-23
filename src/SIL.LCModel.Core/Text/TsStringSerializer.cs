@@ -193,6 +193,7 @@ namespace SIL.LCModel.Core.Text
 		{
 			// Remove characters not allowed in XML:
 			// Valid are: #x9, #xA, #xD, #x20-#xD7FF, #xE000-#xFFFD.
+			// Documented here: https://en.wikipedia.org/wiki/Valid_characters_in_XML
 			return InvalidXmlRegex.Replace(text, string.Empty);
 		}
 
