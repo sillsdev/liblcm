@@ -2880,6 +2880,29 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		#endregion
+
+		#region ICloneableCmObject Members
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Clones this instance.
+		/// </summary>
+		/// <param name="clone">Destination object for clone operation</param>
+		/// ------------------------------------------------------------------------------------
+		public void SetCloneProperties(ICmObject clone)
+		{
+			IMoInflAffixSlot slot = clone as IMoInflAffixSlot;
+			if (slot == null)
+				throw new ApplicationException("Failed to copy inflectional affix slot:  the target is not an inflectional affix slote.");
+
+			slot.Name.CopyAlternatives(Name);
+			slot.Description.CopyAlternatives(Description);
+			slot.Optional = Optional;
+			foreach (IMoInflAffMsa affix in Affixes)
+			{
+				affix.SlotsRC.Add(slot);
+			}
+		}
+		#endregion
 	}
 
 	/// <summary></summary>
