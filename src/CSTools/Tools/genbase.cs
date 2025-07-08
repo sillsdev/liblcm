@@ -85,7 +85,7 @@ namespace SIL.LCModel.Tools
 			return offset<max; // false if nothing left
 		}
 		/// <summary/>
-		public void EmitClassDefin(string b,ref int p,int max,CsReader inf,string defbas,out string bas, out string name,bool lx)
+		public void EmitClassDefin(string b,ref int p,int max,CsReader? inf,string defbas,out string bas, out string name,bool lx)
 		{
 			bool defconseen = false;
 			name = "";
@@ -170,7 +170,7 @@ namespace SIL.LCModel.Tools
 			}
 			m_outFile.WriteLine("}");
 		}
-		
+
 		[DoesNotReturn]
 		public void Error(int n,int p,string str)
 		{
