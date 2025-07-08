@@ -2749,9 +2749,11 @@ namespace SIL.LCModel.DomainImpl
 			get
 			{
 				((ICmObjectRepositoryInternal)Services.ObjectRepository).EnsureCompleteIncomingRefsFrom(MoInflAffMsaTags.kflidSlots);
-				return from msa in m_incomingRefs
+				var affixes = from msa in m_incomingRefs
 						where msa.Source is IMoInflAffMsa && ((IMoInflAffMsa) msa.Source).SlotsRC.Contains(this)
 						select (IMoInflAffMsa) msa.Source;
+				int flid = Cache.DomainDataByFlid.MetaDataCache.GetFieldId2(this.ClassID, "Affixes", true);
+				return VirtualOrderingServices.GetOrderedValue(this, flid, affixes);
 			}
 		}
 
