@@ -2731,6 +2731,26 @@ namespace SIL.LCModel.DomainImpl
 			{
 				template.StratumRA = StratumRA;
 			}
+			MakeTemplateNameUnique(template);
+		}
+
+		internal void MakeTemplateNameUnique(IMoInflAffixTemplate newTemplate)
+		{
+			// Get existing names.
+			ISet<string> names = new HashSet<string>();
+			IEnumerable<ICmObject> templates = Services.ObjectRepository.AllInstances(newTemplate.ClassID);
+			foreach (IMoInflAffixTemplate template in templates)
+			{
+				if (template == newTemplate)
+					continue;
+				for (int i = 0; i < template.Name.StringCount; i++)
+				{
+					ITsString tss = template.Name.GetStringFromIndex(i, out _);
+					names.Add(tss.Text);
+				}
+			}
+			// Make newSlot name unique.
+			MoInflAffixSlot.MakeNameUnique(newTemplate.Name, names);
 		}
 		#endregion
 	}
@@ -2881,6 +2901,105 @@ namespace SIL.LCModel.DomainImpl
 				return x;
 		}
 
+		#endregion
+
+		#region ICloneableCmObject Members
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Clones this instance.
+		/// </summary>
+		/// <param name="clone">Destination object for clone operation</param>
+		/// ------------------------------------------------------------------------------------
+		public void SetCloneProperties(ICmObject clone)
+		{
+			IMoInflAffixSlot slot = clone as IMoInflAffixSlot;
+			if (slot == null)
+				throw new ApplicationException("Failed to copy inflectional affix slot:  the target is not an inflectional affix slote.");
+
+			slot.Name.CopyAlternatives(Name);
+			slot.Description.CopyAlternatives(Description);
+			slot.Optional = Optional;
+			// Make copies of Affixes.
+			foreach (IMoInflAffMsa msa in Affixes)
+			{
+				if (msa.Owner is not ILexEntry entry)
+					// Shouldn't happen, but just in case...
+					continue;
+				foreach (ILexSense sense in entry.SensesOS.ToList()) {
+					CopySensesWithMSA(entry, sense, msa, slot);
+				}
+			}
+			MakeSlotNameUnique(slot);
+		}
+
+		/// <summary>
+		/// Copy sense with new slot if it's MorphoSyntaxAnalysisRA equals msa.
+		/// Recurse on the subsenses.
+		/// </summary>
+		internal void CopySensesWithMSA(ILexEntry entry, ILexSense sense, IMoInflAffMsa msa, IMoInflAffixSlot newSlot)
+		{
+			// Recurse on subsense first.
+			foreach (ILexSense subsense in sense.SensesOS.ToList())
+			{
+				CopySensesWithMSA(entry, subsense, msa, newSlot);
+			}
+			if (sense.MorphoSyntaxAnalysisRA == msa)
+			{
+				// Create a new sense.
+				SandboxGenericMSA sandboxMsa = SandboxGenericMSA.Create(msa);
+				sandboxMsa.Slot = newSlot;
+				ILexSense newSense = Services.GetInstance<ILexSenseFactory>().Create(entry, sandboxMsa, sense.Gloss.BestAnalysisAlternative);
+				newSense.Gloss.MergeAlternatives(sense.Gloss);
+			}
+		}
+
+		internal void MakeSlotNameUnique(IMoInflAffixSlot newSlot)
+		{
+			// Get existing names.
+			ISet<string> names = new HashSet<string>();
+			IEnumerable<ICmObject> slots = Services.ObjectRepository.AllInstances(newSlot.ClassID);
+			foreach (IMoInflAffixSlot slot in slots)
+			{
+				if (slot == newSlot)
+					continue;
+				for (int i = 0; i < slot.Name.StringCount; i++)
+				{
+					ITsString tss = slot.Name.GetStringFromIndex(i, out _);
+					names.Add(tss.Text);
+				}
+			}
+			// Make newSlot name unique.
+			MakeNameUnique(newSlot.Name, names);
+		}
+
+		static internal void MakeNameUnique(IMultiUnicode name, ISet<string> names)
+		{
+			for (int i = 0; i < name.StringCount; i++)
+			{
+				int ws;
+				ITsString tss = name.GetStringFromIndex(i, out ws);
+				string text = tss.Text;
+				// Get existing id.
+				int id = 1;
+				int idStart = text.Length;
+				while (idStart > 0 && Char.IsNumber(text[idStart - 1]))
+					idStart = idStart - 1;
+				if (idStart < text.Length)
+					id = Int32.Parse(text.Substring(idStart));
+				// Look for a unique name.
+				while (true)
+				{
+					id += 1;
+					string newName = text.Substring(0, idStart) + id.ToString();
+					if (!names.Contains(newName))
+					{
+						// Replace name[i] with unique name.
+						name.set_String(ws, newName);
+						break;
+					}
+				}
+			}
+		}
 		#endregion
 	}
 

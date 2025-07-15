@@ -2097,7 +2097,7 @@ namespace SIL.LCModel
 	}
 
 	/// <summary/>
-	public partial interface IMoInflAffixSlot
+	public partial interface IMoInflAffixSlot : ICloneableCmObject
 	{
 		/// <summary/>
 		IEnumerable<IMoInflAffMsa> Affixes { get; }
