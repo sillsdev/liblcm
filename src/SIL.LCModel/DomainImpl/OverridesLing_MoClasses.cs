@@ -2921,6 +2921,7 @@ namespace SIL.LCModel.DomainImpl
 			foreach (IMoInflAffMsa msa in Affixes)
 			{
 				if (msa.Owner is not ILexEntry entry)
+					// Shouldn't happen, but just in case...
 					continue;
 				foreach (ILexSense sense in entry.SensesOS.ToList()) {
 					CopySensesWithMSA(entry, sense, msa, slot);
