@@ -42,6 +42,14 @@ namespace SIL.LCModel.Core.Text
 			Assert.That(StripNewLines(xml), Is.EqualTo("<Str><Run ws=\"en\">This is a test!</Run></Str>"));
 		}
 
+		[Test]
+		public void SerializeTsStringToXml_StripsInvalidControlCharacter()
+		{
+			ITsString tss = TsStringUtils.MakeString("This is a te\u0002st!", EnWS);
+			string xml = TsStringSerializer.SerializeTsStringToXml(tss, WritingSystemManager);
+			Assert.That(StripNewLines(xml), Is.EqualTo("<Str><Run ws=\"en\">This is a test!</Run></Str>"));
+		}
+
 		///--------------------------------------------------------------------------------------
 		/// <summary>
 		/// Tests the method SerializeTsStringToXml with a MultiString. This should
