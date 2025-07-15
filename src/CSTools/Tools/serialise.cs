@@ -51,8 +51,8 @@ namespace SIL.LCModel.Tools
 		}
 		// on Encode, we ignore the return value which is always null
 		// Otherwise, o if non-null is an instance of the subclass
-		TextWriter f = null;
-		int[] b = null;
+		TextWriter? f = null;
+		int[]? b = null;
 		int pos = 0;
 		Hashtable obs = new Hashtable(); // object->int (code) or int->object (decode)
 		static Hashtable tps = new Hashtable(); // type->SerType
@@ -87,11 +87,11 @@ namespace SIL.LCModel.Tools
 		{
 			return b[pos++];
 		}
-		static object NullSerialise(object o,Serialiser s)
+		static object? NullSerialise(object o,Serialiser s)
 		{
 			return null;
 		}
-		static object IntSerialise(object o,Serialiser s)
+		static object? IntSerialise(object o,Serialiser s)
 		{
 			if (s.Encode)
 			{
@@ -100,7 +100,7 @@ namespace SIL.LCModel.Tools
 			}
 			return s._Read();
 		}
-		static object StringSerialise(object o,Serialiser s)
+		static object? StringSerialise(object o,Serialiser s)
 		{
 			if (s==null)
 				return "";
@@ -120,7 +120,7 @@ namespace SIL.LCModel.Tools
 			string r = e.GetString(bb,0,ln);
 			return r;
 		}
-		static object HashtableSerialise(object o,Serialiser s)
+		static object? HashtableSerialise(object o,Serialiser s)
 		{
 			if (s==null)
 				return new Hashtable();
@@ -144,7 +144,7 @@ namespace SIL.LCModel.Tools
 			}
 			return h;
 		}
-		static object CharSerialise(object o,Serialiser s)
+		static object? CharSerialise(object o,Serialiser s)
 		{
 			Encoding e = new UnicodeEncoding();
 			if (s.Encode)
@@ -160,7 +160,7 @@ namespace SIL.LCModel.Tools
 			string r = e.GetString(bb,0,2);
 			return r[0];
 		}
-		static object BoolSerialise(object o,Serialiser s)
+		static object? BoolSerialise(object o,Serialiser s)
 		{
 			if (s.Encode)
 			{
@@ -170,7 +170,7 @@ namespace SIL.LCModel.Tools
 			int v = s._Read();
 			return v!=0;
 		}
-		static object EncodingSerialise(object o,Serialiser s)
+		static object? EncodingSerialise(object o,Serialiser s)
 		{
 			if (s.Encode)
 			{
@@ -187,7 +187,7 @@ namespace SIL.LCModel.Tools
 			}
 			throw new Exception("Unknown encoding");
 		}
-		static object UnicodeCategorySerialise(object o,Serialiser s)
+		static object? UnicodeCategorySerialise(object o,Serialiser s)
 		{
 			if (s.Encode)
 			{
@@ -196,7 +196,7 @@ namespace SIL.LCModel.Tools
 			}
 			return (UnicodeCategory)s._Read();
 		}
-		static object SymtypeSerialise(object o,Serialiser s)
+		static object? SymtypeSerialise(object o,Serialiser s)
 		{
 			if (s.Encode)
 			{

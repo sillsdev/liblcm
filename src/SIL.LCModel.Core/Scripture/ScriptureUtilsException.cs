@@ -8,6 +8,8 @@
 // <remarks>
 // </remarks>
 
+#nullable enable
+
 using System;
 
 namespace SIL.LCModel.Core.Scripture
@@ -314,11 +316,11 @@ namespace SIL.LCModel.Core.Scripture
 			m_message += Environment.NewLine +
 				string.Format(GetResourceString("kstidImportErrorFileDetails"), fileName);
 
-			Exception innerException = InnerException;
+			Exception? innerException = InnerException;
 			while (innerException != null)
 			{
-				m_message += Environment.NewLine + innerException.Message;
-				innerException = innerException.InnerException;
+			    m_message += Environment.NewLine + innerException.Message;
+			    innerException = innerException.InnerException;
 			}
 		}
 		#endregion
@@ -405,7 +407,7 @@ namespace SIL.LCModel.Core.Scripture
 		{
 			includeLineInfoInDetails = true;
 			topic = "/Beginning_Tasks/Import_Standard_Format/Unable_to_Import";
-			string stidErrorMsg = null;
+			string? stidErrorMsg = null;
 
 			switch (error)
 			{
@@ -648,9 +650,9 @@ namespace SIL.LCModel.Core.Scripture
 		/// <param name="stid">String resource id</param>
 		/// <returns>String</returns>
 		/// -----------------------------------------------------------------------------------
-		public static string GetResourceString(string stid)
+		public static string GetResourceString(string? stid)
 		{
-			return stid == null ? "NullStringID" : ScrUtilsStrings.ResourceManager.GetString(stid);
+		    return stid == null ? "NullStringID" : ScrUtilsStrings.ResourceManager.GetString(stid) ?? $"Missing resource string: {stid}";
 		}
 		#endregion
 	}

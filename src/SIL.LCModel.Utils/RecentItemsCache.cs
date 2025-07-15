@@ -13,7 +13,7 @@ namespace SIL.LCModel.Utils
 	/// if passed duplicate arguments. For now, the value looked up is parameterized, but the input is
 	/// always a string. The user specifies the maximum number of items to save.
 	/// </summary>
-	public class RecentItemsCache<K, T>
+	public class RecentItemsCache<K, T> where K : notnull
 	{
 		int MaxValuesToSave { get; set; }
 		// This is the actual cache.
