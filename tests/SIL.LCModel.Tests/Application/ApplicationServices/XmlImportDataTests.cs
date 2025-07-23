@@ -479,7 +479,6 @@ namespace SIL.LCModel.Application.ApplicationServices
 		/// </summary>
 		///--------------------------------------------------------------------------------------
 		[Test]
-		//[Ignore("This needs to be rewritten so that imported files are in resources.")]
 		public void ImportData3()
 		{
 			XmlImportData xid = new XmlImportData(m_cache, true);
@@ -1380,6 +1379,38 @@ namespace SIL.LCModel.Application.ApplicationServices
 			}
 		}
 
+		///
+		[Test]
+		public void MergeCreatedDateWorks()
+		{
+			var xid = new XmlImportData(m_cache, false);
+			var createdDate = "2011-09-14 12:00:00.000";
+			using (var reader = new StringReader("<LexDb xmlns:msxsl=\"urn:schemas-microsoft-com:xslt\" xmlns:user=\"urn:my-scripts\">" +
+				 "<Entries><LexEntry><LexemeForm><MoStemAllomorph><MorphType><Link ws=\"en\" name=\"stem\" /></MorphType>" +
+				 "<Form><AUni ws=\"cub\">ãcʉriojomecacʉ</AUni></Form></MoStemAllomorph></LexemeForm><DateCreated>" +
+				 $"<Time val=\"{createdDate}\" /></DateCreated><DialectLabels><Link ws=\"en\" abbr=\"C\" name=\"C\" />" +
+				 "</DialectLabels><EntryRefs><LexEntryRef><ComponentLexemes><Link ws=\"cub\" entry=\"ãcʉriojʉmecacʉ\" />" +
+				 "</ComponentLexemes></LexEntryRef></EntryRefs></LexEntry><LexEntry id=\"IID0E3\"><LexemeForm><MoStemAllomorph>" +
+				 "<MorphType><Link ws=\"en\" name=\"stem\" /></MorphType><Form><AUni ws=\"cub\">ãcʉriojʉmecacʉ</AUni></Form>" +
+				 "</MoStemAllomorph></LexemeForm><DateCreated><Time val=\"2011-09-14 12:00:00.000\" /></DateCreated><DialectLabels>" +
+				 "<Link ws=\"en\" abbr=\"Q\" name=\"Q\" /><Link ws=\"en\" abbr=\"V\" name=\"V\" /></DialectLabels>" +
+				 "<MorphoSyntaxAnalyses><MoStemMsa id=\"MSA1000\"><PartOfSpeech><Link ws=\"en\" abbr=\"s.\" /></PartOfSpeech>" +
+				 "</MoStemMsa></MorphoSyntaxAnalyses><Senses><LexSense><Definition><AStr ws=\"en\">" +
+				 "<Run ws=\"en\">tree species cf jocʉcʉ</Run></AStr></Definition><MorphoSyntaxAnalysis><Link target=\"MSA1000\" />" +
+				 "</MorphoSyntaxAnalysis></LexSense></Senses></LexEntry><LexEntry><LexemeForm><MoStemAllomorph><MorphType>" +
+				 "<Link ws=\"en\" name=\"stem\" /></MorphType><Form><AUni ws=\"cub\">ãcʉriojomecacʉ</AUni></Form></MoStemAllomorph>" +
+				 "</LexemeForm><EntryRefs><LexEntryRef><VariantEntryTypes><Link ws=\"es\" name=\"Variante\" /></VariantEntryTypes>" +
+				 "<ComponentLexemes><Link target=\"IID0E3\" /></ComponentLexemes></LexEntryRef></EntryRefs></LexEntry></Entries></LexDb>"))
+			{
+				StringBuilder sbLog = new StringBuilder();
+				xid.ImportData(reader, new StringWriter(sbLog), null);
+				var entries = m_cache.LangProject.LexDbOA.Entries.ToArray();
+				Assert.That(entries.Length, Is.EqualTo(2), "The lexicon should have 2 entries.");
+				Assert.That(entries[0].DateCreated, Is.EqualTo(entries[1].DateCreated));
+				Assert.That(entries[0].DateCreated, Is.EqualTo(DateTime.Parse(createdDate)),
+					"The DateCreated of the entries should match the import data.");
+			}
+		}
 		///--------------------------------------------------------------------------------------
 		/// <summary>
 		/// Tests the method ImportData() on sequence lexical relations.
