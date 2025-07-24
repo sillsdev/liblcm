@@ -1401,9 +1401,9 @@ namespace SIL.LCModel.Application.ApplicationServices
 				 "<Link ws=\"en\" name=\"stem\" /></MorphType><Form><AUni ws=\"cub\">ãcʉriojomecacʉ</AUni></Form></MoStemAllomorph>" +
 				 "</LexemeForm><EntryRefs><LexEntryRef><VariantEntryTypes><Link ws=\"es\" name=\"Variante\" /></VariantEntryTypes>" +
 				 "<ComponentLexemes><Link target=\"IID0E3\" /></ComponentLexemes></LexEntryRef></EntryRefs></LexEntry></Entries></LexDb>"))
+			using(var writer = new StringWriter(new StringBuilder()))
 			{
-				StringBuilder sbLog = new StringBuilder();
-				xid.ImportData(reader, new StringWriter(sbLog), null);
+				xid.ImportData(reader, writer, null);
 				var entries = m_cache.LangProject.LexDbOA.Entries.ToArray();
 				Assert.That(entries.Length, Is.EqualTo(2), "The lexicon should have 2 entries.");
 				Assert.That(entries[0].DateCreated, Is.EqualTo(entries[1].DateCreated));
@@ -1521,6 +1521,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 		</LexEntry>
 	</Entries>
 </LexDb>"))
+			using(var writer = new StringWriter(new StringBuilder()))
 			{
 				Assert.AreEqual(0, m_cache.LangProject.LexDbOA.Entries.Count(), "The lexicon starts out empty.");
 				Assert.AreEqual(0, m_cache.LangProject.AnthroListOA.PossibilitiesOS.Count);
@@ -1536,8 +1537,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 					calendar.Name.SetAnalysisDefaultWritingSystem("calendar");
 					calendar.MappingType = (int)LexRefTypeTags.MappingTypes.kmtSenseSequence;
 				});
-				StringBuilder sbLog = new StringBuilder();
-				xid.ImportData(rdr, new StringWriter(sbLog), null);
+				xid.ImportData(rdr, writer, null);
 				// The entries are Mon, Tue, Wed.
 				// The input specifies (three times!) that there is a Calendar relation Mon, Tue, Wed.
 				Assert.AreEqual(3, m_cache.LangProject.LexDbOA.Entries.Count());
@@ -1719,10 +1719,10 @@ namespace SIL.LCModel.Application.ApplicationServices
 				partWhole.Name.SetAnalysisDefaultWritingSystem("part");
 				partWhole.MappingType = (int)LexRefTypeTags.MappingTypes.kmtSenseTree;
 			});
-			StringBuilder sbLog = new StringBuilder();
 			using (var rdr = new StringReader(input))
+			using(var writer = new StringWriter(new StringBuilder()))
 			{
-				xid.ImportData(rdr, new StringWriter(sbLog), null);
+				xid.ImportData(rdr, writer, null);
 			}
 			// The entries are house, wall, wall, ceiling.
 			// The input specifies that there is a part-whole relation house, wall(2.2), ceiling.
@@ -2013,8 +2013,9 @@ namespace SIL.LCModel.Application.ApplicationServices
 			var xid = new XmlImportData(m_cache, false); // false -> fCreateMissingLinks flag (this is the new default)
 			var sbLog = new StringBuilder();
 			using (var rdr = new StringReader(input))
+			using (var writer = new StringWriter(sbLog))
 			{
-				xid.ImportData(rdr, new StringWriter(sbLog), null);
+				xid.ImportData(rdr, writer, null);
 			}
 			// The main entries are test, aok, bok, cok and dok. The xslt has already created entries a and d.
 			// Because the fCreateMissingLinks flag is false, the import should NOT create entries b and c,
@@ -2076,9 +2077,10 @@ namespace SIL.LCModel.Application.ApplicationServices
 			});
 			var xid = new XmlImportData(m_cache, false); // false -> fCreateMissingLinks flag (this is the new default)
 			var sbLog = new StringBuilder();
-			using (var rdr = new StringReader(input))
+			using(var rdr = new StringReader(input))
+			using(var writer = new StringWriter(sbLog))
 			{
-				xid.ImportData(rdr, new StringWriter(sbLog), null);
+				xid.ImportData(rdr, writer, null);
 			}
 			// The main entries is 'a'. The xslt has already created it.
 			// Because the fCreateMissingLinks flag is false, the import should NOT create entry ab,
@@ -2232,13 +2234,13 @@ namespace SIL.LCModel.Application.ApplicationServices
 				"		</LexEntry>" +
 				"	</Entries>" +
 				"</LexDb>"))
+			using(var writer = new StringWriter(new StringBuilder()))
 			{
-				var sbLog = new StringBuilder();
 				Assert.AreEqual(0, m_cache.LangProject.LexDbOA.Entries.Count(), "The lexicon starts out empty.");
 				Assert.AreEqual(0, m_cache.LangProject.AnthroListOA.PossibilitiesOS.Count);
 				Assert.AreEqual(0, m_cache.LangProject.SemanticDomainListOA.PossibilitiesOS.Count);
 				Assert.AreEqual(0, m_cache.LangProject.PartsOfSpeechOA.PossibilitiesOS.Count);
-				xid.ImportData(rdr, new StringWriter(sbLog), null);
+				xid.ImportData(rdr, writer, null);
 				Assert.AreEqual(3, m_cache.LangProject.LexDbOA.Entries.Count(), "The import data had one entry.");
 				var entry = m_cache.LangProject.LexDbOA.Entries.ToArray()[0];
 				Assert.IsTrue(VirtualOrderingServices.HasVirtualOrdering(entry, "Subentries"));
@@ -2340,13 +2342,13 @@ namespace SIL.LCModel.Application.ApplicationServices
 				"		</LexEntry>" +
 				"	</Entries>" +
 				"</LexDb>"))
+			using (var writer = new StringWriter(new StringBuilder()))
 			{
-				var sbLog = new StringBuilder();
 				Assert.AreEqual(0, m_cache.LangProject.LexDbOA.Entries.Count(), "The lexicon starts out empty.");
 				Assert.AreEqual(0, m_cache.LangProject.AnthroListOA.PossibilitiesOS.Count);
 				Assert.AreEqual(0, m_cache.LangProject.SemanticDomainListOA.PossibilitiesOS.Count);
 				Assert.AreEqual(0, m_cache.LangProject.PartsOfSpeechOA.PossibilitiesOS.Count);
-				xid.ImportData(rdr, new StringWriter(sbLog), null);
+				xid.ImportData(rdr, writer, null);
 				Assert.AreEqual(2, m_cache.LangProject.LexDbOA.Entries.Count(), "The import data should have 2 entries.");
 				var entry = m_cache.LangProject.LexDbOA.Entries.ToArray()[0];
 				Assert.IsFalse(VirtualOrderingServices.HasVirtualOrdering(entry, "Subentries"), "No virtual ordering should have been created.");
@@ -2450,16 +2452,16 @@ namespace SIL.LCModel.Application.ApplicationServices
 				"</LexEntry>" + Environment.NewLine +
 				"</Entries>" + Environment.NewLine +
 				"</LexDb>" + Environment.NewLine))
+			using (var writer = new StringWriter(new StringBuilder()))
 			{
 				Assert.AreEqual(0, m_cache.LangProject.LexDbOA.Entries.Count(), "The lexicon starts out empty.");
 				Assert.AreEqual(0, m_cache.LangProject.PicturesOC.Count);
 				Assert.AreEqual(0, m_cache.LangProject.MediaOC.Count);
 				var folderRepo = m_cache.ServiceLocator.GetInstance<ICmFolderRepository>();
 				Assert.AreEqual(0, folderRepo.Count);
-				var sbLog = new StringBuilder();
 
 				// SUT
-				xid.ImportData(rdr, new StringWriter(sbLog), null);
+				xid.ImportData(rdr, writer, null);
 				Assert.AreEqual(2, m_cache.LangProject.LexDbOA.Entries.Count());
 				Assert.AreEqual(2, folderRepo.Count, "Should have created 2 CmFolders");
 				Assert.AreEqual(1, m_cache.LangProject.MediaOC.Count);
