@@ -82,6 +82,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			TimeSpan span = new TimeSpan(dtLexOrig.Ticks - m_now.Ticks);
 			Assert.LessOrEqual(span.TotalMinutes, 1.0);		// should be only a second or two...
 			XmlImportData xid = new XmlImportData(m_cache, true);
+			var sbLog = new StringBuilder();
 			using (var rdr = new StringReader(
 				"<FwDatabase>" +
 				"<LangProject>" +
@@ -143,125 +144,125 @@ namespace SIL.LCModel.Application.ApplicationServices
 				"</LexDb>" +
 				"</LangProject>" +
 				"</FwDatabase>"))
+			using(var writer = new StringWriter(sbLog))
 			{
-			StringBuilder sbLog = new StringBuilder();
-			Assert.AreEqual(0, m_cache.LangProject.LexDbOA.Entries.Count(), "The lexicon starts out empty.");
-			Assert.AreEqual(0, m_cache.LangProject.AnthroListOA.PossibilitiesOS.Count);
-			Assert.AreEqual(0, m_cache.LangProject.SemanticDomainListOA.PossibilitiesOS.Count);
-			Assert.AreEqual(0, m_cache.LangProject.PartsOfSpeechOA.PossibilitiesOS.Count);
-			xid.ImportData(rdr, new StringWriter(sbLog), null);
-			DateTime dtLexNew = m_cache.LangProject.LexDbOA.DateCreated;
-			DateTime dt2 = new DateTime(1995, 12, 19, 10, 31, 25);
-			Assert.AreEqual(dt2, dtLexNew, "LexDb DateCreated changed to reflect import value.");
-			Assert.AreEqual(1, m_cache.LangProject.LexDbOA.Entries.Count(), "The import data had one entry.");
-			Assert.AreEqual(0, m_cache.LangProject.LexDbOA.ReversalIndexesOC.Count);
-			ILexEntry entry = m_cache.LangProject.LexDbOA.Entries.ToArray()[0];
-			Assert.IsTrue(entry.LexemeFormOA is IMoStemAllomorph, "The entry is a stem.");
-			IMultiUnicode mu = entry.LexemeFormOA.Form;
-			Assert.AreEqual(1, mu.StringCount);
-			int ws;
-			ITsString tss = mu.GetStringFromIndex(0, out ws);
-			Assert.AreEqual("adult", tss.Text);
-			string sWs = m_cache.WritingSystemFactory.GetStrFromWs(ws);
-			Assert.AreEqual("qaa-x-ame", sWs);
-			Assert.AreEqual(1, entry.MorphoSyntaxAnalysesOC.Count, "The entry has only one MSA.");
-			Assert.AreEqual(1, entry.SensesOS.Count, "The imported entry had one sense.");
-			ILexSense sense = entry.SensesOS[0];
-			mu = sense.Gloss;
-			Assert.AreEqual(2, mu.StringCount, "The gloss is given in two writing systems/languages.");
-			int wsEn = m_cache.WritingSystemFactory.GetWsFromStr("en");
-			int wsFr = m_cache.WritingSystemFactory.GetWsFromStr("fr");
-			tss = mu.get_String(wsEn);
-			Assert.AreEqual("adult", tss.Text, "The English gloss imported okay.");
-			tss = mu.get_String(wsFr);
-			Assert.AreEqual("adulte", tss.Text, "The French gloss imported okay.");
-			IMultiString ms = sense.Definition;
-			Assert.AreEqual(2, ms.StringCount, "The definition is given in two writing systems/languages.");
-			tss = ms.get_String(wsEn);
-			ITsString tss0 = TsStringUtils.MakeString("a man or woman who is fully grown up", wsEn);
-			Assert.IsTrue(tss.Equals(tss0), "The English definition imported okay.");
-			tss = ms.get_String(wsFr);
-			tss0 = TsStringUtils.MakeString("un homme ou une femme qui est parvenu au terme de la croissance", wsFr);
-			Assert.IsTrue(tss.Equals(tss0), "The French definition imported okay.");
-			Assert.AreEqual(4, sense.AnthroCodesRC.Count, "The sense has 4 anthopology category codes.");
-			Assert.AreEqual(3, sense.SemanticDomainsRC.Count, "The sense is linked to 3 semantic domains.");
-			Assert.IsTrue(sense.MorphoSyntaxAnalysisRA is IMoStemMsa, "The sense's MSA is a stem type MSA.");
-			IMoStemMsa msa = sense.MorphoSyntaxAnalysisRA as IMoStemMsa;
-			Assert.AreEqual(msa.Owner, sense.Owner, "The sense's MSA is owned by the sense's owner.");
-			string pos = msa.PartOfSpeechRA.Name.get_String(wsEn).Text;
-			Assert.AreEqual("common noun", pos, "The sense's part of speech is 'common noun'.");
+				Assert.AreEqual(0, m_cache.LangProject.LexDbOA.Entries.Count(), "The lexicon starts out empty.");
+				Assert.AreEqual(0, m_cache.LangProject.AnthroListOA.PossibilitiesOS.Count);
+				Assert.AreEqual(0, m_cache.LangProject.SemanticDomainListOA.PossibilitiesOS.Count);
+				Assert.AreEqual(0, m_cache.LangProject.PartsOfSpeechOA.PossibilitiesOS.Count);
+				xid.ImportData(rdr, writer, null);
+				DateTime dtLexNew = m_cache.LangProject.LexDbOA.DateCreated;
+				DateTime dt2 = new DateTime(1995, 12, 19, 10, 31, 25);
+				Assert.AreEqual(dt2, dtLexNew, "LexDb DateCreated changed to reflect import value.");
+				Assert.AreEqual(1, m_cache.LangProject.LexDbOA.Entries.Count(), "The import data had one entry.");
+				Assert.AreEqual(0, m_cache.LangProject.LexDbOA.ReversalIndexesOC.Count);
+				ILexEntry entry = m_cache.LangProject.LexDbOA.Entries.ToArray()[0];
+				Assert.IsTrue(entry.LexemeFormOA is IMoStemAllomorph, "The entry is a stem.");
+				IMultiUnicode mu = entry.LexemeFormOA.Form;
+				Assert.AreEqual(1, mu.StringCount);
+				int ws;
+				ITsString tss = mu.GetStringFromIndex(0, out ws);
+				Assert.AreEqual("adult", tss.Text);
+				string sWs = m_cache.WritingSystemFactory.GetStrFromWs(ws);
+				Assert.AreEqual("qaa-x-ame", sWs);
+				Assert.AreEqual(1, entry.MorphoSyntaxAnalysesOC.Count, "The entry has only one MSA.");
+				Assert.AreEqual(1, entry.SensesOS.Count, "The imported entry had one sense.");
+				ILexSense sense = entry.SensesOS[0];
+				mu = sense.Gloss;
+				Assert.AreEqual(2, mu.StringCount, "The gloss is given in two writing systems/languages.");
+				int wsEn = m_cache.WritingSystemFactory.GetWsFromStr("en");
+				int wsFr = m_cache.WritingSystemFactory.GetWsFromStr("fr");
+				tss = mu.get_String(wsEn);
+				Assert.AreEqual("adult", tss.Text, "The English gloss imported okay.");
+				tss = mu.get_String(wsFr);
+				Assert.AreEqual("adulte", tss.Text, "The French gloss imported okay.");
+				IMultiString ms = sense.Definition;
+				Assert.AreEqual(2, ms.StringCount, "The definition is given in two writing systems/languages.");
+				tss = ms.get_String(wsEn);
+				ITsString tss0 = TsStringUtils.MakeString("a man or woman who is fully grown up", wsEn);
+				Assert.IsTrue(tss.Equals(tss0), "The English definition imported okay.");
+				tss = ms.get_String(wsFr);
+				tss0 = TsStringUtils.MakeString("un homme ou une femme qui est parvenu au terme de la croissance", wsFr);
+				Assert.IsTrue(tss.Equals(tss0), "The French definition imported okay.");
+				Assert.AreEqual(4, sense.AnthroCodesRC.Count, "The sense has 4 anthopology category codes.");
+				Assert.AreEqual(3, sense.SemanticDomainsRC.Count, "The sense is linked to 3 semantic domains.");
+				Assert.IsTrue(sense.MorphoSyntaxAnalysisRA is IMoStemMsa, "The sense's MSA is a stem type MSA.");
+				IMoStemMsa msa = sense.MorphoSyntaxAnalysisRA as IMoStemMsa;
+				Assert.AreEqual(msa.Owner, sense.Owner, "The sense's MSA is owned by the sense's owner.");
+				string pos = msa.PartOfSpeechRA.Name.get_String(wsEn).Text;
+				Assert.AreEqual("common noun", pos, "The sense's part of speech is 'common noun'.");
 
-			Assert.AreEqual(4, m_cache.LangProject.AnthroListOA.PossibilitiesOS.Count);
-			ICmPossibility poss = m_cache.LangProject.AnthroListOA.PossibilitiesOS[0];
-			Assert.IsTrue(poss is ICmAnthroItem);
-			tss = poss.Name.get_String(wsEn);
-			Assert.AreEqual("Social Personality", tss.Text);
-			tss = poss.Abbreviation.get_String(wsEn);
-			Assert.AreEqual("156", tss.Text);
-			poss = m_cache.LangProject.AnthroListOA.PossibilitiesOS[1];
-			Assert.IsTrue(poss is ICmAnthroItem);
-			tss = poss.Name.get_String(wsEn);
-			Assert.AreEqual("Personality Traits", tss.Text);
-			tss = poss.Abbreviation.get_String(wsEn);
-			Assert.AreEqual("157", tss.Text);
-			poss = m_cache.LangProject.AnthroListOA.PossibilitiesOS[2];
-			Assert.IsTrue(poss is ICmAnthroItem);
-			tss = poss.Name.get_String(wsEn);
-			Assert.AreEqual("Norms", tss.Text);
-			tss = poss.Abbreviation.get_String(wsEn);
-			Assert.AreEqual("183", tss.Text);
-			poss = m_cache.LangProject.AnthroListOA.PossibilitiesOS[3];
-			Assert.IsTrue(poss is ICmAnthroItem);
-			tss = poss.Name.get_String(wsEn);
-			Assert.AreEqual("Ethnopsychology", tss.Text);
-			tss = poss.Abbreviation.get_String(wsEn);
-			Assert.AreEqual("828", tss.Text);
+				Assert.AreEqual(4, m_cache.LangProject.AnthroListOA.PossibilitiesOS.Count);
+				ICmPossibility poss = m_cache.LangProject.AnthroListOA.PossibilitiesOS[0];
+				Assert.IsTrue(poss is ICmAnthroItem);
+				tss = poss.Name.get_String(wsEn);
+				Assert.AreEqual("Social Personality", tss.Text);
+				tss = poss.Abbreviation.get_String(wsEn);
+				Assert.AreEqual("156", tss.Text);
+				poss = m_cache.LangProject.AnthroListOA.PossibilitiesOS[1];
+				Assert.IsTrue(poss is ICmAnthroItem);
+				tss = poss.Name.get_String(wsEn);
+				Assert.AreEqual("Personality Traits", tss.Text);
+				tss = poss.Abbreviation.get_String(wsEn);
+				Assert.AreEqual("157", tss.Text);
+				poss = m_cache.LangProject.AnthroListOA.PossibilitiesOS[2];
+				Assert.IsTrue(poss is ICmAnthroItem);
+				tss = poss.Name.get_String(wsEn);
+				Assert.AreEqual("Norms", tss.Text);
+				tss = poss.Abbreviation.get_String(wsEn);
+				Assert.AreEqual("183", tss.Text);
+				poss = m_cache.LangProject.AnthroListOA.PossibilitiesOS[3];
+				Assert.IsTrue(poss is ICmAnthroItem);
+				tss = poss.Name.get_String(wsEn);
+				Assert.AreEqual("Ethnopsychology", tss.Text);
+				tss = poss.Abbreviation.get_String(wsEn);
+				Assert.AreEqual("828", tss.Text);
 
-			Assert.AreEqual(3, m_cache.LangProject.SemanticDomainListOA.PossibilitiesOS.Count);
-			poss = m_cache.LangProject.SemanticDomainListOA.PossibilitiesOS[0];
-			Assert.IsTrue(poss is ICmSemanticDomain);
-			tss = poss.Name.get_String(wsEn);
-			Assert.AreEqual("4.3.1.3", tss.Text);
-			tss = poss.Abbreviation.get_String(wsEn);
-			Assert.AreEqual("4.3.1.3", tss.Text);
-			poss = m_cache.LangProject.SemanticDomainListOA.PossibilitiesOS[1];
-			Assert.IsTrue(poss is ICmSemanticDomain);
-			tss = poss.Name.get_String(wsEn);
-			Assert.AreEqual("4.3.1.3.1", tss.Text);
-			tss = poss.Abbreviation.get_String(wsEn);
-			Assert.AreEqual("4.3.1.3.1", tss.Text);
-			poss = m_cache.LangProject.SemanticDomainListOA.PossibilitiesOS[2];
-			Assert.IsTrue(poss is ICmSemanticDomain);
-			tss = poss.Name.get_String(wsEn);
-			Assert.AreEqual("2", tss.Text);
-			tss = poss.Abbreviation.get_String(wsEn);
-			Assert.AreEqual("2", tss.Text);
+				Assert.AreEqual(3, m_cache.LangProject.SemanticDomainListOA.PossibilitiesOS.Count);
+				poss = m_cache.LangProject.SemanticDomainListOA.PossibilitiesOS[0];
+				Assert.IsTrue(poss is ICmSemanticDomain);
+				tss = poss.Name.get_String(wsEn);
+				Assert.AreEqual("4.3.1.3", tss.Text);
+				tss = poss.Abbreviation.get_String(wsEn);
+				Assert.AreEqual("4.3.1.3", tss.Text);
+				poss = m_cache.LangProject.SemanticDomainListOA.PossibilitiesOS[1];
+				Assert.IsTrue(poss is ICmSemanticDomain);
+				tss = poss.Name.get_String(wsEn);
+				Assert.AreEqual("4.3.1.3.1", tss.Text);
+				tss = poss.Abbreviation.get_String(wsEn);
+				Assert.AreEqual("4.3.1.3.1", tss.Text);
+				poss = m_cache.LangProject.SemanticDomainListOA.PossibilitiesOS[2];
+				Assert.IsTrue(poss is ICmSemanticDomain);
+				tss = poss.Name.get_String(wsEn);
+				Assert.AreEqual("2", tss.Text);
+				tss = poss.Abbreviation.get_String(wsEn);
+				Assert.AreEqual("2", tss.Text);
 
-			Assert.AreEqual(1, m_cache.LangProject.PartsOfSpeechOA.PossibilitiesOS.Count);
-			poss = m_cache.LangProject.PartsOfSpeechOA.PossibilitiesOS[0];
-			Assert.IsTrue(poss is IPartOfSpeech);
-			tss = poss.Name.get_String(wsEn);
-			Assert.AreEqual("common noun", tss.Text);
-			tss = poss.Abbreviation.get_String(wsEn);
-			Assert.AreEqual("com n", tss.Text);
+				Assert.AreEqual(1, m_cache.LangProject.PartsOfSpeechOA.PossibilitiesOS.Count);
+				poss = m_cache.LangProject.PartsOfSpeechOA.PossibilitiesOS[0];
+				Assert.IsTrue(poss is IPartOfSpeech);
+				tss = poss.Name.get_String(wsEn);
+				Assert.AreEqual("common noun", tss.Text);
+				tss = poss.Abbreviation.get_String(wsEn);
+				Assert.AreEqual("com n", tss.Text);
 
-			IWfiWordformRepository repoWfi = m_cache.ServiceLocator.GetInstance<IWfiWordformRepository>();
-			Assert.AreEqual(0, repoWfi.Count);
+				IWfiWordformRepository repoWfi = m_cache.ServiceLocator.GetInstance<IWfiWordformRepository>();
+				Assert.AreEqual(0, repoWfi.Count);
 
-			string sLog = sbLog.ToString();
-			Assert.IsFalse(String.IsNullOrEmpty(sLog), "There should be some log information!");
-			string[] rgsLog = sLog.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-			Assert.LessOrEqual(9, rgsLog.Length);
-			Assert.AreEqual("data stream:0: Info: Creating new writing system for \"qaa-x-ame\".", rgsLog[0]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"com n\", and name=\"common noun\" in the Parts of Speech list.", rgsLog[1]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"156\", and name=\"Social Personality\" in the Anthropology Categories list.", rgsLog[2]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"157\", and name=\"Personality Traits\" in the Anthropology Categories list.", rgsLog[3]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"183\", and name=\"Norms\" in the Anthropology Categories list.", rgsLog[4]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"828\", and name=\"Ethnopsychology\" in the Anthropology Categories list.", rgsLog[5]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"4.3.1.3\", and name=\"4.3.1.3\" in the Semantic Domain list.", rgsLog[6]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"4.3.1.3.1\", and name=\"4.3.1.3.1\" in the Semantic Domain list.", rgsLog[7]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"2\", and name=\"2\" in the Semantic Domain list.", rgsLog[8]);
-		}
+				string sLog = sbLog.ToString();
+				Assert.IsFalse(String.IsNullOrEmpty(sLog), "There should be some log information!");
+				string[] rgsLog = sLog.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+				Assert.LessOrEqual(9, rgsLog.Length);
+				Assert.AreEqual("data stream:0: Info: Creating new writing system for \"qaa-x-ame\".", rgsLog[0]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"com n\", and name=\"common noun\" in the Parts of Speech list.", rgsLog[1]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"156\", and name=\"Social Personality\" in the Anthropology Categories list.", rgsLog[2]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"157\", and name=\"Personality Traits\" in the Anthropology Categories list.", rgsLog[3]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"183\", and name=\"Norms\" in the Anthropology Categories list.", rgsLog[4]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"828\", and name=\"Ethnopsychology\" in the Anthropology Categories list.", rgsLog[5]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"4.3.1.3\", and name=\"4.3.1.3\" in the Semantic Domain list.", rgsLog[6]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"4.3.1.3.1\", and name=\"4.3.1.3.1\" in the Semantic Domain list.", rgsLog[7]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"2\", and name=\"2\" in the Semantic Domain list.", rgsLog[8]);
+			}
 		}
 
 		///--------------------------------------------------------------------------------------
@@ -273,7 +274,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 		public void ImportData2()
 		{
 			XmlImportData xid = new XmlImportData(m_cache, true);
-			using (var rdr = new StringReader(
+			var sbLog = new StringBuilder();
+			using(var rdr = new StringReader(
 				"<FwDatabase>" +
 				"<LangProject>" +
 				"<LexDb>" +
@@ -370,107 +372,107 @@ namespace SIL.LCModel.Application.ApplicationServices
 				"</WfiWordform>" +
 				"</FwDatabase>"
 				))
+			using(var writer = new StringWriter(sbLog))
 			{
-			StringBuilder sbLog = new StringBuilder();
-			xid.ImportData(rdr, new StringWriter(sbLog), null);
-			CoreWritingSystemDefinition wsEn = m_cache.ServiceLocator.WritingSystemManager.Get("en");
-			Assert.AreEqual(1, m_cache.LangProject.LexDbOA.ReversalIndexesOC.Count);
-			IReversalIndex revIdx = m_cache.LangProject.LexDbOA.ReversalIndexesOC.ToArray()[0];
-			IMultiUnicode mu = revIdx.Name;
-			Assert.AreEqual(1, mu.StringCount);
-			ITsString tss = mu.get_String(wsEn.Handle);
-			Assert.AreEqual("English Index", tss.Text);
-			Assert.AreEqual(wsEn.Id, revIdx.WritingSystem);
-			Assert.AreEqual(1, revIdx.EntriesOC.Count);
-			IReversalIndexEntry revEntry = revIdx.EntriesOC.ToArray()[0];
-			mu = revEntry.ReversalForm;
-			tss = mu.get_String(wsEn.Handle);
-			Assert.AreEqual("adolescent", tss.Text);
-			Assert.AreEqual("Parts Of Speech", revIdx.PartsOfSpeechOA.Name.get_String(wsEn.Handle).Text);
-			Assert.AreEqual("Parts Of Speech", revIdx.PartsOfSpeechOA.Abbreviation.get_String(wsEn.Handle).Text);
-			Assert.AreEqual(-3, revIdx.PartsOfSpeechOA.WsSelector);
-			Assert.IsTrue(revIdx.PartsOfSpeechOA.IsSorted);
-			Assert.IsFalse(revIdx.PartsOfSpeechOA.IsClosed);
-			Assert.AreEqual(7, revIdx.PartsOfSpeechOA.ItemClsid);
-			Assert.IsTrue(revIdx.PartsOfSpeechOA.UseExtendedFields);
-			Assert.AreEqual(1, revIdx.PartsOfSpeechOA.PossibilitiesOS.Count);
-			ICmPossibility poss = revIdx.PartsOfSpeechOA.PossibilitiesOS[0];
-			Assert.AreEqual("noun", poss.Name.get_String(wsEn.Handle).Text);
-			Assert.AreEqual("n", poss.Abbreviation.get_String(wsEn.Handle).Text);
-			Assert.AreEqual(5, poss.SubPossibilitiesOS.Count);
-			ICmPossibility subposs;
-			subposs = poss.SubPossibilitiesOS[0];
-			Assert.AreEqual("common noun", subposs.Name.get_String(wsEn.Handle).Text);
-			Assert.AreEqual("comm", subposs.Abbreviation.get_String(wsEn.Handle).Text);
-			Assert.AreEqual(revEntry.PartOfSpeechRA, subposs as IPartOfSpeech);
-			subposs = poss.SubPossibilitiesOS[1];
-			Assert.AreEqual("concrete noun", subposs.Name.get_String(wsEn.Handle).Text);
-			Assert.AreEqual("conc", subposs.Abbreviation.get_String(wsEn.Handle).Text);
-			subposs = poss.SubPossibilitiesOS[2];
-			Assert.AreEqual("nominal", subposs.Name.get_String(wsEn.Handle).Text);
-			Assert.AreEqual("nom", subposs.Abbreviation.get_String(wsEn.Handle).Text);
-			subposs = poss.SubPossibilitiesOS[3];
-			Assert.AreEqual("possessive noun", subposs.Name.get_String(wsEn.Handle).Text);
-			Assert.AreEqual("poss", subposs.Abbreviation.get_String(wsEn.Handle).Text);
-			subposs = poss.SubPossibilitiesOS[4];
-			Assert.AreEqual("proper noun", subposs.Name.get_String(wsEn.Handle).Text);
-			Assert.AreEqual("prop", subposs.Abbreviation.get_String(wsEn.Handle).Text);
+				xid.ImportData(rdr, writer, null);
+				CoreWritingSystemDefinition wsEn = m_cache.ServiceLocator.WritingSystemManager.Get("en");
+				Assert.AreEqual(1, m_cache.LangProject.LexDbOA.ReversalIndexesOC.Count);
+				IReversalIndex revIdx = m_cache.LangProject.LexDbOA.ReversalIndexesOC.ToArray()[0];
+				IMultiUnicode mu = revIdx.Name;
+				Assert.AreEqual(1, mu.StringCount);
+				ITsString tss = mu.get_String(wsEn.Handle);
+				Assert.AreEqual("English Index", tss.Text);
+				Assert.AreEqual(wsEn.Id, revIdx.WritingSystem);
+				Assert.AreEqual(1, revIdx.EntriesOC.Count);
+				IReversalIndexEntry revEntry = revIdx.EntriesOC.ToArray()[0];
+				mu = revEntry.ReversalForm;
+				tss = mu.get_String(wsEn.Handle);
+				Assert.AreEqual("adolescent", tss.Text);
+				Assert.AreEqual("Parts Of Speech", revIdx.PartsOfSpeechOA.Name.get_String(wsEn.Handle).Text);
+				Assert.AreEqual("Parts Of Speech", revIdx.PartsOfSpeechOA.Abbreviation.get_String(wsEn.Handle).Text);
+				Assert.AreEqual(-3, revIdx.PartsOfSpeechOA.WsSelector);
+				Assert.IsTrue(revIdx.PartsOfSpeechOA.IsSorted);
+				Assert.IsFalse(revIdx.PartsOfSpeechOA.IsClosed);
+				Assert.AreEqual(7, revIdx.PartsOfSpeechOA.ItemClsid);
+				Assert.IsTrue(revIdx.PartsOfSpeechOA.UseExtendedFields);
+				Assert.AreEqual(1, revIdx.PartsOfSpeechOA.PossibilitiesOS.Count);
+				ICmPossibility poss = revIdx.PartsOfSpeechOA.PossibilitiesOS[0];
+				Assert.AreEqual("noun", poss.Name.get_String(wsEn.Handle).Text);
+				Assert.AreEqual("n", poss.Abbreviation.get_String(wsEn.Handle).Text);
+				Assert.AreEqual(5, poss.SubPossibilitiesOS.Count);
+				ICmPossibility subposs;
+				subposs = poss.SubPossibilitiesOS[0];
+				Assert.AreEqual("common noun", subposs.Name.get_String(wsEn.Handle).Text);
+				Assert.AreEqual("comm", subposs.Abbreviation.get_String(wsEn.Handle).Text);
+				Assert.AreEqual(revEntry.PartOfSpeechRA, subposs as IPartOfSpeech);
+				subposs = poss.SubPossibilitiesOS[1];
+				Assert.AreEqual("concrete noun", subposs.Name.get_String(wsEn.Handle).Text);
+				Assert.AreEqual("conc", subposs.Abbreviation.get_String(wsEn.Handle).Text);
+				subposs = poss.SubPossibilitiesOS[2];
+				Assert.AreEqual("nominal", subposs.Name.get_String(wsEn.Handle).Text);
+				Assert.AreEqual("nom", subposs.Abbreviation.get_String(wsEn.Handle).Text);
+				subposs = poss.SubPossibilitiesOS[3];
+				Assert.AreEqual("possessive noun", subposs.Name.get_String(wsEn.Handle).Text);
+				Assert.AreEqual("poss", subposs.Abbreviation.get_String(wsEn.Handle).Text);
+				subposs = poss.SubPossibilitiesOS[4];
+				Assert.AreEqual("proper noun", subposs.Name.get_String(wsEn.Handle).Text);
+				Assert.AreEqual("prop", subposs.Abbreviation.get_String(wsEn.Handle).Text);
 
-			Assert.AreEqual(1, m_cache.LangProject.LexDbOA.Entries.Count(), "The import data had one entry.");
-			ILexEntry entry = m_cache.LangProject.LexDbOA.Entries.ToArray()[0];
-			IMoForm form = entry.LexemeFormOA;
-			Assert.IsTrue(form is IMoStemAllomorph);
-			int wsAme = m_cache.WritingSystemFactory.GetWsFromStr("qaa-x-ame");
-			Assert.AreEqual(1, form.Form.StringCount);
-			Assert.AreEqual("adolescent", form.Form.get_String(wsAme).Text);
-			Assert.AreEqual("root", form.MorphTypeRA.Name.get_String(wsEn.Handle).Text);
-			Assert.AreEqual(1, entry.MorphoSyntaxAnalysesOC.Count);
-			IMoStemMsa msaStem = entry.MorphoSyntaxAnalysesOC.ToArray()[0] as IMoStemMsa;
-			Assert.IsNotNull(msaStem);
-			Assert.AreEqual("common noun", msaStem.PartOfSpeechRA.Name.get_String(wsEn.Handle).Text);
-			Assert.AreNotEqual(revEntry.PartOfSpeechRA, msaStem.PartOfSpeechRA);
-			Assert.AreEqual(revEntry.PartOfSpeechRA.Name.get_String(wsEn.Handle).Text,
-				msaStem.PartOfSpeechRA.Name.get_String(wsEn.Handle).Text);
-			Assert.AreEqual(1, entry.SensesOS.Count);
-			ILexSense sense = entry.SensesOS[0];
-			Assert.AreEqual(msaStem, sense.MorphoSyntaxAnalysisRA);
-			Assert.AreEqual(1, sense.SensesOS.Count);
-			ILexSense subsense = sense.SensesOS[0];
-			Assert.AreEqual(msaStem, subsense.MorphoSyntaxAnalysisRA);
-			Assert.AreEqual(1, subsense.Gloss.StringCount);
-			Assert.AreEqual("adolescent", subsense.Gloss.get_String(wsEn.Handle).Text);
-			Assert.AreEqual(1, subsense.Definition.StringCount);
-			ITsString tss0 = TsStringUtils.MakeString("a boy or girl from the period of puberty to adulthood", wsEn.Handle);
-			Assert.IsTrue(tss0.Equals(subsense.Definition.get_String(wsEn.Handle)));
-			Assert.AreEqual(1, subsense.AnthroCodesRC.Count);
-			ICmAnthroItem anth = subsense.AnthroCodesRC.ToArray()[0];
-			Assert.AreEqual("Age Stratification", anth.Name.get_String(wsEn.Handle).Text);
-			Assert.AreEqual("561", anth.Abbreviation.get_String(wsEn.Handle).Text);
-			Assert.AreEqual(1, subsense.SemanticDomainsRC.Count);
-			ICmSemanticDomain sem = subsense.SemanticDomainsRC.ToArray()[0];
-			Assert.AreEqual("2.6.4.2", sem.Name.get_String(wsEn.Handle).Text);
-			Assert.AreEqual("2.6.4.2", sem.Abbreviation.get_String(wsEn.Handle).Text);
-			Assert.AreEqual(1, subsense.ReferringReversalIndexEntries.Count());
-			IReversalIndexEntry rieSense = subsense.ReferringReversalIndexEntries.ToArray()[0];
-			Assert.AreEqual(revEntry, rieSense);
-			IWfiWordformRepository repoWfi = m_cache.ServiceLocator.GetInstance<IWfiWordformRepository>();
-			Assert.AreEqual(2, repoWfi.Count);
-			IWfiWordform wfiThis = repoWfi.GetMatchingWordform(wsAme, "this");
-			Assert.IsNotNull(wfiThis);
-			Assert.AreEqual(0, wfiThis.AnalysesOC.Count);
-			IWfiWordform wfiThose = repoWfi.GetMatchingWordform(wsAme, "those");
-			Assert.IsNotNull(wfiThose);
-			Assert.AreEqual(0, wfiThose.AnalysesOC.Count);
+				Assert.AreEqual(1, m_cache.LangProject.LexDbOA.Entries.Count(), "The import data had one entry.");
+				ILexEntry entry = m_cache.LangProject.LexDbOA.Entries.ToArray()[0];
+				IMoForm form = entry.LexemeFormOA;
+				Assert.IsTrue(form is IMoStemAllomorph);
+				int wsAme = m_cache.WritingSystemFactory.GetWsFromStr("qaa-x-ame");
+				Assert.AreEqual(1, form.Form.StringCount);
+				Assert.AreEqual("adolescent", form.Form.get_String(wsAme).Text);
+				Assert.AreEqual("root", form.MorphTypeRA.Name.get_String(wsEn.Handle).Text);
+				Assert.AreEqual(1, entry.MorphoSyntaxAnalysesOC.Count);
+				IMoStemMsa msaStem = entry.MorphoSyntaxAnalysesOC.ToArray()[0] as IMoStemMsa;
+				Assert.IsNotNull(msaStem);
+				Assert.AreEqual("common noun", msaStem.PartOfSpeechRA.Name.get_String(wsEn.Handle).Text);
+				Assert.AreNotEqual(revEntry.PartOfSpeechRA, msaStem.PartOfSpeechRA);
+				Assert.AreEqual(revEntry.PartOfSpeechRA.Name.get_String(wsEn.Handle).Text,
+					msaStem.PartOfSpeechRA.Name.get_String(wsEn.Handle).Text);
+				Assert.AreEqual(1, entry.SensesOS.Count);
+				ILexSense sense = entry.SensesOS[0];
+				Assert.AreEqual(msaStem, sense.MorphoSyntaxAnalysisRA);
+				Assert.AreEqual(1, sense.SensesOS.Count);
+				ILexSense subsense = sense.SensesOS[0];
+				Assert.AreEqual(msaStem, subsense.MorphoSyntaxAnalysisRA);
+				Assert.AreEqual(1, subsense.Gloss.StringCount);
+				Assert.AreEqual("adolescent", subsense.Gloss.get_String(wsEn.Handle).Text);
+				Assert.AreEqual(1, subsense.Definition.StringCount);
+				ITsString tss0 = TsStringUtils.MakeString("a boy or girl from the period of puberty to adulthood", wsEn.Handle);
+				Assert.IsTrue(tss0.Equals(subsense.Definition.get_String(wsEn.Handle)));
+				Assert.AreEqual(1, subsense.AnthroCodesRC.Count);
+				ICmAnthroItem anth = subsense.AnthroCodesRC.ToArray()[0];
+				Assert.AreEqual("Age Stratification", anth.Name.get_String(wsEn.Handle).Text);
+				Assert.AreEqual("561", anth.Abbreviation.get_String(wsEn.Handle).Text);
+				Assert.AreEqual(1, subsense.SemanticDomainsRC.Count);
+				ICmSemanticDomain sem = subsense.SemanticDomainsRC.ToArray()[0];
+				Assert.AreEqual("2.6.4.2", sem.Name.get_String(wsEn.Handle).Text);
+				Assert.AreEqual("2.6.4.2", sem.Abbreviation.get_String(wsEn.Handle).Text);
+				Assert.AreEqual(1, subsense.ReferringReversalIndexEntries.Count());
+				IReversalIndexEntry rieSense = subsense.ReferringReversalIndexEntries.ToArray()[0];
+				Assert.AreEqual(revEntry, rieSense);
+				IWfiWordformRepository repoWfi = m_cache.ServiceLocator.GetInstance<IWfiWordformRepository>();
+				Assert.AreEqual(2, repoWfi.Count);
+				IWfiWordform wfiThis = repoWfi.GetMatchingWordform(wsAme, "this");
+				Assert.IsNotNull(wfiThis);
+				Assert.AreEqual(0, wfiThis.AnalysesOC.Count);
+				IWfiWordform wfiThose = repoWfi.GetMatchingWordform(wsAme, "those");
+				Assert.IsNotNull(wfiThose);
+				Assert.AreEqual(0, wfiThose.AnalysesOC.Count);
 
-			string sLog = sbLog.ToString();
-			Assert.IsFalse(String.IsNullOrEmpty(sLog), "There should be some log information!");
-			string[] rgsLog = sLog.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-			Assert.LessOrEqual(4, rgsLog.Length);
-			Assert.AreEqual("data stream:0: Info: Creating new writing system for \"qaa-x-ame\".", rgsLog[0]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"com n\", and name=\"common noun\" in the Parts of Speech list.", rgsLog[1]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"561\", and name=\"Age Stratification\" in the Anthropology Categories list.", rgsLog[2]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"2.6.4.2\", and name=\"2.6.4.2\" in the Semantic Domain list.", rgsLog[3]);
-		}
+				string sLog = sbLog.ToString();
+				Assert.IsFalse(String.IsNullOrEmpty(sLog), "There should be some log information!");
+				string[] rgsLog = sLog.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+				Assert.LessOrEqual(4, rgsLog.Length);
+				Assert.AreEqual("data stream:0: Info: Creating new writing system for \"qaa-x-ame\".", rgsLog[0]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"com n\", and name=\"common noun\" in the Parts of Speech list.", rgsLog[1]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"561\", and name=\"Age Stratification\" in the Anthropology Categories list.", rgsLog[2]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"2.6.4.2\", and name=\"2.6.4.2\" in the Semantic Domain list.", rgsLog[3]);
+			}
 		}
 
 		///--------------------------------------------------------------------------------------
@@ -482,7 +484,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 		public void ImportData3()
 		{
 			XmlImportData xid = new XmlImportData(m_cache, true);
-			using (var rdr = new StringReader(
+			var sbLog = new StringBuilder();
+			using(var rdr = new StringReader(
 				"<FwDatabase>" + Environment.NewLine +
 				"<LangProject>" + Environment.NewLine +
 				"<LexDb>" + Environment.NewLine +
@@ -850,41 +853,41 @@ namespace SIL.LCModel.Application.ApplicationServices
 				"</CmBaseAnnotation>" + Environment.NewLine +
 				"</FwDatabase>" + Environment.NewLine
 				))
+				using(var writer = new StringWriter(sbLog))
 			{
-			StringBuilder sbLog = new StringBuilder();
-			xid.ImportData(rdr, new StringWriter(sbLog), null);
-			int wsEn = m_cache.WritingSystemFactory.GetWsFromStr("en");
-			int wsAme = m_cache.WritingSystemFactory.GetWsFromStr("qaa-x-ame");
-			Assert.AreEqual(0, m_cache.LangProject.LexDbOA.ReversalIndexesOC.Count);
-			Assert.AreEqual(3, m_cache.LangProject.LexDbOA.Entries.Count());
-			ILexEntry[] rgle = m_cache.LangProject.LexDbOA.Entries.ToArray();
-			CheckFirstEntry(rgle[0], wsEn, wsAme);
-			CheckSecondEntry(rgle[1], wsEn, wsAme, rgle[2]);
-			CheckThirdEntry(rgle[2], wsEn, wsAme);
-			Assert.AreEqual(1, m_cache.LangProject.Texts.Count);
-			CheckTheText(m_cache.LangProject.Texts.ToArray()[0]);
-			Assert.AreEqual(4, m_cache.LangProject.AnalyzingAgentsOC.Count);	// There are 3 standard agents.
-			CheckTheAgent(m_cache.LangProject.AnalyzingAgentsOC.ToArray()[3], wsAme);
-			CheckWfiWordforms(wsEn, wsAme);
-			CheckAnnotations(wsEn, wsAme);
+				xid.ImportData(rdr, writer, null);
+				int wsEn = m_cache.WritingSystemFactory.GetWsFromStr("en");
+				int wsAme = m_cache.WritingSystemFactory.GetWsFromStr("qaa-x-ame");
+				Assert.AreEqual(0, m_cache.LangProject.LexDbOA.ReversalIndexesOC.Count);
+				Assert.AreEqual(3, m_cache.LangProject.LexDbOA.Entries.Count());
+				ILexEntry[] rgle = m_cache.LangProject.LexDbOA.Entries.ToArray();
+				CheckFirstEntry(rgle[0], wsEn, wsAme);
+				CheckSecondEntry(rgle[1], wsEn, wsAme, rgle[2]);
+				CheckThirdEntry(rgle[2], wsEn, wsAme);
+				Assert.AreEqual(1, m_cache.LangProject.Texts.Count);
+				CheckTheText(m_cache.LangProject.Texts.ToArray()[0]);
+				Assert.AreEqual(4, m_cache.LangProject.AnalyzingAgentsOC.Count);	// There are 3 standard agents.
+				CheckTheAgent(m_cache.LangProject.AnalyzingAgentsOC.ToArray()[3], wsAme);
+				CheckWfiWordforms(wsEn, wsAme);
+				CheckAnnotations(wsEn, wsAme);
 
-			string sLog = sbLog.ToString();
-			Assert.IsFalse(String.IsNullOrEmpty(sLog), "There should be some log information!");
-			string[] rgsLog = sLog.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-			Assert.LessOrEqual(12, rgsLog.Length);
-			Assert.AreEqual("data stream:0: Info: Creating new writing system for \"qaa-x-ame\".", rgsLog[0]);
-			Assert.AreEqual("data stream:0: Info: Creating new writing system for \"qaa-x-ame-fonipa\".", rgsLog[1]);
-			Assert.AreEqual("data stream:0: Info: Creating new writing system for \"la\".", rgsLog[3]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"adj, indef art\", and name=\"indefinite article\" in the Parts of Speech list.", rgsLog[2]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"\", and name=\"Irregularly Inflected Form\" in the *** list.", rgsLog[4]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"vi\", and name=\"intransitive verb\" in the Parts of Speech list.", rgsLog[5]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"aux\", and name=\"auxiliary verb\" in the Parts of Speech list.", rgsLog[6]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"prim\", and name=\"primary\" in the *** list.", rgsLog[7]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"sec\", and name=\"secondary\" in the *** list.", rgsLog[8]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"\", and name=\"Text Segment\" in the *** list.", rgsLog[9]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"\", and name=\"Free Translation\" in the *** list.", rgsLog[10]);
-			Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"\", and name=\"Wordform In Context\" in the *** list.", rgsLog[11]);
-		}
+				string sLog = sbLog.ToString();
+				Assert.IsFalse(String.IsNullOrEmpty(sLog), "There should be some log information!");
+				string[] rgsLog = sLog.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+				Assert.LessOrEqual(12, rgsLog.Length);
+				Assert.AreEqual("data stream:0: Info: Creating new writing system for \"qaa-x-ame\".", rgsLog[0]);
+				Assert.AreEqual("data stream:0: Info: Creating new writing system for \"qaa-x-ame-fonipa\".", rgsLog[1]);
+				Assert.AreEqual("data stream:0: Info: Creating new writing system for \"la\".", rgsLog[3]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"adj, indef art\", and name=\"indefinite article\" in the Parts of Speech list.", rgsLog[2]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"\", and name=\"Irregularly Inflected Form\" in the *** list.", rgsLog[4]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"vi\", and name=\"intransitive verb\" in the Parts of Speech list.", rgsLog[5]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"aux\", and name=\"auxiliary verb\" in the Parts of Speech list.", rgsLog[6]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"prim\", and name=\"primary\" in the *** list.", rgsLog[7]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"sec\", and name=\"secondary\" in the *** list.", rgsLog[8]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"\", and name=\"Text Segment\" in the *** list.", rgsLog[9]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"\", and name=\"Free Translation\" in the *** list.", rgsLog[10]);
+				Assert.AreEqual("data stream:0: Info: Creating new item with ws=\"en\", abbr=\"\", and name=\"Wordform In Context\" in the *** list.", rgsLog[11]);
+			}
 		}
 
 		private void CheckAnnotations(int wsEn, int wsAme)
@@ -1289,7 +1292,8 @@ namespace SIL.LCModel.Application.ApplicationServices
 			Assert.LessOrEqual(span.TotalMinutes, 1.0);
 			// should be only a second or two
 			XmlImportData xid = new XmlImportData(m_cache, true);
-			using (var rdr = new StringReader(
+			var sbLog = new StringBuilder();
+			using(var rdr = new StringReader(
 				"<LexDb>" + Environment.NewLine +
 				"<Entries>" + Environment.NewLine +
 				"<LexEntry>" + Environment.NewLine +
@@ -1353,29 +1357,29 @@ namespace SIL.LCModel.Application.ApplicationServices
 				"</LexEntry>" + Environment.NewLine +
 				"</Entries>" + Environment.NewLine +
 				"</LexDb>" + Environment.NewLine))
+			using(var writer = new StringWriter(sbLog))
 			{
-			Assert.AreEqual(0, m_cache.LangProject.LexDbOA.Entries.Count(), "The lexicon starts out empty.");
-			Assert.AreEqual(0, m_cache.LangProject.AnthroListOA.PossibilitiesOS.Count);
-			Assert.AreEqual(0, m_cache.LangProject.SemanticDomainListOA.PossibilitiesOS.Count);
-			Assert.AreEqual(0, m_cache.LangProject.PartsOfSpeechOA.PossibilitiesOS.Count);
-			Assert.AreEqual(0, m_cache.LangProject.LexDbOA.LanguagesOA.PossibilitiesOS.Count);
-			StringBuilder sbLog = new StringBuilder();
-			xid.ImportData(rdr, new StringWriter(sbLog), null);
-			Assert.AreEqual(1, m_cache.LangProject.LexDbOA.Entries.Count());
-			ILexEntry le = m_cache.LangProject.LexDbOA.Entries.ToArray()[0];
-			int wsKal = m_cache.WritingSystemFactory.GetWsFromStr("qaa-x-kal");
-			Assert.AreEqual("inline test entry", le.LexemeFormOA.Form.get_String(wsKal).Text);
-			Assert.AreEqual(MoMorphTypeTags.kguidMorphPhrase, le.LexemeFormOA.MorphTypeRA.Guid);
-			Assert.AreEqual(1, le.SensesOS.Count);
-			int wsEn = m_cache.WritingSystemFactory.GetWsFromStr("en");
-			Assert.AreEqual("Bold regular Italicgreekignoredboldwordsbold-italicBOLD ", le.SensesOS[0].Definition.get_String(wsEn).Text);
-			Assert.AreEqual(0, le.SensesOS[0].SensesOS.Count);
+				Assert.AreEqual(0, m_cache.LangProject.LexDbOA.Entries.Count(), "The lexicon starts out empty.");
+				Assert.AreEqual(0, m_cache.LangProject.AnthroListOA.PossibilitiesOS.Count);
+				Assert.AreEqual(0, m_cache.LangProject.SemanticDomainListOA.PossibilitiesOS.Count);
+				Assert.AreEqual(0, m_cache.LangProject.PartsOfSpeechOA.PossibilitiesOS.Count);
+				Assert.AreEqual(0, m_cache.LangProject.LexDbOA.LanguagesOA.PossibilitiesOS.Count);
+				xid.ImportData(rdr, writer, null);
+				Assert.AreEqual(1, m_cache.LangProject.LexDbOA.Entries.Count());
+				ILexEntry le = m_cache.LangProject.LexDbOA.Entries.ToArray()[0];
+				int wsKal = m_cache.WritingSystemFactory.GetWsFromStr("qaa-x-kal");
+				Assert.AreEqual("inline test entry", le.LexemeFormOA.Form.get_String(wsKal).Text);
+				Assert.AreEqual(MoMorphTypeTags.kguidMorphPhrase, le.LexemeFormOA.MorphTypeRA.Guid);
+				Assert.AreEqual(1, le.SensesOS.Count);
+				int wsEn = m_cache.WritingSystemFactory.GetWsFromStr("en");
+				Assert.AreEqual("Bold regular Italicgreekignoredboldwordsbold-italicBOLD ", le.SensesOS[0].Definition.get_String(wsEn).Text);
+				Assert.AreEqual(0, le.SensesOS[0].SensesOS.Count);
 
-			string sLog = sbLog.ToString();
-			Assert.IsFalse(String.IsNullOrEmpty(sLog), "There should be some log information!");
-			string[] rgsLog = sLog.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-			Assert.LessOrEqual(1, rgsLog.Length);
-			Assert.AreEqual("data stream:0: Info: Creating new writing system for \"qaa-x-kal\".", rgsLog[0]);
+				string sLog = sbLog.ToString();
+				Assert.IsFalse(String.IsNullOrEmpty(sLog), "There should be some log information!");
+				string[] rgsLog = sLog.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+				Assert.LessOrEqual(1, rgsLog.Length);
+				Assert.AreEqual("data stream:0: Info: Creating new writing system for \"qaa-x-kal\".", rgsLog[0]);
 			}
 		}
 
@@ -1385,7 +1389,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 		{
 			var xid = new XmlImportData(m_cache, false);
 			var createdDate = "2011-09-14 12:00:00.000";
-			using (var reader = new StringReader("<LexDb xmlns:msxsl=\"urn:schemas-microsoft-com:xslt\" xmlns:user=\"urn:my-scripts\">" +
+			using(var reader = new StringReader("<LexDb xmlns:msxsl=\"urn:schemas-microsoft-com:xslt\" xmlns:user=\"urn:my-scripts\">" +
 				 "<Entries><LexEntry><LexemeForm><MoStemAllomorph><MorphType><Link ws=\"en\" name=\"stem\" /></MorphType>" +
 				 "<Form><AUni ws=\"cub\">ãcʉriojomecacʉ</AUni></Form></MoStemAllomorph></LexemeForm><DateCreated>" +
 				 $"<Time val=\"{createdDate}\" /></DateCreated><DialectLabels><Link ws=\"en\" abbr=\"C\" name=\"C\" />" +
@@ -1401,9 +1405,9 @@ namespace SIL.LCModel.Application.ApplicationServices
 				 "<Link ws=\"en\" name=\"stem\" /></MorphType><Form><AUni ws=\"cub\">ãcʉriojomecacʉ</AUni></Form></MoStemAllomorph>" +
 				 "</LexemeForm><EntryRefs><LexEntryRef><VariantEntryTypes><Link ws=\"es\" name=\"Variante\" /></VariantEntryTypes>" +
 				 "<ComponentLexemes><Link target=\"IID0E3\" /></ComponentLexemes></LexEntryRef></EntryRefs></LexEntry></Entries></LexDb>"))
+			using(var writer = new StringWriter(new StringBuilder()))
 			{
-				StringBuilder sbLog = new StringBuilder();
-				xid.ImportData(reader, new StringWriter(sbLog), null);
+				xid.ImportData(reader, writer, null);
 				var entries = m_cache.LangProject.LexDbOA.Entries.ToArray();
 				Assert.That(entries.Length, Is.EqualTo(2), "The lexicon should have 2 entries.");
 				Assert.That(entries[0].DateCreated, Is.EqualTo(entries[1].DateCreated));
@@ -1424,7 +1428,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			Assert.LessOrEqual(span.TotalMinutes, 1.0);
 			// should be only a second or two
 			XmlImportData xid = new XmlImportData(m_cache, true);
-			using (var rdr = new StringReader(@"<LexDb xmlns:msxsl='urn:schemas-microsoft-com:xslt' xmlns:user='urn:my-scripts'>
+			using(var rdr = new StringReader(@"<LexDb xmlns:msxsl='urn:schemas-microsoft-com:xslt' xmlns:user='urn:my-scripts'>
 	<Entries>
 		<LexEntry>
 			<LexemeForm>
@@ -1521,6 +1525,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 		</LexEntry>
 	</Entries>
 </LexDb>"))
+			using(var writer = new StringWriter(new StringBuilder()))
 			{
 				Assert.AreEqual(0, m_cache.LangProject.LexDbOA.Entries.Count(), "The lexicon starts out empty.");
 				Assert.AreEqual(0, m_cache.LangProject.AnthroListOA.PossibilitiesOS.Count);
@@ -1536,8 +1541,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 					calendar.Name.SetAnalysisDefaultWritingSystem("calendar");
 					calendar.MappingType = (int)LexRefTypeTags.MappingTypes.kmtSenseSequence;
 				});
-				StringBuilder sbLog = new StringBuilder();
-				xid.ImportData(rdr, new StringWriter(sbLog), null);
+				xid.ImportData(rdr, writer, null);
 				// The entries are Mon, Tue, Wed.
 				// The input specifies (three times!) that there is a Calendar relation Mon, Tue, Wed.
 				Assert.AreEqual(3, m_cache.LangProject.LexDbOA.Entries.Count());
@@ -1719,10 +1723,10 @@ namespace SIL.LCModel.Application.ApplicationServices
 				partWhole.Name.SetAnalysisDefaultWritingSystem("part");
 				partWhole.MappingType = (int)LexRefTypeTags.MappingTypes.kmtSenseTree;
 			});
-			StringBuilder sbLog = new StringBuilder();
-			using (var rdr = new StringReader(input))
+			using(var rdr = new StringReader(input))
+			using(var writer = new StringWriter(new StringBuilder()))
 			{
-				xid.ImportData(rdr, new StringWriter(sbLog), null);
+				xid.ImportData(rdr, writer, null);
 			}
 			// The entries are house, wall, wall, ceiling.
 			// The input specifies that there is a part-whole relation house, wall(2.2), ceiling.
@@ -2012,9 +2016,10 @@ namespace SIL.LCModel.Application.ApplicationServices
 			});
 			var xid = new XmlImportData(m_cache, false); // false -> fCreateMissingLinks flag (this is the new default)
 			var sbLog = new StringBuilder();
-			using (var rdr = new StringReader(input))
+			using(var rdr = new StringReader(input))
+			using(var writer = new StringWriter(sbLog))
 			{
-				xid.ImportData(rdr, new StringWriter(sbLog), null);
+				xid.ImportData(rdr, writer, null);
 			}
 			// The main entries are test, aok, bok, cok and dok. The xslt has already created entries a and d.
 			// Because the fCreateMissingLinks flag is false, the import should NOT create entries b and c,
@@ -2076,9 +2081,10 @@ namespace SIL.LCModel.Application.ApplicationServices
 			});
 			var xid = new XmlImportData(m_cache, false); // false -> fCreateMissingLinks flag (this is the new default)
 			var sbLog = new StringBuilder();
-			using (var rdr = new StringReader(input))
+			using(var rdr = new StringReader(input))
+			using(var writer = new StringWriter(sbLog))
 			{
-				xid.ImportData(rdr, new StringWriter(sbLog), null);
+				xid.ImportData(rdr, writer, null);
 			}
 			// The main entries is 'a'. The xslt has already created it.
 			// Because the fCreateMissingLinks flag is false, the import should NOT create entry ab,
@@ -2108,7 +2114,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			TimeSpan span = new TimeSpan(dtLexOrig.Ticks - m_now.Ticks);
 			Assert.LessOrEqual(span.TotalMinutes, 1.0);		// should be only a second or two...
 			XmlImportData xid = new XmlImportData(m_cache, true);
-			using (var rdr = new StringReader(
+			using(var rdr = new StringReader(
 				"<LexDb xmlns:msxsl='urn:schemas-microsoft-com:xslt' xmlns:user='urn:my-scripts'>" +
 				"	<Entries>" +
 				"		<LexEntry id='IID0EK'>" +
@@ -2232,13 +2238,13 @@ namespace SIL.LCModel.Application.ApplicationServices
 				"		</LexEntry>" +
 				"	</Entries>" +
 				"</LexDb>"))
+			using(var writer = new StringWriter(new StringBuilder()))
 			{
-				var sbLog = new StringBuilder();
 				Assert.AreEqual(0, m_cache.LangProject.LexDbOA.Entries.Count(), "The lexicon starts out empty.");
 				Assert.AreEqual(0, m_cache.LangProject.AnthroListOA.PossibilitiesOS.Count);
 				Assert.AreEqual(0, m_cache.LangProject.SemanticDomainListOA.PossibilitiesOS.Count);
 				Assert.AreEqual(0, m_cache.LangProject.PartsOfSpeechOA.PossibilitiesOS.Count);
-				xid.ImportData(rdr, new StringWriter(sbLog), null);
+				xid.ImportData(rdr, writer, null);
 				Assert.AreEqual(3, m_cache.LangProject.LexDbOA.Entries.Count(), "The import data had one entry.");
 				var entry = m_cache.LangProject.LexDbOA.Entries.ToArray()[0];
 				Assert.IsTrue(VirtualOrderingServices.HasVirtualOrdering(entry, "Subentries"));
@@ -2261,7 +2267,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			TimeSpan span = new TimeSpan(dtLexOrig.Ticks - m_now.Ticks);
 			Assert.LessOrEqual(span.TotalMinutes, 1.0);		// should be only a second or two...
 			XmlImportData xid = new XmlImportData(m_cache, true);
-			using (var rdr = new StringReader(
+			using(var rdr = new StringReader(
 				"<LexDb xmlns:msxsl='urn:schemas-microsoft-com:xslt' xmlns:user='urn:my-scripts'>" +
 				"	<Entries>" +
 				"		<LexEntry id='IID0EK'>" +
@@ -2340,13 +2346,13 @@ namespace SIL.LCModel.Application.ApplicationServices
 				"		</LexEntry>" +
 				"	</Entries>" +
 				"</LexDb>"))
+			using(var writer = new StringWriter(new StringBuilder()))
 			{
-				var sbLog = new StringBuilder();
 				Assert.AreEqual(0, m_cache.LangProject.LexDbOA.Entries.Count(), "The lexicon starts out empty.");
 				Assert.AreEqual(0, m_cache.LangProject.AnthroListOA.PossibilitiesOS.Count);
 				Assert.AreEqual(0, m_cache.LangProject.SemanticDomainListOA.PossibilitiesOS.Count);
 				Assert.AreEqual(0, m_cache.LangProject.PartsOfSpeechOA.PossibilitiesOS.Count);
-				xid.ImportData(rdr, new StringWriter(sbLog), null);
+				xid.ImportData(rdr, writer, null);
 				Assert.AreEqual(2, m_cache.LangProject.LexDbOA.Entries.Count(), "The import data should have 2 entries.");
 				var entry = m_cache.LangProject.LexDbOA.Entries.ToArray()[0];
 				Assert.IsFalse(VirtualOrderingServices.HasVirtualOrdering(entry, "Subentries"), "No virtual ordering should have been created.");
@@ -2365,7 +2371,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 		public void ImportData_CmFolders_EnsureOnlyOneEachForMediaAndPictures()
 		{
 			var xid = new XmlImportData(m_cache, true);
-			using (var rdr = new StringReader(
+			using(var rdr = new StringReader(
 				"<LexDb>" + Environment.NewLine +
 				"<Entries>" + Environment.NewLine +
 				"<LexEntry>" + Environment.NewLine +
@@ -2450,16 +2456,16 @@ namespace SIL.LCModel.Application.ApplicationServices
 				"</LexEntry>" + Environment.NewLine +
 				"</Entries>" + Environment.NewLine +
 				"</LexDb>" + Environment.NewLine))
+			using(var writer = new StringWriter(new StringBuilder()))
 			{
 				Assert.AreEqual(0, m_cache.LangProject.LexDbOA.Entries.Count(), "The lexicon starts out empty.");
 				Assert.AreEqual(0, m_cache.LangProject.PicturesOC.Count);
 				Assert.AreEqual(0, m_cache.LangProject.MediaOC.Count);
 				var folderRepo = m_cache.ServiceLocator.GetInstance<ICmFolderRepository>();
 				Assert.AreEqual(0, folderRepo.Count);
-				var sbLog = new StringBuilder();
 
 				// SUT
-				xid.ImportData(rdr, new StringWriter(sbLog), null);
+				xid.ImportData(rdr, writer, null);
 				Assert.AreEqual(2, m_cache.LangProject.LexDbOA.Entries.Count());
 				Assert.AreEqual(2, folderRepo.Count, "Should have created 2 CmFolders");
 				Assert.AreEqual(1, m_cache.LangProject.MediaOC.Count);
