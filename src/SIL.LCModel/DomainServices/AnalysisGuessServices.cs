@@ -234,9 +234,12 @@ namespace SIL.LCModel.DomainServices
 			return result;
 		}
 
-		bool IsNotDisapproved(IWfiAnalysis wa)
+		bool IncludeAnalysis(IWfiAnalysis wa)
 		{
+			// Exclude human-disapproved analyses unless we are in Parsing Dev mode.
 			ICmAgentEvaluation cae = null;
+			if (PrioritizeParser)
+				return true;
 			foreach (var ae in wa.EvaluationsRC)
 				if (((ICmAgent)ae.Owner).Human)
 					cae = ae;
@@ -512,7 +515,7 @@ namespace SIL.LCModel.DomainServices
 			// Include analyses that may not have been selected.
 			foreach (IWfiAnalysis analysis in wordform.AnalysesOC)
 			{
-				if (IsNotDisapproved(analysis))
+				if (IncludeAnalysis(analysis))
 				{
 					// Human takes priority over parser which takes priority over computer.
 					// Approved takes priority over disapproved.
@@ -538,7 +541,7 @@ namespace SIL.LCModel.DomainServices
 		{
 			var counts = new Dictionary<IAnalysis, Dictionary<IAnalysis, PriorityCount>>();
 			var segs = new HashSet<ISegment>();
-			if (!IsNotDisapproved(analysis))
+			if (!IncludeAnalysis(analysis))
 				return counts;
 			foreach (ISegment seg in analysis.Wordform.OccurrencesInTexts)
 			{
