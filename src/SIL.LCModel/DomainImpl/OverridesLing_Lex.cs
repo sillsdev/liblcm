@@ -2279,6 +2279,17 @@ namespace SIL.LCModel.DomainImpl
 				Cache.ServiceLocator.GetInstance<Virtuals>().LexDbEntries,
 				() => cache.ServiceLocator.GetInstance<ILexEntryRepository>().AllInstances(),
 				new ILexEntry[0], new[] { this });
+			// Remove all the virtual ordering objects that refer to this entry.
+			UndoableUnitOfWorkHelper.DoUsingNewOrCurrentUOW("Undo Remove Entry VOs",
+				"Redo Remove Entry VOs",
+				Cache.ActionHandlerAccessor,
+				() =>
+				{
+					var virtualOrderingObjects = Cache.ServiceLocator
+						.GetInstance<IVirtualOrderingRepository>().AllInstances().Where(vo => vo.SourceRA == this);
+					foreach (var vo in virtualOrderingObjects)
+						vo.Delete();
+				});
 			base.RegisterVirtualsModifiedForObjectDeletion(uow);
 		}
 
