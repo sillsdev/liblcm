@@ -1,6 +1,8 @@
-﻿// Copyright (c) 2015-2017 SIL International
+﻿﻿// Copyright (c) 2015-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
+
+#nullable enable
 
 using System;
 using System.Collections;
@@ -14,9 +16,10 @@ namespace SIL.LCModel.Utils
 	/// a few keys. It uses linear search and is optimized for a handful of items.
 	/// </summary>
 	public class SmallDictionary<Tkey, TValue> : IDictionary<Tkey, TValue>
+	    where Tkey : notnull
 	{
-		private KeyValuePair<Tkey, TValue> m_first;
-		private KeyValuePair<Tkey, TValue>[] m_others;
+		private KeyValuePair<Tkey, TValue?> m_first = new(default!, default);
+		private KeyValuePair<Tkey, TValue?>[]? m_others;
 
 		#region IDictionary<Tkey,TValue> Members
 
@@ -29,7 +32,7 @@ namespace SIL.LCModel.Utils
 				throw new ArgumentException("SmallDictionary does not allow the default value of the key type to be used as a key");
 			if (indexOfKey(key) != -2)
 				throw new ArgumentException("Key " + key + " already present.");
-			var newItem = new KeyValuePair<Tkey, TValue>(key, value);
+			var newItem = new KeyValuePair<Tkey, TValue?>(key, value);
 			if (m_first.Key.Equals(default(Tkey)))
 			{
 				m_first = newItem;
@@ -37,12 +40,12 @@ namespace SIL.LCModel.Utils
 			}
 			if (m_others == null)
 			{
-				m_others = new KeyValuePair<Tkey, TValue>[1];
+				m_others = new KeyValuePair<Tkey, TValue?>[1];
 			}
 			else
 			{
 				var temp = m_others;
-				m_others = new KeyValuePair<Tkey, TValue>[temp.Length + 1];
+				m_others = new KeyValuePair<Tkey, TValue?>[temp.Length + 1];
 				Array.Copy(temp, m_others, temp.Length);
 			}
 			m_others[m_others.Length - 1] = newItem;
@@ -106,7 +109,7 @@ namespace SIL.LCModel.Utils
 				if (m_others == null)
 				{
 					// No others: make the special-case so it is empty.
-					m_first = new KeyValuePair<Tkey, TValue>(default(Tkey), default(TValue));
+					m_first = new KeyValuePair<Tkey, TValue?>(default!, default);
 					return true;
 				}
 				// Removing the first one, but there are others: copy the first thing in m_others to first
@@ -114,13 +117,13 @@ namespace SIL.LCModel.Utils
 				// Now we've saved the first one from m_others in m_first, treat as if removing that first one.
 				index = 0;
 			}
-			if (m_others.Length == 1)
+			if (m_others!.Length == 1)
 			{
 				m_others = null;
 				return true;
 			}
 			var temp = m_others;
-			m_others = new KeyValuePair<Tkey, TValue>[m_others.Length - 1];
+			m_others = new KeyValuePair<Tkey, TValue?>[m_others.Length - 1];
 			Array.Copy(temp, 0, m_others, 0, index); // copy ones before removed
 			Array.Copy(temp, index + 1, m_others, index, m_others.Length - index); // copy ones after removed
 			return true;
@@ -134,15 +137,15 @@ namespace SIL.LCModel.Utils
 			int index = indexOfKey(key);
 			if (index >= 0)
 			{
-				value = m_others[index].Value;
+				value = m_others![index].Value!;
 				return true;
 			}
 			if (index == -2)
 			{
-				value = default(TValue);
+				value = default!;
 				return false;
 			}
-			value = m_first.Value;
+			value = m_first.Value!;
 			return true;
 		}
 
@@ -155,10 +158,10 @@ namespace SIL.LCModel.Utils
 			{
 				var result = new TValue[Count];
 				if (result.Length > 0)
-					result[0] = m_first.Value;
+					result[0] = m_first.Value!;
 				if (m_others != null)
 					for (int i = 0; i < m_others.Length; i++)
-						result[i + 1] = m_others[i].Value;
+						result[i + 1] = m_others[i].Value!;
 				return result;
 			}
 		}
@@ -171,11 +174,11 @@ namespace SIL.LCModel.Utils
 			get
 			{
 				if (m_first.Key.Equals(key) && !key.Equals(default(Tkey)))
-					return m_first.Value;
+					return m_first.Value!;
 				if (m_others != null)
 					foreach (var item in m_others)
 						if (item.Key.Equals(key))
-							return item.Value;
+							return item.Value!;
 				if (key.Equals(default(Tkey)))
 					throw new ArgumentException("Cannot use default type for Key in SmallDictionary");
 				throw new KeyNotFoundException("Key " + key.ToString() + " not found.");
@@ -184,7 +187,7 @@ namespace SIL.LCModel.Utils
 			{
 				if (key.Equals(default(Tkey)))
 					throw new ArgumentException("SmallDictionary does not allow the default value of the key type to be used as a key");
-				var newItem = new KeyValuePair<Tkey, TValue>(key, value);
+				var newItem = new KeyValuePair<Tkey, TValue?>(key, value);
 				if (m_first.Key.Equals(key) || m_first.Key.Equals(default(Tkey)))
 				{
 					m_first = newItem;
@@ -192,7 +195,7 @@ namespace SIL.LCModel.Utils
 				}
 				if (m_others == null)
 				{
-					m_others = new KeyValuePair<Tkey, TValue>[1];
+					m_others = new KeyValuePair<Tkey, TValue?>[1];
 				}
 				else
 				{
@@ -205,7 +208,7 @@ namespace SIL.LCModel.Utils
 						}
 					}
 					var temp = m_others;
-					m_others = new KeyValuePair<Tkey, TValue>[temp.Length + 1];
+					m_others = new KeyValuePair<Tkey, TValue?>[temp.Length + 1];
 					Array.Copy(temp, m_others, temp.Length);
 				}
 				m_others[m_others.Length - 1] = newItem;
@@ -231,7 +234,7 @@ namespace SIL.LCModel.Utils
 		public void Clear()
 		{
 			m_others = null;
-			m_first = new KeyValuePair<Tkey, TValue>(default(Tkey), default(TValue));
+			m_first = new KeyValuePair<Tkey, TValue?>(default!, default);
 		}
 
 		/// <summary>
@@ -296,10 +299,10 @@ namespace SIL.LCModel.Utils
 		public IEnumerator<KeyValuePair<Tkey, TValue>> GetEnumerator()
 		{
 			if (!m_first.Key.Equals(default(Tkey)))
-				yield return m_first;
+				yield return new KeyValuePair<Tkey, TValue>(m_first.Key, m_first.Value!);
 			if (m_others != null)
 				foreach (var item in m_others)
-					yield return item;
+					yield return new KeyValuePair<Tkey, TValue>(item.Key, item.Value!);
 		}
 
 

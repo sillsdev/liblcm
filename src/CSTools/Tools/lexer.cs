@@ -234,7 +234,7 @@ namespace SIL.LCModel.Tools
 			return new ChTest(Char.IsControl); // not reached
 		}
 #endif
-		public virtual TOKEN OldAction(Lexer yyl,string yytext,int action,ref bool reject)
+		public virtual TOKEN? OldAction(Lexer yyl,string yytext,int action,ref bool reject)
 		{
 			return null;
 		}
@@ -247,7 +247,7 @@ namespace SIL.LCModel.Tools
 	public class LineManager
 	{
 		public int lines = 1;  // for error messages etc
-		public LineList list = null;
+		public LineList? list = null;
 		public LineManager() {}
 		public void newline(int pos)
 		{
@@ -353,7 +353,7 @@ namespace SIL.LCModel.Tools
 			}
 			return Encoding.ASCII;
 		}
-		public static object Serialise(object o,Serialiser s)
+		public static object? Serialise(object o,Serialiser s)
 		{
 			if (s==null)
 				return new Charset();
@@ -378,7 +378,7 @@ namespace SIL.LCModel.Tools
 
 	public class Tfactory
 	{
-		public static object create(string cls_name,Lexer yyl)
+		public static object? create(string cls_name,Lexer yyl)
 		{
 			TCreator cr = (TCreator) yyl.tokens.types[cls_name];
 			// Console.WriteLine("TCreating {0} <{1}>",cls_name,yyl.yytext);
@@ -414,13 +414,13 @@ namespace SIL.LCModel.Tools
 	public class LineList
 	{  // based on Appel's ErrorMsg class
 		public int head;
-		public CommentList comments = null;
-		public LineList tail;
-		public LineList(int h, LineList t)
+		public CommentList? comments = null;
+		public LineList? tail;
+		public LineList(int h, LineList? t)
 		{
-			head=h;
-			comments = null;
-			tail=t;
+		    head = h;
+		    comments = null;
+		    tail = t;
 		}
 		public int getpos(int pos)
 		{
@@ -434,7 +434,7 @@ namespace SIL.LCModel.Tools
 	public class CommentList
 	{ // similar for comments on a line
 		public int spos,len;
-		public CommentList tail = null;
+		public CommentList? tail = null;
 		public CommentList(int st,int ln, CommentList t)
 		{
 			spos = st; len = ln;
@@ -629,8 +629,8 @@ namespace SIL.LCModel.Tools
 		public virtual bool IsAction() { return false; }
 		public virtual bool IsCSymbol() { return false; }
 		//[NonSerialized]
-		public Parser yyps = null;
-		public Symbols yyact { get { return (yyps!=null)?yyps.m_symbols:null; }}
+		public Parser? yyps = null;
+		public Symbols? yyact { get { return (yyps!=null)?yyps.m_symbols:null; }}
 		public SYMBOL(Parser yyp) { yyps=yyp; yylx=yyp.m_lexer; }
 		public virtual bool Pass(Symbols syms,int snum,out ParserEntry entry)
 		{
@@ -823,9 +823,9 @@ namespace SIL.LCModel.Tools
 				m_buf = m_buf.ToUpper();
 			m_pch = 0;
 		}
-		public TOKEN Next()
+		public TOKEN? Next()
 		{
-			TOKEN rv = null;
+			TOKEN? rv = null;
 			while (PeekChar()!=0)
 			{
 				Matching(true);
@@ -919,14 +919,14 @@ namespace SIL.LCModel.Tools
 		public class _Enumerator
 		{
 			Lexer lxr;
-			TOKEN t;
+			TOKEN? t;
 			public _Enumerator(Lexer x) { lxr = x;	t = null; }
 			public bool MoveNext()
 			{
 				t = lxr.Next();
 				return t!=null;
 			}
-			public TOKEN Current { get { return t; } }
+			public TOKEN? Current { get { return t; } }
 			public void Reset() { lxr.Reset(); }
 		}
 	}
