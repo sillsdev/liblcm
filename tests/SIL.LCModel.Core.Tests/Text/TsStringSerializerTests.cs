@@ -55,6 +55,7 @@ namespace SIL.LCModel.Core.Text
 		[TestCase(" 𐰉 (dǒng)")]//Nushu script
 		[TestCase("𠔤野 (Nishino)")]//Japanese Kanji
 		[TestCase("𠮷野家 (Yóu yě jiā)")]//Historic Chinese
+		[TestCase("🦊")]//emoji
 		public void SerializeTsStringToXml_DoesNotStripValidCharacters(string word)
 		{
 			ITsString tss = TsStringUtils.MakeString(word, EnWS);
