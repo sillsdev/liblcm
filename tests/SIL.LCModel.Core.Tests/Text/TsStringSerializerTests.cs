@@ -50,6 +50,19 @@ namespace SIL.LCModel.Core.Text
 			Assert.That(StripNewLines(xml), Is.EqualTo("<Str><Run ws=\"en\">This is a test!</Run></Str>"));
 		}
 
+		[Test]
+		[TestCase("This is a test!")]
+		[TestCase(" 𐰉 (dǒng)")]//Nushu script
+		[TestCase("𠔤野 (Nishino)")]//Japanese Kanji
+		[TestCase("𠮷野家 (Yóu yě jiā)")]//Historic Chinese
+		public void SerializeTsStringToXml_DoesNotStripValidCharacters(string word)
+		{
+			ITsString tss = TsStringUtils.MakeString(word, EnWS);
+			string xml = TsStringSerializer.SerializeTsStringToXml(tss, WritingSystemManager);
+			Assert.That(StripNewLines(xml),
+				Is.EqualTo($"<Str><Run ws=\"en\">{word}</Run></Str>"));
+		}
+
 		///--------------------------------------------------------------------------------------
 		/// <summary>
 		/// Tests the method SerializeTsStringToXml with a MultiString. This should
