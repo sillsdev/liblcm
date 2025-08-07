@@ -188,11 +188,10 @@ namespace SIL.LCModel.Core.Text
 			return xml.ToString();
 		}
 
-		private static readonly Regex InvalidXmlRegex = new Regex(@"[^\x09\x0A\x0D\x20-\uD7FF\uE000-\uFFFD\p{Cs}]", RegexOptions.Compiled);
+		private static readonly Regex InvalidXmlRegex = new Regex(@"[\x00-\x08\x0B\x0C\x0E-\x1F\uFFFE\uFFFF]", RegexOptions.Compiled);
 		public static string StripInvalidXmlChars(string text)
 		{
-			// Remove characters not allowed in XML:
-			// Valid are: #x9, #xA, #xD, #x20-#xD7FF, #xE000-#xFFFD, #x10000-#x10FFFF.
+			// Remove characters not allowed in XML
 			// Documented here: https://en.wikipedia.org/wiki/Valid_characters_in_XML
 			return InvalidXmlRegex.Replace(text, string.Empty);
 		}
