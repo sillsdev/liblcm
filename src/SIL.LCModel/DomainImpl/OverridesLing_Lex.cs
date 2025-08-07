@@ -10065,5 +10065,38 @@ namespace SIL.LCModel.DomainImpl
 				return sense.DialectLabelsSenseOrEntry;
 			}
 		}
+
+		/// <summary>
+		/// There are some special cases where the value of a field cannot be obtained
+		/// by getting the value of fieldName on the SenseOrEntry.Item. This method accounts for
+		/// those special cases and returns the Item and fieldName that will need to be used to
+		/// get the value.
+		/// </summary>
+		/// <param name="fieldName">The general fieldName associated with this SenseOrEntry object.</param>
+		/// <param name="specificItem">The specific LexSense or LexEntry item that will contain a
+		/// value for specificFieldName.</param>
+		/// <param name="specificFieldName">The specific field name that will need to be used to get
+		/// the value from the specificItem.</param>
+		public void SpecificItemAndFieldName(string fieldName, out ICmObject specificObject, out string specificFieldName)
+		{
+			specificObject = Item;
+			specificFieldName = fieldName;
+			if (fieldName == "HeadWordRef")
+			{
+				var sense = Item as ILexSense;
+				if (sense != null)
+				{
+					specificFieldName = "MLOwnerOutlineName";
+				}
+			}
+			else if (fieldName == "EntryRefsOS")
+			{
+				var sense = Item as ILexSense;
+				if (sense != null)
+				{
+					specificObject = sense.Entry;
+				}
+			}
+		}
 	}
 }
