@@ -900,7 +900,7 @@ namespace SIL.LCModel.DomainImpl
 
 			writer.WriteStartElement("AUni");
 			writer.WriteAttributeString("ws", m_object.Services.WritingSystemManager.Get(ws).Id);
-			text = Normalizer.Normalize(text, Normalizer.UNormalizationMode.UNORM_NFC);
+			text = TsStringSerializer.StripInvalidXmlChars(Normalizer.Normalize(text, Normalizer.UNormalizationMode.UNORM_NFC));
 			writer.WriteString(text);
 			writer.WriteEndElement();
 		}
