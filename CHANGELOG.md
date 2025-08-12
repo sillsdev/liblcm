@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- [SIL.LCModel] Add SpecificItemAndFieldName() to ISenseOrEntry
 - [SIL.LCModel] Added a parameter to GetBestGuess() and TryGetBestGuess() to do lowercase matching regardless of the occurrence index
 - [SIL.LCModel] Add GetCaptionOrHeadword() to CmPicture
 - [SIL.LCModel] `LCModelStrings.NotSure` to allow clients to know if a grammatical category is the placeholder
