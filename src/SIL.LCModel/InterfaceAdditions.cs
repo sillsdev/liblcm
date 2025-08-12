@@ -6006,6 +6006,5 @@ namespace SIL.LCModel
 		/// <param name="specificFieldName">The specific field name that will need to be used to get
 		/// the value from the specificItem.</param>
 		void SpecificItemAndFieldName(string fieldName, out ICmObject specificItem, out string specificFieldName);
-
 	}
 }

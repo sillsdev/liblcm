@@ -10082,21 +10082,13 @@ namespace SIL.LCModel.DomainImpl
 		{
 			specificObject = Item;
 			specificFieldName = fieldName;
-			if (fieldName == "HeadWordRef")
+			if (fieldName == "HeadWordRef" && Item is ILexSense)
 			{
-				var sense = Item as ILexSense;
-				if (sense != null)
-				{
-					specificFieldName = "MLOwnerOutlineName";
-				}
+				specificFieldName = "MLOwnerOutlineName";
 			}
-			else if (fieldName == "EntryRefsOS")
+			else if (fieldName == "EntryRefsOS" && Item is ILexSense sense)
 			{
-				var sense = Item as ILexSense;
-				if (sense != null)
-				{
-					specificObject = sense.Entry;
-				}
+				specificObject = sense.Entry;
 			}
 		}
 	}
