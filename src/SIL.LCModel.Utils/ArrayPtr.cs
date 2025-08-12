@@ -29,7 +29,7 @@ namespace SIL.LCModel.Utils
 	{
 		private IntPtr m_ptr;
 		private int m_Size;
-		private static ArrayPtr s_Null;
+		private static ArrayPtr? s_Null;
 		/// <summary>If we are in charge of the memory(true)
 		/// or if native code owns it(false)</summary>
 		private bool m_ownMemory;
@@ -262,8 +262,7 @@ namespace SIL.LCModel.Utils
 		{
 			get
 			{
-				if (s_Null == null)
-					s_Null = new ArrayPtr(IntPtr.Zero);
+				s_Null ??= new ArrayPtr(IntPtr.Zero);
 				return s_Null;
 			}
 		}
@@ -325,7 +324,7 @@ namespace SIL.LCModel.Utils
 		{
 		}
 
-		private static ArrayPtrMarshaler m_Marshaler;
+		private static ArrayPtrMarshaler? m_Marshaler;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -337,8 +336,7 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		public static ICustomMarshaler GetInstance(string strCookie)
 		{
-			if (m_Marshaler == null)
-				m_Marshaler = new ArrayPtrMarshaler(strCookie);
+			m_Marshaler ??= new ArrayPtrMarshaler(strCookie);
 
 			return m_Marshaler;
 		}
@@ -351,8 +349,8 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		public void CleanUpManagedData(object managedObj)
 		{
-			if (managedObj != null && managedObj is IDisposable)
-				((IDisposable)managedObj).Dispose();
+			if (managedObj is IDisposable disposable)
+				disposable.Dispose();
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -395,7 +393,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="pNativeData">A pointer to the unmanaged data to be wrapped</param>
 		/// <returns>Returns the managed view of the COM data</returns>
 		/// ------------------------------------------------------------------------------------
-		public object MarshalNativeToManaged(IntPtr pNativeData)
+		public object? MarshalNativeToManaged(IntPtr pNativeData)
 		{
 			return (ArrayPtr)pNativeData;
 		}

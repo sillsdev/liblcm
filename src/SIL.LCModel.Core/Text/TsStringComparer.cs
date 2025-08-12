@@ -5,6 +5,8 @@
 // File: TsStringComparer.cs
 // Responsibility: TE Team
 
+#nullable enable
+
 using System;
 using System.Collections;
 using SIL.LCModel.Core.KernelInterfaces;
@@ -88,8 +90,8 @@ namespace SIL.LCModel.Core.Text
 				throw new ArgumentException();
 			}
 
-			string xString = (x is ITsString) ? ((ITsString)x).Text : x as string;
-			string yString = (y is ITsString) ? ((ITsString)y).Text : y as string;
+			string? xString = (x is ITsString) ? ((ITsString)x).Text : x as string;
+			string? yString = (y is ITsString) ? ((ITsString)y).Text : y as string;
 			if (xString == string.Empty)
 				xString = null;
 			if (yString == string.Empty)

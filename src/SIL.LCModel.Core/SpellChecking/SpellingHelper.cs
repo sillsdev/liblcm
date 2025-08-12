@@ -2,6 +2,8 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -216,7 +218,7 @@ namespace SIL.LCModel.Core.SpellChecking
 
 		private static SpellEngine RawGetSpellChecker(string dictId)
 		{
-			SpellEngine result = null;
+			SpellEngine? result = null;
 			var rootDir = GetSpellingDirectoryPath();
 			var dictPath = GetShortName(Path.Combine(rootDir, Path.ChangeExtension(dictId, "dic")));
 			var affixPath = GetShortName(Path.Combine(rootDir, Path.ChangeExtension(dictId, "aff")));
