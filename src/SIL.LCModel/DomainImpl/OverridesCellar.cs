@@ -4014,12 +4014,11 @@ namespace SIL.LCModel.DomainImpl
 
 		/// <summary>
 		/// Provide a "Name" for this.
-		/// Use short name to satisfy LT-22133.
 		/// </summary>
 		/// <returns></returns>
 		public override string ToString()
 		{
-			return ShortName;
+			return LongName;
 		}
 
 		/// <summary>
