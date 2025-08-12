@@ -10070,7 +10070,8 @@ namespace SIL.LCModel.DomainImpl
 		/// There are some special cases where the value of a field cannot be obtained
 		/// by getting the value of fieldName on the SenseOrEntry.Item. This method accounts for
 		/// those special cases and returns the Item and fieldName that will need to be used to
-		/// get the value.
+		/// get the value. If it is not a special case then the default is to return SenseOrEntry.Item
+		/// for specificItem and return fieldName for specificFieldName.
 		/// </summary>
 		/// <param name="fieldName">The general fieldName associated with this SenseOrEntry object.</param>
 		/// <param name="specificItem">The specific LexSense or LexEntry item that will contain a
