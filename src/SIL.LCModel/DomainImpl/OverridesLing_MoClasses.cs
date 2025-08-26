@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using SIL.Extensions;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
@@ -2920,15 +2921,19 @@ namespace SIL.LCModel.DomainImpl
 			slot.Description.CopyAlternatives(Description);
 			slot.Optional = Optional;
 			// Make copies of Affixes.
+			Dictionary<IMoInflAffMsa, IList<IMoMorphSynAnalysis>> oldToNew = new Dictionary<IMoInflAffMsa, IList<IMoMorphSynAnalysis>>();
 			foreach (IMoInflAffMsa msa in Affixes)
 			{
 				if (msa.Owner is not ILexEntry entry)
 					// Shouldn't happen, but just in case...
 					continue;
+				IList<IMoMorphSynAnalysis> newMsas = new List<IMoMorphSynAnalysis>();
 				foreach (ILexSense sense in entry.SensesOS.ToList()) {
-					CopySensesWithMSA(entry, sense, msa, slot);
+					CopySensesWithMSA(entry, sense, msa, slot, newMsas);
 				}
+				oldToNew[msa] = newMsas;
 			}
+			SortNewAffixes(slot, oldToNew);
 			MakeSlotNameUnique(slot);
 		}
 
@@ -2936,12 +2941,12 @@ namespace SIL.LCModel.DomainImpl
 		/// Copy sense with new slot if it's MorphoSyntaxAnalysisRA equals msa.
 		/// Recurse on the subsenses.
 		/// </summary>
-		internal void CopySensesWithMSA(ILexEntry entry, ILexSense sense, IMoInflAffMsa msa, IMoInflAffixSlot newSlot)
+		internal void CopySensesWithMSA(ILexEntry entry, ILexSense sense, IMoInflAffMsa msa, IMoInflAffixSlot newSlot, IList<IMoMorphSynAnalysis> newMsas)
 		{
 			// Recurse on subsense first.
 			foreach (ILexSense subsense in sense.SensesOS.ToList())
 			{
-				CopySensesWithMSA(entry, subsense, msa, newSlot);
+				CopySensesWithMSA(entry, subsense, msa, newSlot, newMsas);
 			}
 			if (sense.MorphoSyntaxAnalysisRA == msa)
 			{
@@ -2950,7 +2955,35 @@ namespace SIL.LCModel.DomainImpl
 				sandboxMsa.Slot = newSlot;
 				ILexSense newSense = Services.GetInstance<ILexSenseFactory>().Create(entry, sandboxMsa, sense.Gloss.BestAnalysisAlternative);
 				newSense.Gloss.MergeAlternatives(sense.Gloss);
+				newMsas.Add(newSense.MorphoSyntaxAnalysisRA);
 			}
+		}
+
+		internal void SortNewAffixes(IMoInflAffixSlot slot, Dictionary<IMoInflAffMsa, IList<IMoMorphSynAnalysis>> oldToNew)
+		{
+			// Get the old affixes and the new affixes.
+			int flid = Cache.DomainDataByFlid.MetaDataCache.GetFieldId2(ClassID, "Affixes", true);
+			IEnumerable<ICmObject> oldAffixes = VirtualOrderingServices.GetOrderedValue(this, flid, Affixes);
+			List<ICmObject> newAffixes = slot.Affixes.ToList<ICmObject>();
+
+			// Sort the new affixes using the order of the old affixes.
+			Dictionary<ICmObject, int> newToOld = new Dictionary<ICmObject, int>();
+			foreach (var oldMsa in oldToNew.Keys)
+			{
+				foreach (var newMsa in oldToNew[oldMsa])
+				{
+					newToOld[newMsa] = oldAffixes.IndexOf(oldMsa);
+				}
+			}
+			newAffixes.Sort(delegate (ICmObject x, ICmObject y)
+			{
+				if (newToOld[x] > newToOld[y]) return 1;
+				if (newToOld[x] < newToOld[y]) return -1;
+				return 0;
+			});
+
+			// Save the new order.
+			VirtualOrderingServices.SetVO(slot, flid, newAffixes);
 		}
 
 		internal void MakeSlotNameUnique(IMoInflAffixSlot newSlot)
