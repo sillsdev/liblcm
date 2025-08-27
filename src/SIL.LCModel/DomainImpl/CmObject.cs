@@ -833,9 +833,16 @@ namespace SIL.LCModel.DomainImpl
 							myCurrentValue = new MultiStringAccessor(this, flid);
 							srcCurrentValue = new MultiStringAccessor(objSrc, flid);
 							break;
-						case (int)CellarPropertyType.MultiUnicode:
-							myCurrentValue = new MultiUnicodeAccessor(this, flid);
-							srcCurrentValue = new MultiUnicodeAccessor(objSrc, flid);
+						case (int)CellarPropertyType.OwningAtomic:
+						case (int)CellarPropertyType.ReferenceAtomic:
+							int myHvo = m_cache.DomainDataByFlid.get_ObjectProp(Hvo, flid);
+							int srcHvo = m_cache.DomainDataByFlid.get_ObjectProp(objSrc.Hvo, flid);
+							myCurrentValue = m_cache.GetAtomicPropObject(myHvo);
+							srcCurrentValue = m_cache.GetAtomicPropObject(srcHvo);
+							break;
+						default:
+							myCurrentValue = this.GetCustomPropertyForSDA(flid);
+							srcCurrentValue = ((CmObject)objSrc).GetCustomPropertyForSDA(flid);
 							break;
 					}
 				}
