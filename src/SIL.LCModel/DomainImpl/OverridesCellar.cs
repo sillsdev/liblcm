@@ -4013,12 +4013,12 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
-		/// Provide a "Name" for this (is a long name)
+		/// Provide a "Name" for this.
 		/// </summary>
 		/// <returns></returns>
 		public override string ToString()
 		{
-			return LongNameSorted;
+			return LongName;
 		}
 
 		/// <summary>

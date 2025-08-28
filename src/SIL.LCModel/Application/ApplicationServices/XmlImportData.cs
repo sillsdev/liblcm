@@ -165,6 +165,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 		private ReferenceTracker m_rglinks = new ReferenceTracker();
 		private TextWriter m_wrtrLog;
 		private bool m_createLinks;
+		private DateTime m_importDate = DateTime.Now;
 
 
 		/// ------------------------------------------------------------------------------------
@@ -470,6 +471,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 			ILexSense[] rgls = leOld.SensesOS.ToArray();
 			for (int i = 0; i < rgls.Length; ++i)
 				leNew.SensesOS.Add(rgls[i]);
+			MergeDates(leOld, leNew);
 			MergeEntryRefs(leOld, leNew);
 			CopyCustomFieldData(leOld, leNew);
 
@@ -477,6 +479,23 @@ namespace SIL.LCModel.Application.ApplicationServices
 			string id;
 			if (m_mapGuidId.TryGetValue(leOld.Guid, out id))
 				m_mapIdGuid[id] = leNew.Guid;
+		}
+
+		/// Use the newest date between the two dates, as long as it is different from the importDate
+		private void MergeDates(ILexEntry leOld, ILexEntry leNew)
+		{
+			if (leOld.DateCreated == m_importDate)
+			{
+				return;
+			}
+			if (leNew.DateCreated == m_importDate)
+			{
+				leNew.DateCreated = leOld.DateCreated;
+			}
+			else if (leOld.DateCreated > leNew.DateCreated)
+			{
+				leNew.DateCreated = leOld.DateCreated;
+			}
 		}
 
 		private void MergeEntryRefs(ILexEntry leOld, ILexEntry leNew)
@@ -1089,6 +1108,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 								if (m_factLexEntry == null)
 									m_factLexEntry = m_cache.ServiceLocator.GetInstance<ILexEntryFactory>();
 								cmo = m_factLexEntry.Create();
+								((LexEntry)cmo).DateCreated = m_importDate;
 								m_nHomograph = 0;
 								break;
 							case TextTags.kClassId:

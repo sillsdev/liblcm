@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using SIL.Extensions;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
@@ -2731,6 +2732,26 @@ namespace SIL.LCModel.DomainImpl
 			{
 				template.StratumRA = StratumRA;
 			}
+			MakeTemplateNameUnique(template);
+		}
+
+		internal void MakeTemplateNameUnique(IMoInflAffixTemplate newTemplate)
+		{
+			// Get existing names.
+			ISet<string> names = new HashSet<string>();
+			IEnumerable<ICmObject> templates = Services.ObjectRepository.AllInstances(newTemplate.ClassID);
+			foreach (IMoInflAffixTemplate template in templates)
+			{
+				if (template == newTemplate)
+					continue;
+				for (int i = 0; i < template.Name.StringCount; i++)
+				{
+					ITsString tss = template.Name.GetStringFromIndex(i, out _);
+					names.Add(tss.Text);
+				}
+			}
+			// Make newSlot name unique.
+			MoInflAffixSlot.MakeNameUnique(newTemplate.Name, names);
 		}
 		#endregion
 	}
@@ -2749,9 +2770,11 @@ namespace SIL.LCModel.DomainImpl
 			get
 			{
 				((ICmObjectRepositoryInternal)Services.ObjectRepository).EnsureCompleteIncomingRefsFrom(MoInflAffMsaTags.kflidSlots);
-				return from msa in m_incomingRefs
+				var affixes = from msa in m_incomingRefs
 						where msa.Source is IMoInflAffMsa && ((IMoInflAffMsa) msa.Source).SlotsRC.Contains(this)
 						select (IMoInflAffMsa) msa.Source;
+				int flid = Cache.DomainDataByFlid.MetaDataCache.GetFieldId2(this.ClassID, "Affixes", true);
+				return VirtualOrderingServices.GetOrderedValue(this, flid, affixes);
 			}
 		}
 
@@ -2879,6 +2902,137 @@ namespace SIL.LCModel.DomainImpl
 				return x;
 		}
 
+		#endregion
+
+		#region ICloneableCmObject Members
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Clones this instance.
+		/// </summary>
+		/// <param name="clone">Destination object for clone operation</param>
+		/// ------------------------------------------------------------------------------------
+		public void SetCloneProperties(ICmObject clone)
+		{
+			IMoInflAffixSlot slot = clone as IMoInflAffixSlot;
+			if (slot == null)
+				throw new ApplicationException("Failed to copy inflectional affix slot:  the target is not an inflectional affix slote.");
+
+			slot.Name.CopyAlternatives(Name);
+			slot.Description.CopyAlternatives(Description);
+			slot.Optional = Optional;
+			// Make copies of Affixes.
+			Dictionary<IMoInflAffMsa, IList<IMoMorphSynAnalysis>> oldToNew = new Dictionary<IMoInflAffMsa, IList<IMoMorphSynAnalysis>>();
+			foreach (IMoInflAffMsa msa in Affixes)
+			{
+				if (msa.Owner is not ILexEntry entry)
+					// Shouldn't happen, but just in case...
+					continue;
+				IList<IMoMorphSynAnalysis> newMsas = new List<IMoMorphSynAnalysis>();
+				foreach (ILexSense sense in entry.SensesOS.ToList()) {
+					CopySensesWithMSA(entry, sense, msa, slot, newMsas);
+				}
+				oldToNew[msa] = newMsas;
+			}
+			SortNewAffixes(slot, oldToNew);
+			MakeSlotNameUnique(slot);
+		}
+
+		/// <summary>
+		/// Copy sense with new slot if it's MorphoSyntaxAnalysisRA equals msa.
+		/// Recurse on the subsenses.
+		/// </summary>
+		internal void CopySensesWithMSA(ILexEntry entry, ILexSense sense, IMoInflAffMsa msa, IMoInflAffixSlot newSlot, IList<IMoMorphSynAnalysis> newMsas)
+		{
+			// Recurse on subsense first.
+			foreach (ILexSense subsense in sense.SensesOS.ToList())
+			{
+				CopySensesWithMSA(entry, subsense, msa, newSlot, newMsas);
+			}
+			if (sense.MorphoSyntaxAnalysisRA == msa)
+			{
+				// Create a new sense.
+				SandboxGenericMSA sandboxMsa = SandboxGenericMSA.Create(msa);
+				sandboxMsa.Slot = newSlot;
+				ILexSense newSense = Services.GetInstance<ILexSenseFactory>().Create(entry, sandboxMsa, sense.Gloss.BestAnalysisAlternative);
+				newSense.Gloss.MergeAlternatives(sense.Gloss);
+				newMsas.Add(newSense.MorphoSyntaxAnalysisRA);
+			}
+		}
+
+		internal void SortNewAffixes(IMoInflAffixSlot slot, Dictionary<IMoInflAffMsa, IList<IMoMorphSynAnalysis>> oldToNew)
+		{
+			// Get the old affixes and the new affixes.
+			int flid = Cache.DomainDataByFlid.MetaDataCache.GetFieldId2(ClassID, "Affixes", true);
+			IEnumerable<ICmObject> oldAffixes = VirtualOrderingServices.GetOrderedValue(this, flid, Affixes);
+			List<ICmObject> newAffixes = slot.Affixes.ToList<ICmObject>();
+
+			// Sort the new affixes using the order of the old affixes.
+			Dictionary<ICmObject, int> newToOld = new Dictionary<ICmObject, int>();
+			foreach (var oldMsa in oldToNew.Keys)
+			{
+				foreach (var newMsa in oldToNew[oldMsa])
+				{
+					newToOld[newMsa] = oldAffixes.IndexOf(oldMsa);
+				}
+			}
+			newAffixes.Sort(delegate (ICmObject x, ICmObject y)
+			{
+				if (newToOld[x] > newToOld[y]) return 1;
+				if (newToOld[x] < newToOld[y]) return -1;
+				return 0;
+			});
+
+			// Save the new order.
+			VirtualOrderingServices.SetVO(slot, flid, newAffixes);
+		}
+
+		internal void MakeSlotNameUnique(IMoInflAffixSlot newSlot)
+		{
+			// Get existing names.
+			ISet<string> names = new HashSet<string>();
+			IEnumerable<ICmObject> slots = Services.ObjectRepository.AllInstances(newSlot.ClassID);
+			foreach (IMoInflAffixSlot slot in slots)
+			{
+				if (slot == newSlot)
+					continue;
+				for (int i = 0; i < slot.Name.StringCount; i++)
+				{
+					ITsString tss = slot.Name.GetStringFromIndex(i, out _);
+					names.Add(tss.Text);
+				}
+			}
+			// Make newSlot name unique.
+			MakeNameUnique(newSlot.Name, names);
+		}
+
+		static internal void MakeNameUnique(IMultiUnicode name, ISet<string> names)
+		{
+			for (int i = 0; i < name.StringCount; i++)
+			{
+				int ws;
+				ITsString tss = name.GetStringFromIndex(i, out ws);
+				string text = tss.Text;
+				// Get existing id.
+				int id = 1;
+				int idStart = text.Length;
+				while (idStart > 0 && Char.IsNumber(text[idStart - 1]))
+					idStart = idStart - 1;
+				if (idStart < text.Length)
+					id = Int32.Parse(text.Substring(idStart));
+				// Look for a unique name.
+				while (true)
+				{
+					id += 1;
+					string newName = text.Substring(0, idStart) + id.ToString();
+					if (!names.Contains(newName))
+					{
+						// Replace name[i] with unique name.
+						name.set_String(ws, newName);
+						break;
+					}
+				}
+			}
+		}
 		#endregion
 	}
 

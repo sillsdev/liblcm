@@ -214,6 +214,39 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
+		/// Test that a virtual ordering is removed the entry that owns it is deleted
+		/// </summary>
+		[Test]
+		public void VerifyVirtualOrderingRemoved()
+		{
+			ILexEntry kick = null;
+			ILexEntry bucket = null;
+			ILexEntry kickBucket = null;
+			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor,
+				() =>
+				{
+					kick = MakeEntryWithForm("kick");
+					bucket = MakeEntryWithForm("bucket");
+					kickBucket = MakeEntryWithForm("kick the bucket");
+					kickBucket.AddComponent(kick);
+					kickBucket.AddComponent(bucket);
+					var vof = Cache.ServiceLocator.GetInstance<IVirtualOrderingFactory>();
+					vof.Create(kick, "VisibleComplexFormBackRefs", new []{bucket, kickBucket});
+				});
+			var entryRef = kickBucket.EntryRefsOS[0];
+			Assert.That(entryRef.PrimaryLexemesRS[0], Is.EqualTo(kick));
+			var vos = Cache.ServiceLocator.GetInstance<IVirtualOrderingRepository>();
+			Assert.That(vos.Count, Is.EqualTo(1));
+			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor,
+				() =>
+				{
+					kick.Delete();
+				});
+			Cache.ServiceLocator.GetInstance<IVirtualOrderingRepository>();
+			Assert.That(vos.Count, Is.EqualTo(0));
+		}
+
+		/// <summary>
 		/// Ensure references are corrected when moving a sense between two existing entries
 		/// </summary>
 		[Test]
