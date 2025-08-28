@@ -18,7 +18,7 @@ namespace SIL.LCModel.Build.Tasks
 	/// ----------------------------------------------------------------------------------------
 	internal class Model
 	{
-		private StringKeyCollection<CellarModule> m_modules;
+		private StringKeyCollection<CellarModule>? m_modules;
 		private readonly XmlElement m_node;
 
 		/// ------------------------------------------------------------------------------------

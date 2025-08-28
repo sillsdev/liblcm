@@ -296,7 +296,7 @@ namespace SIL.LCModel.Utils
 		/// <summary>
 		/// Remove all whitespace from a string.
 		/// </summary>
-		public static string StripWhitespace(string s)
+		public static string? StripWhitespace(string? s)
 		{
 			if (s == null)
 				return s;
