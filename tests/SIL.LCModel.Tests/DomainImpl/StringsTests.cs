@@ -3,7 +3,9 @@
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System;
+using System.IO;
 using System.Linq;
+using System.Text;
 using NUnit.Framework;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
@@ -282,6 +284,34 @@ namespace SIL.LCModel.DomainImpl
 			Cache.LangProject.FieldWorkLocation.AppendAlternatives(Cache.LangProject.MainCountry);
 			Assert.AreEqual("Saltillo Mexico", Cache.LangProject.FieldWorkLocation.get_String(english.Handle).Text);
 			Assert.AreEqual("Saltillo Mejico", Cache.LangProject.FieldWorkLocation.get_String(spanish.Handle).Text);
+		}
+
+		[Test]
+		public void ToXml_WorksAsExpected()
+		{
+			var english = Cache.LangProject.CurrentAnalysisWritingSystems.First();
+			Cache.LangProject.MainCountry.set_String(english.Handle, TsStringUtils.MakeString("Mexico", english.Handle));
+			var xml = ToXml(Cache.LangProject.MainCountry);
+			Assert.AreEqual("<AUni ws=\"en\">Mexico</AUni>", xml, "XML does not contain expected string element.");
+		}
+
+		[Test]
+		public void ToXml_WithControlCharacterWorks()
+		{
+			var english = Cache.LangProject.CurrentAnalysisWritingSystems.First();
+			var tsString = TsStringUtils.MakeString("te\u0002st", english.Handle);
+			Cache.LangProject.MainCountry.set_String(english.Handle, tsString);
+			var xml = ToXml(Cache.LangProject.MainCountry);
+			Assert.AreEqual("<AUni ws=\"en\">test</AUni>", xml, "XML does not contain expected string element.");
+		}
+
+		private string ToXml(ITsMultiString multiString)
+		{
+			using var ms = new MemoryStream();
+			using var xmlWriter = XmlServices.CreateWriter(ms);
+			((MultiAccessor)multiString).ToXMLString(xmlWriter);
+			xmlWriter.Flush();
+			return Encoding.UTF8.GetString(ms.ToArray());
 		}
 	}
 
