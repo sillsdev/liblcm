@@ -7528,7 +7528,7 @@ namespace SIL.LCModel.DomainImpl
 		}
 	}
 
-	internal partial class PhRegularRule
+	internal partial class PhRegularRule : ICloneableCmObject
 	{
 		/// <summary>
 		/// Gets all of the feature constraints in this rule.
@@ -7670,6 +7670,23 @@ namespace SIL.LCModel.DomainImpl
 				}
 			}
 		}
+
+		#region ICloneableCmObject Members
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Clones this instance.
+		/// </summary>
+		/// <param name="clone">Destination object for clone operation</param>
+		/// ------------------------------------------------------------------------------------
+		public void SetCloneProperties(ICmObject clone)
+		{
+			IPhRegularRule rule = clone as IPhRegularRule;
+			if (rule == null)
+				throw new ApplicationException("Failed to copy regular phonological rule:  the target is not a regular phonological rule.");
+
+			rule.Name.CopyAlternatives(Name);
+		}
+		#endregion
 	}
 
 	internal partial class PhSegRuleRHS
