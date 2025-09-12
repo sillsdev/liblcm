@@ -41,7 +41,17 @@ namespace SIL.LCModel
 		/// <summary>
 		/// Create a well-formed ICmTranslation which has an owner and Type property set
 		/// </summary>
+		ICmTranslation Create(IStTxtPara owner, ICmPossibility translationType, Guid guid);
+
+		/// <summary>
+		/// Create a well-formed ICmTranslation which has an owner and Type property set
+		/// </summary>
 		ICmTranslation Create(ILexExampleSentence owner, ICmPossibility translationType);
+
+		/// <summary>
+		/// Create a well-formed ICmTranslation which has an owner and Type property set
+		/// </summary>
+		ICmTranslation Create(ILexExampleSentence owner, ICmPossibility translationType, Guid guid);
 	}
 
 	public partial interface ICmTranslation
