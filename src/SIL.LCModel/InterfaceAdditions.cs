@@ -4616,6 +4616,12 @@ namespace SIL.LCModel
 		ITsString SenseNumberTSS { get; }
 
 		/// <summary>
+		/// Get the license of this CmPicture
+		/// </summary>
+		//IMultiString License { get; }
+		ITsString License { get; }
+
+		/// <summary>
 		/// First try to get the Caption property of this CmPicture,for the given writing system name. If
 		/// there isn't one then try to get the Headword property, for the given writing system name.
 		/// </summary>
