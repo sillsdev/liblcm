@@ -473,12 +473,23 @@ namespace SIL.LCModel.Application.ApplicationServices
 				leNew.SensesOS.Add(rgls[i]);
 			MergeDates(leOld, leNew);
 			MergeEntryRefs(leOld, leNew);
+			MergeDialectLabels(leOld, leNew);
 			CopyCustomFieldData(leOld, leNew);
 
 			// Clean up our internal Id map before deleting anything.
 			string id;
 			if (m_mapGuidId.TryGetValue(leOld.Guid, out id))
 				m_mapIdGuid[id] = leNew.Guid;
+		}
+
+		private void MergeDialectLabels(ILexEntry leOld, ILexEntry leNew)
+		{
+			// We don't want duplicates, so we have to check each reference.
+			foreach (var dlOld in leOld.DialectLabelsRS)
+			{
+				if (!leNew.DialectLabelsRS.Contains(dlOld))
+					leNew.DialectLabelsRS.Add(dlOld);
+			}
 		}
 
 		/// Use the newest date between the two dates, as long as it is different from the importDate
