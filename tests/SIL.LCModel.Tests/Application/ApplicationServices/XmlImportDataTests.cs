@@ -1417,7 +1417,7 @@ namespace SIL.LCModel.Application.ApplicationServices
 		}
 
 		[Test]
-		public void DialectLableMergeWorks()
+		public void DialectLabelMergeWorks()
 		{
 			var xid = new XmlImportData(m_cache, false);
 			using(var reader = new StringReader("<LexDb xmlns:msxsl=\"urn:schemas-microsoft-com:xslt\" xmlns:user=\"urn:my-scripts\">" +
