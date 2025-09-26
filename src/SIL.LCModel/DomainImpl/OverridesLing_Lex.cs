@@ -6,16 +6,6 @@
 // This file holds the overrides of the generated classes for the Ling module.
 // </remarks>
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Diagnostics;
-using System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml;
 using SIL.LCModel.Application;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
@@ -27,6 +17,16 @@ using SIL.LCModel.Infrastructure;
 using SIL.LCModel.Infrastructure.Impl;
 using SIL.LCModel.Utils;
 using SIL.ObjectModel;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Drawing;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml;
 
 namespace SIL.LCModel.DomainImpl
 {
@@ -7528,7 +7528,7 @@ namespace SIL.LCModel.DomainImpl
 		}
 	}
 
-	internal partial class PhRegularRule
+	internal partial class PhRegularRule : ICloneableCmObject
 	{
 		/// <summary>
 		/// Gets all of the feature constraints in this rule.
@@ -7670,6 +7670,34 @@ namespace SIL.LCModel.DomainImpl
 				}
 			}
 		}
+
+		#region ICloneableCmObject Members
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Clones this instance.
+		/// </summary>
+		/// <param name="clone">Destination object for clone operation</param>
+		/// ------------------------------------------------------------------------------------
+		public void SetCloneProperties(ICmObject clone)
+		{
+			IPhRegularRule rule = clone as IPhRegularRule;
+			if (rule == null)
+				throw new ApplicationException("Failed to copy regular phonological rule:  the target is not a regular phonological rule.");
+
+			rule.Description.CopyAlternatives(Description);
+			rule.Direction = Direction;
+			rule.Disabled = Disabled;
+			rule.Name.CopyAlternatives(Name);
+			// FeatureConstraints is synthetic.
+			rule.FinalStratumRA = FinalStratumRA;
+			rule.InitialStratumRA = InitialStratumRA;
+			rule.RightHandSidesOS.Clear(); // Remove default.
+			CopyObject<IPhSegRuleRHS>.CloneLcmObjects(RightHandSidesOS, newRhs =>
+					rule.RightHandSidesOS.Add(newRhs));
+			CopyObject<IPhSimpleContext>.CloneLcmObjects(StrucDescOS, newDesc =>
+					rule.StrucDescOS.Add(newDesc));
+		}
+		#endregion
 	}
 
 	internal partial class PhSegRuleRHS
@@ -7734,7 +7762,7 @@ namespace SIL.LCModel.DomainImpl
 		}
 	}
 
-	internal partial class PhMetathesisRule
+	internal partial class PhMetathesisRule : ICloneableCmObject
 	{
 		/// <summary>
 		/// Gets the structural change indices.
@@ -8135,6 +8163,32 @@ namespace SIL.LCModel.DomainImpl
 			base.SetDefaultValuesAfterInit();
 			SetStrucChangeIndices(new int[] { -1, -1, -1, -1, -1 }, true);
 		}
+
+		#region ICloneableCmObject Members
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Clones this instance.
+		/// </summary>
+		/// <param name="clone">Destination object for clone operation</param>
+		/// ------------------------------------------------------------------------------------
+		public void SetCloneProperties(ICmObject clone)
+		{
+			IPhMetathesisRule rule = clone as IPhMetathesisRule;
+			if (rule == null)
+				throw new ApplicationException("Failed to copy metathesis phonological rule:  the target is not a regular metathesis rule.");
+
+			rule.Description.CopyAlternatives(Description);
+			rule.Direction = Direction;
+			rule.Disabled = Disabled;
+			rule.Name.CopyAlternatives(Name);
+			// FeatureConstraints is synthetic.
+			rule.FinalStratumRA = FinalStratumRA;
+			rule.InitialStratumRA = InitialStratumRA;
+			rule.StrucChange = StrucChange;
+			CopyObject<IPhSimpleContext>.CloneLcmObjects(StrucDescOS, newDesc =>
+					rule.StrucDescOS.Add(newDesc));
+		}
+		#endregion
 	}
 
 	internal partial class PhIterationContext
