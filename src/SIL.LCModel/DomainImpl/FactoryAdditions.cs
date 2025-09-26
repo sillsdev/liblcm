@@ -1605,10 +1605,17 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		public ICmTranslation Create(IStTxtPara owner, ICmPossibility translationType)
 		{
+			return Create(owner, translationType, Guid.NewGuid());
+		}
+		/// <summary>
+		/// Create a well-formed ICmTranslation which has the owner and Type property set.
+		/// </summary>
+		public ICmTranslation Create(IStTxtPara owner, ICmPossibility translationType, Guid guid)
+		{
 			if (owner == null) throw new ArgumentNullException("owner");
 			if (translationType == null) throw new ArgumentNullException("translationType");
 
-			return Create(owner.TranslationsOC, translationType);
+			return Create(owner.TranslationsOC, translationType, guid);
 		}
 
 		/// <summary>
@@ -1616,18 +1623,27 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		public ICmTranslation Create(ILexExampleSentence owner, ICmPossibility translationType)
 		{
+			return Create(owner, translationType, Guid.NewGuid());
+		}
+
+		/// <summary>
+		/// Create a well-formed ICmTranslation which has the owner and Type property set.
+		/// </summary>
+		public ICmTranslation Create(ILexExampleSentence owner, ICmPossibility translationType, Guid guid)
+		{
 			if (owner == null) throw new ArgumentNullException("owner");
 			if (translationType == null) throw new ArgumentNullException("translationType");
 
-			return Create(owner.TranslationsOC, translationType);
+			return Create(owner.TranslationsOC, translationType, guid);
 		}
 
 		/// <summary>
 		/// Do the real work for both smart Create methods.
 		/// </summary>
-		private ICmTranslation Create(ICollection<ICmTranslation> owningVector, ICmPossibility translationType)
+		private ICmTranslation Create(ICollection<ICmTranslation> owningVector, ICmPossibility translationType, Guid guid)
 		{
-			var newbie = new CmTranslation();
+			if (guid == Guid.Empty) guid = Guid.NewGuid();
+			var newbie = new CmTranslation(m_cache, m_cache.InternalServices.DataReader.GetNextRealHvo(), guid);
 			owningVector.Add(newbie);
 			newbie.TypeRA = translationType;
 			return newbie;
