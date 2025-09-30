@@ -23,7 +23,7 @@ This package provides unit tests for SIL.LCModel.Core.</Description>
   <ItemGroup>
     <ProjectReference Include="..\..\src\SIL.LCModel.Core\SIL.LCModel.Core.csproj" />
     <ProjectReference Include="..\SIL.LCModel.Utils.Tests\SIL.LCModel.Utils.Tests.csproj" />
-    <ProjectReference Include="..\TestHelper\TestHelper.csproj" />
+    <ProjectReference Include="..\TestHelper\TestHelper.csproj" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
