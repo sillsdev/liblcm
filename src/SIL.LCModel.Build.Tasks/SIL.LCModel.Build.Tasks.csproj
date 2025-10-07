@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <RootNamespace>SIL.LCModel.Build.Tasks</RootNamespace>
-    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
     <Description>The liblcm library is the core FieldWorks model for linguistic analyses of languages. Tools in this library provide the ability to store and interact with language and culture data, including anthropological, text corpus, and linguistics data.
 SIL.LCModel.Build.Tasks provides msbuild tasks for generating C# classes for the FieldWorks model: IdlImp and LcmGenerate.</Description>
     <BuildOutputTargetFolder>tools/$(TargetFramework)</BuildOutputTargetFolder>
@@ -19,9 +19,9 @@ SIL.LCModel.Build.Tasks provides msbuild tasks for generating C# classes for the
   </ItemGroup>
 
   <Target Name="CopyTargetsAndProps" AfterTargets="Build">
-    <MakeDir Directories="$(OutputPath)/lib/net461" />
+    <MakeDir Directories="$(OutputPath)/lib/net462" />
     <!-- Create empty files -->
-    <WriteLinesToFile File="$(OutputPath)/lib/net461/_._" />
+    <WriteLinesToFile File="$(OutputPath)/lib/net462/_._" />
   </Target>
 
   <Target Name="CollectRuntimeOutputs" BeforeTargets="_GetPackageFiles">

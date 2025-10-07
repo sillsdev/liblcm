@@ -67,7 +67,7 @@ Open the solution in Rider and run them all there. Right-click the solution and 
 - then run (adjust the version number `3.11.1` accordingly):
 
 	```bash
-	(. environ && cd artifacts/Debug/net461/ && mono --debug ~/.nuget/packages/nunit.consolerunner/3.11.1/tools/nunit3-console.exe *Tests.dll )
+	(. environ && cd artifacts/Debug/net462/ && mono --debug ~/.nuget/packages/nunit.consolerunner/3.11.1/tools/nunit3-console.exe *Tests.dll )
 	```
 
 ### Windows
@@ -85,7 +85,7 @@ To run the tests for a single test dll:
 
    **Note:** Running the tests after building the solution from inside VS resulted in a `BadImageFormatException`.
    Running the tests after building from the cmd prompt worked.
-3. Go to the `liblcm\artifacts\Debug\net461` directory.
+3. Go to the `liblcm\artifacts\Debug\net462` directory.
 4. Execute: `..\..\..\packages\NUnit.ConsoleRunner.3.9.0\tools\nunit3-console.exe SIL.LCModel.Tests.dll`
 
    (Or specify one of the other `SIL.LCModel*Tests.dll`)
