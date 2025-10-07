@@ -1,6 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
-		<SilLCModelBuildTasksPath Condition="$(SilLCModelBuildTasksPath) == '' And '$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)../tools/net461/</SilLCModelBuildTasksPath>
+		<SilLCModelBuildTasksPath Condition="$(SilLCModelBuildTasksPath) == '' And '$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)../tools/net462/</SilLCModelBuildTasksPath>
 	</PropertyGroup>
 
 	<UsingTask TaskName="IdlImp" AssemblyFile="$(SilLCModelBuildTasksPath)SIL.LCModel.Build.Tasks.dll" />
