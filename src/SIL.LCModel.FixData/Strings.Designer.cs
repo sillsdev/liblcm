@@ -19,10 +19,10 @@ namespace SIL.LCModel.FixData {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Strings {
+    public class Strings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace SIL.LCModel.FixData {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SIL.LCModel.FixData.Strings", typeof(Strings).Assembly);
@@ -51,7 +51,7 @@ namespace SIL.LCModel.FixData {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Adding ownerguid=&apos;{0}&apos; (class=&apos;{1}&apos;, guid=&apos;{2}&apos;)..
         /// </summary>
-        internal static string ksAddingLinkToOwner {
+        public static string ksAddingLinkToOwner {
             get {
                 return ResourceManager.GetString("ksAddingLinkToOwner", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Missing default value type added to {0}.
         /// </summary>
-        internal static string ksAddingMissingDefaultForValueType {
+        public static string ksAddingMissingDefaultForValueType {
             get {
                 return ResourceManager.GetString("ksAddingMissingDefaultForValueType", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Adjusted homograph number in {0} from {1} to {2}.
         /// </summary>
-        internal static string ksAdjustedHomograph {
+        public static string ksAdjustedHomograph {
             get {
                 return ResourceManager.GetString("ksAdjustedHomograph", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Adjusting reference to missing Segment by changing analysis object guid=&apos;{0}&apos;, class=&apos;{1}&apos;, field=&apos;{2}&apos;..
         /// </summary>
-        internal static string ksAdjustingAnalysisRefObj {
+        public static string ksAdjustingAnalysisRefObj {
             get {
                 return ResourceManager.GetString("ksAdjustingAnalysisRefObj", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Changing ownerguid value from &apos;{0}&apos; to &apos;{1}&apos; (class=&apos;{2}&apos;, guid=&apos;{3}&apos;)..
         /// </summary>
-        internal static string ksChangingOwnerGuidValue {
+        public static string ksChangingOwnerGuidValue {
             get {
                 return ResourceManager.GetString("ksChangingOwnerGuidValue", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Wordform with guid &apos;{0}&apos; has same form ({1}) as &apos;{2}&apos; and was merged.
         /// </summary>
-        internal static string ksDuplicateWordform {
+        public static string ksDuplicateWordform {
             get {
                 return ResourceManager.GetString("ksDuplicateWordform", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Looking for and fixing errors in {0}.
         /// </summary>
-        internal static string ksLookingForAndFixingErrors {
+        public static string ksLookingForAndFixingErrors {
             get {
                 return ResourceManager.GetString("ksLookingForAndFixingErrors", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Object with guid &apos;{0}&apos; already exists! (not fixed).
         /// </summary>
-        internal static string ksObjectWithGuidAlreadyExists {
+        public static string ksObjectWithGuidAlreadyExists {
             get {
                 return ResourceManager.GetString("ksObjectWithGuidAlreadyExists", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Object with guid &apos;{0}&apos; is already owned, so can&apos;t be owned by &apos;{1}&apos;.
         /// </summary>
-        internal static string ksObjectWithGuidAlreadyOwned {
+        public static string ksObjectWithGuidAlreadyOwned {
             get {
                 return ResourceManager.GetString("ksObjectWithGuidAlreadyOwned", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Reading the input file {0}.
         /// </summary>
-        internal static string ksReadingTheInputFile {
+        public static string ksReadingTheInputFile {
             get {
                 return ResourceManager.GetString("ksReadingTheInputFile", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Removing unused MorphoSyntaxAnalysis.
         /// </summary>
-        internal static string ksRemovedUnusedMsa {
+        public static string ksRemovedUnusedMsa {
             get {
                 return ResourceManager.GetString("ksRemovedUnusedMsa", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Removing reference to missing Segment by deleting analysis object guid=&apos;{0}&apos;, class=&apos;{1}&apos;, ownerguid=&apos;{2}&apos;..
         /// </summary>
-        internal static string ksRemovingBadAnalysisRefObj {
+        public static string ksRemovingBadAnalysisRefObj {
             get {
                 return ResourceManager.GetString("ksRemovingBadAnalysisRefObj", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Removing LexReference with too few references (Targets) (guid=&apos;{0}&apos;) from its owner (guid=&apos;{1}&apos;)..
         /// </summary>
-        internal static string ksRemovingBadLexReference {
+        public static string ksRemovingBadLexReference {
             get {
                 return ResourceManager.GetString("ksRemovingBadLexReference", resourceCulture);
             }
@@ -180,7 +180,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Removing dangling link to Form &apos;{0}&apos; for WfiMorphBundle &apos;{1}&apos;..
         /// </summary>
-        internal static string ksRemovingDanglingMorph {
+        public static string ksRemovingDanglingMorph {
             get {
                 return ResourceManager.GetString("ksRemovingDanglingMorph", resourceCulture);
             }
@@ -189,7 +189,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Removing dangling link to MSA &apos;{0}&apos; for WfiMorphBundle &apos;{1}&apos;..
         /// </summary>
-        internal static string ksRemovingDanglingMsa {
+        public static string ksRemovingDanglingMsa {
             get {
                 return ResourceManager.GetString("ksRemovingDanglingMsa", resourceCulture);
             }
@@ -198,7 +198,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Removed alternative {0} from {1} of {2} because it has the same writing system as {3}.
         /// </summary>
-        internal static string ksRemovingDuplicateAlternative {
+        public static string ksRemovingDuplicateAlternative {
             get {
                 return ResourceManager.GetString("ksRemovingDuplicateAlternative", resourceCulture);
             }
@@ -207,7 +207,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Removing duplicate style {0}..
         /// </summary>
-        internal static string ksRemovingDuplicateStyle {
+        public static string ksRemovingDuplicateStyle {
             get {
                 return ResourceManager.GetString("ksRemovingDuplicateStyle", resourceCulture);
             }
@@ -216,7 +216,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Removing &apos;editable&apos; attribute from a string in a {0}.
         /// </summary>
-        internal static string ksRemovingEditableAttribute {
+        public static string ksRemovingEditableAttribute {
             get {
                 return ResourceManager.GetString("ksRemovingEditableAttribute", resourceCulture);
             }
@@ -225,7 +225,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Removing invalid Generic Date {0} from {1} of {2} ({3})..
         /// </summary>
-        internal static string ksRemovingGenericDate {
+        public static string ksRemovingGenericDate {
             get {
                 return ResourceManager.GetString("ksRemovingGenericDate", resourceCulture);
             }
@@ -234,7 +234,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Removing dangling link to &apos;{0}&apos; (class=&apos;{1}&apos;, guid=&apos;{2}&apos;, field=&apos;{3}&apos;)..
         /// </summary>
-        internal static string ksRemovingLinkToNonexistingObject {
+        public static string ksRemovingLinkToNonexistingObject {
             get {
                 return ResourceManager.GetString("ksRemovingLinkToNonexistingObject", resourceCulture);
             }
@@ -243,7 +243,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Removing multiple ownership link &apos;{0}&apos; (class=&apos;{1}&apos;, guid=&apos;{2}&apos;, field=&apos;{3}&apos;)..
         /// </summary>
-        internal static string ksRemovingMultipleOwnershipLink {
+        public static string ksRemovingMultipleOwnershipLink {
             get {
                 return ResourceManager.GetString("ksRemovingMultipleOwnershipLink", resourceCulture);
             }
@@ -252,7 +252,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Removing object with nonexistent owner (invalid ownerguid=&apos;{0}&apos;, class=&apos;{1}&apos;, guid=&apos;{2}&apos;)..
         /// </summary>
-        internal static string ksRemovingObjectWithBadOwner {
+        public static string ksRemovingObjectWithBadOwner {
             get {
                 return ResourceManager.GetString("ksRemovingObjectWithBadOwner", resourceCulture);
             }
@@ -261,7 +261,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Removing owner of empty sequence (guid=&apos;{0}&apos; class=&apos;{1}&apos;) from its owner (guid=&apos;{2}&apos;)..
         /// </summary>
-        internal static string ksRemovingOwnerOfEmptySequence {
+        public static string ksRemovingOwnerOfEmptySequence {
             get {
                 return ResourceManager.GetString("ksRemovingOwnerOfEmptySequence", resourceCulture);
             }
@@ -270,7 +270,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Removing undefined custom property &apos;{0}&apos; from class=&apos;{1}&apos;, guid=&apos;{2}&apos;..
         /// </summary>
-        internal static string ksRemovingUndefinedCustomProperty {
+        public static string ksRemovingUndefinedCustomProperty {
             get {
                 return ResourceManager.GetString("ksRemovingUndefinedCustomProperty", resourceCulture);
             }
@@ -279,7 +279,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Fixing link to Form based on only Form of entry for WfiMorphBundle &apos;{0}&apos;..
         /// </summary>
-        internal static string ksRepairingBundleFormFromEntry {
+        public static string ksRepairingBundleFormFromEntry {
             get {
                 return ResourceManager.GetString("ksRepairingBundleFormFromEntry", resourceCulture);
             }
@@ -288,7 +288,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Repairing duplicate lists both named &quot;{0}&quot;. &quot;{1}&quot; kept the original name and &quot;{2}&quot;  was renamed to &quot;{3}&quot;.
         /// </summary>
-        internal static string ksRepairingDuplicateListName {
+        public static string ksRepairingDuplicateListName {
             get {
                 return ResourceManager.GetString("ksRepairingDuplicateListName", resourceCulture);
             }
@@ -297,7 +297,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Fixing link to MSA based on only MSA of entry for WfiMorphBundle &apos;{0}&apos;..
         /// </summary>
-        internal static string ksRepairingMorphBundleFromEntry {
+        public static string ksRepairingMorphBundleFromEntry {
             get {
                 return ResourceManager.GetString("ksRepairingMorphBundleFromEntry", resourceCulture);
             }
@@ -306,7 +306,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Fixing link to MSA based on Sense MSA (class=&apos;WfiMorphBundle&apos;, guid=&apos;{0}&apos;)..
         /// </summary>
-        internal static string ksRepairingMorphBundleFromSense {
+        public static string ksRepairingMorphBundleFromSense {
             get {
                 return ResourceManager.GetString("ksRepairingMorphBundleFromSense", resourceCulture);
             }
@@ -315,7 +315,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to This utility attempts to fix various errors in a FieldWorks project file.  The project must not be open, and must be in the fwdata (XML) format..
         /// </summary>
-        internal static string ksThisUtilityAttemptsTo {
+        public static string ksThisUtilityAttemptsTo {
             get {
                 return ResourceManager.GetString("ksThisUtilityAttemptsTo", resourceCulture);
             }
@@ -324,7 +324,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Removing unused rt element. (class=&apos;{0}&apos;, guid=&apos;{1}&apos;)..
         /// </summary>
-        internal static string ksUnusedRtElement {
+        public static string ksUnusedRtElement {
             get {
                 return ResourceManager.GetString("ksUnusedRtElement", resourceCulture);
             }
@@ -333,7 +333,7 @@ namespace SIL.LCModel.FixData {
         /// <summary>
         ///   Looks up a localized string similar to Use this when a project is throwing exceptions such as &quot;Key 62c22e20-8d8a-42bf-a54c-e21529284f2d not found in identity map...&quot;, and you suspect the data has been corrupted somehow..
         /// </summary>
-        internal static string ksUseThisWhen {
+        public static string ksUseThisWhen {
             get {
                 return ResourceManager.GetString("ksUseThisWhen", resourceCulture);
             }
