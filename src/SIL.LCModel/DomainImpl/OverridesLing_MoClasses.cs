@@ -4066,6 +4066,126 @@ namespace SIL.LCModel.DomainImpl
 					clonedProcess.OutputOS.RemoveAt(0);
 			}
 		}
+		/// <summary>
+		/// Gets all of the feature constraints in this rule.
+		/// </summary>
+		/// <value>The feature constraints.</value>
+		[VirtualProperty(CellarPropertyType.ReferenceCollection, "PhFeatureConstraint")]
+		public IEnumerable<IPhFeatureConstraint> FeatureConstraints
+		{
+			get
+			{
+				return GetFeatureConstraints();
+			}
+		}
+
+		/// <summary>
+		/// Gets all of the feature constraints in this rule.
+		/// </summary>
+		/// <returns>The feature constraints.</returns>
+		public List<IPhFeatureConstraint> GetFeatureConstraints()
+		{
+			var featureConstrs = new List<IPhFeatureConstraint>();
+			CollectVars(InputOS, featureConstrs);
+			var contents = new List<IPhContextOrVar>();
+			foreach (var ruleMapping in OutputOS)
+			{
+				switch (ruleMapping.ClassID)
+				{
+					case MoCopyFromInputTags.kClassId:
+						var copyInput = ruleMapping as IMoCopyFromInput;
+						if (copyInput != null && copyInput.ContentRA != null)
+						{
+							contents.Add(copyInput.ContentRA);
+						}
+						break;
+					case MoModifyFromInputTags.kClassId:
+						var modInput = ruleMapping as IMoModifyFromInput;
+						if (modInput != null && modInput.ContentRA != null)
+						{
+							contents.Add(modInput.ContentRA);
+						}
+						break;
+				}
+			}
+			CollectVars(contents, featureConstrs);
+			return featureConstrs;
+		}
+
+		/// <summary>
+		/// Collects all of the alpha variables in the specified sequence of contexts.
+		/// </summary>
+		/// <param name="seq">The sequence.</param>
+		/// <param name="featureConstrs">The feature constraints.</param>
+		void CollectVars(IEnumerable<IPhContextOrVar> seq, List<IPhFeatureConstraint> featureConstrs)
+		{
+			foreach (var ctxt in seq)
+			{
+				if (ctxt.ClassID == PhSequenceContextTags.kClassId)
+				{
+					IPhSequenceContext psc = ctxt as IPhSequenceContext;
+					if (psc == null)
+						continue;
+					foreach (var memb in psc.MembersRS)
+					{
+						if (memb.ClassID == PhSimpleContextNCTags.kClassId)
+						{
+							var ncMemb = memb as IPhSimpleContextNC;
+							CollectVars(ncMemb, featureConstrs);
+						}
+					}
+				}
+				else if (ctxt.ClassID == PhSimpleContextNCTags.kClassId)
+				{
+					var ncCtxt = ctxt as IPhSimpleContextNC;
+					CollectVars(ncCtxt, featureConstrs);
+				}
+			}
+		}
+		/// <summary>
+		/// Collects all of the alpha variables in the specified sequence of contexts.
+		/// </summary>
+		/// <param name="ctxt">The context.</param>
+		/// <param name="featureConstrs">The feature indices.</param>
+		void CollectVars(IPhPhonContext ctxt, List<IPhFeatureConstraint> featureConstrs)
+		{
+			if (ctxt == null)
+				return;
+
+			switch (ctxt.ClassID)
+			{
+				case PhSequenceContextTags.kClassId:
+					var seqCtxt = (IPhSequenceContext)ctxt;
+					foreach (var cur in seqCtxt.MembersRS)
+						CollectVars(cur as IPhSimpleContextNC, featureConstrs);
+					break;
+
+				case PhIterationContextTags.kClassId:
+					var iterCtxt = (IPhIterationContext)ctxt;
+					CollectVars(iterCtxt.MemberRA, featureConstrs);
+					break;
+
+				case PhSimpleContextNCTags.kClassId:
+					var ncCtxt = (IPhSimpleContextNC)ctxt;
+					CollectVars(ncCtxt.PlusConstrRS, featureConstrs);
+					CollectVars(ncCtxt.MinusConstrRS, featureConstrs);
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Collects all of the alpha variables in the specified sequence.
+		/// </summary>
+		/// <param name="vars">The sequence of variables.</param>
+		/// <param name="featureConstrs">The feature constraints.</param>
+		void CollectVars(IEnumerable<IPhFeatureConstraint> vars, List<IPhFeatureConstraint> featureConstrs)
+		{
+			foreach (var var in vars)
+			{
+				if (!featureConstrs.Contains(var))
+					featureConstrs.Add(var);
+			}
+		}
 	}
 
 	internal partial class MoMorphData
