@@ -84,7 +84,7 @@ namespace SIL.LCModel.Utils
 				get { throw new NotSupportedException(); }
 			}
 
-			public object AsyncState
+			public object? AsyncState
 			{
 				get { return null; }
 			}
