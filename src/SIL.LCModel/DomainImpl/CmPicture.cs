@@ -321,31 +321,19 @@ namespace SIL.LCModel.DomainImpl
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Method called to implement virtual property. Returns internal pathname of associated
+		/// Method called to implement virtual property. Returns license metadata of associated
 		/// file.  (LT-7104 requested internal path instead of original path.)
 		/// </summary>----------------------------------------------------------------------------------
-		/*[VirtualProperty(CellarPropertyType.MultiString)]
-		public IMultiString License
-		{
-			get
-			{
-				if (PictureFileRA == null || PictureFileRA.Copyright == null)
-					return null;
-				
-				return PictureFileRA.Copyright;
-			}
-		}*/
-
 		[VirtualProperty(CellarPropertyType.String)]
 		public ITsString License
 		{
 			get
 			{
 				var path = PictureFileRA?.AbsoluteInternalPath;
-				SIL.Core.ClearShare.Metadata metadata;
+				SIL.Core.ClearShare.MetadataBare metadata;
 				try
 				{
-					metadata = SIL.Core.ClearShare.Metadata.FromFile(path);
+					metadata = SIL.Core.ClearShare.MetadataBare.FromFile(path);
 				}
 				catch (Exception e)
 				{
@@ -366,15 +354,6 @@ namespace SIL.LCModel.DomainImpl
 					? string.Empty
 					: metadata.ShortCopyrightNotice;
 				return m_cache.MakeUserTss(SecurityElement.Escape(string.Join(", ", new[] { copyright, license }.Where(txt => !string.IsNullOrEmpty(txt)))));
-
-				/*if (PictureFileRA == null || PictureFileRA.Copyright == null)
-					return null;
-				if (PictureFileRA.Copyright == null)
-					return m_cache.MakeUserTss("Copyright was null");
-				if (String.IsNullOrEmpty(PictureFileRA.Copyright.ToString()))
-					return m_cache.MakeUserTss("Copyright String was null or empty");
-				string license = PictureFileRA.Copyright.ToString();
-				return m_cache.MakeUserTss(license);*/
 			}
 		}
 

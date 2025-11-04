@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net462;net8.0</TargetFrameworks>
@@ -16,9 +16,9 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
     <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="2.0.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.0.4" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="SIL.Lexicon" Version="17.0.0-core-metadata0078" />
+    <PackageReference Include="SIL.Lexicon" Version="17.0.0-core-metadata0081" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
-    <PackageReference Include="SIL.WritingSystems" Version="17.0.0-core-metadata0078" />
+    <PackageReference Include="SIL.WritingSystems" Version="17.0.0-core-metadata0081" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
     <PackageReference Include="vswhere" Version="2.8.4" PrivateAssets="all" />
