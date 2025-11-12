@@ -2912,7 +2912,8 @@ namespace SIL.LCModel.DomainImpl
 		/// <summary>
 		/// Return all allomorphs of the entry: first the lexeme form, then the alternate forms.
 		/// </summary>
-		public IMoForm[] AllAllomorphs
+		[VirtualProperty(CellarPropertyType.ReferenceSequence, "MoForm")]
+		public IEnumerable<IMoForm> AllAllomorphs
 		{
 			get
 			{
