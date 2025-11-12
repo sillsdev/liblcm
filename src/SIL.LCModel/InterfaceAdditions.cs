@@ -1331,7 +1331,7 @@ namespace SIL.LCModel
 		}
 
 		/// <summary/>
-		IMoForm[] AllAllomorphs
+		IEnumerable<IMoForm> AllAllomorphs
 		{
 			get;
 		}
