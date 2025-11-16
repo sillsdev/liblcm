@@ -658,7 +658,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// <param name="extension">The extension of the filename or null for '.tmp'.</param>
 		/// ------------------------------------------------------------------------------------
-		public static string GetTempFile(string extension)
+		public static string? GetTempFile(string? extension)
 		{
 			var fileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 			return Path.ChangeExtension(fileName, extension ?? ".tmp");
@@ -924,7 +924,7 @@ namespace SIL.LCModel.Utils
 		/// Paths starting with drive letters other than "C:" are not handled since they
 		/// are not as easily interpretable as a Linux path, and an exception will be thrown.
 		/// </summary>
-		public static string ChangeWindowsPathIfLinux(string windowsPath)
+		public static string? ChangeWindowsPathIfLinux(string? windowsPath)
 		{
 			if (!Platform.IsUnix)
 				return windowsPath;
@@ -950,8 +950,8 @@ namespace SIL.LCModel.Utils
 		/// This allows paths to be processed which are prefixed by
 		/// FwObjDataTypes.kodtExternalPathName.
 		/// </summary>
-		public static string ChangeWindowsPathIfLinuxPreservingPrefix(string windowsPath,
-			string prefix)
+		public static string? ChangeWindowsPathIfLinuxPreservingPrefix(string? windowsPath,
+			string? prefix)
 		{
 			if (windowsPath == null || prefix == null || !windowsPath.StartsWith(prefix, StringComparison.Ordinal))
 				return ChangeWindowsPathIfLinux(windowsPath);
@@ -968,14 +968,14 @@ namespace SIL.LCModel.Utils
 		/// Paths to removable media such as "/media/cdrom/dir" will simply
 		/// be converted to "C:\media\cdrom\dir".
 		/// </summary>
-		public static string ChangeLinuxPathIfWindows(string linuxPath)
+		public static string? ChangeLinuxPathIfWindows(string? linuxPath)
 		{
 			if (Platform.IsUnix)
 				return linuxPath;
 			if (String.IsNullOrEmpty(linuxPath))
 				return linuxPath;
 			// Collapse two or more adjacent slashes
-			if (linuxPath.Contains("//"))
+			if (linuxPath!.Contains("//"))
 				linuxPath = Regex.Replace(linuxPath, "/+", "/");
 			// Prepend "C:" for absolute paths)
 			if (linuxPath[0] == '/')
@@ -989,8 +989,8 @@ namespace SIL.LCModel.Utils
 		/// This allows paths to be processed which are prefixed by
 		/// FwObjDataTypes.kodtExternalPathName.
 		/// </summary>
-		public static string ChangeLinuxPathIfWindowsPreservingPrefix(string linuxPath,
-			string prefix)
+		public static string? ChangeLinuxPathIfWindowsPreservingPrefix(string? linuxPath,
+			string? prefix)
 		{
 			if (linuxPath == null || prefix == null || !linuxPath.StartsWith(prefix, StringComparison.Ordinal))
 				return ChangeLinuxPathIfWindows(linuxPath);
@@ -1006,7 +1006,7 @@ namespace SIL.LCModel.Utils
 		/// For example, on Windows, changes "/dir/file.txt" to "C:\dir\file.txt",
 		/// and on Linux, changes "C:\dir\file.txt" to "/dir/file.txt".
 		/// </summary>
-		public static string ChangePathToPlatform(string path)
+		public static string? ChangePathToPlatform(string? path)
 		{
 			if (Platform.IsUnix)
 				return ChangeWindowsPathIfLinux(path);
@@ -1025,7 +1025,7 @@ namespace SIL.LCModel.Utils
 		/// than "C:" are not handled since they are not as easily interpretable as a
 		/// Linux path, and an exception will be thrown.
 		/// </summary>
-		public static string ChangePathToPlatformPreservingPrefix(string path, string prefix)
+		public static string? ChangePathToPlatformPreservingPrefix(string? path, string? prefix)
 		{
 			if (Platform.IsUnix)
 				return ChangeWindowsPathIfLinuxPreservingPrefix(path, prefix);
@@ -1043,7 +1043,7 @@ namespace SIL.LCModel.Utils
 		/// specified folders.</param>
 		/// <param name="foldersToCheck">The list of folders to check.</param>
 		/// ------------------------------------------------------------------------------------
-		public static string GetRelativePath(string fullPath, Action<string> relFolderSideEffect,
+		public static string GetRelativePath(string fullPath, Action<string>? relFolderSideEffect,
 			params string[] foldersToCheck)
 		{
 			foreach (string dir in foldersToCheck)
@@ -1084,7 +1084,7 @@ namespace SIL.LCModel.Utils
 		///
 		/// FWNX-607
 		/// </summary>
-		public static string StripFilePrefix(string fileString)
+		public static string? StripFilePrefix(string? fileString)
 		{
 			if (fileString == null)
 				return fileString;
