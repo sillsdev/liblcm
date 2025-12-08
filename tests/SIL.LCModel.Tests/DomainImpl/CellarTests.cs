@@ -459,6 +459,17 @@ namespace SIL.LCModel.DomainImpl
 				Assert.AreEqual("Gen", cv.FeatureRA.Abbreviation.AnalysisDefaultWritingSystem.Text, "Expect to have Gen feature name");
 				Assert.AreEqual("Neut", cv.ValueRA.Abbreviation.AnalysisDefaultWritingSystem.Text, "Expect to have Neut feature value");
 			}
+			// Test FillInBlanks.
+			IFsClosedValue closedValue = featStruct.FeatureSpecsOC.First() as IFsClosedValue;
+			closedValue.ValueRA = null;
+			featStruct.FillInBlanks(featStrucGenNeut);
+			Assert.AreEqual("Agr", featStruct.TypeRA.Abbreviation.AnalysisDefaultWritingSystem.Text, "Expect type Agr");
+			Assert.AreEqual(1, featStruct.FeatureSpecsOC.Count, "should have one feature spec");
+			foreach (IFsClosedValue cv in featStruct.FeatureSpecsOC)
+			{
+				Assert.AreEqual("Gen", cv.FeatureRA.Abbreviation.AnalysisDefaultWritingSystem.Text, "Expect to have Gen feature name");
+				Assert.AreEqual("Neut", cv.ValueRA.Abbreviation.AnalysisDefaultWritingSystem.Text, "Expect to have Neut feature value");
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -667,6 +678,24 @@ namespace SIL.LCModel.DomainImpl
 			// Check for correct LongName
 			Assert.AreEqual("[asp:aor sbj:[gen:n num:sg pers:1]]", featStruct.LongName, "Incorrect LongName for merged feature struture");
 			Assert.AreEqual("[asp:aor sbj:[gen:n num:sg pers:1]]", featStruct.LongNameSorted, "Incorrect LongNameSorted for merged feature struture");
+
+			// Test FillInBlanks.
+			pos.DefaultFeaturesOA = null;
+			pos.DefaultFeaturesOA = Cache.ServiceLocator.GetInstance<IFsFeatStrucFactory>().Create();
+			featStruct = pos.DefaultFeaturesOA;
+			featStruct.AddFeatureFromXml(itemFem, msfs);
+			IFsComplexValue complexValue = featStruct.FeatureSpecsOC.First() as IFsComplexValue;
+			IFsFeatStruc fsValue = complexValue.ValueOA as IFsFeatStruc;
+			IFsClosedValue closedValue = fsValue.FeatureSpecsOC.First() as IFsClosedValue;
+			closedValue.ValueRA = null;
+			featStruct.FillInBlanks(featStruct2);
+			Assert.AreEqual("[sbj:[gen:n]]", featStruct.LongName, "Incorrect LongName for merged feature struture");
+
+			// Test removing FillInBlanks.
+			closedValue.ValueRA = null;
+			featStruct2.FeatureSpecsOC.Remove(featStruct2.FeatureSpecsOC.First());
+			featStruct = featStruct.FillInBlanks(featStruct2);
+			Assert.AreEqual(null, featStruct, "FillInBlanks didn't remove unfilled blanks");
 		}
 
 
