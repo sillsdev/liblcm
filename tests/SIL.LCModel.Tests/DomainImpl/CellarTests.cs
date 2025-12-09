@@ -459,10 +459,14 @@ namespace SIL.LCModel.DomainImpl
 				Assert.AreEqual("Gen", cv.FeatureRA.Abbreviation.AnalysisDefaultWritingSystem.Text, "Expect to have Gen feature name");
 				Assert.AreEqual("Neut", cv.ValueRA.Abbreviation.AnalysisDefaultWritingSystem.Text, "Expect to have Neut feature value");
 			}
+
 			// Test FillInBlanks.
 			IFsClosedValue closedValue = featStruct.FeatureSpecsOC.First() as IFsClosedValue;
 			closedValue.ValueRA = null;
-			featStruct.FillInBlanks(featStrucGenNeut);
+			Assert.IsTrue(featStruct.ContainsBlank());
+			Assert.IsFalse(featStrucGenNeut.ContainsBlank());
+			featStruct = featStruct.FillInBlanks(featStrucGenNeut);
+			Assert.IsFalse(featStruct.ContainsBlank());
 			Assert.AreEqual("Agr", featStruct.TypeRA.Abbreviation.AnalysisDefaultWritingSystem.Text, "Expect type Agr");
 			Assert.AreEqual(1, featStruct.FeatureSpecsOC.Count, "should have one feature spec");
 			foreach (IFsClosedValue cv in featStruct.FeatureSpecsOC)
@@ -688,12 +692,17 @@ namespace SIL.LCModel.DomainImpl
 			IFsFeatStruc fsValue = complexValue.ValueOA as IFsFeatStruc;
 			IFsClosedValue closedValue = fsValue.FeatureSpecsOC.First() as IFsClosedValue;
 			closedValue.ValueRA = null;
-			featStruct.FillInBlanks(featStruct2);
+			Assert.IsTrue(featStruct.ContainsBlank());
+			Assert.IsFalse(featStruct2.ContainsBlank());
+			featStruct = featStruct.FillInBlanks(featStruct2);
+			Assert.IsFalse(featStruct2.ContainsBlank());
 			Assert.AreEqual("[sbj:[gen:n]]", featStruct.LongName, "Incorrect LongName for merged feature struture");
 
 			// Test removing FillInBlanks.
 			closedValue.ValueRA = null;
 			featStruct2.FeatureSpecsOC.Remove(featStruct2.FeatureSpecsOC.First());
+			Assert.IsTrue(featStruct.ContainsBlank());
+			Assert.IsFalse(featStruct2.ContainsBlank());
 			featStruct = featStruct.FillInBlanks(featStruct2);
 			Assert.AreEqual(null, featStruct, "FillInBlanks didn't remove unfilled blanks");
 		}

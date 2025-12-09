@@ -3944,6 +3944,28 @@ namespace SIL.LCModel.DomainImpl
 			return this;
 		}
 
+		public bool ContainsBlank()
+		{
+			foreach (IFsFeatureSpecification spec in FeatureSpecsOC.ToList())
+			{
+				if (spec is IFsClosedValue closed && closed != null && closed.ValueRA == null)
+				{
+					return true;
+				}
+				if (spec is IFsComplexValue complex && complex != null)
+				{
+					if (complex.ValueOA is IFsFeatStruc fs)
+					{
+						if (fs.ContainsBlank())
+						{
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		}
+
 		protected override void RemoveObjectSideEffectsInternal(RemoveObjectEventArgs e)
 		{
 			switch (e.Flid)
