@@ -649,11 +649,27 @@ namespace SIL.LCModel.DomainServices
 		public static ILexSense GetMainOrFirstSenseOfVariant(ILexEntryRef variantRef)
 		{
 			var mainEntryOrSense = variantRef.ComponentLexemesRS[0] as IVariantComponentLexeme;
-			// find first gloss
-			ILexEntry mainEntry;
-			ILexSense mainOrFirstSense;
-			GetMainEntryAndSenseStack(mainEntryOrSense, out mainEntry, out mainOrFirstSense);
-			return mainOrFirstSense;
+			if (mainEntryOrSense != null)
+			{
+				// find first gloss
+				ILexEntry mainEntry;
+				ILexSense mainOrFirstSense;
+				GetMainEntryAndSenseStack(mainEntryOrSense, out mainEntry, out mainOrFirstSense);
+				return mainOrFirstSense;
+			}
+			else
+			{
+				var componentLexeme = variantRef.ComponentLexemesRS[0];
+				if (componentLexeme != null && componentLexeme is ILexEntry)
+				{
+					ILexEntry entry = (ILexEntry)componentLexeme;
+					if (entry.SensesOS.Count > 0)
+					{
+						return GetMainOrFirstSenseOfVariant(entry.EntryRefsOS[0]);
+					}
+				}
+			}
+			return null;
 		}
 
 		/// <summary>
@@ -664,14 +680,21 @@ namespace SIL.LCModel.DomainServices
 		/// <param name="mainOrFirstSense"></param>
 		public static void GetMainEntryAndSenseStack(IVariantComponentLexeme mainEntryOrSense, out ILexEntry mainEntry, out ILexSense mainOrFirstSense)
 		{
-			if (mainEntryOrSense is ILexEntry)
+			if (mainEntryOrSense is ILexEntry entry)
 			{
-				mainEntry = mainEntryOrSense as ILexEntry;
-				mainOrFirstSense = mainEntry.SensesOS.Count > 0 ? mainEntry.SensesOS[0] : null;
+				mainEntry = entry;
+				if (entry.SensesOS.Count == 0)
+				{
+					mainOrFirstSense = GetMainOrFirstSenseOfVariant(entry.EntryRefsOS[0]);
+				}
+				else
+				{
+					mainOrFirstSense = mainEntry.SensesOS[0];
+				}
 			}
-			else if (mainEntryOrSense is ILexSense)
+			else if (mainEntryOrSense is ILexSense sense)
 			{
-				mainOrFirstSense = mainEntryOrSense as ILexSense;
+				mainOrFirstSense = sense;
 				mainEntry = mainOrFirstSense.Entry;
 			}
 			else

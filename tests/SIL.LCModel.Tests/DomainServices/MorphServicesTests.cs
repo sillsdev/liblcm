@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Caching;
 using NUnit.Framework;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
@@ -555,6 +556,52 @@ namespace SIL.LCModel.DomainServices
 			}
 		}
 
+		/// <summary>
+		/// Get sense/gloss for a variant of a variant (see LT-22315).
+		/// </summary>
+		[Test]
+		public void GlossOfVariantOfVariant()
+		{
+			NonUndoableUnitOfWorkHelper.Do(Cache.ActionHandlerAccessor, () =>
+			{
+				ILexEntry newMainEntry = GetNewMainEntry();
+				newMainEntry.SensesOS.Add(Cache.ServiceLocator.GetInstance<ILexSenseFactory>().Create());
+				newMainEntry.SensesOS[0].Gloss.set_String(Cache.DefaultAnalWs, "gloss");
+
+				ILexEntryType letDialectalVariantType = Cache.ServiceLocator.GetInstance<ILexEntryTypeRepository>().GetObject(LexEntryTypeTags.kguidLexTypDialectalVar);
+				ILexEntryRef newLerDial;
+				SetupLexEntryVariant(Cache, "vaDialVar", newMainEntry, letDialectalVariantType, out newLerDial);
+				AddVariantOf(newLerDial, newMainEntry, letDialectalVariantType);
+
+				// Now create a contraction variant of the dialectal variant
+				ILexEntryType letContractionVariantType = Cache.ServiceLocator.GetInstance<ILexEntryTypeRepository>().GetObject(LexEntryTypeTags.kguidLexTypContraction);
+				ILexEntryRef newLerCont;
+				SetupLexEntryVariant(Cache, "vaContractionVar", newMainEntry, letContractionVariantType, out newLerCont);
+				ILexEntry varEntry = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
+				AddVariantOf(newLerCont, varEntry, letContractionVariantType);
+			});
+
+			var variant = Cache.ServiceLocator.GetInstance<ILexEntryRepository>().GetHomographs("vaDialVar").FirstOrDefault();
+			var variantRefs = DomainObjectServices.GetVariantRefs(variant);
+			Assert.That(variantRefs.Count(), Is.EqualTo(2));
+			var variant2 = Cache.ServiceLocator.GetInstance<ILexEntryRepository>().GetHomographs("vaContractionVar").FirstOrDefault();
+			var variant2Refs = DomainObjectServices.GetVariantRefs(variant2);
+			Assert.That(variant2Refs.Count(), Is.EqualTo(2));
+			var analWs = Cache.ServiceLocator.WritingSystemManager.Get(Cache.DefaultAnalWs);
+			{
+				IMultiUnicode gloss1;
+				GetMainVariantGloss(variantRefs.ElementAt(0), out gloss1);
+
+				var variantGloss = MorphServices.MakeGlossWithReverseAbbrs(gloss1, analWs, variantRefs.ElementAt(0).VariantEntryTypesRS);
+				Assert.That(variantGloss, Is.Not.Null);
+				Assert.That(variantGloss.Text, Is.EqualTo("gloss+***"));
+
+				GetMainVariantGloss(variant2Refs.ElementAt(0), out gloss1);
+				variantGloss = MorphServices.MakeGlossWithReverseAbbrs(gloss1, analWs, variant2Refs.ElementAt(0).VariantEntryTypesRS);
+				Assert.That(variantGloss, Is.Not.Null);
+				Assert.That(variantGloss.Text, Is.EqualTo("gloss+***"));
+			}
+		}
 		/// <summary>
 		/// TODO: If the variant itself has a glosss use it? (Ask Beth Bryson)
 		/// TODO: What do we do if there is no sense, or no gloss? Use lexEntry form instead? (or just put the info on the LexEntry line?)
