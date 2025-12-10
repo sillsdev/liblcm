@@ -18,7 +18,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security;
-using SIL.Core;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
@@ -342,10 +341,17 @@ namespace SIL.LCModel.DomainImpl
 				var analWs = m_cache.WritingSystemFactory.GetStrFromWs(m_cache.DefaultAnalWs);
 				var vernWs = m_cache.WritingSystemFactory.GetStrFromWs(m_cache.DefaultVernWs);
 
+				// Set Localizer.Default to use L10NSharpLocalizer to localize the license.
+				ILocalizer oldLocalizer = Localizer.Default;
+				Localizer.Default = new SIL.Core.Desktop.i18n.L10NSharpLocalizer();
+
 				// Get the license in first analysis writing system if available, otherwise first vernacular ws, otherwise English.
 				var license = metadata.License?.GetMinimalFormForCredits(new[] { analWs, vernWs, "en" }, out _);
 				if (string.IsNullOrEmpty(metadata.CopyrightNotice) && string.IsNullOrEmpty(license))
 					return null;
+
+				// Reset Localizer default.
+				Localizer.Default = oldLocalizer;
 
 				// We want the short copyright notice, but it isn't safe to ask for if CopyrightNotice is null.
 				var copyright = string.IsNullOrEmpty(metadata.CopyrightNotice)

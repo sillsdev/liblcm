@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using NUnit.Framework;
+using SIL.Core.ClearShare;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Core.WritingSystems;
@@ -28,7 +29,7 @@ namespace SIL.LCModel.DomainImpl
 		private MockFileOS m_fileOs;
 		private ICmPictureFactory m_pictureFactory;
 		private ICmPicture m_pict;
-		private string m_internalPath = Path.DirectorySeparatorChar + Path.GetRandomFileName();
+		private string m_internalPath;
 		private CoreWritingSystemDefinition m_wsGerman;
 		private CoreWritingSystemDefinition m_wsSpanish;
 		#endregion
@@ -43,6 +44,10 @@ namespace SIL.LCModel.DomainImpl
 			base.FixtureSetup();
 			Cache.ServiceLocator.WritingSystemManager.GetOrSet("de", out m_wsGerman);
 			Cache.ServiceLocator.WritingSystemManager.GetOrSet("es", out m_wsSpanish);
+			// Initialize internalPath inside a temp folder
+			// .jpg file extension is needed for the test CmPicture_GetCreatorAndLicenseForPicture
+			string tempFolder = Path.GetTempPath();
+			m_internalPath = Path.Combine(tempFolder, Guid.NewGuid().ToString() + ".jpg");
 		}
 
 		/// -------------------------------------------------------------------------------------
@@ -74,6 +79,8 @@ namespace SIL.LCModel.DomainImpl
 		public override void TestTearDown()
 		{
 			FileUtils.Manager.Reset();
+			if (File.Exists(m_internalPath))
+				File.Delete(m_internalPath);
 			base.TestTearDown();
 		}
 
@@ -345,19 +352,22 @@ namespace SIL.LCModel.DomainImpl
 
 		/// -------------------------------------------------------------------------------------
 		/// <summary>
-		/// Test ability to get license of a picture.
+		/// Test ability to get creator and license of a picture.
 		/// </summary>
 		/// -------------------------------------------------------------------------------------
 		[Test]
-		public void CmPicture_GetLicenseInfoForPicture()
+		public void CmPicture_GetCreatorAndLicenseForPicture()
 		{
-			//MetadataCore metadata = new MetadataCore();
-			//metadata.Creator = "test";
-			//metadata.CopyrightNotice = "test copyright";
-			//metadata.Write(m_pict.PictureFileRA.InternalPath, true);
+			// Copy the test image penguin.jpg from TestData to a temp file located at m_internalPath
+			string penguinPath = Path.Combine(TestDirectoryFinder.TestDataDirectory, "penguin.jpg");
+			File.Copy(penguinPath, m_internalPath, overwrite: true);
 
-			CmPicture pic = (CmPicture) m_pict;
-			Assert.IsNull(pic.LicenseTSS);
+			MetadataCore metadata = new MetadataCore();
+			metadata.Creator = "test creator";
+			metadata.CopyrightNotice = "test copyright";
+			metadata.Write(m_pict.PictureFileRA.AbsoluteInternalPath, false);
+			Assert.AreEqual("test creator", ((CmPicture)m_pict).CreatorTSS.ToString());
+			Assert.AreEqual("test copyright",((CmPicture)m_pict).LicenseTSS.ToString());
 		}
 		/// -------------------------------------------------------------------------------------
 		/// <summary>
