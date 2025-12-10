@@ -329,7 +329,7 @@ namespace SIL.LCModel.DomainImpl
 				{
 					metadata = SIL.Core.ClearShare.MetadataCore.CreateMetadataCoreFromFile(path);
 				}
-				catch (Exception e)
+				catch
 				{
 					// Error getting metadata from path
 					metadata = null;
@@ -377,7 +377,7 @@ namespace SIL.LCModel.DomainImpl
 				{
 					metadata = SIL.Core.ClearShare.MetadataCore.CreateMetadataCoreFromFile(path);
 				}
-				catch (Exception e)
+				catch
 				{
 					// Error getting metadata from path
 					metadata = null;
