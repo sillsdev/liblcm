@@ -345,6 +345,22 @@ namespace SIL.LCModel.DomainImpl
 
 		/// -------------------------------------------------------------------------------------
 		/// <summary>
+		/// Test ability to get license of a picture.
+		/// </summary>
+		/// -------------------------------------------------------------------------------------
+		[Test]
+		public void CmPicture_GetLicenseInfoForPicture()
+		{
+			//MetadataCore metadata = new MetadataCore();
+			//metadata.Creator = "test";
+			//metadata.CopyrightNotice = "test copyright";
+			//metadata.Write(m_pict.PictureFileRA.InternalPath, true);
+
+			CmPicture pic = (CmPicture) m_pict;
+			Assert.IsNull(pic.LicenseTSS);
+		}
+		/// -------------------------------------------------------------------------------------
+		/// <summary>
 		/// Test ability to update the properties of a picture, given a file, folder, etc.
 		/// </summary>
 		/// -------------------------------------------------------------------------------------

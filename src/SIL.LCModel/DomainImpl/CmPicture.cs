@@ -17,6 +17,8 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security;
+using SIL.Core;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
@@ -309,6 +311,76 @@ namespace SIL.LCModel.DomainImpl
 					return null;
 				string pathname = PictureFileRA.AbsoluteInternalPath;
 				return m_cache.MakeUserTss(pathname);
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Method called to implement virtual property. Returns license metadata of associated
+		/// file.
+		/// </summary>----------------------------------------------------------------------------------
+		[VirtualProperty(CellarPropertyType.String)]
+		public ITsString LicenseTSS
+		{
+			get
+			{
+				var path = PictureFileRA?.AbsoluteInternalPath;
+				SIL.Core.ClearShare.MetadataCore metadata;
+				try
+				{
+					metadata = SIL.Core.ClearShare.MetadataCore.CreateMetadataCoreFromFile(path);
+				}
+				catch (Exception e)
+				{
+					// Error getting metadata from path
+					metadata = null;
+				}
+
+				if (metadata == null)
+					return null;
+
+				var analWs = m_cache.WritingSystemFactory.GetStrFromWs(m_cache.DefaultAnalWs);
+				var vernWs = m_cache.WritingSystemFactory.GetStrFromWs(m_cache.DefaultVernWs);
+
+				// Get the license in first analysis writing system if available, otherwise first vernacular ws, otherwise English.
+				var license = metadata.License?.GetMinimalFormForCredits(new[] { analWs, vernWs, "en" }, out _);
+				if (string.IsNullOrEmpty(metadata.CopyrightNotice) && string.IsNullOrEmpty(license))
+					return null;
+
+				// We want the short copyright notice, but it isn't safe to ask for if CopyrightNotice is null.
+				var copyright = string.IsNullOrEmpty(metadata.CopyrightNotice)
+					? string.Empty
+					: metadata.ShortCopyrightNotice;
+				return m_cache.MakeUserTss(SecurityElement.Escape(string.Join(", ", new[] { copyright, license }.Where(txt => !string.IsNullOrEmpty(txt)))));
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Method called to implement virtual property. Returns creator metadata of associated
+		/// file.  (LT-7104 requested internal path instead of original path.)
+		/// </summary>----------------------------------------------------------------------------------
+		[VirtualProperty(CellarPropertyType.String)]
+		public ITsString CreatorTSS
+		{
+			get
+			{
+				var path = PictureFileRA?.AbsoluteInternalPath;
+				SIL.Core.ClearShare.MetadataCore metadata;
+				try
+				{
+					metadata = SIL.Core.ClearShare.MetadataCore.CreateMetadataCoreFromFile(path);
+				}
+				catch (Exception e)
+				{
+					// Error getting metadata from path
+					metadata = null;
+				}
+
+				if (metadata == null || metadata.Creator == null)
+					return null;
+				
+				return m_cache.MakeUserTss(metadata.Creator);
 			}
 		}
 
