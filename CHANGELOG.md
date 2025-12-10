@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- [SIL.LCModel] Add new virtual property LicenseTSS in CmPicture, to access info about the picture's copyright and license.
+- [SIL.LCModel] Add new virtual property CreatorTSS in CmPicture, to access info about the picture's creator.
 - [SIL.LCModel] Add SpecificItemAndFieldName() to ISenseOrEntry
 - [SIL.LCModel] Added a parameter to GetBestGuess() and TryGetBestGuess() to do lowercase matching regardless of the occurrence index
 - [SIL.LCModel] Add GetCaptionOrHeadword() to CmPicture
