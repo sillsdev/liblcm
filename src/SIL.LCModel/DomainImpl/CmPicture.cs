@@ -385,8 +385,8 @@ namespace SIL.LCModel.DomainImpl
 
 				if (metadata == null || metadata.Creator == null)
 					return null;
-				
-				return m_cache.MakeUserTss(metadata.Creator);
+
+				return m_cache.MakeUserTss(SecurityElement.Escape(metadata.Creator));
 			}
 		}
 
