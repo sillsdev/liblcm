@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net462;net8.0</TargetFrameworks>
@@ -17,7 +17,7 @@ This package provides unit tests for SIL.LCModel.Core.</Description>
     <PackageReference Include="NUnit" Version="3.13.3" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.3.2" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
-    <PackageReference Include="SIL.TestUtilities" Version="17.0.0-core-metadata0081" />
+    <PackageReference Include="SIL.TestUtilities" Version="17.0.0-*" />
   </ItemGroup>
 
   <ItemGroup>

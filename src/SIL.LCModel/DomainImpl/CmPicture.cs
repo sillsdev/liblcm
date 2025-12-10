@@ -71,16 +71,11 @@ namespace SIL.LCModel.DomainImpl
 		/// <param name="ws">The WS for the location in the caption MultiUnicode to put the
 		/// caption</param>
 		/// ------------------------------------------------------------------------------------
-		public void UpdatePicture(string srcFilename, ITsString captionTss, string sFolder, int ws)//string license, string sFolder, int ws)
+		public void UpdatePicture(string srcFilename, ITsString captionTss, string sFolder, int ws)
 		{
 			// Set the caption first since creating the CmFile will throw if srcFilename is empty.
 			if (ws != 0)
 				Caption.set_String(ws, captionTss);
-
-			/*if (license != null)
-			{
-				PictureFileRA.Copyright = license;
-			}*/
 
 			ICmFile file = PictureFileRA;
 			if (file == null)
@@ -325,15 +320,15 @@ namespace SIL.LCModel.DomainImpl
 		/// file.  (LT-7104 requested internal path instead of original path.)
 		/// </summary>----------------------------------------------------------------------------------
 		[VirtualProperty(CellarPropertyType.String)]
-		public ITsString License
+		public ITsString LicenseTSS
 		{
 			get
 			{
 				var path = PictureFileRA?.AbsoluteInternalPath;
-				SIL.Core.ClearShare.MetadataBare metadata;
+				SIL.Core.ClearShare.MetadataCore metadata;
 				try
 				{
-					metadata = SIL.Core.ClearShare.MetadataBare.FromFile(path);
+					metadata = SIL.Core.ClearShare.MetadataCore.CreateMetadataCoreFromFile(path);
 				}
 				catch (Exception e)
 				{
@@ -344,16 +339,48 @@ namespace SIL.LCModel.DomainImpl
 				if (metadata == null)
 					return null;
 
-				// TODO: do we actually want english? First analysis ws is better
-				var license = metadata.License?.GetMinimalFormForCredits(new[] { "en" }, out _);
+				var analWs = m_cache.WritingSystemFactory.GetStrFromWs(m_cache.DefaultAnalWs);
+				var vernWs = m_cache.WritingSystemFactory.GetStrFromWs(m_cache.DefaultVernWs);
+
+				// Get the license in first analysis writing system if available, otherwise first vernacular ws, otherwise English.
+				var license = metadata.License?.GetMinimalFormForCredits(new[] { analWs, vernWs, "en" }, out _);
 				if (string.IsNullOrEmpty(metadata.CopyrightNotice) && string.IsNullOrEmpty(license))
 					return null;
 
-				// We want the short copyright notice, but it isn't safe to ask for if CopyrightNotice is null
+				// We want the short copyright notice, but it isn't safe to ask for if CopyrightNotice is null.
 				var copyright = string.IsNullOrEmpty(metadata.CopyrightNotice)
 					? string.Empty
 					: metadata.ShortCopyrightNotice;
 				return m_cache.MakeUserTss(SecurityElement.Escape(string.Join(", ", new[] { copyright, license }.Where(txt => !string.IsNullOrEmpty(txt)))));
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Method called to implement virtual property. Returns creator metadata of associated
+		/// file.  (LT-7104 requested internal path instead of original path.)
+		/// </summary>----------------------------------------------------------------------------------
+		[VirtualProperty(CellarPropertyType.String)]
+		public ITsString CreatorTSS
+		{
+			get
+			{
+				var path = PictureFileRA?.AbsoluteInternalPath;
+				SIL.Core.ClearShare.MetadataCore metadata;
+				try
+				{
+					metadata = SIL.Core.ClearShare.MetadataCore.CreateMetadataCoreFromFile(path);
+				}
+				catch (Exception e)
+				{
+					// Error getting metadata from path
+					metadata = null;
+				}
+
+				if (metadata == null || metadata.Creator == null)
+					return null;
+				
+				return m_cache.MakeUserTss(metadata.Creator);
 			}
 		}
 
