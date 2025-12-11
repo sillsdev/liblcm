@@ -205,7 +205,7 @@ namespace SIL.LCModel.DomainImpl
 
 		/// <summary>
 		/// Gets all the bulk-editable things that might be used as the destination of a bulk edit to
-		/// Allomorphs/MoForms. This includes MoForms that are the LexemeForm of some entry.
+		/// Allomorphs. This includes MoForms that are the LexemeForm of some entry.
 		/// </summary>
 		[VirtualProperty(CellarPropertyType.ReferenceSequence, "CmObject")]
 		public IEnumerable<ICmObject> AllPossibleAllomorphs
