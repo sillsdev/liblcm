@@ -205,8 +205,7 @@ namespace SIL.LCModel.DomainImpl
 
 		/// <summary>
 		/// Gets all the bulk-editable things that might be used as the destination of a bulk edit to
-		/// Allomorphs. This includes the entries that do not have allomorphs. It does NOT include
-		/// MoForms that are the LexemeForm of some entry. (Possibly the name should indicate this better somehow?)
+		/// Allomorphs/MoForms. This includes MoForms that are the LexemeForm of some entry.
 		/// </summary>
 		[VirtualProperty(CellarPropertyType.ReferenceSequence, "CmObject")]
 		public IEnumerable<ICmObject> AllPossibleAllomorphs
@@ -217,9 +216,7 @@ namespace SIL.LCModel.DomainImpl
 				// Optimize JohnT: are we likely to modify any of the iterators while iterating? If not
 				// we may not need the ToList().
 				return (from entry in entries from morph in entry.AlternateFormsOS select morph).Cast<ICmObject>()
-					.Concat((from entry in entries
-							 where entry.AlternateFormsOS.Count == 0
-							 select entry).Cast<ICmObject>())
+					.Concat((from entry in entries select entry.LexemeFormOA).Cast<ICmObject>())
 					.ToList();
 			}
 		}
@@ -2912,7 +2909,8 @@ namespace SIL.LCModel.DomainImpl
 		/// <summary>
 		/// Return all allomorphs of the entry: first the lexeme form, then the alternate forms.
 		/// </summary>
-		public IMoForm[] AllAllomorphs
+		[VirtualProperty(CellarPropertyType.ReferenceSequence, "MoForm")]
+		public IEnumerable<IMoForm> AllAllomorphs
 		{
 			get
 			{

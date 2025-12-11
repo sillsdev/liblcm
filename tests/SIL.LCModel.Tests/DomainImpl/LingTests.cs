@@ -107,6 +107,46 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
+		/// Verify that a new MoAffixProcess is properly initialized. This is needed at least for the Affix Process slice
+		/// to work properly. See FWR-1619.
+		/// </summary>
+		[Test]
+		public void MoAffixProcessFeatureConstraints()
+		{
+			var phData = Cache.LangProject.PhonologicalDataOA;
+			var entry = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
+			var affixProcess = Cache.ServiceLocator.GetInstance<IMoAffixProcessFactory>().Create();
+			entry.LexemeFormOA = affixProcess;
+
+			var ctxtInput = Cache.ServiceLocator.GetInstance<IPhSimpleContextNCFactory>().Create();
+			affixProcess.InputOS.Add(ctxtInput);
+			var featConstrInput = Cache.ServiceLocator.GetInstance<IPhFeatureConstraintFactory>().Create();
+			phData.FeatConstraintsOS.Add(featConstrInput);
+			ctxtInput.PlusConstrRS.Add(featConstrInput);
+
+			var cfi = Cache.ServiceLocator.GetInstance<IMoCopyFromInputFactory>().Create();
+			affixProcess.OutputOS.Add(cfi);
+			var ctxtCfi = Cache.ServiceLocator.GetInstance<IPhSimpleContextNCFactory>().Create();
+			phData.ContextsOS.Add(ctxtCfi);
+			cfi.ContentRA = ctxtCfi;
+			var featConstrCfi = Cache.ServiceLocator.GetInstance<IPhFeatureConstraintFactory>().Create();
+			phData.FeatConstraintsOS.Add(featConstrCfi);
+			ctxtCfi.MinusConstrRS.Add(featConstrCfi);
+
+			var mfi = Cache.ServiceLocator.GetInstance<IMoModifyFromInputFactory>().Create();
+			affixProcess.OutputOS.Add(mfi);
+			var ctxtMfi = Cache.ServiceLocator.GetInstance<IPhSimpleContextNCFactory>().Create();
+			phData.ContextsOS.Add(ctxtMfi);
+			mfi.ContentRA = ctxtMfi;
+			var featConstrMfi = Cache.ServiceLocator.GetInstance<IPhFeatureConstraintFactory>().Create();
+			phData.FeatConstraintsOS.Add(featConstrMfi);
+			ctxtMfi.PlusConstrRS.Add(featConstrMfi);
+
+			var featureConstrs = affixProcess.FeatureConstraints;
+			Assert.That(featureConstrs, Has.Count.EqualTo(3));
+		}
+
+		/// <summary>
 		/// Trivial test that a newly created InflAffixTemplate has the Final property set to true.
 		/// </summary>
 		[Test]

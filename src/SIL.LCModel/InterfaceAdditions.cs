@@ -1331,7 +1331,7 @@ namespace SIL.LCModel
 		}
 
 		/// <summary/>
-		IMoForm[] AllAllomorphs
+		IEnumerable<IMoForm> AllAllomorphs
 		{
 			get;
 		}
@@ -2105,6 +2105,24 @@ namespace SIL.LCModel
 		/// Get a list of inflectional affix LexEntries which do not already refer to this slot
 		/// </summary>
 		IEnumerable<ILexEntry> OtherInflectionalAffixLexEntries { get; }
+	}
+
+	public partial interface IMoAffixProcess
+	{
+		/// <summary>
+		/// Gets all of the feature constraints in this rule.
+		/// </summary>
+		/// <value>The feature constraints.</value>
+		IEnumerable<IPhFeatureConstraint> FeatureConstraints
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets all of the feature constraints in this rule.
+		/// </summary>
+		/// <returns>The feature constraints.</returns>
+		public List<IPhFeatureConstraint> GetFeatureConstraints();
 	}
 
 	public partial interface IFsFeatureSystem
