@@ -463,6 +463,7 @@ namespace SIL.LCModel.DomainImpl
 			// Test FillInBlanks.
 			IFsClosedValue closedValue = featStruct.FeatureSpecsOC.First() as IFsClosedValue;
 			closedValue.ValueRA = null;
+			Assert.AreEqual("Gen:???", featStruct.ShortName);
 			Assert.IsTrue(featStruct.ContainsBlank());
 			Assert.IsFalse(featStrucGenNeut.ContainsBlank());
 			featStruct = featStruct.FillInBlanks(featStrucGenNeut);
@@ -692,6 +693,7 @@ namespace SIL.LCModel.DomainImpl
 			IFsFeatStruc fsValue = complexValue.ValueOA as IFsFeatStruc;
 			IFsClosedValue closedValue = fsValue.FeatureSpecsOC.First() as IFsClosedValue;
 			closedValue.ValueRA = null;
+			Assert.AreEqual("gen:???", featStruct.ShortName);
 			Assert.IsTrue(featStruct.ContainsBlank());
 			Assert.IsFalse(featStruct2.ContainsBlank());
 			featStruct = featStruct.FillInBlanks(featStruct2);
@@ -701,6 +703,7 @@ namespace SIL.LCModel.DomainImpl
 			// Test removing FillInBlanks.
 			closedValue.ValueRA = null;
 			featStruct2.FeatureSpecsOC.Remove(featStruct2.FeatureSpecsOC.First());
+			Assert.AreEqual("gen:???", featStruct.ShortName);
 			Assert.IsTrue(featStruct.ContainsBlank());
 			Assert.IsFalse(featStruct2.ContainsBlank());
 			featStruct = featStruct.FillInBlanks(featStruct2);

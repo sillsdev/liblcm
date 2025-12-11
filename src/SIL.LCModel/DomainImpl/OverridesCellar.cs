@@ -4039,7 +4039,7 @@ namespace SIL.LCModel.DomainImpl
 				var cv = spec as IFsClosedValue;
 				if (cv != null)
 				{
-					if (fLongForm)
+					if (fLongForm || cv.ValueRA == null)
 					{
 						tisb.AppendTsString((cv as FsClosedValue)?.LongNameTSS);
 					}
