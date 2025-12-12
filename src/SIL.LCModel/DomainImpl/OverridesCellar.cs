@@ -2247,8 +2247,9 @@ namespace SIL.LCModel.DomainImpl
 			var tisb = TsStringUtils.MakeIncStrBldr();
 			tisb.SetIntPropValues((int)FwTextPropType.ktptWs, (int)FwTextPropVar.ktpvDefault, Cache.DefaultUserWs);
 
-			var sFeature = GetFeatureString(fLongForm);
-			var sValue = GetValueString(fLongForm);
+			// ValueRA == null is an empty value that is filled in by FillInBlanks.
+			var sFeature = GetFeatureString(fLongForm || ValueRA == null);
+			var sValue = ValueRA == null ? "*" : GetValueString(fLongForm);
 			if ((!fLongForm) &&
 				(FeatureRA != null) &&
 				(FeatureRA.DisplayToRightOfValues))
@@ -4039,7 +4040,7 @@ namespace SIL.LCModel.DomainImpl
 				var cv = spec as IFsClosedValue;
 				if (cv != null)
 				{
-					if (fLongForm || cv.ValueRA == null)
+					if (fLongForm)
 					{
 						tisb.AppendTsString((cv as FsClosedValue)?.LongNameTSS);
 					}
