@@ -22,6 +22,7 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="protobuf-net" Version="2.4.6" />
     <PackageReference Include="SharpZipLib" Version="1.4.0" />
+    <PackageReference Include="SIL.Core.Desktop" Version="17.0.0-*" />
     <PackageReference Include="SIL.Lexicon" Version="17.0.0-*" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
     <PackageReference Include="SIL.WritingSystems" Version="17.0.0-*" />
