@@ -2323,6 +2323,19 @@ namespace SIL.LCModel
 		/// </summary>
 		/// <param name="fsNew">the new feature structure</param>
 		void PriorityUnion(IFsFeatStruc fsNew);
+
+		/// <summary>
+		/// Fill in the blanks of this feature structure
+		/// using the given values.
+		/// Eliminates blanks with no values and returns null if there is nothing left.
+		/// </summary>
+		/// <param name="fsValues">feature structure with given values</param>
+		IFsFeatStruc FillInBlanks(IFsFeatStruc fsValues);
+
+		/// <summary>
+		/// Determine if this feature structure contains a blank.
+		/// </summary>
+		public bool ContainsBlank();
 	}
 
 	/// <summary>

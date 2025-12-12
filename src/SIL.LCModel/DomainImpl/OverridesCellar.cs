@@ -2247,8 +2247,9 @@ namespace SIL.LCModel.DomainImpl
 			var tisb = TsStringUtils.MakeIncStrBldr();
 			tisb.SetIntPropValues((int)FwTextPropType.ktptWs, (int)FwTextPropVar.ktpvDefault, Cache.DefaultUserWs);
 
-			var sFeature = GetFeatureString(fLongForm);
-			var sValue = GetValueString(fLongForm);
+			// ValueRA == null is an empty value that is filled in by FillInBlanks.
+			var sFeature = GetFeatureString(fLongForm || ValueRA == null);
+			var sValue = ValueRA == null ? "*" : GetValueString(fLongForm);
 			if ((!fLongForm) &&
 				(FeatureRA != null) &&
 				(FeatureRA.DisplayToRightOfValues))
@@ -3871,8 +3872,8 @@ namespace SIL.LCModel.DomainImpl
 				else
 				{
 					if (myFeatureValues.First() is IFsComplexValue complex &&
-					    spec is IFsComplexValue newComplexValue &&
-					    complex.ValueOA is IFsFeatStruc fs)
+						spec is IFsComplexValue newComplexValue &&
+						complex.ValueOA is IFsFeatStruc fs)
 					{
 						fs.PriorityUnion(newComplexValue.ValueOA as IFsFeatStruc);
 					}
@@ -3885,6 +3886,87 @@ namespace SIL.LCModel.DomainImpl
 			}
 
 		}
+
+		/// <summary>
+		/// Fill in the blanks.
+		/// Remove unfilled blanks and empty feature structures.
+		/// </summary>
+		/// <param name="fsValue">the values to fill with</param>
+		public IFsFeatStruc FillInBlanks(IFsFeatStruc fsValue)
+		{
+			foreach (IFsFeatureSpecification spec in FeatureSpecsOC.ToList())
+			{
+				// Find matching specification.
+				IFsFeatureSpecification spec2 = null;
+				if (fsValue != null)
+				{
+					foreach (var spec3 in fsValue.FeatureSpecsOC)
+					{
+						if (spec3.FeatureRA.Name == spec.FeatureRA.Name)
+						{
+							spec2 = spec3;
+						}
+					}
+				}
+				// Fill in blanks in spec.
+				if (spec is IFsClosedValue closed && closed != null && closed.ValueRA == null)
+				{
+					if (spec2 is IFsClosedValue closed2 && closed2 != null)
+					{
+						// Fill in blank.
+						closed.ValueRA = closed2.ValueRA;
+
+					}
+					if (closed.ValueRA == null)
+					{
+						// Remove unfilled blank.
+						FeatureSpecsOC.Remove(spec);
+					}
+				}
+				if (spec is IFsComplexValue complex && complex != null)
+				{
+					// Recursively fill in blanks.
+					if (complex.ValueOA is IFsFeatStruc fs)
+					{
+						IFsComplexValue complex2 = spec2 as IFsComplexValue;
+						if (fs.FillInBlanks(complex2?.ValueOA as IFsFeatStruc) == null)
+						{
+							// Remove empty feature structure.
+							FeatureSpecsOC.Remove(complex);
+						}
+					}
+				}
+			}
+			// See if removing blanks emptied the feature structure.
+			if (FeatureSpecsOC.Count == 0)
+			{
+				return null;
+			}
+			return this;
+		}
+
+		public bool ContainsBlank()
+		{
+			foreach (IFsFeatureSpecification spec in FeatureSpecsOC.ToList())
+			{
+				if (spec is IFsClosedValue closed && closed != null && closed.ValueRA == null)
+				{
+					return true;
+				}
+				if (spec is IFsComplexValue complex && complex != null)
+				{
+					if (complex.ValueOA is IFsFeatStruc fs)
+					{
+						if (fs.ContainsBlank())
+						{
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		}
+
 		protected override void RemoveObjectSideEffectsInternal(RemoveObjectEventArgs e)
 		{
 			switch (e.Flid)
