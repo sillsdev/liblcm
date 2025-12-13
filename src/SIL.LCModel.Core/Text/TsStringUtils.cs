@@ -2,6 +2,8 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -1718,7 +1720,7 @@ namespace SIL.LCModel.Core.Text
 			// and we choose to make the longer match at the start.
 			// On the other hand, if the two strings are "xxxabc xxxdef" and "xxxdef", we could have deleted
 			// "xxxabc " or "abc xxx", and we'd prefer the first interpretation, so we choose the longer match at the end.
-			ITsString longerString = null;
+			ITsString? longerString = null;
 			// only used and valid if cvIns or cvDel < 0
 			var offsetIchMin = 0;
 			if (cvIns < 0)
