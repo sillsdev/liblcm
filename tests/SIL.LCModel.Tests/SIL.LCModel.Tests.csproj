@@ -5,7 +5,7 @@
     <RootNamespace>SIL.LCModel</RootNamespace>
     <Description>The liblcm library is the core FieldWorks model for linguistic analyses of languages. Tools in this library provide the ability to store and interact with language and culture data, including anthropological, text corpus, and linguistics data.
 This package provides unit tests for SIL.LCModel.</Description>
-    <IsPackable>true</IsPackable>
+    <IsPackable>false</IsPackable>
 	  <Nullable>disable</Nullable>
   </PropertyGroup>
 
@@ -22,6 +22,7 @@ This package provides unit tests for SIL.LCModel.</Description>
   <ItemGroup>
     <ProjectReference Include="..\..\src\SIL.LCModel\SIL.LCModel.csproj" />
     <ProjectReference Include="..\SIL.LCModel.Core.Tests\SIL.LCModel.Core.Tests.csproj" />
+    <ProjectReference Include="..\SIL.LCModel.TestUtilities\SIL.LCModel.TestUtilities.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,4 +34,22 @@ This package provides unit tests for SIL.LCModel.</Description>
       <None Include="$(OutputPath)\**\$(PackageId).dll.config" Pack="true" PackagePath="lib" />
 	</ItemGroup>
   </Target>
+
+  <ItemGroup>
+    <Compile Remove="TestProjectId.cs" />
+    <Compile Remove="LcmTestHelper.cs" />
+    <Compile Remove="DummyProgressDlg.cs" />
+    <Compile Remove="DummyLcmUI.cs" />
+    <Compile Remove="TestDirectoryFinder.cs" />
+    <Compile Remove="TestLcmDirectories.cs" />
+    <Compile Remove="LcmTestBase.cs" />
+    <Compile Remove="ScrInMemoryLcmTestBase.cs" />
+    <Compile Remove="DomainServices\InterlinearTestBase.cs" />
+    <Compile Remove="RhinoMocksToMoq\Expect.cs" />
+    <Compile Remove="RhinoMocksToMoq\MockRepository.cs" />
+    <Compile Remove="RhinoMocksToMoq\MoqAdapter.cs" />
+    <Compile Remove="RhinoMocksToMoq\MoqExtensions.cs" />
+    <Compile Remove="RhinoMocksToMoq\MockExtensions.cs" />
+    <Compile Remove="RhinoMocksToMoq\LICENSE" />
+  </ItemGroup>
 </Project>
