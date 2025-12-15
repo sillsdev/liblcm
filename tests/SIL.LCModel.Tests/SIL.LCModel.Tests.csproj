@@ -50,6 +50,6 @@ This package provides unit tests for SIL.LCModel.</Description>
     <Compile Remove="RhinoMocksToMoq\MoqAdapter.cs" />
     <Compile Remove="RhinoMocksToMoq\MoqExtensions.cs" />
     <Compile Remove="RhinoMocksToMoq\MockExtensions.cs" />
-    <Compile Remove="RhinoMocksToMoq\LICENSE" />
+    <None Remove="RhinoMocksToMoq\LICENSE" />
   </ItemGroup>
 </Project>

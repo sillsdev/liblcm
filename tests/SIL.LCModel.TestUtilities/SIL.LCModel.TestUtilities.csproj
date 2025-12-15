@@ -50,7 +50,4 @@
     <Compile Include="..\SIL.LCModel.Tests\RhinoMocksToMoq\MockExtensions.cs" Link="Lcm\RhinoMocksToMoq\MockExtensions.cs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\SIL.LCModel.Tests\RhinoMocksToMoq\LICENSE" Link="Lcm\RhinoMocksToMoq\LICENSE" Pack="true" PackagePath="contentFiles\any\any\RhinoMocksToMoq\" />
-  </ItemGroup>
 </Project>
