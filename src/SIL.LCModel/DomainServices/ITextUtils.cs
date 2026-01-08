@@ -275,6 +275,11 @@ namespace SIL.LCModel.DomainServices
 			}
 		}
 
+		/// <summary>
+		/// Determine whether text ends with an EOS character.
+		/// This is used by the FieldWorks interlinear importer
+		/// to make sure that segments are well-formed.
+		/// </summary>
 		public static bool EndsWithEOS(ITsString text, LcmCache cache)
 		{
 			var collector = new SegmentMaker(text, cache.WritingSystemFactory, null);
