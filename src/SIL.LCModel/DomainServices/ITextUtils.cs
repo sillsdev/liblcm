@@ -276,6 +276,18 @@ namespace SIL.LCModel.DomainServices
 		}
 
 		/// <summary>
+		/// Determine whether text ends with an EOS character.
+		/// This is used by the FieldWorks interlinear importer
+		/// to make sure that segments are well-formed.
+		/// </summary>
+		public static bool EndsWithEOS(ITsString text, LcmCache cache)
+		{
+			var collector = new SegmentMaker(text, cache.WritingSystemFactory, null);
+			collector.Run();
+			return !collector.ExtraSegment;
+		}
+
+		/// <summary>
 		/// tokenize the paragraph with segments and analyses (wordforms generally, though we try to preserve other existing ones).
 		/// </summary>
 		/// <param name="para"></param>
@@ -1632,6 +1644,7 @@ namespace SIL.LCModel.DomainServices
 		private int m_csegs;
 		private int m_prevCh;
 		private readonly ILgWritingSystemFactory m_wsf;
+		internal bool ExtraSegment = false;
 
 		// The idea here is that certain characters more-or-less mark the end of a segment:
 		// basically, sentence-terminating characters like period, question-mark, and so forth.
@@ -1824,7 +1837,13 @@ namespace SIL.LCModel.DomainServices
 			}
 			// We reached the end of the loop. Make a segment out of anything left over.
 			if (ichStartSeg < m_tssText.Length)
+			{
+				if (state != SegParseState.FoundEosChar)
+				{
+					ExtraSegment = true;
+				}
 				CreateSegment(ichStartSeg, m_tssText.Length);
+			}
 
 		}
 
@@ -1985,7 +2004,10 @@ namespace SIL.LCModel.DomainServices
 		protected override void CreateSegment(int ichMin, int ichLim)
 		{
 			base.CreateSegment(ichMin, ichLim);
-			m_segments.Add(m_paraParser.CreateSegment(ichMin, ichLim));
+			if (m_paraParser != null)
+			{
+				m_segments.Add(m_paraParser.CreateSegment(ichMin, ichLim));
+			}
 		}
 
 		/// <summary>

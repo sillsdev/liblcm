@@ -946,6 +946,14 @@ namespace SIL.LCModel.DomainServices
 			ValidateGuesses(expectedGuessesAfterEdit, paraGuessed);
 		}
 
+		[Test]
+		public void EndsWithEOS()
+		{
+			Assert.IsFalse(ParagraphParser.EndsWithEOS(TsStringUtils.MakeString("abc", Cache.DefaultVernWs), Cache));
+			Assert.IsTrue(ParagraphParser.EndsWithEOS(TsStringUtils.MakeString("abc.", Cache.DefaultVernWs), Cache));
+			Assert.IsTrue(ParagraphParser.EndsWithEOS(TsStringUtils.MakeString("abc.\"", Cache.DefaultVernWs), Cache));
+		}
+
 		private void ValidateGuesses(IList<IWfiGloss> expectedGuesses, IStTxtPara paraWithGuesses)
 		{
 			var segsParaGuesses = paraWithGuesses.SegmentsOS;
