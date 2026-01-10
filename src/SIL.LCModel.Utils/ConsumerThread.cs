@@ -33,7 +33,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// <param name="workItem">The work item.</param>
 		/// <returns></returns>
-		bool GetNextWorkItem(out T workItem);
+		bool GetNextWorkItem(out T? workItem);
 
 		/// <summary>
 		/// Gets the next work item with a priority that is greater than
@@ -42,7 +42,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="lowestPriority">The lowest priority.</param>
 		/// <param name="workItem">The work item.</param>
 		/// <returns></returns>
-		bool GetNextWorkItem(P lowestPriority, out T workItem);
+		bool GetNextWorkItem(P lowestPriority, out T? workItem);
 
 		/// <summary>
 		/// Gets the next work item and its corresponding priority.
@@ -50,7 +50,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="priority">The priority.</param>
 		/// <param name="workItem">The work item.</param>
 		/// <returns></returns>
-		bool GetNextPriorityWorkItem(out P priority, out T workItem);
+		bool GetNextPriorityWorkItem(out P priority, out T? workItem);
 
 		/// <summary>
 		/// Gets the next work item with a priority that is greater than
@@ -60,7 +60,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="priority">The priority.</param>
 		/// <param name="workItem">The work item.</param>
 		/// <returns></returns>
-		bool GetNextPriorityWorkItem(P lowestPriority, out P priority, out T workItem);
+		bool GetNextPriorityWorkItem(P lowestPriority, out P priority, out T? workItem);
 
 		/// <summary>
 		/// Gets all work items.
@@ -101,7 +101,7 @@ namespace SIL.LCModel.Utils
 	/// </summary>
 	/// <typeparam name="P">The queue priority type</typeparam>
 	/// <typeparam name="T">The work item type</typeparam>
-	public class ConsumerThread<P, T> : IQueueAccessor<P, T>, IDisposable
+	public class ConsumerThread<P, T> : IQueueAccessor<P, T>, IDisposable where P : notnull
 	{
 		#region Member variables
 		private readonly Thread m_thread;
@@ -110,11 +110,11 @@ namespace SIL.LCModel.Utils
 		private readonly ManualResetEvent m_stopEvent = new ManualResetEvent(false);
 		private readonly ManualResetEvent m_idleEvent = new ManualResetEvent(true);
 		private readonly PriorityQueue<P, T> m_queue;
-		private readonly Action m_initHandler;
+		private readonly Action? m_initHandler;
 		private readonly Action<IQueueAccessor<P, T>> m_workHandler;
 		private bool m_hasWork;
 		private bool m_isIdle = true;
-		private Exception m_unhandledException;
+		private Exception? m_unhandledException;
 		private bool m_stopRequested;
 		#endregion
 
@@ -132,7 +132,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// <param name="workHandler">The work handler.</param>
 		/// <param name="initHandler">The init handler.</param>
-		public ConsumerThread(Action<IQueueAccessor<P, T>> workHandler, Action initHandler)
+		public ConsumerThread(Action<IQueueAccessor<P, T>> workHandler, Action? initHandler)
 			: this(workHandler, initHandler, Comparer<P>.Default, EqualityComparer<T>.Default)
 		{
 		}
@@ -144,7 +144,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="initHandler">The init handler.</param>
 		/// <param name="priorityComparer">The priority comparer.</param>
 		/// <param name="workComparer">The work comparer.</param>
-		public ConsumerThread(Action<IQueueAccessor<P, T>> workHandler, Action initHandler, IComparer<P> priorityComparer,
+		public ConsumerThread(Action<IQueueAccessor<P, T>> workHandler, Action? initHandler, IComparer<P> priorityComparer,
 			IEqualityComparer<T> workComparer)
 		{
 			if (workHandler == null)
@@ -196,7 +196,7 @@ namespace SIL.LCModel.Utils
 		/// <summary>
 		/// if there has been an error, this will return the exception that stopped it.
 		/// </summary>
-		public Exception UnhandledException
+		public Exception? UnhandledException
 		{
 			get
 			{
@@ -246,7 +246,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="work">The work.</param>
 		public void EnqueueWork(T work)
 		{
-			EnqueueWork(default(P), work);
+			EnqueueWork(default!, work);
 		}
 
 		/// <summary>
@@ -351,7 +351,7 @@ namespace SIL.LCModel.Utils
 		/// Gets the next work item.
 		/// </summary>
 		/// <param name="workItem">The work item.</param>
-		bool IQueueAccessor<P, T>.GetNextWorkItem(out T workItem)
+		bool IQueueAccessor<P, T>.GetNextWorkItem(out T? workItem)
 		{
 			P priority;
 			return GetNextPriorityWorkItem(out priority, out workItem);
@@ -363,7 +363,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// <param name="lowestPriority">The lowest priority.</param>
 		/// <param name="workItem">The work item.</param>
-		bool IQueueAccessor<P, T>.GetNextWorkItem(P lowestPriority, out T workItem)
+		bool IQueueAccessor<P, T>.GetNextWorkItem(P lowestPriority, out T? workItem)
 		{
 			P priority;
 			return GetNextPriorityWorkItem(lowestPriority, out priority, out workItem);
@@ -374,7 +374,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// <param name="priority">The priority.</param>
 		/// <param name="workItem">The work item.</param>
-		bool IQueueAccessor<P, T>.GetNextPriorityWorkItem(out P priority, out T workItem)
+		bool IQueueAccessor<P, T>.GetNextPriorityWorkItem(out P priority, out T? workItem)
 		{
 			return GetNextPriorityWorkItem(out priority, out workItem);
 		}
@@ -386,7 +386,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="lowestPriority">The lowest priority.</param>
 		/// <param name="priority">The priority.</param>
 		/// <param name="workItem">The work item.</param>
-		bool IQueueAccessor<P, T>.GetNextPriorityWorkItem(P lowestPriority, out P priority, out T workItem)
+		bool IQueueAccessor<P, T>.GetNextPriorityWorkItem(P lowestPriority, out P priority, out T? workItem)
 		{
 			return GetNextPriorityWorkItem(lowestPriority, out priority, out workItem);
 		}
@@ -484,7 +484,7 @@ namespace SIL.LCModel.Utils
 		/// </summary>
 		/// <param name="priority">The priority.</param>
 		/// <param name="workItem">The work item.</param>
-		private bool GetNextPriorityWorkItem(out P priority, out T workItem)
+		private bool GetNextPriorityWorkItem(out P priority, out T? workItem)
 		{
 			lock (SyncRoot)
 			{
@@ -499,8 +499,8 @@ namespace SIL.LCModel.Utils
 				{
 					// the queue is empty, so idle
 					SetNoWork();
-					priority = default(P);
-					workItem = default(T);
+					priority = default!;
+					workItem = default;
 					return false;
 				}
 			}
@@ -513,7 +513,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="lowestPriority">The lowest priority.</param>
 		/// <param name="priority">The priority.</param>
 		/// <param name="workItem">The work item.</param>
-		private bool GetNextPriorityWorkItem(P lowestPriority, out P priority, out T workItem)
+		private bool GetNextPriorityWorkItem(P lowestPriority, out P priority, out T? workItem)
 		{
 			lock (SyncRoot)
 			{
@@ -544,8 +544,8 @@ namespace SIL.LCModel.Utils
 					{
 						// the next item has a lower priority than the lowest allowed priority, so idle
 						SetNoWork();
-						priority = default(P);
-						workItem = default(T);
+						priority = default!;
+						workItem = default;
 						return false;
 					}
 				}
@@ -553,8 +553,8 @@ namespace SIL.LCModel.Utils
 				{
 					// the queue is empty, so idle
 					SetNoWork();
-					priority = default(P);
-					workItem = default(T);
+					priority = default!;
+					workItem = default;
 					return false;
 				}
 			}

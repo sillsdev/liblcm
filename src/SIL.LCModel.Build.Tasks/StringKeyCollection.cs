@@ -7,7 +7,7 @@ namespace SIL.LCModel.Build.Tasks
 	/// Collection which can also be accessed by Name.
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
-	internal class StringKeyCollection<T> : KeyedCollection<string, T>
+	internal class StringKeyCollection<T> : KeyedCollection<string, T> where T : notnull
 	{
 		/// ------------------------------------------------------------------------------------
 		/// <summary>

@@ -7,6 +7,8 @@
 // Implementation of the additional interface information should go into the RepositoryAdditions.cs file.
 // </remarks>
 
+#nullable enable
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -82,7 +84,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <summary>
 		/// Try to get a value for an uncertain guid.
 		/// </summary>
-		public bool TryGetObject(Guid guid, out IAnalysis obj)
+		public bool TryGetObject(Guid guid, out IAnalysis? obj)
 		{
 			ICmObject target;
 			if (m_everythingRepos.TryGetObject(guid, out target))
@@ -103,7 +105,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			return (IAnalysis)m_everythingRepos.GetObject(hvo);
 		}
 
-		public bool TryGetObject(int hvo, out IAnalysis obj)
+		public bool TryGetObject(int hvo, out IAnalysis? obj)
 		{
 			ICmObject result;
 			if (m_everythingRepos.TryGetObject(hvo, out result))
@@ -436,7 +438,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <returns>The footnote referenced in the properties or <c>null</c> if the properties
 		/// were not for a footnote ORC</returns>
 		/// ------------------------------------------------------------------------------------
-		public IStFootnote GetFootnoteFromObjData(string objData)
+		public IStFootnote? GetFootnoteFromObjData(string objData)
 		{
 			if (String.IsNullOrEmpty(objData))
 				return null;
@@ -466,7 +468,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <returns>The footnote referenced in the properties or <c>null</c> if the properties
 		/// were not for a footnote ORC</returns>
 		/// ------------------------------------------------------------------------------------
-		public IScrFootnote GetFootnoteFromProps(ITsTextProps ttp)
+		public IScrFootnote? GetFootnoteFromProps(ITsTextProps ttp)
 		{
 			Guid objGuid = TsStringUtils.GetHotObjectGuidFromProps(ttp);
 			if (objGuid == Guid.Empty)
@@ -487,7 +489,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <param name="footnote">Footnote with footnoteGuid as its id</param>
 		/// <returns><c>true</c> if the footnote is found; <c>false</c> otherwise</returns>
 		/// ------------------------------------------------------------------------------------
-		public bool TryGetFootnote(Guid footnoteGuid, out IScrFootnote footnote)
+		public bool TryGetFootnote(Guid footnoteGuid, out IScrFootnote? footnote)
 		{
 			footnote = null;
 			ICmObject obj;
@@ -568,7 +570,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		{
 			if (m_punctFormFromForm == null)
 				return; // nothing cached.
-			string oldKey = RemoveForm(oldForm) ? oldForm.Text : null;
+			string? oldKey = RemoveForm(oldForm) ? oldForm.Text : null;
 			if (AddFormToCache(pf))
 			{
 				var action = new UndoUpdateFormAction(oldKey, pf.Form.Text, pf, m_punctFormFromForm);
@@ -594,7 +596,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// ------------------------------------------------------------------------------------
 		private bool AddFormToCache(IPunctuationForm pf)
 		{
-			ITsString tssKey = (pf != null) ? pf.Form : null;
+			ITsString? tssKey = pf?.Form;
 			if (tssKey == null || tssKey.Length == 0)
 				return false;
 
@@ -658,7 +660,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			/// --------------------------------------------------------------------------------
 			public override bool Equals(object obj)
 			{
-				OrcStringHashcode otherObj = obj as OrcStringHashcode;
+				OrcStringHashcode? otherObj = obj as OrcStringHashcode;
 				// If either object has m_ws == 0, then it is a semi-bogus OrcStringHashcode and
 				// is assumed to not be equal to any other. This can happen, for instance, if
 				// the TSS used to initialize it was not an ORC.
@@ -900,7 +902,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			Dictionary<string, IWfiWordform> lookupTable;
 			if (!m_wordformFromForm.TryGetValue(ws, out lookupTable))
 				return; // this ws not yet cached.
-			string oldKey = null;
+			string? oldKey = null;
 			if (oldForm != null)
 			{
 				oldKey = oldForm.Text;
@@ -941,7 +943,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			private IWfiWordformRepositoryInternal m_wfRepo;
 			public UndoUpdateFormAction(ITsString oldForm, ITsString newForm, IWfiWordform wf, IWfiWordformRepositoryInternal wfRepo,
 				Dictionary<string, IWfiWordform> lookupTable)
-				: base(oldForm == null ? null : oldForm.Text , newForm == null ? null : newForm.Text, wf, lookupTable)
+				: base(oldForm?.Text , newForm?.Text, wf, lookupTable)
 			{
 				m_oldForm = oldForm;
 				m_newForm = newForm;
@@ -1037,7 +1039,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <param name="mmtEnclitic"></param>
 		/// <param name="mmtSimulfix"></param>
 		/// <param name="mmtSuprafix"></param>
-		public void GetMajorMorphTypes(out IMoMorphType mmtStem, out IMoMorphType mmtPrefix, out IMoMorphType mmtSuffix, out IMoMorphType mmtInfix, out IMoMorphType mmtBoundStem, out IMoMorphType mmtProclitic, out IMoMorphType mmtEnclitic, out IMoMorphType mmtSimulfix, out IMoMorphType mmtSuprafix)
+		public void GetMajorMorphTypes(out IMoMorphType? mmtStem, out IMoMorphType? mmtPrefix, out IMoMorphType? mmtSuffix, out IMoMorphType? mmtInfix, out IMoMorphType? mmtBoundStem, out IMoMorphType? mmtProclitic, out IMoMorphType? mmtEnclitic, out IMoMorphType? mmtSimulfix, out IMoMorphType? mmtSuprafix)
 		{
 			mmtStem = null;
 			mmtPrefix = null;
@@ -1090,7 +1092,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 	internal partial class MoStemAllomorphRepository
 	{
-		private Dictionary<Tuple<int, string>, IMoStemAllomorph> m_monomorphemicMorphData;
+		private Dictionary<Tuple<int, string>, IMoStemAllomorph>? m_monomorphemicMorphData;
 		/// <summary>
 		/// Return a dictionary keyed by ws/form pair of the stem allomorphs that can stand alone as wordforms.
 		/// </summary>
@@ -1151,8 +1153,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			{
 				if (ler.RefType == LexEntryRefTags.krtComplexForm && ler.ShowComplexFormsInRS.Contains(mainEntryOrSense))
 				{
-					Debug.Assert(ler.Owner is ILexEntry);
-					retval.Add(ler.Owner as ILexEntry);
+					retval.Add((ILexEntry)ler.Owner);
 				}
 			}
 			return SortEntries(retval);
@@ -1172,8 +1173,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			{
 				if (ler.RefType == LexEntryRefTags.krtComplexForm)
 				{
-					Debug.Assert(ler.Owner is ILexEntry);
-					retval.Add(ler.Owner as ILexEntry);
+					retval.Add((ILexEntry)ler.Owner);
 				}
 			}
 			return SortEntries(retval);
@@ -1194,7 +1194,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 			if (m_cachedHeadwords.TryGetValue(entry, out result))
 				return result;
 			result = entry.HeadWord.Text;
-			Debug.Assert(result != null);
 			m_cachedHeadwords[entry] = result;
 			return result;
 		}
@@ -1216,8 +1215,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			{
 				if (ler.RefType == LexEntryRefTags.krtComplexForm && ler.PrimaryLexemesRS.Contains(mainEntryOrSense))
 				{
-					Debug.Assert(ler.Owner is ILexEntry);
-					retval.Add(ler.Owner as ILexEntry);
+					retval.Add((ILexEntry)ler.Owner);
 				}
 			}
 			return SortEntries(retval);
@@ -1233,8 +1231,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				// For a variant, ComponentLexemes is all that matters; PrimaryLexemes is not used.
 				if (ler.RefType == LexEntryRefTags.krtVariant && ler.ComponentLexemesRS.Contains(mainEntryOrSense))
 				{
-					Debug.Assert(ler.Owner is ILexEntry);
-					retval.Add(ler.Owner as ILexEntry);
+					retval.Add((ILexEntry)ler.Owner);
 				}
 			}
 			return retval;
@@ -1244,7 +1241,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// Dictionary to track homographs. Entry may be a single (non-homograph) entry, or a list of entries.
 		/// Key is the HomographForm of each entry.
 		/// </summary>
-		Dictionary<string, object> m_homographInfo;
+		Dictionary<string, object>? m_homographInfo;
 
 		/// <summary>
 		/// Clear the list of homograph information
@@ -1316,9 +1313,9 @@ namespace SIL.LCModel.Infrastructure.Impl
 		{
 			string key = entry.HomographFormKey;
 			object oldVal;
-			if (m_homographInfo.TryGetValue(key, out oldVal))
+			if (m_homographInfo!.TryGetValue(key, out oldVal))
 			{
-				List<ILexEntry> list = oldVal as List<ILexEntry>;
+				List<ILexEntry>? list = oldVal as List<ILexEntry>;
 				if (list == null)
 				{
 					list = new List<ILexEntry>();
@@ -1389,7 +1386,6 @@ namespace SIL.LCModel.Infrastructure.Impl
 				return new List<ILexEntry>(0);
 
 			var cache = entries[0].Cache;
-			Debug.Assert(cache != null);
 			var rgHomographs = new List<ILexEntry>();
 
 			var morphOrder = HomographMorphOrder(cache, morphType);
@@ -1544,7 +1540,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <param name="tssWf"></param>
 		/// <returns></returns>
 		/// ------------------------------------------------------------------------------------
-		public ILexEntry FindEntryForWordform(LcmCache cache, ITsString tssWf)
+		public ILexEntry? FindEntryForWordform(LcmCache cache, ITsString tssWf)
 		{
 			if (tssWf == null || tssWf.Length == 0)
 				return null;
@@ -1841,7 +1837,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <param name="checkId">A GUID that uniquely identifies the editorial check</param>
 		/// <returns>The run history for the requested check or <c>null</c></returns>
 		/// ------------------------------------------------------------------------------------
-		public IScrCheckRun InstanceForCheck(int bookId, Guid checkId)
+		public IScrCheckRun? InstanceForCheck(int bookId, Guid checkId)
 		{
 
 			IScrBookAnnotations annotations =
@@ -1902,7 +1898,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <param name="name">Name of the desired publication</param>
 		/// <returns>The publication or null if no matching publicaiton is found</returns>
 		/// ------------------------------------------------------------------------------------
-		public IPublication FindByName(string name)
+		public IPublication? FindByName(string name)
 		{
 			foreach (var pub in AllInstances())
 				if (pub.Name == name)
