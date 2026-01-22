@@ -5058,9 +5058,9 @@ Change History: (Be sure to update the 'version' attribute in the EntireModel, w
 		  <comment>
 			<para>The direction and manner in which the rule applies.</para>
 			<para>The possible values are:</para>
-			<para>1 - left-to-right iterative;</para>
-			<para>2 - right-to-left iterative;</para>
-			<para>3 - simultaneous.</para>
+			<para>0 - left-to-right iterative;</para>
+			<para>1 - right-to-left iterative;</para>
+			<para>2 - simultaneous.</para>
 		  </comment>
 		</basic>
 		<rel num="4" id="InitialStratum" card="atomic" sig="MoStratum">
