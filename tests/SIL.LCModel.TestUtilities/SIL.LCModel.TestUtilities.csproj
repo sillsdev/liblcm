@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net462;net8.0</TargetFrameworks>
+    <RootNamespace>SIL.LCModel.TestUtilities</RootNamespace>
+    <Description>Shared test utility classes aggregated from SIL.LCModel test projects.</Description>
+    <IsPackable>true</IsPackable>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GitVersion.MsBuild" Version="5.6.10" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Moq" Version="4.20.70" />
+    <PackageReference Include="NUnit" Version="3.13.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SIL.LCModel\SIL.LCModel.csproj" />
+    <ProjectReference Include="..\..\src\SIL.LCModel.Core\SIL.LCModel.Core.csproj" />
+    <ProjectReference Include="..\..\src\SIL.LCModel.Utils\SIL.LCModel.Utils.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\SIL.LCModel.Utils.Tests\DummyFileMaker.cs" Link="Utils\DummyFileMaker.cs" />
+    <Compile Include="..\SIL.LCModel.Utils.Tests\MockFileOs.cs" Link="Utils\MockFileOs.cs" />
+    <Compile Include="..\SIL.LCModel.Utils.Tests\TestSmallDictionary.cs" Link="Utils\TestSmallDictionary.cs" />
+    <Compile Include="..\SIL.LCModel.Utils.Tests\Attributes\CleanupSingletonsAttribute.cs" Link="Utils\Attributes\CleanupSingletonsAttribute.cs" />
+
+    <Compile Include="..\SIL.LCModel.Core.Tests\Attributes\InitializeIcuAttribute.cs" Link="Core\Attributes\InitializeIcuAttribute.cs" />
+    <Compile Include="..\SIL.LCModel.Core.Tests\Text\AssertEx.cs" Link="Core\Text\AssertEx.cs" />
+    <Compile Include="..\SIL.LCModel.Core.Tests\Text\TsSerializerTestsBase.cs" Link="Core\Text\TsSerializerTestsBase.cs" />
+    <Compile Include="..\SIL.LCModel.Core.Tests\Text\TsStringHelper.cs" Link="Core\Text\TsStringHelper.cs" />
+    <Compile Include="..\SIL.LCModel.Core.Tests\Text\TsTextPropsHelper.cs" Link="Core\Text\TsTextPropsHelper.cs" />
+
+    <Compile Include="..\SIL.LCModel.Tests\TestProjectId.cs" Link="Lcm\TestProjectId.cs" />
+    <Compile Include="..\SIL.LCModel.Tests\LcmTestHelper.cs" Link="Lcm\LcmTestHelper.cs" />
+    <Compile Include="..\SIL.LCModel.Tests\DummyProgressDlg.cs" Link="Lcm\DummyProgressDlg.cs" />
+    <Compile Include="..\SIL.LCModel.Tests\DummyLcmUI.cs" Link="Lcm\DummyLcmUI.cs" />
+    <Compile Include="..\SIL.LCModel.Tests\TestDirectoryFinder.cs" Link="Lcm\TestDirectoryFinder.cs" />
+    <Compile Include="..\SIL.LCModel.Tests\TestLcmDirectories.cs" Link="Lcm\TestLcmDirectories.cs" />
+    <Compile Include="..\SIL.LCModel.Tests\LcmTestBase.cs" Link="Lcm\LcmTestBase.cs" />
+    <Compile Include="..\SIL.LCModel.Tests\ScrInMemoryLcmTestBase.cs" Link="Lcm\ScrInMemoryLcmTestBase.cs" />
+    <Compile Include="..\SIL.LCModel.Tests\DomainServices\InterlinearTestBase.cs" Link="Lcm\DomainServices\InterlinearTestBase.cs" />
+
+    <Compile Include="..\SIL.LCModel.Tests\RhinoMocksToMoq\Expect.cs" Link="Lcm\RhinoMocksToMoq\Expect.cs" />
+    <Compile Include="..\SIL.LCModel.Tests\RhinoMocksToMoq\MockRepository.cs" Link="Lcm\RhinoMocksToMoq\MockRepository.cs" />
+    <Compile Include="..\SIL.LCModel.Tests\RhinoMocksToMoq\MoqAdapter.cs" Link="Lcm\RhinoMocksToMoq\MoqAdapter.cs" />
+    <Compile Include="..\SIL.LCModel.Tests\RhinoMocksToMoq\MoqExtensions.cs" Link="Lcm\RhinoMocksToMoq\MoqExtensions.cs" />
+    <Compile Include="..\SIL.LCModel.Tests\RhinoMocksToMoq\MockExtensions.cs" Link="Lcm\RhinoMocksToMoq\MockExtensions.cs" />
+  </ItemGroup>
+
+</Project>
