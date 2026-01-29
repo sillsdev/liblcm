@@ -226,6 +226,9 @@ namespace SIL.LCModel.Infrastructure.Impl
 				// Check if we are already in SaveInternal.
 				if (m_fInSaveInternal)
 					return;
+				// Check if we are disposed before accessing m_ui
+				if (IsDisposed)
+					return;
 				// Don't save if we're in the middle of something and not in the right state to Save!
 				if (UndoOrRedoInProgress || CurrentProcessingState != BusinessTransactionState.ReadyForBeginTask)
 					return; // don't start another, if for example the conflict dialog is open.
