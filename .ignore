@@ -7,7 +7,7 @@ artifacts/
 *.user
 *.suo
 *.userprefs
-*DS_Store
+*.DS_Store
 *.sln.ide
 lib/downloads/
 .idea/
