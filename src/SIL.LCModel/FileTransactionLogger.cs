@@ -32,7 +32,7 @@ namespace SIL.LCModel
 	   protected virtual void Dispose(bool disposing)
 		{
 			Debug.WriteLineIf(!disposing, "****** Missing Dispose() call for " + GetType() + ". *******");
-			lock (m_stream)
+			lock (m_lock)
 			{
 				m_stream?.Flush();
 				m_stream?.Dispose();
