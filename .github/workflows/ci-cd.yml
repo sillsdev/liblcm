@@ -9,6 +9,10 @@ on:
     # Trigger on release tags
     tags: [ 'v[0-9]+*' ]
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
 
   build:
