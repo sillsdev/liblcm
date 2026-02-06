@@ -12,6 +12,7 @@ using SIL.LCModel.Application;
 using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Utils;
+using SIL.Reporting;
 using Timer = System.Timers.Timer;
 
 namespace SIL.LCModel.Infrastructure.Impl
@@ -26,7 +27,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 	/// via the 'PropChanged' method of the IVwNotifyChange interface.
 	/// In this implementation, the LCM ISILDataAccess implementation farms out this
 	/// notification function to this class.
-	/// IVwNotifyChange implementations are not to use this notificatin mechanism
+	/// IVwNotifyChange implementations are not to use this notification mechanism
 	/// to make additional data changes. That is done using the second set of Mediator clients.
 	///
 	/// The second set of Mediator clients is between CmObjects.
@@ -35,7 +36,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 	/// of properties on other CmObjects.
 	///
 	/// With this twofold Mediator mechanism,
-	/// the IVwNotifyChange system can stay with its purpose of refeshing UI display,
+	/// the IVwNotifyChange system can stay with its purpose of refreshing UI display,
 	/// while the second system can take care of side effect data changes.
 	/// </summary>
 	/// <remarks>
@@ -103,6 +104,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		private readonly IDataStorer m_dataStorer;
 		private readonly IdentityMap m_identityMap;
 		private readonly ILcmUI m_ui;
+		private readonly ITransactionLogger m_logger;
 		internal ICmObjectRepositoryInternal ObjectRepository
 		{
 			get;
@@ -151,7 +153,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		internal UnitOfWorkService(IDataStorer dataStorer, IdentityMap identityMap, ICmObjectRepositoryInternal objectRepository, ILcmUI ui)
+		internal UnitOfWorkService(IDataStorer dataStorer, IdentityMap identityMap, ICmObjectRepositoryInternal objectRepository, ILcmUI ui, ITransactionLogger logger)
 		{
 			if (dataStorer == null) throw new ArgumentNullException("dataStorer");
 			if (identityMap == null) throw new ArgumentNullException("identityMap");
@@ -160,6 +162,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 			m_dataStorer = dataStorer;
 			m_identityMap = identityMap;
+			m_logger = logger;
 			ObjectRepository = objectRepository;
 			m_ui = ui;
 			CurrentProcessingState = BusinessTransactionState.ReadyForBeginTask;
@@ -216,6 +219,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				m_saveTimer.Dispose();
 			}
 			IsDisposed = true;
+			m_logger?.AddBreadCrumb("UOW Disposed.");
 		}
 		#endregion
 
@@ -247,7 +251,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				// If it is less than 2s since the user did something don't save to smooth performance (unless the user has been busy as a beaver for more than 5 minutes)
 				if (now - m_ui.LastActivityTime < TimeSpan.FromSeconds(2.0) && now < (m_lastSave + TimeSpan.FromMinutes(5)))
 					return;
-
+				m_logger.AddBreadCrumb("Saving from SaveOnIdle");
 				SaveInternal();
 			}
 		}
@@ -282,6 +286,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 		private void SaveInternal()
 		{
+			m_logger?.AddBreadCrumb("Attempting Save.");
 			// don't allow reentrant calls.
 			if (m_fInSaveInternal)
 				return;
@@ -309,6 +314,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 						if (stack.CanUndo())
 							undoable = true;
 					}
+					m_logger?.AddBreadCrumb($"Raising save event: New:{newbies.Count} Changed:{dirtballs.Count} Deleted:{goners.Count}");
 					RaiseSave(undoable);
 				}
 
@@ -324,6 +330,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 					return; // Don't try to save the changes we just reverted!
 				}
 
+				m_logger?.AddBreadCrumb("Committing");
 				// let the BEP determine if a commit should occur or not
 				if (!m_dataStorer.Commit(realNewbies, dirtballs, goners))
 				{
@@ -520,7 +527,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 			ChangeInformation[] changes = subscribers.Length == 0 ? changesEnum.Where(ci => ci.HasNotifier).ToArray() : changesEnum.ToArray();
 			if (changes.Length == 0)
 				return;
-
+			m_logger?.AddBreadCrumb($"Sending prop changed notifications. Changes:{changes.Length} Subscribers: {subscribers.Length}");
 			m_ui.SynchronizeInvoke.Invoke(() =>
 			{
 				foreach (IVwNotifyChange sub in subscribers)
