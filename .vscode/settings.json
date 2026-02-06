@@ -1,6 +1,5 @@
 {
-	"csharp.unitTestDebuggingOptions": {
-		// It would be preferable to "fix" the test projects to target an executable .net core framework (https://stackoverflow.com/a/48885500/2301416)
-		"type": "clr" // https://github.com/OmniSharp/omnisharp-vscode/wiki/Desktop-.NET-Framework#settingsjson-example
+	"dotnet.unitTestDebuggingOptions": {
+		"type": "clr"
 	}
 }
