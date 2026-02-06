@@ -10,6 +10,7 @@ on:
     tags: [ 'v[0-9]+*' ]
 
 permissions:
+  checks: write
   contents: read
   packages: write
 
@@ -91,8 +92,11 @@ jobs:
       run: dotnet nuget push artifacts/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{secrets.SILLSDEV_PUBLISH_NUGET_ORG}} --skip-duplicate
       if: github.event_name == 'push' && matrix.os == 'ubuntu-22.04'
 
+    # Publish packages for pull requests from the same repository only.
+    # Fork PRs cannot authenticate to GitHub Packages due to security restrictions,
+    # but contributors can still download build artifacts from the workflow run.
     - name: Publish to Github packages
-      if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-22.04'
+      if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && matrix.os == 'ubuntu-22.04'
       run: dotnet nuget push artifacts/*.nupkg -s https://nuget.pkg.github.com/sillsdev/index.json -k ${{secrets.GITHUB_TOKEN}} --skip-duplicate
 
     - name: Publish Artifacts
