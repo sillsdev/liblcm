@@ -7,6 +7,8 @@
 // Responsibility: TE Team
 // ---------------------------------------------------------------------------------------------
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -246,9 +248,9 @@ namespace SIL.LCModel.Core.Scripture
 		/// ------------------------------------------------------------------------------------
 		protected static bool AreEqual(BCVRef left, BCVRef right)
 		{
-			if ((object)left == null && (object)right == null)
+			if (left is null && right is null)
 				return true;
-			else if ((object)left == null || (object)right == null)
+			else if (left is null || right is null)
 				return false;
 			return left.CompareTo(right) == 0;
 		}
@@ -310,7 +312,7 @@ namespace SIL.LCModel.Core.Scripture
 		/// ------------------------------------------------------------------------------------
 		/// <summary>Equals is same as ==</summary>
 		/// ------------------------------------------------------------------------------------
-		public override bool Equals(object o)
+		public override bool Equals(object? o)
 		{
 			if (o == null)
 				return false;
@@ -684,12 +686,12 @@ namespace SIL.LCModel.Core.Scripture
 		/// <returns>The reference range as a formatted string.</returns>
 		/// ------------------------------------------------------------------------------------
 		public static string MakeReferenceString(string bookName, BCVRef startRef,
-			BCVRef endRef, string chapterVerseSeparator, string verseBridge,
-			string literalTitleText, string literalIntroText)
+			BCVRef? endRef, string chapterVerseSeparator, string verseBridge,
+			string? literalTitleText, string? literalIntroText)
 		{
 			bookName = bookName.Trim();
 
-			if (endRef == null || endRef.IsEmpty)
+			if (endRef is null || endRef.IsEmpty)
 				endRef = startRef;
 
 			// Build strings to use for the chapter/verse separator and the verse bridge.
@@ -726,7 +728,7 @@ namespace SIL.LCModel.Core.Scripture
 					startRef.Verse.ToString();
 			}
 
-			string sLiteral = null;
+			string? sLiteral = null;
 			switch (startRef.Chapter)
 			{
 				case 0: sLiteral =  literalTitleText; break;
@@ -744,12 +746,12 @@ namespace SIL.LCModel.Core.Scripture
 		/// <param name="literal">The literal string to use in place of the chapter number or
 		/// <c>null</c> to use the chapter number.</param>
 		/// ------------------------------------------------------------------------------------
-		private static string FormatChapterOnlyRef(int chapter, string literal)
+		private static string FormatChapterOnlyRef(int chapter, string? literal)
 		{
-			if (literal == String.Empty)
-				return String.Empty;
+		    if (literal == String.Empty)
+		        return String.Empty;
 
-			return " " + (literal != null ? literal : chapter.ToString());
+		    return " " + (literal ?? chapter.ToString());
 		}
 
 		/// ------------------------------------------------------------------------------------

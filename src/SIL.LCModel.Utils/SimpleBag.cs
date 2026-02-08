@@ -2,6 +2,8 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -15,7 +17,7 @@ namespace SIL.LCModel.Utils
 	public class SimpleBag<T> : IBag<T>
 	{
 		private object m_lockObject = new Object();
-		private object m_contents;
+		private object? m_contents;
 
 		/// <summary>
 		/// Add an item to the bag.
@@ -31,7 +33,7 @@ namespace SIL.LCModel.Utils
 				}
 				if (m_contents is T)
 				{
-					if (item.Equals((T)m_contents))
+					if (item!.Equals((T)m_contents))
 					{
 						// Direct to duplicates.
 						var contents = new ConcurrentDictionary<T, int>();
@@ -48,7 +50,7 @@ namespace SIL.LCModel.Utils
 					return;
 				}
 				// Otherwise it must be a dictionary.
-				AddToDict(m_contents as ConcurrentDictionary<T, int>, item);
+				AddToDict((m_contents as ConcurrentDictionary<T, int>)!, item);
 			}
 		}
 
@@ -59,7 +61,7 @@ namespace SIL.LCModel.Utils
 		{
 			lock (m_lockObject)
 			{
-				if (m_contents is T && item.Equals((T)m_contents))
+				if (m_contents is T && item!.Equals((T)m_contents))
 				{
 					m_contents = null;
 					return true;
@@ -69,7 +71,7 @@ namespace SIL.LCModel.Utils
 				{
 					// In theory, if we are down to just one item, we could go back to a simpler representation;
 					// but it's not worth it as this case is vanishingly rare.
-					return RemoveFromDict(m_contents as ConcurrentDictionary<T, int>, item);
+					return RemoveFromDict((m_contents as ConcurrentDictionary<T, int>)!, item);
 				}
 				return false;
 			}
@@ -129,7 +131,7 @@ namespace SIL.LCModel.Utils
 		public int Occurrences(T item)
 		{
 			if (m_contents is T)
-				if (item.Equals(m_contents))
+				if (item!.Equals(m_contents))
 					return 1;
 				else
 					return 0;

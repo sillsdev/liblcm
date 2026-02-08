@@ -540,7 +540,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="iMatched"></param>
 		/// <returns></returns>
 		/// ------------------------------------------------------------------------------------
-		public static int IndexOfAnyString(this string s, string[] rgs, out int iMatched)
+		public static int IndexOfAnyString(this string? s, string[]? rgs, out int iMatched)
 		{
 			return IndexOfAnyString(s, rgs, out iMatched, StringComparison.CurrentCulture);
 		}
@@ -556,7 +556,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="sc">culture rule to use</param>
 		/// <returns></returns>
 		/// ------------------------------------------------------------------------------------
-		public static int IndexOfAnyString(this string s, string[] rgs, out int iMatched, StringComparison sc)
+		public static int IndexOfAnyString(this string? s, string[]? rgs, out int iMatched, StringComparison sc)
 		{
 			iMatched = -1;
 			if (s == null || rgs == null || rgs.Length == 0)
@@ -643,9 +643,9 @@ namespace SIL.LCModel.Utils
 		/// <param name="sWs"></param>
 		/// <returns></returns>
 		/// ------------------------------------------------------------------------------------
-		public static CultureInfo GetCultureForWs(string sWs)
+		public static CultureInfo? GetCultureForWs(string sWs)
 		{
-			CultureInfo ci = null;
+			CultureInfo? ci = null;
 			int idx = sWs.Length;
 			while (ci == null && idx > 0)
 			{
@@ -699,7 +699,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="baseConfigPath">from FwUtils.DirectoryFinder</param>
 		/// <returns></returns>
 		/// ------------------------------------------------------------------------------------
-		public static IEnumerable<string> GetAdditionalUILanguages(string baseConfigPath)
+		public static IEnumerable<string> GetAdditionalUILanguages(string? baseConfigPath)
 		{
 			var additionalWs = new List<string>();
 			if (Directory.Exists(baseConfigPath))
@@ -788,7 +788,7 @@ namespace SIL.LCModel.Utils
 		/// True if input is made of only one or more upper or lowercase English letters,
 		/// otherwise false.
 		/// </returns>
-		public static bool IsAlpha(string input)
+		public static bool IsAlpha(string? input)
 		{
 			if (input == null)
 				return false;
@@ -801,7 +801,7 @@ namespace SIL.LCModel.Utils
 		/// registry key.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static bool CanWriteKey(this RegistryKey key)
+		public static bool CanWriteKey(this RegistryKey? key)
 		{
 			if (key == null)
 				return false;

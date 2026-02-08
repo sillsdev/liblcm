@@ -58,7 +58,7 @@ namespace SIL.LCModel.Build.Tasks
 				_logger = msbuildLogger;
 			}
 
-			public void Error(string   text)
+			public void Error(string text)
 			{
 				_logger.LogError(text);
 			}
@@ -81,14 +81,14 @@ namespace SIL.LCModel.Build.Tasks
 
 		/// <summary>Namespace.</summary>
 		[Required]
-		public string Namespace { get; set; }
+		public string? Namespace { get; set; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Additional namespaces that are used.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public ITaskItem[] UsingNamespaces { get; set; }
+		public ITaskItem[]? UsingNamespaces { get; set; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -96,7 +96,7 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Required]
-		public ITaskItem[] IdhFiles { get; set; }
+		public ITaskItem[]? IdhFiles { get; set; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -104,7 +104,7 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value></value>
 		/// ------------------------------------------------------------------------------------
-		public ITaskItem[] ReferenceFiles { get; set; }
+		public ITaskItem[]? ReferenceFiles { get; set; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -117,9 +117,9 @@ namespace SIL.LCModel.Build.Tasks
 		/// The IDL file (typically only one) we want to compile.
 		/// </summary>
 		[Required]
-		public ITaskItem[] Sources { get; set; }
+		public ITaskItem[]? Sources { get; set; }
 
-		private static StringCollection GetFilesFrom(ITaskItem[] source)
+		private static StringCollection GetFilesFrom(ITaskItem[]? source)
 		{
 			var result = new StringCollection();
 			if (source == null)
@@ -130,7 +130,7 @@ namespace SIL.LCModel.Build.Tasks
 		}
 
 		[Required]
-		public string Output { get; set; }
+		public string? Output { get; set; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -150,7 +150,7 @@ namespace SIL.LCModel.Build.Tasks
 				}
 
 
-				foreach (var idlFile in Sources)
+				foreach (var idlFile in Sources!)
 				{
 					//Log.LogMessage(MessageImportance.Normal, "Creating IDL File " + Path.GetFileName(idlFile.ItemSpec));
 					Log.LogMessage(MessageImportance.Normal, "Processing IDL File " + Path.GetFileName(idlFile.ItemSpec) + " to produce " + Output);
@@ -159,7 +159,7 @@ namespace SIL.LCModel.Build.Tasks
 					foreach (var s in GetFilesFrom(ReferenceFiles))
 						Log.LogMessage(MessageImportance.Low, "references: " + s);
 					bool fOk = importer.Import(namespaces, idlFile.ItemSpec, null,
-						Output, Namespace, GetFilesFrom(IdhFiles),
+						Output!, Namespace!, GetFilesFrom(IdhFiles),
 						GetFilesFrom(ReferenceFiles), CreateXmlComments);
 					if (!fOk)
 					{

@@ -2,6 +2,8 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,14 +22,14 @@ namespace SIL.LCModel.Build.Tasks
 	internal class LcmGenerateImpl
 	{
 		/// <summary></summary>
-		public static LcmGenerateImpl Generator;
+		public static LcmGenerateImpl? Generator;
 
 		private readonly string m_OutputDir;
-		private string m_OutputFileName;
+		private string? m_OutputFileName;
 		private readonly VelocityEngine m_Engine;
 		private readonly VelocityContext m_Context;
-		private Dictionary<string, List<string>> m_OverrideList;
-		private Dictionary<string, Dictionary<string, string>> m_IntPropTypeOverrideList;
+		private Dictionary<string, List<string>>? m_OverrideList;
+		private Dictionary<string, Dictionary<string, string>>? m_IntPropTypeOverrideList;
 		private readonly Model m_Model;
 		private readonly XmlDocument m_Document;
 
@@ -51,7 +53,7 @@ namespace SIL.LCModel.Build.Tasks
 		/// <param name="outputDir">The output dir.</param>
 		/// <param name="outputFile">The output file name.</param>
 		/// ------------------------------------------------------------------------------------
-		public LcmGenerateImpl(XmlDocument doc, string outputDir, string outputFile)
+		public LcmGenerateImpl(XmlDocument doc, string outputDir, string? outputFile)
 		{
 			Generator = this;
 			m_Document = doc;
@@ -77,7 +79,7 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value>The list of override class names.</value>
 		/// ------------------------------------------------------------------------------------
-		public Dictionary<string, List<string>> Overrides
+		public Dictionary<string, List<string>>? Overrides
 		{
 			get { return m_OverrideList; }
 			set { m_OverrideList = value; }
@@ -90,7 +92,7 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value>The list of override class names.</value>
 		/// ------------------------------------------------------------------------------------
-		public Dictionary<string, Dictionary<string, string>> IntPropTypeOverrides
+		public Dictionary<string, Dictionary<string, string>>? IntPropTypeOverrides
 		{
 			get { return m_IntPropTypeOverrideList; }
 			set { m_IntPropTypeOverrideList = value; }
@@ -137,7 +139,7 @@ namespace SIL.LCModel.Build.Tasks
 		/// ------------------------------------------------------------------------------------
 		public void Process(string templateName)
 		{
-			Stream stream = null;
+			Stream? stream = null;
 			try
 			{
 				stream = string.IsNullOrEmpty(m_OutputFileName)
@@ -164,7 +166,7 @@ namespace SIL.LCModel.Build.Tasks
 		/// <param name="moduleName">Name of the module.</param>
 		/// <returns></returns>
 		/// ------------------------------------------------------------------------------------
-		public CellarModule GetModule(string moduleName)
+		public CellarModule? GetModule(string moduleName)
 		{
 			var query = string.Format("//CellarModule[@id='{0}']", moduleName);
 // ReSharper disable PossibleNullReferenceException

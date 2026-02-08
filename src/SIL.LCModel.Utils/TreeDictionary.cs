@@ -1,6 +1,8 @@
-﻿// Copyright (c) 2015-2017 SIL International
+﻿﻿// Copyright (c) 2015-2017 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
+
+#nullable enable
 
 using System;
 using System.Collections;
@@ -37,7 +39,7 @@ namespace SIL.LCModel.Utils
 
 		#region Data Members
 
-		private RedBlackNode m_rootNode;
+		private RedBlackNode? m_rootNode;
 		private int m_nodeCount;
 		private readonly IComparer<TKey> m_comparer;
 
@@ -65,7 +67,7 @@ namespace SIL.LCModel.Utils
 
 				// You can get the min value by traversing left from the root until you can't any more.
 				var node = m_rootNode;
-				while (node.LeftNode != null)
+				while (node!.LeftNode != null)
 					node = node.LeftNode;
 
 				return node.Pair;
@@ -84,7 +86,7 @@ namespace SIL.LCModel.Utils
 
 				// You can get the max value by traversing right from the root until you can't any more.
 				var node = m_rootNode;
-				while (node.RightNode != null)
+				while (node!.RightNode != null)
 					node = node.RightNode;
 
 				return node.Pair;
@@ -196,7 +198,7 @@ namespace SIL.LCModel.Utils
 			if (IsEmpty)
 				yield break;
 
-			foreach (KeyValuePair<TKey, TValue> pair in InOrderTraversal(m_rootNode, n => m_comparer.Compare(upper, n.Pair.Key) < 0))
+			foreach (KeyValuePair<TKey, TValue> pair in InOrderTraversal(m_rootNode!, n => m_comparer.Compare(upper, n.Pair.Key) < 0))
 				yield return pair;
 		}
 
@@ -229,9 +231,9 @@ namespace SIL.LCModel.Utils
 		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
 		bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
 		{
-			RedBlackNode node;
+			RedBlackNode? node;
 			if (TryGetNode(item.Key, out node))
-				return EqualityComparer<KeyValuePair<TKey, TValue>>.Default.Equals(item, node.Pair);
+				return EqualityComparer<KeyValuePair<TKey, TValue>>.Default.Equals(item, node!.Pair);
 			return false;
 		}
 
@@ -272,10 +274,10 @@ namespace SIL.LCModel.Utils
 		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
 		bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
 		{
-			RedBlackNode node;
+			RedBlackNode? node;
 			if (TryGetNode(item.Key, out node))
 			{
-				if (EqualityComparer<KeyValuePair<TKey, TValue>>.Default.Equals(item, node.Pair))
+				if (EqualityComparer<KeyValuePair<TKey, TValue>>.Default.Equals(item, node!.Pair))
 				{
 					HardDelete(node);
 					return true;
@@ -325,8 +327,7 @@ namespace SIL.LCModel.Utils
 		{
 			if (key == null)
 				throw new ArgumentNullException("key");
-			RedBlackNode node;
-			return TryGetNode(key, out node);
+			return TryGetNode(key, out _);
 		}
 
 		/// <summary>
@@ -356,10 +357,10 @@ namespace SIL.LCModel.Utils
 		{
 			if (key == null)
 				throw new ArgumentNullException("key");
-			RedBlackNode node;
+			RedBlackNode? node;
 			if (TryGetNode(key, out node))
 			{
-				HardDelete(node);
+				HardDelete(node!);
 				return true;
 			}
 			return false;
@@ -374,15 +375,18 @@ namespace SIL.LCModel.Utils
 		/// <param name="key">The key whose value to get.</param>
 		/// <param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the <paramref name="value"/> parameter. This parameter is passed uninitialized.</param>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="key"/> is null.</exception>
-		public bool TryGetValue(TKey key, out TValue value)
+#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
+		public bool TryGetValue(TKey key, out TValue? value)
+#pragma warning restore CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
+
 		{
 			if (key == null)
 				throw new ArgumentNullException("key");
 
-			RedBlackNode node;
+			RedBlackNode? node;
 			if (TryGetNode(key, out node))
 			{
-				value = node.Pair.Value;
+				value = node!.Pair.Value;
 				return true;
 			}
 			value = default(TValue);
@@ -404,9 +408,9 @@ namespace SIL.LCModel.Utils
 			{
 				if (key == null)
 					throw new ArgumentNullException("key");
-				TValue value;
+				TValue? value;
 				if (TryGetValue(key, out value))
-					return value;
+					return value!;
 				throw new KeyNotFoundException();
 			}
 
@@ -414,10 +418,10 @@ namespace SIL.LCModel.Utils
 			{
 				if (key == null)
 					throw new ArgumentNullException("key");
-				RedBlackNode node;
+				RedBlackNode? node;
 				if (TryGetNode(key, out node))
 				{
-					node.Pair = new KeyValuePair<TKey, TValue>(key, value);
+					node!.Pair = new KeyValuePair<TKey, TValue>(key, value);
 					return;
 				}
 				Add(key, value);
@@ -466,7 +470,7 @@ namespace SIL.LCModel.Utils
 		/// </returns>
 		public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
 		{
-			foreach (KeyValuePair<TKey, TValue> pair in InOrderTraversal(m_rootNode, null))
+			foreach (KeyValuePair<TKey, TValue> pair in InOrderTraversal(m_rootNode!, null))
 				yield return pair;
 		}
 
@@ -506,7 +510,7 @@ namespace SIL.LCModel.Utils
 			return InsertNode(pair, m_rootNode);
 		}
 
-		private bool TryGetNode(TKey key, out RedBlackNode node)
+		private bool TryGetNode(TKey key, out RedBlackNode? node)
 		{
 			node = null;
 
@@ -537,7 +541,7 @@ namespace SIL.LCModel.Utils
 		private Stack<RedBlackNode> GetLowerBoundNodes(TKey lower)
 		{
 			var stack = new Stack<RedBlackNode>();
-			RedBlackNode current = m_rootNode;
+			RedBlackNode? current = m_rootNode;
 			while (current != null)
 			{
 				int compare = m_comparer.Compare(lower, current.Pair.Key);
@@ -609,11 +613,11 @@ namespace SIL.LCModel.Utils
 			CheckNode(current);
 
 			// Automatically make sure the root node is black. (this is valid in a red/black tree)
-			m_rootNode.Color = NodeColor.Black;
+			m_rootNode!.Color = NodeColor.Black;
 			return true;
 		}
 
-		private void CheckNode(RedBlackNode current)
+		private void CheckNode(RedBlackNode? current)
 		{
 			if (current == null)
 				return;
@@ -625,10 +629,10 @@ namespace SIL.LCModel.Utils
 				// Switch colors and then check grandparent.
 				uncleNode.Color = NodeColor.Black;
 				current.Color = NodeColor.Black;
-				current.ParentNode.Color = NodeColor.Red;
+				current.ParentNode!.Color = NodeColor.Red;
 
 				// We don't have to check the root node, I'm just going to turn it black.
-				if (current.ParentNode.ParentNode != null && m_comparer.Compare(current.ParentNode.ParentNode.Pair.Key, m_rootNode.Pair.Key) != 0)
+				if (current.ParentNode.ParentNode != null && m_comparer.Compare(current.ParentNode.ParentNode.Pair.Key, m_rootNode!.Pair.Key) != 0)
 				{
 					var node = current.ParentNode.ParentNode;
 					CheckNode(node);
@@ -672,7 +676,7 @@ namespace SIL.LCModel.Utils
 			}
 		}
 
-		private RedBlackNode GetSiblingNode(RedBlackNode current)
+		private RedBlackNode? GetSiblingNode(RedBlackNode current)
 		{
 			if (current == null || current.ParentNode == null)
 				return null;
@@ -692,7 +696,7 @@ namespace SIL.LCModel.Utils
 			{
 				// Find the successor node, swap the value up the tree, and delete the successor.
 				var successor = FindSuccessor(current);
-				current.Pair = successor.Pair;
+				current.Pair = successor!.Pair;
 				PerformHardDelete(successor);
 			}
 			else
@@ -708,9 +712,9 @@ namespace SIL.LCModel.Utils
 
 				// In this case we are deleting a leaf node, just get rid of it.
 				if (current.ParentDirection == Direction.Left)
-					current.ParentNode.RightNode = null;
+					current.ParentNode!.RightNode = null;
 				else
-					current.ParentNode.LeftNode = null;
+					current.ParentNode!.LeftNode = null;
 
 				current.ParentNode = null;
 
@@ -727,7 +731,7 @@ namespace SIL.LCModel.Utils
 							// Turn the sibling node red to compensate for the black node being deleted,
 							// and make sure the parent is black.
 							sibling.Color = NodeColor.Red;
-							sibling.ParentNode.Color = NodeColor.Black;
+							sibling.ParentNode!.Color = NodeColor.Black;
 						}
 						else if (sibling.LeftNode == null && sibling.RightNode != null)
 						{
@@ -737,7 +741,7 @@ namespace SIL.LCModel.Utils
 								// There will need to be a rotation to fix this situation, and
 								// nodes will have to be re-colored.
 								sibling.RightNode.Color = NodeColor.Black;
-								sibling.Color = sibling.ParentNode.Color;
+								sibling.Color = sibling.ParentNode!.Color;
 								sibling.ParentNode.Color = NodeColor.Black;
 								RotateRightChildLeftParent(sibling);
 							}
@@ -747,7 +751,7 @@ namespace SIL.LCModel.Utils
 								// it becomes the exact same case as above.
 								RotateRightChildRightParent(sibling);
 								sibling.Color = NodeColor.Black;
-								sibling.ParentNode.Color = sibling.ParentNode.ParentNode.Color;
+								sibling.ParentNode!.Color = sibling.ParentNode.ParentNode!.Color;
 								sibling.ParentNode.ParentNode.Color = NodeColor.Black;
 								RotateLeftChildRightParent(sibling.ParentNode);
 							}
@@ -761,7 +765,7 @@ namespace SIL.LCModel.Utils
 								// it becomes the exact same case as above.
 								RotateLeftChildLeftParent(sibling);
 								sibling.Color = NodeColor.Black;
-								sibling.ParentNode.Color = sibling.ParentNode.ParentNode.Color;
+								sibling.ParentNode!.Color = sibling.ParentNode.ParentNode!.Color;
 								sibling.ParentNode.ParentNode.Color = NodeColor.Black;
 								RotateRightChildLeftParent(sibling.ParentNode);
 							}
@@ -770,7 +774,7 @@ namespace SIL.LCModel.Utils
 								// There will need to be a rotation to fix this situation, and
 								// nodes will have to be re-colored.
 								sibling.LeftNode.Color = NodeColor.Black;
-								sibling.Color = sibling.ParentNode.Color;
+								sibling.Color = sibling.ParentNode!.Color;
 								sibling.ParentNode.Color = NodeColor.Black;
 								RotateLeftChildRightParent(sibling);
 							}
@@ -785,7 +789,7 @@ namespace SIL.LCModel.Utils
 									// There will need to be a rotation to fix this situation, and
 									// nodes will have to be re-colored.
 									sibling.RightNode.Color = NodeColor.Black;
-									sibling.Color = sibling.ParentNode.Color;
+									sibling.Color = sibling.ParentNode!.Color;
 									sibling.ParentNode.Color = NodeColor.Black;
 									RotateRightChildLeftParent(sibling);
 								}
@@ -795,7 +799,7 @@ namespace SIL.LCModel.Utils
 									// There will need to be a rotation to fix this situation, and
 									// nodes will have to be re-colored.
 									sibling.LeftNode.Color = NodeColor.Black;
-									sibling.Color = sibling.ParentNode.Color;
+									sibling.Color = sibling.ParentNode!.Color;
 									sibling.ParentNode.Color = NodeColor.Black;
 									RotateLeftChildRightParent(sibling);
 								}
@@ -804,7 +808,7 @@ namespace SIL.LCModel.Utils
 							{
 								// This is the case where the sibling of the deleted node is red with 2 black children.
 								// First, swap the sibling color with the parent color.
-								sibling.ParentNode.Color = NodeColor.Red;
+								sibling.ParentNode!.Color = NodeColor.Red;
 								sibling.Color = NodeColor.Black;
 
 								if (m_comparer.Compare(sibling.Pair.Key, current.Pair.Key) > 0)
@@ -818,7 +822,7 @@ namespace SIL.LCModel.Utils
 										if ((newSib.LeftNode == null || (newSib.LeftNode != null && newSib.LeftNode.Color == NodeColor.Black))
 										 && (newSib.RightNode == null || (newSib.RightNode != null && newSib.RightNode.Color == NodeColor.Black)))
 										{
-											newSib.Color = newSib.ParentNode.Color;
+											newSib.Color = newSib.ParentNode!.Color;
 											newSib.ParentNode.Color = NodeColor.Black;
 
 											// Perform additional re-coloring and rotation to fix violations.
@@ -835,7 +839,7 @@ namespace SIL.LCModel.Utils
 											// Perform additional re-coloring and rotation to fix violations.
 											newSib.RightNode.Color = NodeColor.Black;
 
-											newSib.Color = newSib.ParentNode.Color;
+											newSib.Color = newSib.ParentNode!.Color;
 											newSib.ParentNode.Color = NodeColor.Black;
 											RotateRightChildLeftParent(newSib);
 										}
@@ -845,7 +849,7 @@ namespace SIL.LCModel.Utils
 											// Perform additional re-coloring and rotatin to fix violations.
 											RotateLeftChildLeftParent(newSib);
 											newSib.Color = NodeColor.Black;
-											newSib.ParentNode.Color = newSib.ParentNode.ParentNode.Color;
+											newSib.ParentNode!.Color = newSib.ParentNode.ParentNode!.Color;
 											newSib.ParentNode.ParentNode.Color = NodeColor.Black;
 
 											if (newSib.ParentNode.Color == NodeColor.Red)
@@ -864,7 +868,7 @@ namespace SIL.LCModel.Utils
 										if ((newSib.LeftNode == null || (newSib.LeftNode != null && newSib.LeftNode.Color == NodeColor.Black))
 										 && (newSib.RightNode == null || (newSib.RightNode != null && newSib.RightNode.Color == NodeColor.Black)))
 										{
-											newSib.Color = newSib.ParentNode.Color;
+											newSib.Color = newSib.ParentNode!.Color;
 											newSib.ParentNode.Color = NodeColor.Black;
 
 											// Perform additional re-coloring and rotation to fix violations.
@@ -880,7 +884,7 @@ namespace SIL.LCModel.Utils
 											// Perform additional re-coloring and rotation to fix violations.
 											newSib.LeftNode.Color = NodeColor.Black;
 
-											newSib.Color = newSib.ParentNode.Color;
+											newSib.Color = newSib.ParentNode!.Color;
 											newSib.ParentNode.Color = NodeColor.Black;
 											RotateLeftChildRightParent(newSib);
 										}
@@ -890,7 +894,7 @@ namespace SIL.LCModel.Utils
 											// Perform additional re-coloring and rotatin to fix violations.
 											RotateRightChildRightParent(newSib);
 											newSib.Color = NodeColor.Black;
-											newSib.ParentNode.Color = newSib.ParentNode.ParentNode.Color;
+											newSib.ParentNode!.Color = newSib.ParentNode.ParentNode!.Color;
 											newSib.ParentNode.ParentNode.Color = NodeColor.Black;
 
 											if (newSib.ParentNode.Color == NodeColor.Red)
@@ -941,7 +945,7 @@ namespace SIL.LCModel.Utils
 			}
 		}
 
-		private static RedBlackNode FindSuccessor(RedBlackNode node)
+		private static RedBlackNode? FindSuccessor(RedBlackNode node)
 		{
 			// The successor to a node is the node closest in value to it that is larger.
 			if (node.RightNode == null)
@@ -983,9 +987,9 @@ namespace SIL.LCModel.Utils
 			if (current.IsRoot)
 				return;
 
-			var tmpNode = current.RightNode.LeftNode;
+			var tmpNode = current.RightNode!.LeftNode;
 			current.RightNode.ParentNode = current.ParentNode;
-			current.ParentNode.LeftNode = current.RightNode;
+			current.ParentNode!.LeftNode = current.RightNode;
 			current.ParentNode = current.RightNode;
 			current.RightNode.LeftNode = current;
 
@@ -1010,9 +1014,9 @@ namespace SIL.LCModel.Utils
 			if (current.IsRoot)
 				return;
 
-			var tmpNode = current.LeftNode.RightNode;
+			var tmpNode = current.LeftNode!.RightNode;
 			current.LeftNode.ParentNode = current.ParentNode;
-			current.ParentNode.RightNode = current.LeftNode;
+			current.ParentNode!.RightNode = current.LeftNode;
 			current.ParentNode = current.LeftNode;
 			current.LeftNode.RightNode = current;
 
@@ -1039,12 +1043,12 @@ namespace SIL.LCModel.Utils
 
 			if (current.RightNode != null)
 			{
-				current.ParentNode.LeftNode = current.RightNode;
+				current.ParentNode!.LeftNode = current.RightNode;
 				current.RightNode.ParentNode = current.ParentNode;
 			}
 			else
 			{
-				current.ParentNode.LeftNode = current.RightNode;
+				current.ParentNode!.LeftNode = current.RightNode;
 			}
 
 			var tmpNode = current.ParentNode.ParentNode;
@@ -1087,12 +1091,12 @@ namespace SIL.LCModel.Utils
 
 			if (current.LeftNode != null)
 			{
-				current.ParentNode.RightNode = current.LeftNode;
+				current.ParentNode!.RightNode = current.LeftNode;
 				current.LeftNode.ParentNode = current.ParentNode;
 			}
 			else
 			{
-				current.ParentNode.RightNode = current.LeftNode;
+				current.ParentNode!.RightNode = current.LeftNode;
 			}
 
 			var tmpNode = current.ParentNode.ParentNode;
@@ -1130,7 +1134,7 @@ namespace SIL.LCModel.Utils
 
 		#region Tree Traversal Methods
 
-		private static IEnumerable<KeyValuePair<TKey, TValue>> InOrderTraversal(RedBlackNode node, Func<RedBlackNode, bool> breakPredicate)
+		private static IEnumerable<KeyValuePair<TKey, TValue>> InOrderTraversal(RedBlackNode node, Func<RedBlackNode, bool>? breakPredicate)
 		{
 			if (node.LeftNode != null)
 			{
@@ -1175,11 +1179,11 @@ namespace SIL.LCModel.Utils
 
 			public KeyValuePair<TKey, TValue> Pair { get; set; }
 
-			public RedBlackNode ParentNode { get; set; }
+			public RedBlackNode? ParentNode { get; set; }
 
-			public RedBlackNode LeftNode { get; set; }
+			public RedBlackNode? LeftNode { get; set; }
 
-			public RedBlackNode RightNode { get; set; }
+			public RedBlackNode? RightNode { get; set; }
 
 			public Boolean IsRoot
 			{

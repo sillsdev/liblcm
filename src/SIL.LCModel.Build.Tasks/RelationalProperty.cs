@@ -61,7 +61,7 @@ namespace SIL.LCModel.Build.Tasks
 		{
 			get
 			{
-				var card = m_node.Attributes["card"].Value;
+				var card = m_node.Attributes["card"]!.Value;
 				switch (card)
 				{
 					case "atomic":
@@ -136,7 +136,7 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value>The type info.</value>
 		/// ------------------------------------------------------------------------------------
-		protected override TypeInfo TypeInfo
+		protected override TypeInfo? TypeInfo
 		{
 			get
 			{

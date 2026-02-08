@@ -52,7 +52,7 @@ namespace SIL.LCModel.Build.Tasks
 			Hungarian = hung;
 		}
 
-		private static Dictionary<string, TypeInfo> s_TypeInfos;
+		private static Dictionary<string, TypeInfo>? s_TypeInfos;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -98,5 +98,4 @@ namespace SIL.LCModel.Build.Tasks
 			}
 		}
 	}
-
 }

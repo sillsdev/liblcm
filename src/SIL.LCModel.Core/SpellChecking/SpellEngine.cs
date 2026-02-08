@@ -2,6 +2,8 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,11 +20,11 @@ namespace SIL.LCModel.Core.SpellChecking
 		/// Words are added by appearing, each on a line
 		/// Words beginning * are known bad words.
 		/// </summary>
-		internal string ExceptionPath { get; set; }
+		internal string? ExceptionPath { get; set; }
 
 		internal static SpellEngine Create(string affixPath, string dictPath, string exceptionPath)
 		{
-			SpellEngine spellEngine = null;
+			SpellEngine? spellEngine = null;
 			try
 			{
 				spellEngine = new SpellEngineWeCantSpell(affixPath, dictPath, exceptionPath);
@@ -50,7 +52,7 @@ namespace SIL.LCModel.Core.SpellChecking
 
 			using (var reader = new StreamReader(ExceptionPath, Encoding.UTF8))
 			{
-				string line;
+				string? line;
 				while ((line = reader.ReadLine()) != null)
 				{
 					var item = line;
