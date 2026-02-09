@@ -168,13 +168,13 @@ tests/
 
 ## Common Tasks
 
-When performing any of the following tasks, read the linked guide first:
+The following tasks have detailed Agent Skills (in `.github/skills/`) that are auto-discovered by compatible agents (Copilot, Cursor, Claude, Codex). If your agent supports skills, it will load the relevant guide automatically. Otherwise, read the SKILL.md in the corresponding directory.
 
-- **Adding a property to an existing class**: [docs/agents/adding-a-property.md](docs/agents/adding-a-property.md)
-- **Writing a data migration**: [docs/agents/writing-a-data-migration.md](docs/agents/writing-a-data-migration.md)
-- **Adding a new class to the model**: [docs/agents/adding-a-new-class.md](docs/agents/adding-a-new-class.md)
-- **Adding a virtual property** (computed, no model change): [docs/agents/adding-a-virtual-property.md](docs/agents/adding-a-virtual-property.md)
-- **Writing tests**: [docs/agents/writing-tests.md](docs/agents/writing-tests.md)
+- **Adding a property to an existing class** -- skill: `adding-a-property`
+- **Writing a data migration** -- skill: `writing-a-data-migration`
+- **Adding a new class to the model** -- skill: `adding-a-new-class`
+- **Adding a virtual property** (computed, no model change) -- skill: `adding-a-virtual-property`
+- **Writing tests** -- skill: `writing-tests`
 
 ## Trust These Instructions
 

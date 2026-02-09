@@ -1,5 +1,8 @@
 {
 	"dotnet.unitTestDebuggingOptions": {
 		"type": "clr"
-	}
+	},
+	"chat.agentSkillsLocations": [
+		".github/skills"
+	]
 }
