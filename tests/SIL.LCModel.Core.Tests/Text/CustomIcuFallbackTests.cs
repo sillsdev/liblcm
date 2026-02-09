@@ -164,7 +164,8 @@ namespace SIL.LCModel.Core.Text
 		public void FixtureSetUp()
 		{
 			// Undo the PATH that got set by the InitializeIcu attribute
-			Environment.SetEnvironmentVariable("PATH", InitializeIcuAttribute.PreTestPathEnvironment);
+			var originalPath = InitializeIcuAttribute.PreTestPathEnvironment;
+			Environment.SetEnvironmentVariable("PATH", RemoveIcuPaths(originalPath));
 			_dirsToDelete = new List<string>();
 			_preTestDataDir = Wrapper.DataDirectory;
 			_preTestDataDirEnv = Environment.GetEnvironmentVariable("ICU_DATA");
@@ -235,6 +236,31 @@ namespace SIL.LCModel.Core.Text
 			{
 				TestContext.Out.WriteLine("No ICU DLL's found");
 			}
+		}
+
+		private static string RemoveIcuPaths(string path)
+		{
+			if (string.IsNullOrEmpty(path))
+				return path;
+
+			var filtered = new List<string>();
+			foreach (var folder in path.Split(Path.PathSeparator))
+			{
+				if (string.IsNullOrWhiteSpace(folder))
+					continue;
+				try
+				{
+					if (Directory.Exists(folder) && Directory.EnumerateFiles(folder, "icuuc*.dll").Any())
+						continue;
+				}
+				catch
+				{
+					// If we can't enumerate the folder, keep it to avoid breaking PATH unexpectedly.
+				}
+				filtered.Add(folder);
+			}
+
+			return string.Join(Path.PathSeparator.ToString(), filtered);
 		}
 
 		[Test]
