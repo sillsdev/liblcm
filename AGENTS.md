@@ -41,8 +41,7 @@ dotnet pack --include-symbols --no-restore --no-build -p:SymbolPackageFormat=snu
 On Linux, prefix test/build with `. environ &&`.
 
 ### Local Build
-- Windows: `build.cmd [Debug|Release]` (from repo root)
-- Linux: `build.sh [Debug|Release]` (from repo root)
+From repo root: `dotnet build [--configuration Debug|Release]`. To run tests: `dotnet test --no-restore --no-build -p:ParallelizeAssembly=false [--configuration Release]`. On Linux, prefix with `. environ &&` if using environ for mono/ICU.
 
 ### Known Issues
 - GitVersion.MsBuild requires full git metadata. Shallow clones will fail.
@@ -50,15 +49,9 @@ On Linux, prefix test/build with `. environ &&`.
 
 ## Architecture Overview
 
-### Code Generation Pipeline
+### Code Generation
 
-`MasterLCModel.xml` is the single source of truth for the data model. The `GenerateModel` MSBuild target (in `SIL.LCModel.csproj`) invokes `LcmGenerate` from `SIL.LCModel.Build.Tasks`, which:
-
-1. Parses `MasterLCModel.xml` into a `Model` object hierarchy (`CellarModule` > `Class` > `Property`)
-2. Loads `LcmGenerate/HandGenerated.xml` (properties to skip generation for) and `LcmGenerate/IntPropTypeOverrides.xml`
-3. Processes NVelocity templates (`LcmGenerate/*.vm.cs`) to produce the 9 generated C# files
-
-The generated code provides: class ID/field ID constants, interfaces, concrete implementations, factory interfaces and implementations, repository interfaces and implementations, the backend provider's `ModelVersion` constant, and StructureMap DI bootstrapping.
+`MasterLCModel.xml` is the single source of truth. The `GenerateModel` MSBuild target runs `LcmGenerate` from `SIL.LCModel.Build.Tasks`, which parses the XML and uses NVelocity templates in `LcmGenerate/*.vm.cs` to produce the 9 generated C# files. Edit the XML or templates only — never the generated files.
 
 ### MasterLCModel.xml Schema
 
@@ -105,18 +98,9 @@ These files add virtual properties (`[VirtualProperty]` attribute), convenience 
 
 **IOC**: StructureMap via `LcmServiceLocatorFactory`. Factories, repositories, and infrastructure services are registered as singletons. Generated code handles factory/repository registration in `GeneratedServiceLocatorBootstrapper.cs`.
 
-### Data Migration System
+### Data Migration
 
-Migrations live in `DomainServices/DataMigration/`. Each migration:
-- Implements `IDataMigration` with a single `PerformMigration(IDomainObjectDTORepository)` method
-- Operates on `DomainObjectDTO` objects (raw XML, no live CmObjects)
-- Uses `XElement.Parse()` for XML manipulation
-- Checks starting version, performs changes, increments version
-- Is registered in `LcmDataMigrationManager`'s constructor
-
-Current model version: **7000072**. Next migration would be `DataMigration7000073.cs`.
-
-The `DomainObjectDTORepository` tracks changes in three sets: **newbies** (created), **dirtballs** (modified), **goners** (deleted).
+Model version bumps require a migration class in `DomainServices/DataMigration/` and registration in `LcmDataMigrationManager`. See the `writing-a-data-migration` skill for structure, repository behavior, and current-version details.
 
 ### Key Domain Classes
 

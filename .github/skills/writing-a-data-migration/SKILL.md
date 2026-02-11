@@ -5,7 +5,9 @@ description: Write a data migration class that transforms existing persisted XML
 
 # Writing a Data Migration
 
-Data migrations transform existing persisted data when the model version changes. They operate on raw XML via `DomainObjectDTO` objects -- live `CmObject` instances are NOT available during migration.
+Data migrations transform existing persisted data when the model version changes. They operate on raw XML via `DomainObjectDTO` objects — live `CmObject` instances are NOT available during migration.
+
+**Where things live:** Migration classes go in `src/SIL.LCModel/DomainServices/DataMigration/`. Each implements `IDataMigration` with a single `PerformMigration(IDomainObjectDTORepository)` method, uses `XElement.Parse()` for XML manipulation, and must call `DataMigrationServices.CheckVersionNumber` first and `DataMigrationServices.IncrementVersionNumber` last. Migrations are registered in `LcmDataMigrationManager`'s constructor (dictionary of version number to migration instance). The repository tracks changes in three sets: **newbies** (created), **dirtballs** (modified), **goners** (deleted).
 
 ## When a Migration is Needed
 
