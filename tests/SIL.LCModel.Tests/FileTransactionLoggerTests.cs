@@ -73,9 +73,7 @@ namespace SIL.LCModel
 				logger.AddBreadCrumb(message);
 			}
 
-			// Wait briefly for async write, then read
-			System.Threading.Thread.Sleep(200);
-
+			// Dispose flushes the stream, so the file is readable immediately.
 			string content = File.ReadAllText(m_tempFile, Encoding.UTF8);
 			string expected = message + Environment.NewLine;
 			Assert.AreEqual(expected, content,

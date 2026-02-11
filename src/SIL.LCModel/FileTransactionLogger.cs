@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SIL.LCModel
 {
@@ -9,6 +10,7 @@ namespace SIL.LCModel
    {
 	   private readonly object m_lock = new object();
 	   private FileStream m_stream;
+	   private Task m_lastWrite = Task.CompletedTask;
 	   private bool m_disposed;
 	   
 	   internal FileTransactionLogger(string filePath)
@@ -30,8 +32,9 @@ namespace SIL.LCModel
 			   if (m_disposed)
 				   return;
 			   var bytes = Encoding.UTF8.GetBytes(description + Environment.NewLine);
-			   m_stream.Write(bytes, 0, bytes.Length);
-			   m_stream.Flush();
+			   m_lastWrite = m_lastWrite.ContinueWith(_ =>
+				   m_stream.WriteAsync(bytes, 0, bytes.Length),
+				   TaskContinuationOptions.ExecuteSynchronously).Unwrap();
 		   }
 	   }
 
@@ -42,6 +45,8 @@ namespace SIL.LCModel
 			{
 				if (!m_disposed)
 				{
+					try { m_lastWrite?.GetAwaiter().GetResult(); }
+					catch { /* best-effort: don't let a failed write prevent disposal */ }
 					m_stream?.Flush();
 					m_stream?.Dispose();
 					m_stream = null;
