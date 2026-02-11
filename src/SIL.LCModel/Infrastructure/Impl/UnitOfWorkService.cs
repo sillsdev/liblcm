@@ -257,7 +257,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 				// If it is less than 2s since the user did something don't save to smooth performance (unless the user has been busy as a beaver for more than 5 minutes)
 				if (now - m_ui.LastActivityTime < TimeSpan.FromSeconds(2.0) && now < (m_lastSave + TimeSpan.FromMinutes(5)))
 					return;
-				m_logger.AddBreadCrumb("Saving from SaveOnIdle");
+				m_logger?.AddBreadCrumb("Saving from SaveOnIdle");
 				SaveInternal();
 			}
 		}

@@ -7,8 +7,9 @@ namespace SIL.LCModel
 {
    internal class FileTransactionLogger : ITransactionLogger, IDisposable
    {
-	   private object m_lock = new object();
+	   private readonly object m_lock = new object();
 	   private FileStream m_stream;
+	   private bool m_disposed;
 	   
 	   internal FileTransactionLogger(string filePath)
 	   {
@@ -22,10 +23,15 @@ namespace SIL.LCModel
 
 	   public void AddBreadCrumb(string description)
 	   {
+		   if (description == null || m_disposed)
+			   return;
 		   lock (m_lock)
 		   {
-			   m_stream.WriteAsync(Encoding.UTF8.GetBytes((description + Environment.NewLine).ToCharArray()), 0,
-				   description.Length + 1);
+			   if (m_disposed)
+				   return;
+			   var bytes = Encoding.UTF8.GetBytes(description + Environment.NewLine);
+			   m_stream.Write(bytes, 0, bytes.Length);
+			   m_stream.Flush();
 		   }
 	   }
 
@@ -34,8 +40,13 @@ namespace SIL.LCModel
 			Debug.WriteLineIf(!disposing, "****** Missing Dispose() call for " + GetType() + ". *******");
 			lock (m_lock)
 			{
-				m_stream?.Flush();
-				m_stream?.Dispose();
+				if (!m_disposed)
+				{
+					m_stream?.Flush();
+					m_stream?.Dispose();
+					m_stream = null;
+					m_disposed = true;
+				}
 			}
 		}
 

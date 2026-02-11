@@ -26,6 +26,30 @@ namespace SIL.LCModel.Infrastructure.Impl
 				InvokeNonPublicVoid(serviceInstance, "SaveOnIdle", null, null));
 		}
 
+		/// <summary>
+		/// Regression test: m_logger is null by default (no LCM_TransactionLogPath env var).
+		/// SaveOnIdle must use null-conditional on m_logger.AddBreadCrumb to avoid NRE.
+		/// Reproduces the crash reported in LT-22388.
+		/// </summary>
+		[Test]
+		public void SaveOnIdle_LoggerNull_DoesNotThrow()
+		{
+			var uowService = Cache.ServiceLocator.GetInstance<IUnitOfWorkService>();
+			var serviceInstance = (object)uowService;
+
+			InvokeNonPublicVoid(serviceInstance, "StopSaveTimer");
+
+			// Force m_logger to null (default production state when LCM_TransactionLogPath is unset)
+			SetNonPublicField(serviceInstance, "m_logger", null);
+
+			// Force m_lastSave far enough in the past to pass BOTH the 10-second guard
+			// AND the 5-minute "busy beaver" clause so we actually reach m_logger.AddBreadCrumb
+			SetNonPublicField(serviceInstance, "m_lastSave", DateTime.Now.AddMinutes(-10));
+
+			Assert.DoesNotThrow(() =>
+				InvokeNonPublicVoid(serviceInstance, "SaveOnIdle", null, null));
+		}
+
 		private static void SetNonPublicField(object instance, string fieldName, object value)
 		{
 			var field = instance.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
