@@ -64,7 +64,17 @@
 			if (m_cache.ServiceLocator.GetInstance<I${className}Repository>().Singleton != null)
 				throw new InvalidOperationException("Can not create more than one ${className}");
 #end
-			if (guid == Guid.Empty) guid = Guid.NewGuid();
+			if (guid == Guid.Empty)
+			{
+				guid = Guid.NewGuid();
+			}
+			else
+			{
+				if (m_cache.ServiceLocator.GetInstance<I${className}Repository>().TryGetObject(guid, out var _originalObject))
+				{
+					throw new InvalidOperationException("Can not create more than one ${className} with identical GUIDs");
+				}
+			}
 			int hvo = m_cache.InternalServices.DataReader.GetNextRealHvo();
 			var newby = new $className(m_cache, hvo, guid);
 #if ( $ownerStatus != "required")
