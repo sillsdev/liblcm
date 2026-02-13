@@ -64,7 +64,19 @@
 			if (m_cache.ServiceLocator.GetInstance<I${className}Repository>().Singleton != null)
 				throw new InvalidOperationException("Can not create more than one ${className}");
 #end
-			if (guid == Guid.Empty) guid = Guid.NewGuid();
+			if (guid == Guid.Empty)
+			{
+				guid = Guid.NewGuid();
+			}
+			else
+			{
+				if (m_cache.ServiceLocator.GetInstance<ICmObjectRepository>().IsValidObjectId(guid))
+				{
+					// IsValidObjectId returns true if the GUID exists, i.e. you could call GetObject and get something.
+					// But here in Create(), it's an error if the GUID already exists: duplicate GUIDs are not allowed.
+					throw new InvalidOperationException("Can not create more than one object with identical GUIDs");
+				}
+			}
 			int hvo = m_cache.InternalServices.DataReader.GetNextRealHvo();
 			var newby = new $className(m_cache, hvo, guid);
 #if ( $ownerStatus != "required")

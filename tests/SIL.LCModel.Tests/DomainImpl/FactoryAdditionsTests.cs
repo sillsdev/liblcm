@@ -1,7 +1,8 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2015 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -131,6 +132,29 @@ namespace SIL.LCModel.DomainImpl
 			ILexSense sense = null;
 			Assert.DoesNotThrow(() => sense = lexSenseFactory.Create(entry, msa, nullGloss));
 			Assert.AreEqual(0, sense.Gloss.StringCount);
+		}
+
+		[Test]
+		public void Create_WithDuplicateGuid_SameType_Throws()
+		{
+			var guid = Guid.NewGuid();
+			var factory = Cache.ServiceLocator.GetInstance<ILexEntryFactory>();
+			factory.Create(guid);
+
+			Assert.That(() => factory.Create(guid),
+				Throws.TypeOf<InvalidOperationException>().With.Message.Contains("identical GUIDs"));
+		}
+
+		[Test]
+		public void Create_WithDuplicateGuid_DifferentType_Throws()
+		{
+			var guid = Guid.NewGuid();
+			var entryFactory = Cache.ServiceLocator.GetInstance<ILexEntryFactory>();
+			entryFactory.Create(guid);
+
+			var pictureFactory = Cache.ServiceLocator.GetInstance<ICmPictureFactory>();
+			Assert.That(() => pictureFactory.Create(guid),
+				Throws.TypeOf<InvalidOperationException>().With.Message.Contains("identical GUIDs"));
 		}
 	}
 }
