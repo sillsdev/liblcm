@@ -70,8 +70,10 @@
 			}
 			else
 			{
-				if (m_cache.ServiceLocator.GetInstance<I${className}Repository>().TryGetObject(guid, out var _originalObject))
+				if (m_cache.ServiceLocator.GetInstance<ICmObjectRepository>().IsValidObjectId(guid))
 				{
+					// IsValidObjectId returns true if the GUID exists, i.e. you could call GetObject and get something.
+					// But here in Create(), it's an error if the GUID already exists: duplicate GUIDs are not allowed.
 					throw new InvalidOperationException("Can not create more than one ${className} with identical GUIDs");
 				}
 			}
