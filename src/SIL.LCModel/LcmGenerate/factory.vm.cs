@@ -74,7 +74,7 @@
 				{
 					// IsValidObjectId returns true if the GUID exists, i.e. you could call GetObject and get something.
 					// But here in Create(), it's an error if the GUID already exists: duplicate GUIDs are not allowed.
-					throw new InvalidOperationException("Can not create more than one ${className} with identical GUIDs");
+					throw new InvalidOperationException("Can not create more than one object with identical GUIDs");
 				}
 			}
 			int hvo = m_cache.InternalServices.DataReader.GetNextRealHvo();
