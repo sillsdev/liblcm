@@ -1579,7 +1579,8 @@ namespace SIL.LCModel.DomainServices
 				isLabel = true;
 			// The character is wordforming if it is not a label And it is either word forming or
 			// a number (numbers added for LT-10746)
-			return !isLabel && (m_tss.IsCharWordForming(ich, m_wsManager) || Character.IsNumeric(m_tss.CharAt(ich)));
+			return !isLabel && (m_tss.IsCharWordForming(ich, m_wsManager) ||
+				(!char.IsLowSurrogate(m_tss.Text[ich]) && Character.IsNumeric(m_tss.CharAt(ich))));
 		}
 
 		/// <summary>
