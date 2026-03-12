@@ -149,8 +149,9 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		protected virtual void Dispose(bool disposing)
 		{
-			// Only warn for finalized instances that actually own allocated memory.
-			Debug.WriteLineIf(!disposing && m_ownMemory,
+			// Only warn for finalized instances that own an unmanaged buffer that was
+			// actually allocated by this ArrayPtr.
+			Debug.WriteLineIf(!disposing && m_ownMemory && m_ptr != IntPtr.Zero,
 				"****** Missing Dispose() call for " + GetType().Name + ". ****** ");
 
 			// Must not be run more than once.
