@@ -111,7 +111,6 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		~ArrayPtr()
 		{
-			//if (this != s_null) // TODO (Hasso) 2016.11: is this the only place this ugly hack is needed?
 			Dispose(false);
 			// The base class finalizer is called automatically.
 		}
@@ -150,8 +149,9 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		protected virtual void Dispose(bool disposing)
 		{
-			// If you're getting this line it means that you forgot to call Dispose().
-			Debug.WriteLineIf(!disposing,// && this != s_Null, // TODO (Hasso) 2016.11: is this the only place this ugly hack is needed?
+			// Only warn for finalized instances that own an unmanaged buffer that was
+			// actually allocated by this ArrayPtr.
+			Debug.WriteLineIf(!disposing && m_ownMemory && m_ptr != IntPtr.Zero,
 				"****** Missing Dispose() call for " + GetType().Name + ". ****** ");
 
 			// Must not be run more than once.
