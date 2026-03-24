@@ -33,6 +33,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 	internal sealed class CmObjectSurrogate : ICmObjectSurrogate //, IEquatable<CmObjectSurrogate>
 	{
 		private static Dictionary<string, ConstructorInfo> s_classToConstructorInfo;
+		private static readonly object s_constructorLock = new object();
 		/// <summary>
 		/// It's common that hundreds of thousands of surrogates only use a few hundred class names. This is a local interning
 		/// of those names.
@@ -225,16 +226,19 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 		internal static void InitializeConstructors(List<Type> cmObjectTypes)
 		{
-			if (s_classToConstructorInfo != null) return;
-
-			s_classToConstructorInfo = new Dictionary<string, ConstructorInfo>();
-			// Get default constructor.
-			// Only do this once, since they are stored in a static data member.
-			foreach (var lcmType in cmObjectTypes)
+			lock (s_constructorLock)
 			{
-				if (lcmType.IsAbstract) continue;
+				if (s_classToConstructorInfo != null) return;
 
-				s_classToConstructorInfo.Add(lcmType.Name, lcmType.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, Type.EmptyTypes, null));
+				s_classToConstructorInfo = new Dictionary<string, ConstructorInfo>();
+				// Get default constructor.
+				// Only do this once, since they are stored in a static data member.
+				foreach (var lcmType in cmObjectTypes)
+				{
+					if (lcmType.IsAbstract) continue;
+
+					s_classToConstructorInfo.Add(lcmType.Name, lcmType.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, Type.EmptyTypes, null));
+				}
 			}
 		}
 
