@@ -2,6 +2,8 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+#nullable enable
+
 using System;
 using System.Diagnostics;
 using System.Text;
@@ -16,11 +18,11 @@ namespace SIL.LCModel.Core.Phonology
 	/// </summary>
 	public class PhonEnvRecognizer
 	{
-		private bool m_fSuccess;
-		private string m_sErrorMessage;
-		private PhonEnvParser m_parser;
-		private string[] m_saNaturalClasses;
-		private string[] m_saSegments;
+		private bool m_fSuccess = false;
+		private string m_sErrorMessage = "";
+		private PhonEnvParser? m_parser;
+		private string[] m_saNaturalClasses = {};
+		private string[] m_saSegments = {};
 
 
 		/// <summary>
@@ -47,7 +49,7 @@ namespace SIL.LCModel.Core.Phonology
 		/// <param name="saSegments">The new set of segments.</param>
 		public void ResetSegments(string[] saSegments)
 		{
-			m_parser.ResetSegments(saSegments);
+			m_parser!.ResetSegments(saSegments);
 
 		}
 
@@ -57,7 +59,7 @@ namespace SIL.LCModel.Core.Phonology
 		/// <param name="saNaturalClasses"></param>
 		public void ResetNaturalClasses(string[] saNaturalClasses)
 		{
-			m_parser.ResetNaturalClasses(saNaturalClasses);
+			m_parser!.ResetNaturalClasses(saNaturalClasses);
 
 		}
 
@@ -72,7 +74,7 @@ namespace SIL.LCModel.Core.Phonology
 			try
 			{
 				InitParser(sEnvironment, m_saNaturalClasses, m_saSegments);
-				m_parser.Parse(sEnvironment);
+				m_parser!.Parse(sEnvironment);
 				if (m_parser.Success)
 					m_fSuccess = true;
 				else
@@ -81,7 +83,7 @@ namespace SIL.LCModel.Core.Phonology
 			catch (CSToolsException exc)
 			{
 				StringBuilder sb = new StringBuilder();
-				if (m_parser.ErrorMessage == null)
+				if (m_parser!.ErrorMessage == null)
 				{
 					sb.Append("<phonEnv status=\"syntax\" pos=\"");
 					if (m_parser.Position != -1)

@@ -2,6 +2,8 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using SIL.LCModel.Core.KernelInterfaces;
@@ -27,7 +29,7 @@ namespace SIL.LCModel.Core.Text
 				{(int) FwTextPropType.ktptWs, new TsIntPropValue(ows, ws)}
 			};
 
-			Dictionary<int, string> strProps = null;
+			Dictionary<int, string>? strProps = null;
 			if (!string.IsNullOrEmpty(bstrStyle))
 			{
 				strProps = new Dictionary<int, string>

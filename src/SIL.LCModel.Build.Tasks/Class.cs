@@ -2,6 +2,8 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,32 +24,32 @@ namespace SIL.LCModel.Build.Tasks
 // ReSharper disable InconsistentNaming
 		public const int kTenMillion = 10000000;
 // ReSharper restore InconsistentNaming
-		private StringKeyCollection<Property> m_properties;
-		private StringKeyCollection<RelationalProperty> m_objectProperties;
-		private StringKeyCollection<RelationalProperty> m_atomicProperties;
-		private StringKeyCollection<RelationalProperty> m_atomicRefProperties;
-		private StringKeyCollection<RelationalProperty> m_atomicOwnProperties;
-		private StringKeyCollection<RelationalProperty> m_vectorProperties;
-		private StringKeyCollection<RelationalProperty> m_owningProperties;
-		private StringKeyCollection<RelationalProperty> m_referenceProperties;
-		private StringKeyCollection<RelationalProperty> m_collectionOwnProperties;
-		private StringKeyCollection<RelationalProperty> m_sequenceOwnProperties;
-		private StringKeyCollection<RelationalProperty> m_collectionRefProperties;
-		private StringKeyCollection<RelationalProperty> m_sequenceRefProperties;
-		private StringKeyCollection<RelationalProperty> m_collectionProperties;
-		private StringKeyCollection<RelationalProperty> m_sequenceProperties;
+		private StringKeyCollection<Property>? m_properties;
+		private StringKeyCollection<RelationalProperty>? m_objectProperties;
+		private StringKeyCollection<RelationalProperty>? m_atomicProperties;
+		private StringKeyCollection<RelationalProperty>? m_atomicRefProperties;
+		private StringKeyCollection<RelationalProperty>? m_atomicOwnProperties;
+		private StringKeyCollection<RelationalProperty>? m_vectorProperties;
+		private StringKeyCollection<RelationalProperty>? m_owningProperties;
+		private StringKeyCollection<RelationalProperty>? m_referenceProperties;
+		private StringKeyCollection<RelationalProperty>? m_collectionOwnProperties;
+		private StringKeyCollection<RelationalProperty>? m_sequenceOwnProperties;
+		private StringKeyCollection<RelationalProperty>? m_collectionRefProperties;
+		private StringKeyCollection<RelationalProperty>? m_sequenceRefProperties;
+		private StringKeyCollection<RelationalProperty>? m_collectionProperties;
+		private StringKeyCollection<RelationalProperty>? m_sequenceProperties;
 
-		private StringKeyCollection<Property> m_basicProperties;
-		private StringKeyCollection<Property> m_integerProperties;
-		private StringKeyCollection<Property> m_booleanProperties;
-		private StringKeyCollection<Property> m_guidProperties;
-		private StringKeyCollection<Property> m_dateTimeProperties;
-		private StringKeyCollection<Property> m_genDateProperties;
-		private StringKeyCollection<Property> m_binaryProperties;
-		private StringKeyCollection<Property> m_tsStringProperties;
-		private StringKeyCollection<Property> m_multiProperties;
-		private StringKeyCollection<Property> m_unicodeProperties;
-		private StringKeyCollection<Property> m_textPropBinaryProperties;
+		private StringKeyCollection<Property>? m_basicProperties;
+		private StringKeyCollection<Property>? m_integerProperties;
+		private StringKeyCollection<Property>? m_booleanProperties;
+		private StringKeyCollection<Property>? m_guidProperties;
+		private StringKeyCollection<Property>? m_dateTimeProperties;
+		private StringKeyCollection<Property>? m_genDateProperties;
+		private StringKeyCollection<Property>? m_binaryProperties;
+		private StringKeyCollection<Property>? m_tsStringProperties;
+		private StringKeyCollection<Property>? m_multiProperties;
+		private StringKeyCollection<Property>? m_unicodeProperties;
+		private StringKeyCollection<Property>? m_textPropBinaryProperties;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -171,7 +173,7 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value>The base class.</value>
 		/// ------------------------------------------------------------------------------------
-		public Class BaseClass
+		public Class? BaseClass
 		{
 			get
 			{
@@ -680,7 +682,7 @@ namespace SIL.LCModel.Build.Tasks
 			}
 		}
 
-		private static StringKeyCollection<Property> GatherNonObjectProperties(ref StringKeyCollection<Property> propertyCollection, IEnumerable<Property> query)
+		private static StringKeyCollection<Property> GatherNonObjectProperties(ref StringKeyCollection<Property>? propertyCollection, IEnumerable<Property> query)
 		{
 			if (propertyCollection == null)
 			{
@@ -692,7 +694,7 @@ namespace SIL.LCModel.Build.Tasks
 			return propertyCollection;
 		}
 
-		private static StringKeyCollection<RelationalProperty> GatherObjectProperties(ref StringKeyCollection<RelationalProperty> propertyCollection, IEnumerable<RelationalProperty> query)
+		private static StringKeyCollection<RelationalProperty> GatherObjectProperties(ref StringKeyCollection<RelationalProperty>? propertyCollection, IEnumerable<RelationalProperty> query)
 		{
 			if (propertyCollection == null)
 			{
