@@ -256,6 +256,11 @@ namespace SIL.LCModel.FixData
 							errorLogger(String.Format(Strings.ksRemovingObjectWithBadOwner, guidOwner, className, guid), true);
 							return false;
 						}
+						else
+						{
+							errorLogger(String.Format(Strings.ksRemovingDisownedObject, guidOwner, className, guid), true);
+							return false;
+						}
 					}
 				}
 				else if (storedOwner != Guid.Empty)

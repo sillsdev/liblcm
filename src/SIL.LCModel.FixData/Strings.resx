@@ -135,6 +135,9 @@
   <data name="ksRemovingObjectWithBadOwner" xml:space="preserve">
     <value>Removing object with nonexistent owner (invalid ownerguid='{0}', class='{1}', guid='{2}').</value>
   </data>
+  <data name="ksRemovingDisownedObject" xml:space="preserve">
+    <value>Removing disowned object (invalid ownerguid='{0}', class='{1}', guid='{2}').</value>
+  </data>
   <data name="ksAddingLinkToOwner" xml:space="preserve">
     <value>Adding ownerguid='{0}' (class='{1}', guid='{2}').</value>
   </data>
