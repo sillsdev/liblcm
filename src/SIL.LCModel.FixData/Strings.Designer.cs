@@ -259,6 +259,15 @@ namespace SIL.LCModel.FixData {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Removing disowned object (invalid ownerguid=&apos;{0}&apos;, class=&apos;{1}&apos;, guid=&apos;{2}&apos;)..
+        /// </summary>
+        public static string ksRemovingDisownedObject {
+            get {
+                return ResourceManager.GetString("ksRemovingDisownedObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Removing owner of empty sequence (guid=&apos;{0}&apos; class=&apos;{1}&apos;) from its owner (guid=&apos;{2}&apos;)..
         /// </summary>
         public static string ksRemovingOwnerOfEmptySequence {

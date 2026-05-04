@@ -25,12 +25,17 @@
 
 	<rt class="WfiWordform" guid ="31c5a1c0-270e-4edf-9406-4ed445bd27c4">
 		<Analyses>
-			<objsur guid="16827d7a-cf4e-45f8-aaa1-66cef5c2cc4d" type="o"/>
+			<objsur guid="16827d7a-cf4e-45f8-aaa1-66cef5c2cc4d" t="o"/>
 		</Analyses>
 	</rt>
 	<rt class="WfiAnalysis" guid ="16827d7a-cf4e-45f8-aaa1-66cef5c2cc4d" ownerguid="31c5a1c0-270e-4edf-9406-4ed445bd27c4">
 		<MorphBundles>
-			<objsur guid="10f3db1e-33db-4d9d-9a06-e0a8e1ed8a92" type="o"/>
+			<objsur guid="10f3db1e-33db-4d9d-9a06-e0a8e1ed8a92" t="o"/>
+			<objsur guid="d70b57bc-ecfe-4e32-a590-f2852bce69fc" t="o"/>
+			<objsur guid="e4396e8e-b7d2-43ba-93bd-104cf2011aaf" t="o"/>
+			<objsur guid="cb941dc9-6f6e-44b2-97f2-07854e164b4e" t="o"/>
+			<objsur guid="9665bf3b-2aab-4f7f-88a9-4ca738b75110" t="o"/>
+			<objsur guid="5752ed24-40e1-4282-9ba0-d82c89592432" t="o"/>
 		</MorphBundles>
 	</rt>
 	<rt class="WfiMorphBundle" guid ="10f3db1e-33db-4d9d-9a06-e0a8e1ed8a92" ownerguid="16827d7a-cf4e-45f8-aaa1-66cef5c2cc4d">

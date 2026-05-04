@@ -20,12 +20,12 @@
 
 	<rt class="WfiWordform" guid ="31c5a1c0-270e-4edf-9406-4ed445bd27c4">
 		<Analyses>
-			<objsur guid="16827d7a-cf4e-45f8-aaa1-66cef5c2cc4d" type="o"/>
+			<objsur guid="16827d7a-cf4e-45f8-aaa1-66cef5c2cc4d" t="o"/>
 		</Analyses>
 	</rt>
 	<rt class="WfiAnalysis" guid ="16827d7a-cf4e-45f8-aaa1-66cef5c2cc4d" ownerguid="31c5a1c0-270e-4edf-9406-4ed445bd27c4">
 		<MorphBundles>
-			<objsur guid="10f3db1e-33db-4d9d-9a06-e0a8e1ed8a92" type="o"/>
+			<objsur guid="10f3db1e-33db-4d9d-9a06-e0a8e1ed8a92" t="o"/>
 		</MorphBundles>
 	</rt>
 	<rt class="WfiMorphBundle" guid ="10f3db1e-33db-4d9d-9a06-e0a8e1ed8a92" ownerguid="16827d7a-cf4e-45f8-aaa1-66cef5c2cc4d">

@@ -441,6 +441,8 @@ namespace SIL.LCModel.FixData.Tests
 			var danglingMorphGoodSenseGuid = "9665bf3b-2aab-4f7f-88a9-4ca738b75110";
 			var danglingMorphNoRepairGuid = "5752ed24-40e1-4282-9ba0-d82c89592432";
 			var danglingMorphNoRepairAfGuid = "1f568cae-b0f8-413d-84a6-41cbd90923e9";
+			var disownedOwnerGuid = "16827d7a-cf4e-45f8-aaa1-66cef5c2cc4d";
+			var disownedGuid = "1f568cae-b0f8-413d-84a6-41cbd90923e9";
 
 			// Verify initial state.
 			// We start out with morph bundles that have broken links.
@@ -463,7 +465,7 @@ namespace SIL.LCModel.FixData.Tests
 				"//rt[@class=\"WfiMorphBundle\" and @guid=\"" + danglingMorphNoRepairAfGuid + "\"]/Morph/objsur[@guid=\"" + danglingMsaGuid + "\"]", 1);
 
 			// Check errors
-			Assert.AreEqual(10, _errors.Count, "Unexpected number of errors found.");
+			Assert.AreEqual(11, _errors.Count, "Unexpected number of errors found.");
 			Assert.True(_errors[0].StartsWith("Removing dangling link to '" + danglingMsaGuid + "' (class='LexEntry'"),
 				"Error message is incorrect."); // OriginalFixer--ksRemovingLinkToNonexistingObject
 			Assert.That(_errors[1], Is.EqualTo("Fixing link to MSA based on Sense MSA (class='WfiMorphBundle', guid='" + repairableBundleGuid + "')."),
@@ -480,7 +482,9 @@ namespace SIL.LCModel.FixData.Tests
 				"Error message is incorrect."); // MorphBundleFixer--ksRemovingDanglingMsa
 			Assert.That(_errors[8], Is.EqualTo("Removing dangling link to Form '" + danglingMsaGuid + "' for WfiMorphBundle '" + danglingMorphNoRepairGuid + "'."),
 				"Error message is incorrect."); // MorphBundleFixer--ksRemovingDanglingMorph
-			Assert.That(_errors[9], Is.EqualTo("Removing dangling link to Form '" + danglingMsaGuid + "' for WfiMorphBundle '" + danglingMorphNoRepairAfGuid + "'."),
+			Assert.True(_errors[9].StartsWith("Removing disowned object (invalid ownerguid='" + disownedOwnerGuid + "', class='WfiMorphBundle', guid='" + disownedGuid),
+				"Error message is incorrect."); // MorphBundleFixer--ksRemovingDanglingMorph
+			Assert.That(_errors[10], Is.EqualTo("Removing dangling link to Form '" + danglingMsaGuid + "' for WfiMorphBundle '" + danglingMorphNoRepairAfGuid + "'."),
 				"Error message is incorrect."); // MorphBundleFixer--ksRemovingDanglingMorph
 
 			// Check file repair
@@ -498,6 +502,8 @@ namespace SIL.LCModel.FixData.Tests
 				"//rt[@class=\"WfiMorphBundle\" and @guid=\"" + danglingMorphNoRepairGuid + "\"]/Morph", 0);  // must remove Morph, not just child objsur
 			AssertThatXmlIn.File(Path.Combine(testPath, "BasicFixup.fwdata")).HasSpecifiedNumberOfMatchesForXpath(
 				"//rt[@class=\"WfiMorphBundle\" and @guid=\"" + danglingMorphNoRepairAfGuid + "\"]/Morph/objsur", 0);
+			AssertThatXmlIn.File(Path.Combine(testPath, "BasicFixup.fwdata")).HasSpecifiedNumberOfMatchesForXpath(
+				"//rt[@class=\"WfiMorphBundle\" and @guid=\"" + disownedGuid + "\"]/Morph/objsur", 0);
 		}
 
 		/// <summary>
