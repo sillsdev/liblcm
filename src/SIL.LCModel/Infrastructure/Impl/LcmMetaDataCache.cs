@@ -69,25 +69,29 @@ namespace SIL.LCModel.Infrastructure.Impl
 		#endregion Data Members for IFwMetaDataCache Support
 
 		#region Construction
+		private static readonly object s_constructorLock = new object();
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		internal LcmMetaDataCache()
 		{
-			m_initialized = false;
+			lock (s_constructorLock)
+			{
+				m_initialized = false;
 
-			// Reset static counters for attrs.
-			VirtualPropertyAttribute.ResetFlidCounter();
-			FieldDescription.ClearDataAbout();
+				// Reset static counters for attrs.
+				VirtualPropertyAttribute.ResetFlidCounter();
+				FieldDescription.ClearDataAbout();
 
-			var cmObjectTypesBaseFirst = CmObjectTypesBaseFirst();
+				var cmObjectTypesBaseFirst = CmObjectTypesBaseFirst();
 
-			CmObjectSurrogate.InitializeConstructors(cmObjectTypesBaseFirst);
+				CmObjectSurrogate.InitializeConstructors(cmObjectTypesBaseFirst);
 
-			InitializeMetaDataCache(cmObjectTypesBaseFirst);
+				InitializeMetaDataCache(cmObjectTypesBaseFirst);
 
-			m_initialized = true;
+				m_initialized = true;
+			}
 		}
 
 		/// <summary/>
