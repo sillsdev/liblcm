@@ -935,6 +935,10 @@ namespace SIL.LCModel.DomainServices
 						m_defaultFontInfo.m_fontName.ExplicitValue = sProp;
 						break;
 
+					case (int)FwTextPropType.ktptFontVariations:
+						m_defaultFontInfo.m_features.ExplicitValue = sProp;
+						break;
+
 					case (int)FwTextPropType.ktptBulNumTxtBef:
 						{
 							m_bulletInfo.IsInherited = false;

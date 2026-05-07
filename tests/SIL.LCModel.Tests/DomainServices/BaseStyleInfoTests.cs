@@ -402,6 +402,22 @@ namespace SIL.LCModel.DomainServices
 				"The child entry in the StyleInfoCollection did not inherit the fontName properly");
 		}
 
+		[Test]
+		public void SetPropertiesBasedOnStyle_LoadsDefaultFontVariations()
+		{
+			var mainTitleStyle = AddTestStyle("Title Main", ContextValues.Title,
+				StructureValues.Body, FunctionValues.Prose, false, Cache.LangProject.StylesOC);
+			ITsPropsBldr props = mainTitleStyle.Rules.GetBldr();
+			props.SetStrPropValue((int)FwTextPropType.ktptFontVariations, "kern=0,smcp=1");
+			mainTitleStyle.Rules = props.GetTextProps();
+
+			var entry = new DummyStyleInfo(mainTitleStyle);
+			FontInfo fontInfo = entry.FontInfoForWs(-1);
+
+			Assert.IsTrue(fontInfo.m_features.IsExplicit);
+			Assert.AreEqual("kern=0,smcp=1", fontInfo.m_features.Value);
+		}
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Tests retrieving WS specific overrides from string
