@@ -75,7 +75,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="message">The message.</param>
 		/// <param name="innerException">The inner exception.</param>
 		/// ------------------------------------------------------------------------------------
-		public WorkerThreadException(string message, Exception innerException)
+		public WorkerThreadException(string message, Exception? innerException)
 			: base(message, innerException)
 		{
 		}

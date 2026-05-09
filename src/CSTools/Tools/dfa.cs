@@ -46,7 +46,7 @@ namespace SIL.LCModel.Tools
 		public string m_refToken = "";
 		public string m_initialisation = "";
 		public string m_implement = "";
-		public static object Serialise(object o,Serialiser s)
+		public static object? Serialise(object o,Serialiser s)
 		{
 			if (s==null)
 				return new TokClassDef();
@@ -70,7 +70,7 @@ namespace SIL.LCModel.Tools
 			m_tokens = tks.m_tokens;
 		}
 #endif
-		Tokens m_tokens = null;
+		Tokens? m_tokens = null;
 		public static void SetTokens(Tokens tks, Hashtable h) // needed after deserialisation
 		{
 			foreach (Dfa v in h.Values)
@@ -88,7 +88,7 @@ namespace SIL.LCModel.Tools
 			public Action a_next;
 			public Action(int act,Action next) { a_act = act; a_next = next; }
 			Action() {}
-			public static object Serialise(object o,Serialiser s)
+			public static object? Serialise(object o,Serialiser s)
 			{
 				if (s==null)
 					return new Action();
@@ -176,7 +176,7 @@ namespace SIL.LCModel.Tools
 				}
 		}
 
-		internal Dfa Target(char ch)
+		internal Dfa? Target(char ch)
 		{ // construct or lookup the target for a new arc
 			Dfa n = new Dfa(m_tks);
 
@@ -223,7 +223,7 @@ namespace SIL.LCModel.Tools
 		public int Match(string str,int ix,ref int action)
 		{ // return number of chars matched
 			int r=0;
-			Dfa dfa=null;
+			Dfa? dfa =null;
 			// if there is no arc or the string is exhausted, this is okay at a terminal
 			if (ix>=str.Length ||
 				(dfa=((Dfa)m_map[m_tokens.Filter(str[ix])]))==null ||
@@ -295,7 +295,7 @@ namespace SIL.LCModel.Tools
 			}
 		}
 #endif
-		public static object Serialise(object o,Serialiser s)
+		public static object? Serialise(object o,Serialiser s)
 		{
 			if (s==null)
 				return new Dfa();
@@ -542,7 +542,7 @@ namespace SIL.LCModel.Tools
 				tks.erh.Error(new CSToolsFatalException(1,tks.line(p),tks.position(p),str,String.Format("ill-formed regular expression <{0}>\n", str)));
 		}
 		protected Regex() {} // private
-		public Regex m_sub;
+		public Regex? m_sub;
 		public virtual void Print(TextWriter s)
 		{
 			if (m_sub!=null)
@@ -1068,8 +1068,8 @@ namespace SIL.LCModel.Tools
 	// shame we have to do this ourselves, but SortedList doesn't allow incremental building of Dfas
 	internal class NList
 	{ // sorted List of NfaNode
-		public NfaNode m_node; // null for the sentinel
-		public NList m_next;
+		public NfaNode? m_node; // null for the sentinel
+		public NList? m_next;
 		public NList() { m_node=null; m_next=null; } // sentinel only
 		NList(NfaNode nd,NList nx) { m_node=nd; m_next=nx; }
 		public bool Add(NfaNode n)

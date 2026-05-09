@@ -51,7 +51,7 @@ namespace SIL.LCModel.Build.Tasks
 		/// ------------------------------------------------------------------------------------
 		public string Name
 		{
-			get { return m_node.Attributes["id"].Value; }
+			get { return m_node.Attributes["id"]!.Value; }
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -75,13 +75,13 @@ namespace SIL.LCModel.Build.Tasks
 		/// <param name="tabs">The tabs.</param>
 		/// <param name="parentNode">The parent node.</param>
 		/// <returns></returns>
-		protected static string AsMSString(string tabs, XmlNode parentNode)
+		protected static string AsMSString(string tabs, XmlNode? parentNode)
 		{
 			if (parentNode == null)
 				return string.Empty;
 
 			var retval = string.Empty;
-			foreach (XmlNode paraNode in parentNode.SelectNodes("para"))
+			foreach (XmlNode paraNode in parentNode.SelectNodes("para")!)
 				retval = retval + tabs+ "/// " + paraNode.OuterXml + Environment.NewLine;
 			return retval.TrimEnd();
 		}

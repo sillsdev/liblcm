@@ -8,6 +8,7 @@
     <IsPackable>false</IsPackable>
     <OutputType>Exe</OutputType>
     <NoWarn>1701;1702;0162</NoWarn>
+	  <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

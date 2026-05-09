@@ -2,6 +2,8 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -148,7 +150,7 @@ namespace SIL.LCModel.Core.Cellar
 		/// <param name="year"></param>
 		/// <param name="ad"></param>
 		/// <returns></returns>
-		public static string ValidateParts(int month, int day, int year, bool ad)
+		public static string? ValidateParts(int month, int day, int year, bool ad)
 		{
 			if (year != UnknownYear && (year < MinYear || year > MaxYear))
 				return "year";
@@ -401,7 +403,7 @@ namespace SIL.LCModel.Core.Cellar
 			return ToLongString();
 		}
 
-		private static string[] s_monthNames = null;
+		private static string[]? s_monthNames = null;
 
 		/// <summary>
 		/// Try to parse the string as a generic date.  If successful, return true and set all

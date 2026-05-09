@@ -7,6 +7,8 @@
 // Implementation of the additional interface information should go into the RepositoryAdditions.cs file.
 // </remarks>
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using SIL.LCModel.Core.KernelInterfaces;
@@ -236,7 +238,7 @@ namespace SIL.LCModel
 		/// <returns>The footnote referenced in the properties or <c>null</c> if the properties
 		/// were not for a footnote ORC</returns>
 		/// ------------------------------------------------------------------------------------
-		IScrFootnote GetFootnoteFromProps(ITsTextProps ttp);
+		IScrFootnote? GetFootnoteFromProps(ITsTextProps ttp);
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -385,11 +387,11 @@ namespace SIL.LCModel
 		/// <param name="mmtEnclitic"></param>
 		/// <param name="mmtSimulfix"></param>
 		/// <param name="mmtSuprafix"></param>
-		void GetMajorMorphTypes(out IMoMorphType mmtStem, out IMoMorphType mmtPrefix,
-			out IMoMorphType mmtSuffix, out IMoMorphType mmtInfix,
-			out IMoMorphType mmtBoundStem, out IMoMorphType mmtProclitic,
-			out IMoMorphType mmtEnclitic, out IMoMorphType mmtSimulfix,
-			out IMoMorphType mmtSuprafix);
+		void GetMajorMorphTypes(out IMoMorphType? mmtStem, out IMoMorphType? mmtPrefix,
+			out IMoMorphType? mmtSuffix, out IMoMorphType? mmtInfix,
+			out IMoMorphType? mmtBoundStem, out IMoMorphType? mmtProclitic,
+			out IMoMorphType? mmtEnclitic, out IMoMorphType? mmtSimulfix,
+			out IMoMorphType? mmtSuprafix);
 	}
 
 	public partial interface ILexEntryRepository
@@ -450,7 +452,7 @@ namespace SIL.LCModel
 		/// <param name="tssWf"></param>
 		/// <returns></returns>
 		/// ------------------------------------------------------------------------------------
-		ILexEntry FindEntryForWordform(LcmCache cache, ITsString tssWf);
+		ILexEntry? FindEntryForWordform(LcmCache cache, ITsString tssWf);
 	}
 
 	internal interface ILexEntryRepositoryInternal
@@ -599,7 +601,7 @@ namespace SIL.LCModel
 		/// <param name="bookId">The canonical number (1-based) of the desired book</param>
 		/// <param name="checkId">A GUID that uniquely identifies the editorial check</param>
 		/// <returns>The run history for the requested check or <c>null</c></returns>
-		IScrCheckRun InstanceForCheck(int bookId, Guid checkId);
+		IScrCheckRun? InstanceForCheck(int bookId, Guid checkId);
 	}
 
 	public partial interface IPublicationRepository
@@ -609,7 +611,7 @@ namespace SIL.LCModel
 		/// </summary>
 		/// <param name="name">Name of the desired publication</param>
 		/// <returns>The publication or null if no matching publicaiton is found</returns>
-		IPublication FindByName(string name);
+		IPublication? FindByName(string name);
 	}
 
 	public partial interface IScrDraftRepository

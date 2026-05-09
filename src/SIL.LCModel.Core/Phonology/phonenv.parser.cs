@@ -2,6 +2,8 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+#nullable enable
+
 using System.Text;
 using SIL.LCModel.Tools;
 
@@ -65,15 +67,15 @@ public class OptionalSegment_2_1 : OptionalSegment_2 {
   public OptionalSegment_2_1(Parser yyq):base(yyq){
 				((PhonEnvParser
 )yyq).CreateErrorMessage(PhonEnvParser.SyntaxErrType.missingClosingParen.ToString(),
-	((TOKEN)(yyq.StackAt(2).m_value))
+	((TOKEN)(yyq.StackAt(2).m_value!))
 	.yytext,
-	((error)(yyq.StackAt(0).m_value))
+	((error)(yyq.StackAt(0).m_value!))
 	.pos);
 					((PhonEnvParser
 )yyq).SyntaxErrorType = PhonEnvParser.SyntaxErrType.missingClosingParen;
 					((PhonEnvParser
 )yyq).Position =
-	((error)(yyq.StackAt(0).m_value))
+	((error)(yyq.StackAt(0).m_value!))
 	.pos;
 					}}
 /// <summary/>
@@ -93,15 +95,15 @@ public class OptionalSegment_4_1 : OptionalSegment_4 {
   public OptionalSegment_4_1(Parser yyq):base(yyq){
 					((PhonEnvParser
 )yyq).CreateErrorMessage(PhonEnvParser.SyntaxErrType.missingOpeningParen.ToString(),
-	((TOKEN)(yyq.StackAt(1).m_value))
+	((TOKEN)(yyq.StackAt(1).m_value!))
 	.yytext,
-	((Segment)(yyq.StackAt(2).m_value))
+	((Segment)(yyq.StackAt(2).m_value!))
 	.pos);
 					((PhonEnvParser
 )yyq).SyntaxErrorType = PhonEnvParser.SyntaxErrType.missingOpeningParen;
 					((PhonEnvParser
 )yyq).Position =
-	((Segment)(yyq.StackAt(2).m_value))
+	((Segment)(yyq.StackAt(2).m_value!))
 	.pos;
 					}}
 /// <summary/>
@@ -135,15 +137,15 @@ public class Class_2_1 : Class_2 {
   public Class_2_1(Parser yyq):base(yyq){
 				((PhonEnvParser
 )yyq).CreateErrorMessage(PhonEnvParser.SyntaxErrType.missingClosingSquareBracket.ToString(),
-	((TOKEN)(yyq.StackAt(2).m_value))
+	((TOKEN)(yyq.StackAt(2).m_value!))
 	.yytext,
-	((error)(yyq.StackAt(0).m_value))
+	((error)(yyq.StackAt(0).m_value!))
 	.pos);
 		   ((PhonEnvParser
 )yyq).SyntaxErrorType = PhonEnvParser.SyntaxErrType.missingClosingSquareBracket;
 		   ((PhonEnvParser
 )yyq).Position =
-	((error)(yyq.StackAt(0).m_value))
+	((error)(yyq.StackAt(0).m_value!))
 	.pos;
 		   }}
 /// <summary/>
@@ -163,15 +165,15 @@ public class Class_4_1 : Class_4 {
   public Class_4_1(Parser yyq):base(yyq){
 		   ((PhonEnvParser
 )yyq).CreateErrorMessage(PhonEnvParser.SyntaxErrType.missingOpeningSquareBracket.ToString(),
-	((TOKEN)(yyq.StackAt(1).m_value))
+	((TOKEN)(yyq.StackAt(1).m_value!))
 	.yytext,
-	((Ident)(yyq.StackAt(2).m_value))
+	((Ident)(yyq.StackAt(2).m_value!))
 	.pos);
 		   ((PhonEnvParser
 )yyq).SyntaxErrorType = PhonEnvParser.SyntaxErrType.missingOpeningSquareBracket;
 		   ((PhonEnvParser
 )yyq).Position =
-	((Ident)(yyq.StackAt(2).m_value))
+	((Ident)(yyq.StackAt(2).m_value!))
 	.pos;
 		   }}
 /// <summary/>
@@ -193,19 +195,19 @@ public class Class_6_1 : Class_6 {
 
 			if (!((PhonEnvParser
 )yyq).IsValidClass(
-	((Ident)(yyq.StackAt(1).m_value))
+	((Ident)(yyq.StackAt(1).m_value!))
 	.yytext))
 			{
 
 				((PhonEnvParser
 )yyq).CreateErrorMessage("class",
-	((Ident)(yyq.StackAt(1).m_value))
+	((Ident)(yyq.StackAt(1).m_value!))
 	.yytext,
-	((Ident)(yyq.StackAt(1).m_value))
+	((Ident)(yyq.StackAt(1).m_value!))
 	.pos);
 				((PhonEnvParser
 )yyq).ThrowError(
-	((Ident)(yyq.StackAt(1).m_value))
+	((Ident)(yyq.StackAt(1).m_value!))
 	.pos);
 			}
 			}}
@@ -228,11 +230,11 @@ public class Class_8_1 : Class_8 {
 
 			StringBuilder sb = new StringBuilder();
 			sb.Append(
-	((Ident)(yyq.StackAt(2).m_value))
+	((Ident)(yyq.StackAt(2).m_value!))
 	.yytext);
 			sb.Append(" ");
 			sb.Append(
-	((Ident)(yyq.StackAt(1).m_value))
+	((Ident)(yyq.StackAt(1).m_value!))
 	.yytext);
 			if (!((PhonEnvParser
 )yyq).IsValidClass(sb.ToString()))
@@ -240,11 +242,11 @@ public class Class_8_1 : Class_8 {
 
 				((PhonEnvParser
 )yyq).CreateErrorMessage("class", sb.ToString(),
-	((Ident)(yyq.StackAt(2).m_value))
+	((Ident)(yyq.StackAt(2).m_value!))
 	.pos);
 				((PhonEnvParser
 )yyq).ThrowError(
-	((Ident)(yyq.StackAt(2).m_value))
+	((Ident)(yyq.StackAt(2).m_value!))
 	.pos);
 			}
 			}}
@@ -265,15 +267,15 @@ public class Class_10_1 : Class_10 {
   public Class_10_1(Parser yyq):base(yyq){
 			StringBuilder sb = new StringBuilder();
 			sb.Append(
-	((Ident)(yyq.StackAt(3).m_value))
+	((Ident)(yyq.StackAt(3).m_value!))
 	.yytext);
 			sb.Append(" ");
 			sb.Append(
-	((Ident)(yyq.StackAt(2).m_value))
+	((Ident)(yyq.StackAt(2).m_value!))
 	.yytext);
 			sb.Append(" ");
 			sb.Append(
-	((Ident)(yyq.StackAt(1).m_value))
+	((Ident)(yyq.StackAt(1).m_value!))
 	.yytext);
 			if (!((PhonEnvParser
 )yyq).IsValidClass(sb.ToString()))
@@ -281,11 +283,11 @@ public class Class_10_1 : Class_10 {
 
 				((PhonEnvParser
 )yyq).CreateErrorMessage("class", sb.ToString(),
-	((Ident)(yyq.StackAt(3).m_value))
+	((Ident)(yyq.StackAt(3).m_value!))
 	.pos);
 				((PhonEnvParser
 )yyq).ThrowError(
-	((Ident)(yyq.StackAt(3).m_value))
+	((Ident)(yyq.StackAt(3).m_value!))
 	.pos);
 			}
 			}}
@@ -308,19 +310,19 @@ public class Class_12_1 : Class_12 {
 
 			StringBuilder sb = new StringBuilder();
 			sb.Append(
-	((Ident)(yyq.StackAt(4).m_value))
+	((Ident)(yyq.StackAt(4).m_value!))
 	.yytext);
 			sb.Append(" ");
 			sb.Append(
-	((Ident)(yyq.StackAt(3).m_value))
+	((Ident)(yyq.StackAt(3).m_value!))
 	.yytext);
 			sb.Append(" ");
 			sb.Append(
-	((Ident)(yyq.StackAt(2).m_value))
+	((Ident)(yyq.StackAt(2).m_value!))
 	.yytext);
 			sb.Append(" ");
 			sb.Append(
-	((Ident)(yyq.StackAt(1).m_value))
+	((Ident)(yyq.StackAt(1).m_value!))
 	.yytext);
 			if (!((PhonEnvParser
 )yyq).IsValidClass(sb.ToString()))
@@ -328,11 +330,11 @@ public class Class_12_1 : Class_12 {
 
 				((PhonEnvParser
 )yyq).CreateErrorMessage("class", sb.ToString(),
-	((Ident)(yyq.StackAt(4).m_value))
+	((Ident)(yyq.StackAt(4).m_value!))
 	.pos);
 				((PhonEnvParser
 )yyq).ThrowError(
-	((Ident)(yyq.StackAt(4).m_value))
+	((Ident)(yyq.StackAt(4).m_value!))
 	.pos);
 			}
 			}}
@@ -359,17 +361,17 @@ public class Literal_2_1 : Literal_2 {
 /// <param name='yyq'></param>
   public Literal_2_1(Parser yyq):base(yyq){
 			int iPos =
-	((Ident)(yyq.StackAt(0).m_value))
+	((Ident)(yyq.StackAt(0).m_value!))
 	.pos;
 			if (!((PhonEnvParser
 )yyq).IsValidSegment(
-	((Ident)(yyq.StackAt(0).m_value))
+	((Ident)(yyq.StackAt(0).m_value!))
 	.yytext, ref iPos))
 			{
 
 				((PhonEnvParser
 )yyq).CreateErrorMessage("segment",
-	((Ident)(yyq.StackAt(0).m_value))
+	((Ident)(yyq.StackAt(0).m_value!))
 	.yytext, iPos);
 				((PhonEnvParser
 )yyq).ThrowError(iPos);
@@ -382,7 +384,7 @@ public class yyPhonEnvParser
 /// <param name='yyq'></param>
 /// <param name='yysym'></param>
 /// <param name='yyact'></param>
-  public override object Action(Parser yyq,SYMBOL yysym, int yyact) {
+  public override object? Action(Parser yyq,SYMBOL yysym, int yyact) {
 	switch(yyact) {
 	 case -1: break; //// keep compiler happy
 }  return null; }
