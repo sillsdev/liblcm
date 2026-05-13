@@ -267,6 +267,42 @@ namespace SIL.LCModel.DomainImpl
 			}
 		}
 
+		/// <summary>
+		/// Exercises the entry-level wrapper
+		/// (Algorithm behaviour is covered by HomographValidationWorks.)
+		/// </summary>
+		[Test]
+		public void CorrectHomographNumbers_OnEntry_RenumbersInvalidSet()
+		{
+			const string sLexForm = "entryCorrectHnTest";
+			var e1 = MakeEntry(sLexForm);
+			var e2 = MakeEntry(sLexForm);
+			var e3 = MakeEntry(sLexForm);
+
+			e1.HomographNumber = 2;
+			e2.HomographNumber = 2;
+			e3.HomographNumber = 0;
+
+			Assert.IsFalse(e1.CorrectHomographNumbers(), "Invalid set should be renumbered.");
+			CollectionAssert.AreEquivalent(new[] { 1, 2, 3 },
+				new[] { e1.HomographNumber, e2.HomographNumber, e3.HomographNumber });
+			Assert.IsTrue(e1.CorrectHomographNumbers(), "Already-valid set: no change.");
+		}
+
+		/// <summary>
+		/// Empty-form branch added on top of LexDb.CorrectHomographNumbers.
+		/// </summary>
+		[Test]
+		public void CorrectHomographNumbers_OnEntryWithEmptyForm_ForcesZero()
+		{
+			var entry = MakeEntry("");
+			Assert.AreEqual(Strings.ksQuestions, entry.HomographFormKey);
+			entry.HomographNumber = 7;
+
+			Assert.IsFalse(entry.CorrectHomographNumbers());
+			Assert.AreEqual(0, entry.HomographNumber);
+		}
+
 		private ILexEntry MakeEntry(string sLexForm)
 		{
 			var lme = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();

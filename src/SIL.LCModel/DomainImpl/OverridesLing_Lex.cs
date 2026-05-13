@@ -2044,6 +2044,20 @@ namespace SIL.LCModel.DomainImpl
 			return result;
 		}
 
+		/// <summary>See <see cref="ILexEntry.CorrectHomographNumbers"/>.</summary>
+		public bool CorrectHomographNumbers()
+		{
+			if (HomographFormKey == Strings.ksQuestions)
+			{
+				if (HomographNumber == 0) return true;
+				HomographNumber = 0;
+				return false;
+			}
+			var homographs = Services.GetInstance<ILexEntryRepository>()
+				.CollectHomographs(HomographFormKey, PrimaryMorphType);
+			return LexDb.CorrectHomographNumbers(homographs);
+		}
+
 		partial void LexemeFormOASideEffects(IMoForm oldObjValue, IMoForm newObjValue)
 		{
 			string oldVal = oldObjValue == null ? "" : oldObjValue.Form.VernacularDefaultWritingSystem.Text;
