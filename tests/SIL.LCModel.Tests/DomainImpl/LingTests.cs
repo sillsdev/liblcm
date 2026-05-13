@@ -268,6 +268,36 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
+		/// When a full renumber is needed, ties on HomographNumber are broken by
+		/// DateCreated (then Guid) so that the outcome is entirely deterministic.
+		/// </summary>
+		[Test]
+		public void CorrectHomographNumbers_FullRenumber_TieBreaksByDateCreated()
+		{
+			const string sLexForm = "tieBreakTest";
+			var e1 = MakeEntry(sLexForm);
+			var e2 = MakeEntry(sLexForm);
+			var e3 = MakeEntry(sLexForm);
+
+			e1.HomographNumber = 5;
+			e2.HomographNumber = 5;
+			e3.HomographNumber = 5;
+
+			// Reverse natural creation order so DateCreated differs from insertion order.
+			var baseTime = new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+			e3.DateCreated = baseTime;
+			e2.DateCreated = baseTime.AddMinutes(1);
+			e1.DateCreated = baseTime.AddMinutes(2);
+
+			var fOk = LexDb.CorrectHomographNumbers(new List<ILexEntry> { e1, e2, e3 });
+
+			Assert.IsFalse(fOk, "CorrectHomographNumbers had to renumber homographs");
+			Assert.AreEqual(1, e3.HomographNumber, "oldest DateCreated wins HN=1");
+			Assert.AreEqual(2, e2.HomographNumber);
+			Assert.AreEqual(3, e1.HomographNumber, "newest DateCreated gets HN=3");
+		}
+
+		/// <summary>
 		/// Algorithm behaviour is covered by HomographValidationWorks.
 		/// This just exercises the wrapper.
 		/// </summary>

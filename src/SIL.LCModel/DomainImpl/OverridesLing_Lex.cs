@@ -417,8 +417,13 @@ namespace SIL.LCModel.DomainImpl
 			{
 				// Should we notify the user that we're doing this helpful renumbering for him?
 				// We do our best to keep them in the same order.
+				// Tie-break on DateCreated then Guid so the result is deterministic and reasonable.
 				int n = 1;
-				foreach (ILexEntry le in rgHomographs.OrderBy(h => h.HomographNumber).ToList())
+				foreach (ILexEntry le in rgHomographs
+					.OrderBy(h => h.HomographNumber)
+					.ThenBy(h => h.DateCreated)
+					.ThenBy(h => h.Guid)
+					.ToList())
 				{
 					if (le.HomographNumber != n)
 						le.HomographNumber = n;
