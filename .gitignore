@@ -22,3 +22,5 @@ src/SIL.LCModel/IOC/Generated*.cs
 src/SIL.LCModel.Core/FwKernelTlb.idl
 src/SIL.LCModel.Core/FwKernelTlb.json
 icu4c.readme.txt
+
+*.lscache
