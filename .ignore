@@ -1,0 +1,16 @@
+[Oo]bj/
+[Bb]in/
+.nuget/
+_ReSharper.*
+packages/
+artifacts/
+*.user
+*.suo
+*.userprefs
+*.DS_Store
+*.sln.ide
+lib/downloads/
+.idea/
+.vs/
+*.bak
+icu4c.readme.txt
