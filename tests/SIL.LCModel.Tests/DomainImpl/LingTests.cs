@@ -268,13 +268,13 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
-		/// Exercises the entry-level wrapper
-		/// (Algorithm behaviour is covered by HomographValidationWorks.)
+		/// Algorithm behaviour is covered by HomographValidationWorks.
+		/// This just exercises the wrapper.
 		/// </summary>
 		[Test]
-		public void CorrectHomographNumbers_OnEntry_RenumbersInvalidSet()
+		public void CorrectHomographNumbers_RenumbersInvalidSet()
 		{
-			const string sLexForm = "entryCorrectHnTest";
+			const string sLexForm = "repoCorrectHnTest";
 			var e1 = MakeEntry(sLexForm);
 			var e2 = MakeEntry(sLexForm);
 			var e3 = MakeEntry(sLexForm);
@@ -283,23 +283,25 @@ namespace SIL.LCModel.DomainImpl
 			e2.HomographNumber = 2;
 			e3.HomographNumber = 0;
 
-			Assert.IsFalse(e1.CorrectHomographNumbers(), "Invalid set should be renumbered.");
+			var repo = Cache.ServiceLocator.GetInstance<ILexEntryRepository>();
+			Assert.IsFalse(repo.CorrectHomographNumbers(e1), "Invalid set should be renumbered.");
 			CollectionAssert.AreEquivalent(new[] { 1, 2, 3 },
 				new[] { e1.HomographNumber, e2.HomographNumber, e3.HomographNumber });
-			Assert.IsTrue(e1.CorrectHomographNumbers(), "Already-valid set: no change.");
+			Assert.IsTrue(repo.CorrectHomographNumbers(e1), "Already-valid set: no change.");
 		}
 
 		/// <summary>
 		/// Empty-form branch added on top of LexDb.CorrectHomographNumbers.
 		/// </summary>
 		[Test]
-		public void CorrectHomographNumbers_OnEntryWithEmptyForm_ForcesZero()
+		public void CorrectHomographNumbers_EmptyForm_ForcesZero()
 		{
 			var entry = MakeEntry("");
 			Assert.AreEqual(Strings.ksQuestions, entry.HomographFormKey);
 			entry.HomographNumber = 7;
 
-			Assert.IsFalse(entry.CorrectHomographNumbers());
+			var repo = Cache.ServiceLocator.GetInstance<ILexEntryRepository>();
+			Assert.IsFalse(repo.CorrectHomographNumbers(entry));
 			Assert.AreEqual(0, entry.HomographNumber);
 		}
 

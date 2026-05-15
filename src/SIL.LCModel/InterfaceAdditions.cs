@@ -1288,14 +1288,6 @@ namespace SIL.LCModel
 			get;
 		}
 
-		/// <summary>
-		/// Validate and, if needed, correct homograph numbers for this entry's homograph set.
-		/// Caller should create the unit of work.
-		/// Primarily wraps <see cref="ILexEntry.CorrectHomographNumbers"/>.
-		/// </summary>
-		/// <returns>true if homographs were already valid, false if they had to be renumbered.</returns>
-		bool CorrectHomographNumbers();
-
 		/// <summary/>
 		ITsString HeadWord
 		{

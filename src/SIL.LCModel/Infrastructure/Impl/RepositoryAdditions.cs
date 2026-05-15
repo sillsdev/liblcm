@@ -1366,6 +1366,25 @@ namespace SIL.LCModel.Infrastructure.Impl
 		}
 
 		/// <summary>
+		/// Validate and, if needed, correct homograph numbers for the set <paramref name="entry"/>
+		/// participates in. Zeros the entry's HomographNumber if form is blank (so callers
+		/// don't need to special-case that).
+		/// Caller should create the unit of work.
+		/// </summary>
+		/// <returns>true if no change was needed, false if anything was renumbered.</returns>
+		public bool CorrectHomographNumbers(ILexEntry entry)
+		{
+			var form = entry.HomographFormKey;
+			if (form == Strings.ksQuestions)
+			{
+				if (entry.HomographNumber == 0) return true;
+				entry.HomographNumber = 0;
+				return false;
+			}
+			return LexDb.CorrectHomographNumbers(CollectHomographs(form, entry.PrimaryMorphType));
+		}
+
+		/// <summary>
 		/// Main method to collect all the homographs of the given form from the given list of entries.
 		/// Set hvo to 0 to collect absolutely every matching homograph.
 		/// </summary>
