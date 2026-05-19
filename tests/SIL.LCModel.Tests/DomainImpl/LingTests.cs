@@ -267,6 +267,44 @@ namespace SIL.LCModel.DomainImpl
 			}
 		}
 
+		/// <summary>
+		/// Algorithm behaviour is covered by HomographValidationWorks.
+		/// This just exercises the wrapper.
+		/// </summary>
+		[Test]
+		public void CorrectHomographNumbers_RenumbersInvalidSet()
+		{
+			const string sLexForm = "repoCorrectHnTest";
+			var e1 = MakeEntry(sLexForm);
+			var e2 = MakeEntry(sLexForm);
+			var e3 = MakeEntry(sLexForm);
+
+			e1.HomographNumber = 2;
+			e2.HomographNumber = 2;
+			e3.HomographNumber = 0;
+
+			var repo = Cache.ServiceLocator.GetInstance<ILexEntryRepository>();
+			Assert.IsFalse(repo.CorrectHomographNumbers(e1), "Invalid set should be renumbered.");
+			CollectionAssert.AreEquivalent(new[] { 1, 2, 3 },
+				new[] { e1.HomographNumber, e2.HomographNumber, e3.HomographNumber });
+			Assert.IsTrue(repo.CorrectHomographNumbers(e1), "Already-valid set: no change.");
+		}
+
+		/// <summary>
+		/// Empty-form branch added on top of LexDb.CorrectHomographNumbers.
+		/// </summary>
+		[Test]
+		public void CorrectHomographNumbers_EmptyForm_ForcesZero()
+		{
+			var entry = MakeEntry("");
+			Assert.AreEqual(Strings.ksQuestions, entry.HomographFormKey);
+			entry.HomographNumber = 7;
+
+			var repo = Cache.ServiceLocator.GetInstance<ILexEntryRepository>();
+			Assert.IsFalse(repo.CorrectHomographNumbers(entry));
+			Assert.AreEqual(0, entry.HomographNumber);
+		}
+
 		private ILexEntry MakeEntry(string sLexForm)
 		{
 			var lme = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();

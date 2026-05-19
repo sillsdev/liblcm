@@ -427,6 +427,15 @@ namespace SIL.LCModel
 		List<ILexEntry> CollectHomographs(string sForm, IMoMorphType morphType);
 
 		/// <summary>
+		/// Validate and, if needed, correct homograph numbers for the set <paramref name="entry"/>
+		/// participates in. Zeros the entry's HomographNumber if form is blank (so callers
+		/// don't need to special-case that).
+		/// Caller should create the unit of work.
+		/// </summary>
+		/// <returns>true if no change was needed, false if anything was renumbered.</returns>
+		bool CorrectHomographNumbers(ILexEntry entry);
+
+		/// <summary>
 		/// Maps the specified morph type onto a canonical ordering that should be used in comparing two
 		/// entries to see whether they are homographs.
 		/// </summary>
