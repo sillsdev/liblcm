@@ -42,6 +42,11 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 		/// Whether or not spell checking additions are included in the backup/restore.
 		///</summary>
 		bool IncludeSpellCheckAdditions { get; }
+
+		///<summary>
+		/// Whether or not Send/Receive repository data (.hg and OtherRepositories) is included in the backup/restore.
+		///</summary>
+		bool IncludeSendReceiveData { get; }
 	}
 	#endregion
 

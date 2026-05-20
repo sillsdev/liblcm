@@ -39,6 +39,7 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 		private bool m_linkedFiles;
 		private bool m_supportingFiles;
 		private bool m_spellCheckAdditions;
+		private bool m_sendReceiveData;
 		#endregion
 
 		#region Constructors
@@ -118,6 +119,7 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 			m_projectName = settings.ProjectName;
 			m_projectPathPersisted = LcmFileHelper.GetPathWithoutRoot(settings.ProjectPath);
 			m_spellCheckAdditions = settings.IncludeSpellCheckAdditions;
+			m_sendReceiveData = settings.IncludeSendReceiveData;
 			m_dbVersion = settings.DbVersion;
 			m_fwVersion = settings.FwVersion;
 			m_linkedFilesPathRelative = LinkedFilesRelativePathHelper.GetLinkedFilesRelativePathFromFullPath(settings.ProjectsRootFolder, settings.LinkedFilesPath, settings.ProjectPath, settings.ProjectName);
@@ -372,6 +374,19 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 			get { PopulateSettingsFromZipFileIfNeeded(); return m_supportingFiles; }
 			private set { m_supportingFiles = value; }
 		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Whether or not Send/Receive repository data (.hg and OtherRepositories) is included
+		/// in the backup/restore.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[DataMember(Name = "SendReceiveData")]
+		public bool IncludeSendReceiveData
+		{
+			get { PopulateSettingsFromZipFileIfNeeded(); return m_sendReceiveData; }
+			private set { m_sendReceiveData = value; }
+		}
 		#endregion
 
 		#region Private helper methods
@@ -562,6 +577,7 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 			m_linkedFiles = settings.IncludeLinkedFiles;
 			m_supportingFiles = settings.IncludeSupportingFiles;
 			m_spellCheckAdditions = settings.IncludeSpellCheckAdditions;
+			m_sendReceiveData = settings.IncludeSendReceiveData;
 			m_dbVersion = settings.DbVersion;
 			m_fwVersion = settings.FwVersion;
 		}

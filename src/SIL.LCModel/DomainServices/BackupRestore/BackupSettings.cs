@@ -35,6 +35,7 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 		private bool m_includeMediaFiles;
 		private bool m_includeSupportingFiles;
 		private bool m_includeSpellCheckAdditions;
+		private bool m_includeSendReceiveData;
 
 		/// <summary>
 		/// The root folder for projects (typically the default, but if these settings represent
@@ -140,6 +141,15 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 		{
 			get { return m_includeSpellCheckAdditions; }
 			set { m_includeSpellCheckAdditions = value; }
+		}
+
+		///<summary>
+		/// Whether or not Send/Receive repository data (.hg and OtherRepositories) is included in the backup/restore.
+		///</summary>
+		public bool IncludeSendReceiveData
+		{
+			get { return m_includeSendReceiveData; }
+			set { m_includeSendReceiveData = value; }
 		}
 		#endregion
 
