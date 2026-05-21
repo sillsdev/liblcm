@@ -133,6 +133,9 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 			if (m_settings.IncludeSupportingFiles)
 				foreach (string file in GetSupportingFilesFilesList())
 					yield return file;
+			if (m_settings.IncludeSendReceiveData)
+				foreach (string file in GetSendReceiveFiles())
+					yield return file;
 		}
 
 		private IEnumerable<String> GetProjectFolderFilesToBackup()
@@ -182,6 +185,14 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 		private IEnumerable<String> GetSupportingFilesFilesList()
 		{
 			return GenerateFileListFolderAndSubfolders(m_settings.ProjectSupportingFilesPath);
+		}
+
+		private IEnumerable<String> GetSendReceiveFiles()
+		{
+			var files = new HashSet<String>();
+			files.UnionWith(AllFilesInADirectory(Path.Combine(m_settings.ProjectPath, ".hg")));
+			files.UnionWith(AllFilesInADirectory(LcmFileHelper.GetOtherRepositoriesDir(m_settings.ProjectPath)));
+			return files;
 		}
 
 		private IEnumerable<String> GetSpellingDictionaryFilesList()

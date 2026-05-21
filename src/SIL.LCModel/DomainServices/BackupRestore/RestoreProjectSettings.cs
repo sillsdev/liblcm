@@ -65,6 +65,7 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 			IncludeSupportingFiles = (commandLineOptions.IndexOf('f') >= 0);
 			IncludeLinkedFiles = (commandLineOptions.IndexOf('l') >= 0);
 			IncludeSpellCheckAdditions = (commandLineOptions.IndexOf('s') >= 0);
+			IncludeSendReceiveData = (commandLineOptions.IndexOf('r') >= 0);
 		}
 
 		#region Properties
@@ -87,6 +88,8 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 					bldr.Append('l');
 				if (IncludeSpellCheckAdditions)
 					bldr.Append('s');
+				if (IncludeSendReceiveData)
+					bldr.Append('r');
 				return bldr.ToString();
 			}
 		}

@@ -36,6 +36,7 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 				IncludeLinkedFiles = backupInfo.IncludeLinkedFiles;
 				IncludeSupportingFiles = backupInfo.IncludeSupportingFiles;
 				IncludeSpellCheckAdditions = backupInfo.IncludeSpellCheckAdditions;
+				IncludeSendReceiveData = backupInfo.IncludeSendReceiveData;
 			}
 		}
 

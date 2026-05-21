@@ -174,6 +174,16 @@ namespace SIL.LCModel.DomainServices.BackupRestore
 
 				CopySpellingOverrideFilesFromBackupToLocal();
 			}
+
+			if (m_restoreSettings.IncludeSendReceiveData)
+			{
+				UncompressFilesContainedInFolderandSubFolders(
+					LcmFileHelper.GetZipfileFormattedPath(".hg"),
+					Path.Combine(m_restoreSettings.ProjectPath, ".hg"));
+				UncompressFilesContainedInFolderandSubFolders(
+					LcmFileHelper.GetZipfileFormattedPath(LcmFileHelper.OtherRepositories),
+					LcmFileHelper.GetOtherRepositoriesDir(m_restoreSettings.ProjectPath));
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
