@@ -1478,10 +1478,6 @@ namespace SIL.LCModel.DomainImpl
 		/// Is the delta between the old segment boundary and the new segment boundary empty?
 		/// This fixes LT-18897.
 		/// </summary>
-		/// <param name="endOffset"></param>
-		/// <param name="ichSource"></param>
-		/// <param name="source"></param>
-		/// <returns></returns>
 		private bool DeltaIsEmpty(int endOffset, int ichSource, IStTxtPara source)
 		{
 			int start = Math.Min(endOffset, ichSource);
