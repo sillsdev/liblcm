@@ -3,6 +3,7 @@
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Icu;
@@ -32,19 +33,10 @@ namespace SIL.LCModel.Core.Attributes
 
 			PreTestPathEnvironment = Environment.GetEnvironmentVariable("PATH");
 
+			// Set ICU_DATA and PATH from build output (test assembly dir) before any Wrapper use, so tests pass without manual env.
+			SetIcuEnvironmentFromBuildOutputIfPresent();
+
 			Wrapper.Verbose = true;
-
-			if (IcuVersion > 0)
-				Wrapper.ConfineIcuVersions(IcuVersion);
-
-			try
-			{
-				Wrapper.Init();
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine($"InitializeIcuAttribute: ERROR: failed when calling Wrapper.Init() with {e.GetType()}: {e.Message}");
-			}
 
 			EnsureIcuDataEnvironmentVariableIsSet();
 
@@ -54,8 +46,60 @@ namespace SIL.LCModel.Core.Attributes
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine($"InitializeIcuAttribute: ERROR: failed with {e.GetType()}: {e.Message}");
+				Console.WriteLine($"InitializeIcuAttribute: ERROR: failed when calling Wrapper.Init() with {e.GetType()}: {e.Message}");
 			}
+
+			if (IcuVersion > 0)
+				Wrapper.ConfineIcuVersions(IcuVersion);
+		}
+
+		/// <summary>
+		/// If the test assembly's directory has the build output layout (IcuData/icudt70l, lib/win-*), set ICU_DATA and prepend those lib paths to PATH
+		/// so the first ICU load finds our DLLs. Allows "dotnet test" to pass without manual environment setup.
+		/// </summary>
+		private static void SetIcuEnvironmentFromBuildOutputIfPresent()
+		{
+			try
+			{
+				var assembly = Assembly.GetExecutingAssembly();
+				var location = assembly.Location;
+				if (string.IsNullOrEmpty(location))
+					return;
+				var assemblyDir = Path.GetDirectoryName(location);
+				if (string.IsNullOrEmpty(assemblyDir))
+					return;
+
+				var icuDataVersionDir = Path.Combine(assemblyDir, "IcuData", $"icudt{CustomIcuVersion}l");
+				var nfcFw = Path.Combine(icuDataVersionDir, "nfc_fw.nrm");
+				var nfkcFw = Path.Combine(icuDataVersionDir, "nfkc_fw.nrm");
+				if (!File.Exists(nfcFw) || !File.Exists(nfkcFw))
+					return;
+
+				Environment.SetEnvironmentVariable("ICU_DATA", icuDataVersionDir, EnvironmentVariableTarget.Process);
+
+				var pathPrefixes = new List<string>();
+				AddPathIfExists(pathPrefixes, assemblyDir, "lib", "win-x86");
+				AddPathIfExists(pathPrefixes, assemblyDir, "lib", "x86");
+				AddPathIfExists(pathPrefixes, assemblyDir, "lib", "win-x64");
+				AddPathIfExists(pathPrefixes, assemblyDir, "lib", "x64");
+				if (pathPrefixes.Count > 0)
+				{
+					var existingPath = Environment.GetEnvironmentVariable("PATH") ?? "";
+					var newPath = string.Join(Path.PathSeparator.ToString(), pathPrefixes) + Path.PathSeparator + existingPath;
+					Environment.SetEnvironmentVariable("PATH", newPath, EnvironmentVariableTarget.Process);
+				}
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine($"InitializeIcuAttribute: ERROR: failed when setting ICU env from build output: {e.GetType()}: {e.Message}");
+			}
+		}
+
+		private static void AddPathIfExists(List<string> list, string baseDir, params string[] parts)
+		{
+			var path = Path.Combine(baseDir, Path.Combine(parts));
+			if (Directory.Exists(path))
+				list.Add(path);
 		}
 
 		private void EnsureIcuDataEnvironmentVariableIsSet()
