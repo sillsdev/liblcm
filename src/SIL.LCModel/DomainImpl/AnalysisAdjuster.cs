@@ -1455,9 +1455,9 @@ namespace SIL.LCModel.DomainImpl
 				else if (cchInsert > 0 && seg.EndOffset <= ichSource + cchInsert)
 					m_segPartlyMoved = seg;
 			}
-			if (m_segPartlyMoved != null && m_segPartlyMoved.EndOffset == ichSource)
+			if (m_segPartlyMoved != null && DeltaIsEmpty(m_segPartlyMoved.EndOffset, ichSource, source))
 			{
-				// We are splitting the paragraph right at a segment boundary so there is
+				// We are splitting the paragraph at the equivalent of a segment boundary so there is
 				// no need to copy this segment (as if it was split in the middle of this segment).
 				m_segPartlyMoved = null;
 			}
@@ -1472,6 +1472,24 @@ namespace SIL.LCModel.DomainImpl
 						m_analysesToMove.Add(pair.Item1);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Is the delta between the old segment boundary and the new segment boundary empty?
+		/// This fixes LT-18897.
+		/// </summary>
+		private bool DeltaIsEmpty(int endOffset, int ichSource, IStTxtPara source)
+		{
+			int start = Math.Min(endOffset, ichSource);
+			int end = Math.Max(endOffset, ichSource);
+			for (int i = start; i < end; i++)
+			{
+				if (!Char.IsWhiteSpace(source.Contents.Text[i]))
+				{
+					return false;
+				}
+			}
+			return true;
 		}
 
 		private List<IAnalysisReference> MoveAnalysisAndReferencesFromOldPara(int cchInsert,
