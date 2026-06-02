@@ -546,6 +546,7 @@ Change History: (Be sure to update the 'version' attribute in the EntireModel, w
 			<para>Refer to the documentation on LpTranslation.</para>
 		  </comment>
 		</owning>
+        <rel num="9" id="ExampleSentence" card="atomic" sig="LexExampleSentence"/>
 	  </props>
 	</class>
 	<class num="17" id="StStyle" abstract="false" abbr="ssty" base="CmObject" depth="0">
@@ -3904,6 +3905,8 @@ Change History: (Be sure to update the 'version' attribute in the EntireModel, w
 			<para>A container for media files which are associated with this text, and possibly referenced by segments in the text.</para>
 		  </comment>
 		</owning>
+        <basic num="13" id="SmartRangeStart" sig="String"/>
+        <basic num="14" id="SmartRangeEnd" sig="String"/>
 	  </props>
 	</class>
 	<class num="59" id="WfiAnalysis" abstract="false" abbr="ana" base="CmObject" depth="0">
