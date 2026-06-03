@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using SIL.LCModel.Core.Text;
+using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.DomainImpl;
 using SIL.ObjectModel;
 using System;
@@ -15,101 +16,64 @@ namespace SIL.LCModel.DomainServices
 	{
 		internal class SmartTextBaseSetup : DisposableBase
 		{
-			internal IText Text { get; set; }
-			internal IStText StText { get; set; }
-			internal StTxtPara Para0 { get; set; }
-			internal IList<IWfiWordform> Words_para0 { get; set; }
-			internal ICmAgent UserAgent { get; set; }
-			internal ICmAgent ParserAgent { get; set; }
-			internal AnalysisGuessServices GuessServices { get; set; }
-			internal ILexEntryFactory EntryFactory { get; set; }
-
-
-			// parts of speech
-			internal IPartOfSpeech Pos_adjunct { get; set; }
-			internal IPartOfSpeech Pos_noun { get; set; }
-			internal IPartOfSpeech Pos_verb { get; set; }
-			internal IPartOfSpeech Pos_transitiveVerb { get; set; }
-
-			// variant entry types
-			internal ILexEntryType Vet_DialectalVariant { get; set; }
-			internal ILexEntryType Vet_FreeVariant { get; set; }
-			internal ILexEntryType Vet_InflectionalVariant { get; set; }
-
-			internal enum Flags
-			{
-				PartsOfSpeech,
-				VariantEntryTypes
-			}
-
-			SmartTextBaseSetup()
-			{
-				Words_para0 = new List<IWfiWordform>();
-			}
-
 			LcmCache Cache { get; set; }
 
-			internal SmartTextBaseSetup(LcmCache cache, bool prioritizeParser = false) : this()
+			int m_SpanishWs;
+			int m_EnglishWs;
+
+			internal SmartTextBaseSetup(LcmCache cache)
 			{
 				Cache = cache;
-				UserAgent = Cache.LanguageProject.DefaultUserAgent;
-				ParserAgent = Cache.LangProject.DefaultParserAgent;
-				GuessServices = new AnalysisGuessServices(Cache, prioritizeParser);
-				EntryFactory = Cache.ServiceLocator.GetInstance<ILexEntryFactory>();
-				DoDataSetup();
+				CreateLexExampleSentences();
 			}
 
-			internal SmartTextBaseSetup(LcmCache cache, params Flags[] options)
-				: this(cache)
+			public void CreateLexExampleSentences()
 			{
-				if (options.Contains(Flags.PartsOfSpeech))
-					SetupPartsOfSpeech();
-				if (options.Contains(Flags.VariantEntryTypes))
-					SetupVariantEntryTypes();
+				// Switch to Spanish.
+				WritingSystemManager wsManager = Cache.ServiceLocator.WritingSystemManager;
+				CoreWritingSystemDefinition ws;
+				wsManager.GetOrSet("es", out ws);
+				m_SpanishWs = ws.Handle;
+				Cache.ServiceLocator.WritingSystems.DefaultVernacularWritingSystem = ws;
+				// Get English.
+				wsManager.GetOrSet("en", out ws);
+				m_EnglishWs = ws.Handle;
+				// Create examples.
+				CreateLexExampleSentence("chico", "chico", "boy");
+				CreateLexExampleSentence("casa", "casa", "house");
+				CreateLexExampleSentence("cosina", "cosina", "kitchen");
+				List<ILexEntry> mesaEntries = new()
+				{
+					CreateLexExampleSentence("mesa", "mesa", "table"),
+					CreateLexExampleSentence("mesa", "mesa", "desk")
+				};
+				LexDb.CorrectHomographNumbers(mesaEntries);
+				ILexEntry agua = CreateLexExampleSentence("agua", "agua", "water");
+				AddExampleSentence(agua.SensesOS.FirstOrDefault(), "es aqua", "is water");
+				ILexSense sense = Cache.ServiceLocator.GetInstance<ILexSenseFactory>().Create();
+				agua.SensesOS.Add(sense);
+				AddExampleSentence(sense, "era aqua", "was water");
 			}
 
-			internal void DoDataSetup()
-			{
-				CreateLexExampleSentence();
-			}
-
-			public void CreateLexExampleSentence()
+			public ILexEntry CreateLexExampleSentence(string entryForm, string example, string translation)
 			{
 				ILexEntryFactory lexEntryFactory = Cache.ServiceLocator.GetInstance<ILexEntryFactory>();
-				ILexEntry entry = lexEntryFactory.Create("ay", "Astem", SandboxGenericMSA.Create(MsaType.kStem, null));
-				ILexSense sense = Cache.ServiceLocator.GetInstance<ILexSenseFactory>().Create();
-				entry.SensesOS.Add(sense);
+				ILexEntry entry = lexEntryFactory.Create(entryForm, entryForm, SandboxGenericMSA.Create(MsaType.kStem, null));
+				ILexSense sense = entry.SensesOS.FirstOrDefault();
+				AddExampleSentence(sense, example, translation);
+				return entry;
+			}
+
+			public void AddExampleSentence(ILexSense sense, string example, string translation)
+			{
 				ILexExampleSentence exSentence = Cache.ServiceLocator.GetInstance<ILexExampleSentenceFactory>().Create();
 				sense.ExamplesOS.Add(exSentence);
+				exSentence.Example.set_String(m_SpanishWs, example);
+				var freeTrans = Cache.ServiceLocator.GetInstance<ICmPossibilityRepository>().GetObject(CmPossibilityTags.kguidTranFreeTranslation);
+				ICmTranslation transObj = Cache.ServiceLocator.GetInstance<ICmTranslationFactory>().Create(exSentence, freeTrans);
+				transObj.Translation.set_String(m_EnglishWs, translation);
 			}
 
-			internal void SetupPartsOfSpeech()
-			{
-				// setup language project parts of speech
-				var partOfSpeechFactory = Cache.ServiceLocator.GetInstance<IPartOfSpeechFactory>();
-				Pos_adjunct = partOfSpeechFactory.Create();
-				Pos_noun = partOfSpeechFactory.Create();
-				Pos_verb = partOfSpeechFactory.Create();
-				Pos_transitiveVerb = partOfSpeechFactory.Create();
-				Cache.LangProject.PartsOfSpeechOA.PossibilitiesOS.Add(Pos_adjunct);
-				Cache.LangProject.PartsOfSpeechOA.PossibilitiesOS.Add(Pos_noun);
-				Cache.LangProject.PartsOfSpeechOA.PossibilitiesOS.Add(Pos_verb);
-				Pos_verb.SubPossibilitiesOS.Add(Pos_transitiveVerb);
-				Pos_adjunct.Name.set_String(Cache.DefaultAnalWs, "adjunct");
-				Pos_noun.Name.set_String(Cache.DefaultAnalWs, "noun");
-				Pos_verb.Name.set_String(Cache.DefaultAnalWs, "verb");
-				Pos_transitiveVerb.Name.set_String(Cache.DefaultAnalWs, "transitive verb");
-			}
-
-			internal void SetupVariantEntryTypes()
-			{
-				VariantEntryTypes = Cache.LangProject.LexDbOA.VariantEntryTypesOA;
-				Vet_DialectalVariant = VariantEntryTypes.PossibilitiesOS[0] as ILexEntryType;
-				Vet_FreeVariant = VariantEntryTypes.PossibilitiesOS[1] as ILexEntryType;
-				Vet_InflectionalVariant = VariantEntryTypes.PossibilitiesOS[2] as ILexEntryType;
-			}
-
-			ICmPossibilityList VariantEntryTypes { get; set; }
 		}
 
 		/// <summary>
@@ -131,9 +95,31 @@ namespace SIL.LCModel.DomainServices
 			using (var setup = new SmartTextBaseSetup(Cache))
 			{
 				SmartTextServices services = new SmartTextServices(Cache);
+				services.SmartTextTitle = "Example Sentences";
 				services.AddNewExampleSentences();
 				IList<IText> smartTexts = services.GetSmartTexts();
 				Assert.AreEqual(1, smartTexts.Count);
+				IText smartText = smartTexts[0];
+				Assert.AreEqual("Example Sentences", smartText.Name.BestVernacularAlternative.Text);
+				Assert.AreEqual(8, smartText.ContentsOA.ParagraphsOS.Count);
+				IStTxtPara para;
+				para = smartText.ContentsOA.ParagraphsOS[0] as IStTxtPara;
+				Assert.AreEqual("[agua:1:1]", services.GetSmartLabel(para.ExampleSentenceRA).Text);
+				para = smartText.ContentsOA.ParagraphsOS[1] as IStTxtPara;
+				Assert.AreEqual("[agua:1:2]", services.GetSmartLabel(para.ExampleSentenceRA).Text);
+				para = smartText.ContentsOA.ParagraphsOS[2] as IStTxtPara;
+				Assert.AreEqual("[agua:2:1]", services.GetSmartLabel(para.ExampleSentenceRA).Text);
+				para = smartText.ContentsOA.ParagraphsOS[3] as IStTxtPara;
+				Assert.AreEqual("[casa:1:1]", services.GetSmartLabel(para.ExampleSentenceRA).Text);
+				para = smartText.ContentsOA.ParagraphsOS[4] as IStTxtPara;
+				Assert.AreEqual("[chico:1:1]", services.GetSmartLabel(para.ExampleSentenceRA).Text);
+				para = smartText.ContentsOA.ParagraphsOS[5] as IStTxtPara;
+				// Note: cosina follows chico in modern Spanish.
+				Assert.AreEqual("[cosina:1:1]", services.GetSmartLabel(para.ExampleSentenceRA).Text);
+				para = smartText.ContentsOA.ParagraphsOS[6] as IStTxtPara;
+				Assert.AreEqual("[mesa1:1:1]", services.GetSmartLabel(para.ExampleSentenceRA).Text);
+				para = smartText.ContentsOA.ParagraphsOS[7] as IStTxtPara;
+				Assert.AreEqual("[mesa2:1:1]", services.GetSmartLabel(para.ExampleSentenceRA).Text);
 			}
 		}
 	}

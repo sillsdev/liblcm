@@ -14,6 +14,8 @@ namespace SIL.LCModel.DomainServices
 
 		LcmCache Cache { get; set; }
 
+		public string SmartTextTitle = "";
+
 		/// <summary>
 		/// Add new example sentences in the lexicon to the appropriate smart texts.
 		/// </summary>
@@ -122,6 +124,7 @@ namespace SIL.LCModel.DomainServices
 			var text = stTextFactory.Create();
 			smartText.ContentsOA = text;
 			smartText.SmartRangeStart = TsStringUtils.MakeString(rangeStart, Cache.DefaultVernWs);
+			smartText.Name.set_String(Cache.DefaultVernWs, SmartTextTitle);
 			return smartText;
 		}
 
@@ -131,27 +134,16 @@ namespace SIL.LCModel.DomainServices
 		public ITsString GetSmartLabel(ILexExampleSentence exampleSentence)
 		{
 			ITsString example = exampleSentence.Example.BestVernacularAnalysisAlternative;
-			ILexSense sense = exampleSentence.Owner as ILexSense;
 			ITsStrBldr bldr = example.GetBldr();
-			bldr.Append("[", example.get_WritingSystemAt(0));
-			bldr.Append(example.Text, example.get_WritingSystemAt(0));
-			if (sense != null)
+			bldr.Clear();
+			bldr.Append("[", Cache.DefaultVernWs);
+			if (exampleSentence.Owner is ILexSense sense)
 			{
-				// Add sense number.
-				bldr.Append(":" + sense.EntryID.ToString(), example.get_WritingSystemAt(0));
-				// Add example number.
-				int i = 1;
-				foreach (var sentence in sense.ExamplesOS)
-				{
-					if (sentence == exampleSentence)
-					{
-						break;
-					}
-					i++;
-				}
-				bldr.Append(":" + i.ToString(), example.get_WritingSystemAt(0));
+				bldr.Append(sense.Entry.HeadWord.Text, Cache.DefaultVernWs);
+				bldr.Append(":" + (sense.IndexInOwner + 1), Cache.DefaultVernWs);
+				bldr.Append(":" + (exampleSentence.IndexInOwner + 1), Cache.DefaultVernWs);
 			}
-			bldr.Append("]", example.get_WritingSystemAt(0));
+			bldr.Append("]", Cache.DefaultVernWs);
 			return bldr.GetString();
 		}
 
