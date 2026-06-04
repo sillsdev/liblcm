@@ -1,14 +1,10 @@
 using NUnit.Framework;
-using SIL.LCModel.Core.Text;
+using SIL.Extensions;
 using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.DomainImpl;
 using SIL.ObjectModel;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static SIL.LCModel.DomainServices.AnalysisGuessServicesTests;
 
 namespace SIL.LCModel.DomainServices
 {
@@ -86,6 +82,22 @@ namespace SIL.LCModel.DomainServices
 			base.FixtureSetup();
 		}
 
+		[Test]
+		public void TestIsSmartText()
+		{
+			using (var setup = new SmartTextBaseSetup(Cache))
+			{
+				SmartTextServices services = new SmartTextServices(Cache);
+				IText smartText = services.CreateSmartText("*");
+				Assert.AreEqual(true, SmartTextServices.IsSmartText(smartText));
+				var textFactory = Cache.ServiceLocator.GetInstance<ITextFactory>();
+				var stTextFactory = Cache.ServiceLocator.GetInstance<IStTextFactory>();
+				var text = textFactory.Create();
+				smartText.ContentsOA = stTextFactory.Create();
+				Assert.AreEqual(false, SmartTextServices.IsSmartText(text));
+			}
+		}
+
 		/// <summary>
 		/// Test AddNewExampleSentences when there is only one smart text.
 		/// </summary>
@@ -120,6 +132,52 @@ namespace SIL.LCModel.DomainServices
 				Assert.AreEqual("[mesa1:1:1]", services.GetSmartLabel(para.ExampleSentenceRA).Text);
 				para = smartText.ContentsOA.ParagraphsOS[7] as IStTxtPara;
 				Assert.AreEqual("[mesa2:1:1]", services.GetSmartLabel(para.ExampleSentenceRA).Text);
+			}
+		}
+
+		/// <summary>
+		/// Test AddNewExampleSentences when the user has requested one smart text per letter.
+		/// </summary>
+		[Test]
+		public void TestAlphabeticSmartTexts()
+		{
+			using (var setup = new SmartTextBaseSetup(Cache))
+			{
+				SmartTextServices services = new SmartTextServices(Cache);
+				services.SmartTextTitle = "Example Sentences";
+				services.OneSmartTextPerLetter = true;
+				services.AddNewExampleSentences();
+				IList<IText> smartTexts = services.GetSmartTexts();
+				Assert.AreEqual(3, smartTexts.Count);
+				smartTexts.Sort((x, y) => x.Name.BestVernacularAlternative.Text.CompareTo(y.Name.BestVernacularAlternative.Text));
+				Assert.AreEqual("Example Sentences (a)", smartTexts[0].Name.BestVernacularAlternative.Text);
+				Assert.AreEqual(3, smartTexts[0].ContentsOA.ParagraphsOS.Count);
+				Assert.AreEqual("Example Sentences (c)", smartTexts[1].Name.BestVernacularAlternative.Text);
+				Assert.AreEqual(3, smartTexts[1].ContentsOA.ParagraphsOS.Count);
+				Assert.AreEqual("Example Sentences (m)", smartTexts[2].Name.BestVernacularAlternative.Text);
+				Assert.AreEqual(2, smartTexts[2].ContentsOA.ParagraphsOS.Count);
+			}
+		}
+
+		/// <summary>
+		/// Test AddNewExampleSentences when the user chooses the ranges.
+		/// </summary>
+		[Test]
+		public void TestRangedSmartTexts()
+		{
+			using (var setup = new SmartTextBaseSetup(Cache))
+			{
+				SmartTextServices services = new SmartTextServices(Cache);
+				services.SmartTextTitle = "Example Sentences";
+				services.CreateSmartText("a", "c");
+				services.AddNewExampleSentences();
+				IList<IText> smartTexts = services.GetSmartTexts();
+				Assert.AreEqual(2, smartTexts.Count);
+				smartTexts.Sort((x, y) => x.Name.BestVernacularAlternative.Text.CompareTo(y.Name.BestVernacularAlternative.Text));
+				Assert.AreEqual("Example Sentences", smartTexts[0].Name.BestVernacularAlternative.Text);
+				Assert.AreEqual(2, smartTexts[0].ContentsOA.ParagraphsOS.Count);
+				Assert.AreEqual("Example Sentences (a-c)", smartTexts[1].Name.BestVernacularAlternative.Text);
+				Assert.AreEqual(6, smartTexts[1].ContentsOA.ParagraphsOS.Count);
 			}
 		}
 	}

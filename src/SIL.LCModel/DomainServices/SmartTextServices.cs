@@ -1,6 +1,5 @@
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
-using SIL.LCModel.DomainImpl;
 using System.Collections.Generic;
 
 namespace SIL.LCModel.DomainServices
@@ -15,6 +14,8 @@ namespace SIL.LCModel.DomainServices
 		LcmCache Cache { get; set; }
 
 		public string SmartTextTitle = "";
+
+		public bool OneSmartTextPerLetter = false;
 
 		/// <summary>
 		/// Add new example sentences in the lexicon to the appropriate smart texts.
@@ -65,8 +66,7 @@ namespace SIL.LCModel.DomainServices
 			IText smartText = GetSmartText(exampleSentence);
 			// Determine the best place to insert a new paragraph.
 			ITsString newLabel = GetSmartLabel(exampleSentence);
-			ITsString example = exampleSentence.Example.BestVernacularAnalysisAlternative;
-			var wsObj = Cache.ServiceLocator.WritingSystemManager.Get(example.get_WritingSystemAt(0));
+			var wsObj = Cache.ServiceLocator.WritingSystemManager.Get(Cache.DefaultVernWs);
 			var comparer = new TsStringComparer(wsObj);
 			int pos = 0;
 			foreach (var para in smartText.ContentsOA.ParagraphsOS)
@@ -91,14 +91,34 @@ namespace SIL.LCModel.DomainServices
 		/// <summary>
 		/// Get the appropriate smart text for the given example sentence.
 		/// </summary>
-		private IText GetSmartText(ILexExampleSentence sentence)
+		private IText GetSmartText(ILexExampleSentence exampleSentence)
 		{
-			var textRepo = Cache.ServiceLocator.GetInstance<IStTextRepository>();
+			IText bestText = null;
+			ILexEntry entry = ((ILexSense)exampleSentence.Owner)?.Entry;
+			if (entry == null)
+			{
+				return CreateSmartText("*");
+			}
+			string headword = entry.HeadWord.Text.ToLower();
 			foreach (var text in GetSmartTexts())
 			{
-				return text;
+				if (InRange(headword, text))
+				{
+					if (bestText == null || InRange(text.SmartRangeStart.Text, bestText))
+					{
+						bestText = text;
+					}
+				}
 			}
-			return CreateSmartText("");
+			if (bestText != null)
+			{
+				return bestText;
+			}
+			if (OneSmartTextPerLetter)
+			{
+				return CreateSmartText(headword[0].ToString());
+			}
+			return CreateSmartText("*");
 		}
 
 		public IList<IText> GetSmartTexts()
@@ -115,17 +135,66 @@ namespace SIL.LCModel.DomainServices
 			return smartTexts;
 		}
 
-		private IText CreateSmartText(string rangeStart)
+		public IText CreateSmartText(string rangeStart, string rangeEnd = null)
 		{
 			var textFactory = Cache.ServiceLocator.GetInstance<ITextFactory>();
 			var stTextFactory = Cache.ServiceLocator.GetInstance<IStTextFactory>();
 			var smartText = textFactory.Create();
-			//Cache.LangProject.TextsOC.Add(Text);
 			var text = stTextFactory.Create();
 			smartText.ContentsOA = text;
 			smartText.SmartRangeStart = TsStringUtils.MakeString(rangeStart, Cache.DefaultVernWs);
-			smartText.Name.set_String(Cache.DefaultVernWs, SmartTextTitle);
+			if (rangeEnd != null)
+			{
+				smartText.SmartRangeEnd = TsStringUtils.MakeString(rangeEnd, Cache.DefaultVernWs);
+			}
+			string title = SmartTextTitle;
+			if (rangeStart != "*")
+			{
+				title += " (" + rangeStart;
+				if (rangeEnd != null)
+				{
+					title += "-" + rangeEnd;
+				}
+				title += ")";
+			}
+			smartText.Name.set_String(Cache.DefaultVernWs, title);
 			return smartText;
+		}
+
+		/// <summary>
+		/// Is sentence in smartText's range?
+		/// </summary>
+		private bool InRange(string name, IText smartText)
+		{
+			if (smartText.SmartRangeStart.Text == "*")
+			{
+				return true;
+			}
+			if (name == null)
+			{
+				return false;
+			}
+			if (name.StartsWith(smartText.SmartRangeStart.Text))
+			{
+				return true;
+			}
+			if (smartText.SmartRangeEnd.Text == null)
+			{
+				return false;
+			}
+			if (name.StartsWith(smartText.SmartRangeEnd.Text))
+			{
+				return true;
+			}
+			// Is sentence between SmartRangeStart and SmartRangeEnd?
+			var wsObj = Cache.ServiceLocator.WritingSystemManager.Get(Cache.DefaultVernWs);
+			var comparer = new TsStringComparer(wsObj);
+			if (comparer.Compare(smartText.SmartRangeStart.Text, name) < 0 &&
+				comparer.Compare(name, smartText.SmartRangeEnd.Text) < 0)
+			{
+				return true;
+			}
+			return false;
 		}
 
 		/// <summary>
@@ -149,7 +218,7 @@ namespace SIL.LCModel.DomainServices
 
 		public static bool IsSmartText(IText text)
 		{
-			return text.SmartRangeStart != null;
+			return text.SmartRangeStart.Text != null;
 		}
 
 		public static bool IsSmartParagraph(IStTxtPara para)
