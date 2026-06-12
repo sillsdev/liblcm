@@ -23,7 +23,7 @@ namespace SIL.LCModel.DomainServices
 		public void AddNewExampleSentences()
 		{
 			IEnumerable<ILexExampleSentence> sentences = GetExampleSentences();
-			IList<IStTxtPara> smartParas = GetSmartParagraphs();
+			IList<IStTxtPara> smartParas = GetSmartParagraphs(Cache);
 			ISet<ILexExampleSentence> processedSentences = new HashSet<ILexExampleSentence>();
 			foreach (IStTxtPara smartPara in smartParas)
 			{
@@ -44,9 +44,9 @@ namespace SIL.LCModel.DomainServices
 			return exampleRepo.AllInstances();
 		}
 
-		public IList<IStTxtPara> GetSmartParagraphs()
+		public static IList<IStTxtPara> GetSmartParagraphs(LcmCache cache)
 		{
-			var paraRepo = Cache.ServiceLocator.GetInstance<IStTxtParaRepository>();
+			var paraRepo = cache.ServiceLocator.GetInstance<IStTxtParaRepository>();
 			IList<IStTxtPara> smartParagraphs = new List<IStTxtPara>();
 			foreach (var para in paraRepo.AllInstances())
 			{
@@ -85,7 +85,8 @@ namespace SIL.LCModel.DomainServices
 			smartText.ContentsOA.ParagraphsOS.Insert(pos, newPara);
 			var segmentFactory = Cache.ServiceLocator.GetInstance<ISegmentFactory>();
 			segmentFactory.Create(newPara, 0);
-			UpdateExampleSentence(newPara, exampleSentence);
+			newPara.ExampleSentenceRA = exampleSentence;
+			ExampleSentenceChanged(newPara);
 		}
 
 		/// <summary>
@@ -205,14 +206,12 @@ namespace SIL.LCModel.DomainServices
 			ITsString example = exampleSentence.Example.BestVernacularAnalysisAlternative;
 			ITsStrBldr bldr = example.GetBldr();
 			bldr.Clear();
-			bldr.Append("[", Cache.DefaultVernWs);
 			if (exampleSentence.Owner is ILexSense sense)
 			{
 				bldr.Append(sense.Entry.HeadWord.Text, Cache.DefaultVernWs);
-				bldr.Append(":" + (sense.IndexInOwner + 1), Cache.DefaultVernWs);
-				bldr.Append(":" + (exampleSentence.IndexInOwner + 1), Cache.DefaultVernWs);
+				bldr.Append("." + (sense.IndexInOwner + 1), Cache.DefaultVernWs);
+				bldr.Append("." + (exampleSentence.IndexInOwner + 1), Cache.DefaultVernWs);
 			}
-			bldr.Append("]", Cache.DefaultVernWs);
 			return bldr.GetString();
 		}
 
@@ -226,10 +225,59 @@ namespace SIL.LCModel.DomainServices
 			return para.ExampleSentenceRA != null;
 		}
 
-		public static void UpdateExampleSentence(IStTxtPara para, ILexExampleSentence exampleSentence)
+		/// <summary>
+		/// Update smart texts to reflect changes to exampleSentence.
+		/// </summary>
+		public static void UpdateSmartTexts(ILexExampleSentence exampleSentence)
 		{
-			para.ExampleSentenceRA = exampleSentence;
-			para.Contents = exampleSentence.Example.BestVernacularAnalysisAlternative;
+			LcmCache cache = exampleSentence.Cache;
+			foreach (var smartPara in GetSmartParagraphs(cache))
+			{
+				if (smartPara.ExampleSentenceRA == exampleSentence)
+				{
+					ExampleSentenceChanged(smartPara);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Update para to reflect exampleSentence.
+		/// </summary>
+		public static void ExampleSentenceChanged(IStTxtPara para)
+		{
+			para.Contents = para.ExampleSentenceRA.Example.BestVernacularAnalysisAlternative;
+			if (para.ExampleSentenceRA.TranslationsOC.Count == 1 && para.SegmentsOS.Count == 1)
+			{
+				foreach (var obj in para.ExampleSentenceRA.TranslationsOC.Objects)
+				{
+					para.SegmentsOS[0].FreeTranslation.CopyAlternatives(((ICmTranslation)obj).Translation);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Update para to reflect new contents.
+		/// </summary>
+		/// <param name="para"></param>
+		/// <param name="contents"></param>
+		public static void ContentsChanged(IStTxtPara para)
+		{
+			para.ExampleSentenceRA.Example.set_String(para.Contents.get_WritingSystemAt(0), para.Contents);
+		}
+
+		/// <summary>
+		/// Update para to reflect new free translation.
+		/// </summary>
+		/// <param name="para"></param>
+		/// <param name="contents"></param>
+		public static void TranslationChanged(IStTxtPara para)
+		{
+			if (para.ExampleSentenceRA.TranslationsOC.Count == 1 && para.SegmentsOS.Count == 1)
+			{
+				IMultiString freeTranslation = para.SegmentsOS[0].FreeTranslation;
+				IMultiString exampleTranslation = para.ExampleSentenceRA.TranslationsOC.ToArray()[0].Translation;
+				exampleTranslation.CopyAlternatives(freeTranslation);
+			}
 		}
 	}
 }

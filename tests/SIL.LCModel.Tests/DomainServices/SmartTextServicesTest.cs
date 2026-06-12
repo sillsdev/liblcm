@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using SIL.Extensions;
+using SIL.LCModel.Core.Text;
 using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.DomainImpl;
 using SIL.ObjectModel;
@@ -14,8 +15,8 @@ namespace SIL.LCModel.DomainServices
 		{
 			LcmCache Cache { get; set; }
 
-			int m_SpanishWs;
-			int m_EnglishWs;
+			public int m_SpanishWs;
+			public int m_EnglishWs;
 
 			internal SmartTextBaseSetup(LcmCache cache)
 			{
@@ -116,22 +117,22 @@ namespace SIL.LCModel.DomainServices
 				Assert.AreEqual(8, smartText.ContentsOA.ParagraphsOS.Count);
 				IStTxtPara para;
 				para = smartText.ContentsOA.ParagraphsOS[0] as IStTxtPara;
-				Assert.AreEqual("[agua:1:1]", services.GetSmartLabel(para.ExampleSentenceRA).Text);
+				Assert.AreEqual("agua.1.1", services.GetSmartLabel(para.ExampleSentenceRA).Text);
 				para = smartText.ContentsOA.ParagraphsOS[1] as IStTxtPara;
-				Assert.AreEqual("[agua:1:2]", services.GetSmartLabel(para.ExampleSentenceRA).Text);
+				Assert.AreEqual("agua.1.2", services.GetSmartLabel(para.ExampleSentenceRA).Text);
 				para = smartText.ContentsOA.ParagraphsOS[2] as IStTxtPara;
-				Assert.AreEqual("[agua:2:1]", services.GetSmartLabel(para.ExampleSentenceRA).Text);
+				Assert.AreEqual("agua.2.1", services.GetSmartLabel(para.ExampleSentenceRA).Text);
 				para = smartText.ContentsOA.ParagraphsOS[3] as IStTxtPara;
-				Assert.AreEqual("[casa:1:1]", services.GetSmartLabel(para.ExampleSentenceRA).Text);
+				Assert.AreEqual("casa.1.1", services.GetSmartLabel(para.ExampleSentenceRA).Text);
 				para = smartText.ContentsOA.ParagraphsOS[4] as IStTxtPara;
-				Assert.AreEqual("[chico:1:1]", services.GetSmartLabel(para.ExampleSentenceRA).Text);
+				Assert.AreEqual("chico.1.1", services.GetSmartLabel(para.ExampleSentenceRA).Text);
 				para = smartText.ContentsOA.ParagraphsOS[5] as IStTxtPara;
 				// Note: cosina follows chico in modern Spanish.
-				Assert.AreEqual("[cosina:1:1]", services.GetSmartLabel(para.ExampleSentenceRA).Text);
+				Assert.AreEqual("cosina.1.1", services.GetSmartLabel(para.ExampleSentenceRA).Text);
 				para = smartText.ContentsOA.ParagraphsOS[6] as IStTxtPara;
-				Assert.AreEqual("[mesa1:1:1]", services.GetSmartLabel(para.ExampleSentenceRA).Text);
+				Assert.AreEqual("mesa1.1.1", services.GetSmartLabel(para.ExampleSentenceRA).Text);
 				para = smartText.ContentsOA.ParagraphsOS[7] as IStTxtPara;
-				Assert.AreEqual("[mesa2:1:1]", services.GetSmartLabel(para.ExampleSentenceRA).Text);
+				Assert.AreEqual("mesa2.1.1", services.GetSmartLabel(para.ExampleSentenceRA).Text);
 			}
 		}
 
@@ -180,5 +181,53 @@ namespace SIL.LCModel.DomainServices
 				Assert.AreEqual(6, smartTexts[1].ContentsOA.ParagraphsOS.Count);
 			}
 		}
+
+		/// <summary>
+		/// Test synchronization between smart texts and example sentences.
+		/// </summary>
+		[Test]
+		public void TestSmartTextSynchronization()
+		{
+			using (var setup = new SmartTextBaseSetup(Cache))
+			{
+				SmartTextServices services = new SmartTextServices(Cache);
+				services.SmartTextTitle = "Example Sentences";
+				services.AddNewExampleSentences();
+				IList<IText> smartTexts = services.GetSmartTexts();
+				Assert.AreEqual(1, smartTexts.Count);
+				IText smartText = smartTexts[0];
+
+				// Test initial contents.
+				IStTxtPara para = smartText.ContentsOA.ParagraphsOS[0] as IStTxtPara;
+				ILexExampleSentence exampleSentence = para.ExampleSentenceRA;
+				IMultiString freeTranslation = para.SegmentsOS.ToArray()[0].FreeTranslation;
+				IMultiString exampleTranslation = exampleSentence.TranslationsOC.ToArray()[0].Translation;
+				Assert.AreEqual("agua", para.Contents.Text);
+				Assert.AreEqual(1, para.SegmentsOS.Count);
+				Assert.AreEqual("water", freeTranslation.BestAnalysisAlternative.Text);
+
+				// Test changes to example sentence.
+				exampleSentence.Example.set_String(setup.m_SpanishWs, "agua! agua!");
+				SmartTextServices.UpdateSmartTexts(exampleSentence);
+				Assert.AreEqual("agua! agua!", para.Contents.Text);
+				Assert.AreEqual(1, para.SegmentsOS.Count);
+
+				// Test changes to contents.
+				para.Contents = TsStringUtils.MakeString("agua? agua?", setup.m_SpanishWs);
+				Assert.AreEqual("agua? agua?", exampleSentence.Example.BestVernacularAlternative.Text);
+
+				// Test changes to example sentence translation.
+				exampleTranslation.set_String(setup.m_EnglishWs, "water! water!");
+				SmartTextServices.UpdateSmartTexts(exampleSentence);
+				Assert.AreEqual("water! water!", freeTranslation.BestAnalysisAlternative.Text);
+
+				// Test changes to free translation.
+				freeTranslation.set_String(setup.m_EnglishWs, "water? water?");
+				SmartTextServices.TranslationChanged(para);
+				Assert.AreEqual("water? water?", exampleTranslation.BestAnalysisAlternative.Text);
+
+			}
+		}
+
 	}
 }

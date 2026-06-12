@@ -2,14 +2,14 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.DomainServices;
 using SIL.Reporting;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace SIL.LCModel.DomainImpl
 {
@@ -296,6 +296,14 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		private void AdjustAnalysisInternal()
 		{
+			if (SmartTextServices.IsSmartParagraph(m_para))
+			{
+				// The analysis is fixed for smart paragraphs.
+				// Update the example sentence.
+				SmartTextServices.ContentsChanged(m_para);
+				return;
+			}
+
 			if (!ChangeCanAffectSegments())
 				return;
 
