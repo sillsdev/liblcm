@@ -11,6 +11,7 @@ using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Phonology;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.DomainServices;
+using SIL.LCModel.Utils;
 using MoInflClass = SIL.LCModel.DomainImpl.MoInflClass;
 
 namespace SIL.LCModel.DomainImpl
@@ -1751,6 +1752,80 @@ namespace SIL.LCModel.DomainImpl
 							"entry2 has no MinimalLexReferences after creating LexReference with entry1");
 			Assert.AreEqual(0, (sense2 as LexSense).MinimalLexReferences.Count,
 							"sense2 has no MinimalLexReferences after creating LexReference with entry1");
+		}
+
+		/// <summary>
+		/// LT-21598: Reproduces the actual bulk-delete crash. Corrupt data (a lost incoming-reference index,
+		/// not repaired by Find and Fix) can leave a lexical relation referencing a target that has already
+		/// been deleted. When another target is then removed, LexReference.RemoveObjectSideEffectsInternal
+		/// re-registers MinimalLexReferences on every remaining target; doing so on the already-deleted
+		/// (cache-less) target previously threw a NullReferenceException inside RegisterVirtualAsModified.
+		/// UpdateMinimalLexReferences must skip targets that are no longer valid.
+		/// </summary>
+		[Test]
+		public void RemovingTarget_WithAStaleDeletedTarget_DoesNotThrow()
+		{
+			var entry1 = MakeEntry("food", "stuff to eat that is nutritional");
+			var sense1 = entry1.SensesOS[0];
+			var entry2 = MakeEntry("dog food", "food for dogs");
+			var sense2 = entry2.SensesOS[0];
+			var entry3 = MakeEntry("cat food", "food for cats");
+			var sense3 = entry3.SensesOS[0];
+			var lexRefType1 = MakeLexRefType("TestRelationPartWhole");
+			var lexRef1 = MakeLexReference(lexRefType1, sense1);
+			lexRef1.TargetsRS.Add(sense2);
+			lexRef1.TargetsRS.Add(sense3); // three targets, so removing one leaves the relation valid
+
+			// Simulate the corrupt state seen in the field: sense1 has effectively been deleted (its cache has
+			// been cleared) but the relation still lists it as a target because the incoming-reference index
+			// lost track of this relation, so deleting sense1 never unlinked it here.
+			var savedCache = ReflectionHelper.GetField(sense1, "m_cache");
+			ReflectionHelper.SetField(sense1, "m_cache", null);
+			try
+			{
+				Assert.IsFalse((sense1 as LexSense).IsValidObject, "Precondition: sense1 should look deleted");
+				Assert.DoesNotThrow(() => lexRef1.TargetsRS.Remove(sense3),
+					"Removing a target while another target is already deleted should not throw (LT-21598)");
+			}
+			finally
+			{
+				// Restore the cache so the object is valid again for a clean test teardown.
+				ReflectionHelper.SetField(sense1, "m_cache", savedCache);
+			}
+		}
+
+		/// <summary>
+		/// LT-21598: Deleting a lexical relation that still lists an already-deleted target (corrupt data not
+		/// repaired by Find and Fix) clears its Targets, firing RemoveObjectSideEffectsInternal for the stale
+		/// target. Updating that target's back-reference virtual properties (e.g. LexSenseReferences) previously
+		/// threw a NullReferenceException because its cache was gone. Those updates must be skipped for an
+		/// already-deleted removed object.
+		/// </summary>
+		[Test]
+		public void DeletingRelation_WithAStaleDeletedTarget_DoesNotThrow()
+		{
+			var entry1 = MakeEntry("food", "stuff to eat that is nutritional");
+			var sense1 = entry1.SensesOS[0];
+			var entry2 = MakeEntry("dog food", "food for dogs");
+			var sense2 = entry2.SensesOS[0];
+			var lexRefType1 = MakeLexRefType("TestRelationPartWhole");
+			var lexRef1 = MakeLexReference(lexRefType1, sense1);
+			lexRef1.TargetsRS.Add(sense2);
+
+			// Simulate the corrupt state seen in the field: sense1 has effectively been deleted (its cache has
+			// been cleared) but the relation still lists it as a target.
+			var savedCache = ReflectionHelper.GetField(sense1, "m_cache");
+			ReflectionHelper.SetField(sense1, "m_cache", null);
+			try
+			{
+				Assert.DoesNotThrow(() => Cache.DomainDataByFlid.DeleteObj(lexRef1.Hvo),
+					"Deleting a relation that still references an already-deleted target should not throw (LT-21598)");
+			}
+			finally
+			{
+				// Restore the cache so the object is valid again for a clean test teardown.
+				ReflectionHelper.SetField(sense1, "m_cache", savedCache);
+			}
 		}
 	}
 

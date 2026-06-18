@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- [SIL.LCModel] Fixed crash when bulk deleting entries involved in a lexical relation (LT-21598)
 - [SIL.LCModel] Data migration now serializes dates using the culture-neutral `ToLCMTimeFormatWithMillisString` (LT-20698)
 - [SIL.LCModel] `ReadWriteServices.LoadDateTime` now parses milliseconds correctly (LT-18205)
 - [SIL.LCModel.Core] Copy `SIL.LCModel.Core.dll.config` to output directory
