@@ -8378,13 +8378,9 @@ namespace SIL.LCModel.DomainImpl
 		{
 			if (e.Flid == LexReferenceTags.kflidTargets)
 			{
-				// Refresh MinimalLexReferences on the remaining (still valid) targets; this is self-protecting
-				// against targets already deleted during a bulk delete operation (LT-21598).
-				UpdateMinimalLexReferences(e.ObjectRemoved);
-
-				// The updates below register back-reference virtual properties on the removed object itself, which
-				// dereference its cache. During a bulk delete operation the removed object may already have been
-				// deleted (LT-21598), so only do this work while it is still valid.
+				// These updates register back-reference virtual properties that dereference the removed object's
+				// cache. During a bulk delete operation the removed object may already have been deleted (LT-21598),
+				// so only do this work while it is still valid.
 				if (e.ObjectRemoved.IsValidObject)
 				{
 					// register the virtual prop LexEntryReference back ref as modified for the removed
@@ -8392,6 +8388,7 @@ namespace SIL.LCModel.DomainImpl
 					ILexEntry entry = e.ObjectRemoved as ILexEntry;
 					if (entry != null)
 						UpdateLexEntryReferences(entry, false);
+					UpdateMinimalLexReferences(e.ObjectRemoved);
 					if (e.ObjectRemoved is LexSense sense)
 					{
 						List<ICmObject> backrefs = sense.LexSenseReferences.Cast<ICmObject>().ToList();
