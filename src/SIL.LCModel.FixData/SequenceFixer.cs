@@ -45,6 +45,7 @@ namespace SIL.LCModel.FixData
 		Dictionary<Guid, XElement> m_candidateForRefAdjustment = new Dictionary<Guid, XElement>();
 		Dictionary<Guid, XElement> m_lexRefTypes = new Dictionary<Guid, XElement>();
 		List<Guid> m_lexReferencesToDelete = new List<Guid>();
+		List<Guid> m_lexReferencesWithDuplicateTargets = new List<Guid>();
 		List<Guid> m_objsToDelete = new List<Guid>();
 		List<Guid> m_objsToAdjust = new List<Guid>();
 		Dictionary<Guid, List<Guid>> m_ownerThatWillLoseOwnee = new Dictionary<Guid, List<Guid>>();
@@ -97,10 +98,16 @@ namespace SIL.LCModel.FixData
 					m_lexRefTypes.Add(guid, rt);
 					break;
 				case "LexReference":
-					// Check for less than two Targets
-					if (!HoldsLessThanTwoInSequence("Targets", rt))
-						return;
-					m_lexReferencesToDelete.Add(guid);
+					// A LexReference needs at least two distinct Targets. Count distinct targets, since
+					// duplicate Targets (the same object listed more than once) also make it invalid and can
+					// lead to a crash (LT-21598). Delete it if fewer than two distinct Targets remain;
+					// otherwise just remove the duplicates.
+					var targetGuids = GetSequenceObjsurGuids("Targets", rt);
+					var distinctTargetCount = targetGuids.Distinct().Count();
+					if (distinctTargetCount < 2)
+						m_lexReferencesToDelete.Add(guid);
+					else if (distinctTargetCount < targetGuids.Count)
+						m_lexReferencesWithDuplicateTargets.Add(guid);
 					break;
 				default:
 					break;
@@ -108,17 +115,15 @@ namespace SIL.LCModel.FixData
 		}
 
 		/// <summary>
-		/// Determines whether the sequence held by this XElement object is empty or has less
-		/// than two descendants or not.
-		/// N.B. At this point, there must only be one sequence held by this object.
+		/// Gets the guids (in order, including any duplicates) of the objsur elements in the named
+		/// sequence/collection property, or an empty list if the property is absent.
 		/// </summary>
-		/// <param name="propertyName"> </param>
-		/// <param name="xeObject"></param>
-		/// <returns></returns>
-		private static bool HoldsLessThanTwoInSequence(string propertyName, XElement xeObject)
+		private static List<string> GetSequenceObjsurGuids(string propertyName, XElement xeObject)
 		{
 			var xeProperty = xeObject.Element(propertyName);
-			return xeProperty == null || xeProperty.Descendants("objsur").Count() < 2;
+			if (xeProperty == null)
+				return new List<string>();
+			return xeProperty.Descendants("objsur").Select(objsur => objsur.Attribute("guid").Value).ToList();
 		}
 
 		/// <summary>
@@ -378,16 +383,41 @@ namespace SIL.LCModel.FixData
 						objsur => danglingRefList.Contains(GetObjsurGuid(objsur))).Remove();
 					break;
 				case "LexReference":
-					// Remove a LexReference that only has one (or fewer) Targets.
-					if (!m_lexReferencesToDelete.Contains(guid))
-						return true;
-					ReportBadLexReference(guid, guidOwner, errorLogger);
-					return false; // delete this rt element
+					// Remove a LexReference that has fewer than two distinct Targets.
+					if (m_lexReferencesToDelete.Contains(guid))
+					{
+						ReportBadLexReference(guid, guidOwner, errorLogger);
+						return false; // delete this rt element
+					}
+					// Otherwise remove any duplicate Targets, keeping the first occurrence of each.
+					if (m_lexReferencesWithDuplicateTargets.Contains(guid))
+						RemoveDuplicateTargets(rt, guid, guidOwner, errorLogger);
+					break;
 
 				default:
 					break;
 			}
 			return true;
+		}
+
+		/// <summary>
+		/// Remove duplicate Targets from a LexReference, keeping the first occurrence of each. Duplicate
+		/// Targets (the same object listed more than once) can lead to a crash (LT-21598).
+		/// </summary>
+		private void RemoveDuplicateTargets(XElement rt, Guid guid, Guid guidOwner, FwDataFixer.ErrorLogger errorLogger)
+		{
+			var targets = rt.Element("Targets");
+			if (targets == null)
+				return;
+			var seen = new HashSet<string>();
+			foreach (var objsur in targets.Descendants("objsur").ToList())
+			{
+				var targetGuid = objsur.Attribute("guid").Value;
+				if (seen.Add(targetGuid))
+					continue;
+				objsur.Remove();
+				errorLogger(String.Format(Strings.ksRemovingDuplicateLexReferenceTarget, targetGuid, guid, guidOwner), true);
+			}
 		}
 
 		private void ReportBadLexReference(Guid guid, Guid guidOwner, FwDataFixer.ErrorLogger errorLogger)
@@ -477,6 +507,7 @@ namespace SIL.LCModel.FixData
 			m_candidateForRefAdjustment.Clear();
 			m_lexRefTypes.Clear();
 			m_lexReferencesToDelete.Clear();
+			m_lexReferencesWithDuplicateTargets.Clear();
 			m_objsToDelete.Clear();
 			m_objsToAdjust.Clear();
 			m_ownerThatWillLoseOwnee.Clear();

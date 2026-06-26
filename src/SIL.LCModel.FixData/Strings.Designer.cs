@@ -205,6 +205,15 @@ namespace SIL.LCModel.FixData {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Removing duplicate Target (guid=&apos;{0}&apos;) from LexReference (guid=&apos;{1}&apos;) owned by (guid=&apos;{2}&apos;)..
+        /// </summary>
+        public static string ksRemovingDuplicateLexReferenceTarget {
+            get {
+                return ResourceManager.GetString("ksRemovingDuplicateLexReferenceTarget", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Removing duplicate style {0}..
         /// </summary>
         public static string ksRemovingDuplicateStyle {

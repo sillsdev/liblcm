@@ -53,7 +53,7 @@ namespace SIL.LCModel.FixData.Tests
 				"DuplicateGuid", "DanglingCustomListReference", "DanglingCustomProperty", "DanglingReference",
 				"DuplicateWs", "SequenceFixer", "EntryWithExtraMSA", "EntryWithMsaAndNoSenses", "EntryExtraMsaAndBustedSenseRef", "TagAndCellRefs", "GenericDates",
 				"HomographFixer", WordformswithsameformTestDir, "MorphBundleProblems", "MissingBasicCustomField", "DeletedMsaRefBySenseAndBundle",
-				"DuplicateNameCustomList", "SingleTargetLexRefs", "DuplicateStyles"
+				"DuplicateNameCustomList", "SingleTargetLexRefs", "DuplicateLexRefTargets", "DuplicateStyles"
 			};
 
 		private string TestDataDirectory => Path.Combine(TestDirectoryFinder.RootDirectory, "tests", "SIL.LCModel.FixData.Tests", "TestData");
@@ -413,6 +413,56 @@ namespace SIL.LCModel.FixData.Tests
 			// Check that the valid LexReference is not deleted
 			AssertThatXmlIn.File(Path.Combine(testPath, "BasicFixup.fwdata")).HasSpecifiedNumberOfMatchesForXpath(
 				"//rt[@class=\"LexReference\"]", 1);
+		}
+
+		[Test]
+		public void DuplicateLexReferenceTargets()
+		{
+			var testPath = Path.Combine(_basePath, "DuplicateLexRefTargets");
+			// This test checks that LexReferences listing the same Target more than once (LT-21598) are repaired:
+			// duplicates are removed, and a LexReference left with fewer than two distinct Targets is deleted.
+			const string lexRefDedupeGuid = "f1f1f1f1-0000-0000-0000-000000000001";   // senseA, senseB, senseA -> senseA, senseB
+			const string lexRefDeleteGuid = "f1f1f1f1-0000-0000-0000-000000000002";   // senseC, senseC -> deleted
+			const string lexRefValidGuid = "f1f1f1f1-0000-0000-0000-000000000003";    // senseA, senseB -> untouched
+			const string senseAGuid = "aaaaaaaa-0000-0000-0000-00000000000a";
+			const string senseCGuid = "cccccccc-0000-0000-0000-00000000000c";
+			const string lexRefTypeGuid = "dddddddd-0000-0000-0000-00000000000d";
+
+			var data = new FwDataFixer(Path.Combine(testPath, "BasicFixup.fwdata"), new DummyProgressDlg(), LogErrors, ErrorCount);
+			data.FixErrorsAndSave();
+
+			// Two fixes: one duplicate Target removed, and one too-few-Targets LexReference removed (the
+			// owning LexRefType's reference to the deleted LexReference is removed too, but isn't logged separately).
+			Assert.AreEqual(2, _errorsFixed, "Unexpected number of fixes.");
+			Assert.That(_errors, Has.Some.StartsWith("Removing duplicate Target (guid='" + senseAGuid +
+				"') from LexReference (guid='" + lexRefDedupeGuid + "')"), "Duplicate-target error message missing."); // SequenceFixer--ksRemovingDuplicateLexReferenceTarget
+			Assert.That(_errors, Has.Some.StartsWith("Removing LexReference with too few references (Targets) (guid='" + lexRefDeleteGuid +
+				"')"), "Too-few-Targets error message missing."); // SequenceFixer--ksRemovingBadLexReference
+
+			// Original (bad) data: the dedupe LexReference had senseA twice (3 Targets total).
+			AssertThatXmlIn.File(Path.Combine(testPath, "BasicFixup.bak")).HasSpecifiedNumberOfMatchesForXpath(
+				"//rt[@guid=\"" + lexRefDedupeGuid + "\"]/Targets/objsur[@guid=\"" + senseAGuid + "\"]", 2);
+
+			var fixedFile = Path.Combine(testPath, "BasicFixup.fwdata");
+			// Dedupe LexReference: kept, but senseA now appears only once (two distinct Targets).
+			AssertThatXmlIn.File(fixedFile).HasSpecifiedNumberOfMatchesForXpath("//rt[@guid=\"" + lexRefDedupeGuid + "\"]", 1);
+			AssertThatXmlIn.File(fixedFile).HasSpecifiedNumberOfMatchesForXpath(
+				"//rt[@guid=\"" + lexRefDedupeGuid + "\"]/Targets/objsur[@guid=\"" + senseAGuid + "\"]", 1);
+			AssertThatXmlIn.File(fixedFile).HasSpecifiedNumberOfMatchesForXpath(
+				"//rt[@guid=\"" + lexRefDedupeGuid + "\"]/Targets/objsur", 2);
+
+			// All-duplicate LexReference: deleted, and the LexRefType no longer references it.
+			AssertThatXmlIn.File(fixedFile).HasSpecifiedNumberOfMatchesForXpath("//rt[@guid=\"" + lexRefDeleteGuid + "\"]", 0);
+			AssertThatXmlIn.File(fixedFile).HasSpecifiedNumberOfMatchesForXpath(
+				"//rt[@guid=\"" + lexRefTypeGuid + "\"]/Members/objsur[@guid=\"" + lexRefDeleteGuid + "\"]", 0);
+
+			// The targeted senses themselves are not deleted.
+			AssertThatXmlIn.File(fixedFile).HasSpecifiedNumberOfMatchesForXpath("//rt[@guid=\"" + senseAGuid + "\"]", 1);
+			AssertThatXmlIn.File(fixedFile).HasSpecifiedNumberOfMatchesForXpath("//rt[@guid=\"" + senseCGuid + "\"]", 1);
+
+			// The valid LexReference is untouched (two distinct Targets).
+			AssertThatXmlIn.File(fixedFile).HasSpecifiedNumberOfMatchesForXpath(
+				"//rt[@guid=\"" + lexRefValidGuid + "\"]/Targets/objsur", 2);
 		}
 
 		/// <summary>
