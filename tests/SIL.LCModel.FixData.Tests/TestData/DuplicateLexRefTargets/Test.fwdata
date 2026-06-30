@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<languageproject version="7000061">
+
+<rt class="LexEntry" guid="11111111-0000-0000-0000-000000000001">
+  <Senses>
+	<objsur guid="aaaaaaaa-0000-0000-0000-00000000000a" t="o" />
+  </Senses>
+</rt>
+<rt class="LexSense" guid="aaaaaaaa-0000-0000-0000-00000000000a" ownerguid="11111111-0000-0000-0000-000000000001" />
+
+<rt class="LexEntry" guid="11111111-0000-0000-0000-000000000002">
+  <Senses>
+	<objsur guid="bbbbbbbb-0000-0000-0000-00000000000b" t="o" />
+  </Senses>
+</rt>
+<rt class="LexSense" guid="bbbbbbbb-0000-0000-0000-00000000000b" ownerguid="11111111-0000-0000-0000-000000000002" />
+
+<rt class="LexEntry" guid="11111111-0000-0000-0000-000000000003">
+  <Senses>
+	<objsur guid="cccccccc-0000-0000-0000-00000000000c" t="o" />
+  </Senses>
+</rt>
+<rt class="LexSense" guid="cccccccc-0000-0000-0000-00000000000c" ownerguid="11111111-0000-0000-0000-000000000003" />
+
+<rt class="CmPossibilityList" guid="eeeeeeee-0000-0000-0000-00000000000e">
+	<Possibilities>
+		<objsur guid="dddddddd-0000-0000-0000-00000000000d" t="o" />
+	</Possibilities>
+</rt>
+
+<rt class="LexRefType" guid="dddddddd-0000-0000-0000-00000000000d" ownerguid="eeeeeeee-0000-0000-0000-00000000000e">
+	<Members>
+		<objsur guid="f1f1f1f1-0000-0000-0000-000000000001" t="o" />
+		<objsur guid="f1f1f1f1-0000-0000-0000-000000000002" t="o" />
+		<objsur guid="f1f1f1f1-0000-0000-0000-000000000003" t="o" />
+	</Members>
+</rt>
+
+<!-- Duplicate target (senseA listed twice) but two distinct targets remain.
+		The duplicate should be removed and the LexReference kept. -->
+<rt class="LexReference" guid="f1f1f1f1-0000-0000-0000-000000000001" ownerguid="dddddddd-0000-0000-0000-00000000000d">
+  <Targets>
+	<objsur guid="aaaaaaaa-0000-0000-0000-00000000000a" t="r" />
+	<objsur guid="bbbbbbbb-0000-0000-0000-00000000000b" t="r" />
+	<objsur guid="aaaaaaaa-0000-0000-0000-00000000000a" t="r" />
+  </Targets>
+</rt>
+
+<!-- All targets are the same object (senseC twice): fewer than two distinct
+		Targets, so the whole LexReference should be deleted. -->
+<rt class="LexReference" guid="f1f1f1f1-0000-0000-0000-000000000002" ownerguid="dddddddd-0000-0000-0000-00000000000d">
+  <Targets>
+	<objsur guid="cccccccc-0000-0000-0000-00000000000c" t="r" />
+	<objsur guid="cccccccc-0000-0000-0000-00000000000c" t="r" />
+  </Targets>
+</rt>
+
+<!-- A valid LexReference with two distinct Targets: should be left untouched. -->
+<rt class="LexReference" guid="f1f1f1f1-0000-0000-0000-000000000003" ownerguid="dddddddd-0000-0000-0000-00000000000d">
+  <Targets>
+	<objsur guid="aaaaaaaa-0000-0000-0000-00000000000a" t="r" />
+	<objsur guid="bbbbbbbb-0000-0000-0000-00000000000b" t="r" />
+  </Targets>
+</rt>
+
+</languageproject>
