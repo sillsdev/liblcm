@@ -8364,6 +8364,9 @@ namespace SIL.LCModel.DomainImpl
 				targets.Add(extraTarget);
 			foreach (var target in targets)
 			{
+				// A target may already have been deleted during a bulk delete operation (LT-21598); skip it.
+				if (!target.IsValidObject)
+					continue;
 				if (target is LexEntry entry)
 					uowService.RegisterVirtualAsModified(entry, "MinimalLexReferences", entry.MinimalLexReferences.Cast<ICmObject>());
 				else if (target is LexSense sense)
@@ -8375,22 +8378,28 @@ namespace SIL.LCModel.DomainImpl
 		{
 			if (e.Flid == LexReferenceTags.kflidTargets)
 			{
-				// register the virtual prop LexEntryReference back ref as modified for the removed
-				// lex entry
-				ILexEntry entry = e.ObjectRemoved as ILexEntry;
-				if (entry != null)
-					UpdateLexEntryReferences(entry, false);
-				UpdateMinimalLexReferences(e.ObjectRemoved);
-				if (e.ObjectRemoved is LexSense sense)
+				// These updates register back-reference virtual properties that dereference the removed object's
+				// cache. During a bulk delete operation the removed object may already have been deleted (LT-21598),
+				// so only do this work while it is still valid.
+				if (e.ObjectRemoved.IsValidObject)
 				{
-					List<ICmObject> backrefs = sense.LexSenseReferences.Cast<ICmObject>().ToList();
-					// don't use this.Services, since 'this' may already have been deleted (in case Replace reduces target set to one item).
-					e.ObjectRemoved.Services.GetInstance<IUnitOfWorkService>().RegisterVirtualAsModified(sense, "LexSenseReferences",
-						backrefs);
-					entry = sense.Entry;
+					// register the virtual prop LexEntryReference back ref as modified for the removed
+					// lex entry
+					ILexEntry entry = e.ObjectRemoved as ILexEntry;
+					if (entry != null)
+						UpdateLexEntryReferences(entry, false);
+					UpdateMinimalLexReferences(e.ObjectRemoved);
+					if (e.ObjectRemoved is LexSense sense)
+					{
+						List<ICmObject> backrefs = sense.LexSenseReferences.Cast<ICmObject>().ToList();
+						// don't use this.Services, since 'this' may already have been deleted (in case Replace reduces target set to one item).
+						e.ObjectRemoved.Services.GetInstance<IUnitOfWorkService>().RegisterVirtualAsModified(sense, "LexSenseReferences",
+							backrefs);
+						entry = sense.Entry;
+					}
+					if (entry != null)
+						entry.DateModified = DateTime.Now;
 				}
-				if (entry != null)
-					entry.DateModified = DateTime.Now;
 
 				if (IsValidObject && !m_cache.ObjectsBeingDeleted.Contains(this))
 				{
