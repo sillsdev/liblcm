@@ -2627,6 +2627,10 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		protected virtual void RestoreIncomingRefsOnOutgoingRefsInternal()
 		{
+			// Add a null cache guard. (See LT-14056: when using redo button to delete a lexical relation that was "undeleted" via undo,
+			// it tries to restore refs after deleting the object and crashes b/c Cache is null.)
+			if (Cache == null) { return; }
+
 			var mdc = Cache.ServiceLocator.GetInstance<IFwMetaDataCacheManaged>();
 			foreach (var flid in mdc.GetFields(ClassID, true, (int)CellarPropertyTypeFilter.AllReference))
 			{

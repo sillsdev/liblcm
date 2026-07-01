@@ -1779,6 +1779,10 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		public override void RestoreAfterUndo()
 		{
+			// Add a null cache guard. (See LT-14056: when using redo button to delete a lexical relation that was "undeleted" via undo,
+			// it tries to restore refs after deleting the object and crashes b/c Cache is null.)
+			if (MainObject.Cache == null) { return; }
+
 			// First we must make sure all the objects are real. This is very like a loop over
 			// FluffUpObjectIfNeeded; but do NOT use that, because it will add extra incoming refs
 			// for anything that isn't already fluffed.
