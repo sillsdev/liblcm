@@ -5,9 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Xml.Linq;
-using System.Xml.XPath;
 using NUnit.Framework;
 using SIL.LCModel.Utils;
 
@@ -23,8 +21,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 	[TestFixture]
 	public class DataMigration7000040Tests : DataMigrationTestsBase
 	{
-		private const string FwUrlPrefix = "silfw://localhost/link?";
-
 		///--------------------------------------------------------------------------------------
 		/// <summary>
 		///  Test the migration from version 7000039 to 7000040.
@@ -99,81 +95,6 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			var objsur = osElements.ToArray()[index];
 			Assert.That(objsur.Attribute("guid").Value, Is.EqualTo(guid));
 			Assert.That(objsur.Attribute("t").Value, Is.EqualTo("r"));
-		}
-
-		int m_cLinks;
-		List<string> m_rgsOtherLinks = new List<string>();
-
-		private void CollectionNonSilfwLinks(IDomainObjectDTORepository dtoRepos)
-		{
-			foreach (var dto in dtoRepos.AllInstancesWithValidClasses())
-			{
-				string xml = dto.Xml;
-				Assert.IsTrue(xml.Contains("externalLink"), "Every object in the test has an externalLink");
-				var dtoXML = XElement.Parse(xml);
-				foreach (var run in dtoXML.XPathSelectElements("//Run"))
-				{
-					var externalLinkAttr = run.Attribute("externalLink");
-					if (externalLinkAttr != null)
-					{
-						string value = externalLinkAttr.Value;
-						if (value.StartsWith("http://") || value.StartsWith("libronixdls:"))
-							m_rgsOtherLinks.Add(value);
-						++m_cLinks;
-					}
-				}
-			}
-
-		}
-
-		private void CheckForValidLinkValue(string externalLink)
-		{
-			int idxColon = externalLink.IndexOf(':');
-			Assert.Greater(idxColon, 0, "links must have a colon to separate off the type of link");
-			string linkType = externalLink.Substring(0, idxColon);
-			switch (linkType)
-			{
-				case "http":
-				case "libronixdls":
-					Assert.IsTrue(m_rgsOtherLinks.Contains(externalLink),
-						"Migration should not affect http or libronix links");
-					return;
-				default:
-					Assert.AreEqual("silfw", linkType);
-					break;
-			}
-			Assert.IsTrue(externalLink.StartsWith(FwUrlPrefix),
-				"silfw link should start with " + FwUrlPrefix);
-			string query = HttpUtility.UrlDecode(externalLink.Substring(FwUrlPrefix.Length));
-			string[] rgsProps = query.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
-			string tool = null;
-			Guid guid = Guid.Empty;
-			for (int i = 0; i < rgsProps.Length; ++i)
-			{
-				string[] propPair = rgsProps[i].Split('=');
-				switch (propPair[0])
-				{
-					case "app":
-						Assert.AreEqual("flex", propPair[1], "silfw link - app should equal \"flex\"");
-						break;
-					case "server":
-						Assert.That(propPair[1], Is.Null.Or.Empty, "silfw link - server should be empty");
-						break;
-					case "database":
-						Assert.AreEqual("this$", propPair[1], "silfw link - database should equal \"this$\"");
-						break;
-					case "tool":
-						tool = propPair[1];
-						break;
-					case "guid":
-						guid = new Guid(propPair[1]);
-						break;
-					default:
-						break;
-				}
-			}
-			Assert.That(tool, Is.Not.Null.And.Not.Empty, "silfw link - tool should have a value");
-			Assert.AreNotEqual(Guid.Empty, guid, "silfw link - guid should have a value");
 		}
 	}
 }

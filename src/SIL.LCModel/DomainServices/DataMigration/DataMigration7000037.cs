@@ -7,8 +7,8 @@
 
 using System;
 using System.IO;
+using System.Net;
 using System.Text;
-using System.Web;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using SIL.LCModel.Utils;
@@ -66,7 +66,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 					value = kFwUrlPrefix.Substring(0, 1) + value;
 				if (!value.StartsWith(kFwUrlPrefix))
 					continue;
-				string query = HttpUtility.UrlDecode(value.Substring(kFwUrlPrefix.Length));
+				string query = WebUtility.UrlDecode(value.Substring(kFwUrlPrefix.Length));
 				string[] rgsProps = query.Split(new char[] {'&'}, StringSplitOptions.RemoveEmptyEntries);
 				string database = null;
 				int idxDatabase = -1;
@@ -130,7 +130,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 				if (!fChange)
 					continue;
 
-				value = kFwUrlPrefix + HttpUtility.UrlEncode(string.Join("&", rgsProps));
+				value = kFwUrlPrefix + WebUtility.UrlEncode(string.Join("&", rgsProps));
 				if (attrLink.Value != value)
 				{
 					attrLink.Value = value;
