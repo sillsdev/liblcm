@@ -108,10 +108,6 @@
     <Clean Include="@(GeneratedFiles)" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="System.Web" />
-  </ItemGroup>
-
   <Target Name="GenerateModel" Inputs="MasterLCModel.xml" Outputs="@(GeneratedFiles)" BeforeTargets="BeforeCompile">
     <!-- Call the LcmGenerate task from SIL.LCModel.Build.Tasks in a separate msbuild process,
          so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
