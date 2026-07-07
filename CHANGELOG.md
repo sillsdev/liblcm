@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- [SIL.LCModel] Deleting a duplicated phonological rule no longer deletes pooled feature constraints and environment contexts the original rule still references (LT-22575)
 - [SIL.LCModel] Fixed crash when bulk deleting entries involved in a lexical relation (LT-21598)
 - [SIL.LCModel.FixData] Find and Fix removes duplicate Targets from a LexReference (and deletes it if fewer than two distinct Targets remain) (LT-21598)
 - [SIL.LCModel] Data migration now serializes dates using the culture-neutral `ToLCMTimeFormatWithMillisString` (LT-20698)

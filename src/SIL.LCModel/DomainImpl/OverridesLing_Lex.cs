@@ -7635,7 +7635,11 @@ namespace SIL.LCModel.DomainImpl
 		{
 			base.OnBeforeObjectDeleted();
 			foreach (var constr in FeatureConstraints)
-				m_cache.LanguageProject.PhonologicalDataOA.FeatConstraintsOS.Remove(constr);
+			{
+				// GC the pooled constraint unless a duplicate rule or a process still references it (LT-22575).
+				if (constr.ReferringObjects.All(o => o is IPhSimpleContextNC ctxt && ctxt.Rule == this))
+					m_cache.LanguageProject.PhonologicalDataOA.FeatConstraintsOS.Remove(constr);
+			}
 		}
 
 		protected override void RemoveObjectSideEffectsInternal(RemoveObjectEventArgs e)
@@ -7646,10 +7650,10 @@ namespace SIL.LCModel.DomainImpl
 				var removedCtxt = e.ObjectRemoved as IPhSimpleContextNC;
 				if (removedCtxt != null)
 				{
-					var featConstrs = GetFeatureConstraintsExcept(removedCtxt);
 					foreach (var constr in removedCtxt.PlusConstrRS.ToList())
 					{
-						if (!featConstrs.Contains(constr))
+						// GC the pooled constraint only if removedCtxt is its last referrer (LT-22575).
+						if (constr.ReferringObjects.All(o => o == removedCtxt))
 						{
 							// Remove constr from removedCtxt first to avoid deleting removedCtxt twice (fixes LT-21729).
 							removedCtxt.PlusConstrRS.Remove(constr);
@@ -7658,7 +7662,7 @@ namespace SIL.LCModel.DomainImpl
 					}
 					foreach (var constr in removedCtxt.MinusConstrRS.ToList())
 					{
-						if (!featConstrs.Contains(constr))
+						if (constr.ReferringObjects.All(o => o == removedCtxt))
 						{
 							// Remove constr from removedCtxt first to avoid deleting removedCtxt twice.
 							removedCtxt.MinusConstrRS.Remove(constr);
@@ -8201,7 +8205,8 @@ namespace SIL.LCModel.DomainImpl
 		protected override void OnBeforeObjectDeleted()
 		{
 			base.OnBeforeObjectDeleted();
-			if (MemberRA != null)
+			// GC the pooled member only if this context is its last referrer (LT-22575).
+			if (MemberRA != null && MemberRA.ReferringObjects.All(o => o == this))
 				m_cache.LanguageProject.PhonologicalDataOA.ContextsOS.Remove(MemberRA);
 		}
 	}
@@ -8212,7 +8217,11 @@ namespace SIL.LCModel.DomainImpl
 		{
 			base.OnBeforeObjectDeleted();
 			foreach (var ctxt in MembersRS.ToArray())
-				m_cache.LanguageProject.PhonologicalDataOA.ContextsOS.Remove(ctxt);
+			{
+				// GC the pooled member only if this sequence is its last referrer (LT-22575).
+				if (ctxt.ReferringObjects.All(o => o == this))
+					m_cache.LanguageProject.PhonologicalDataOA.ContextsOS.Remove(ctxt);
+			}
 		}
 
 		protected override void RemoveObjectSideEffectsInternal(RemoveObjectEventArgs e)
