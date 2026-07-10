@@ -274,6 +274,34 @@ namespace SIL.LCModel.DomainServices
 			Assert.AreEqual(false, newInfo.IsBuiltIn, "Copies of styles should not be considered built in");
 		}
 
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests that font features (ktptFontVariations) set as a style-level default (not a
+		/// writing-system override) are loaded into the default font info. See LT-22351: such
+		/// features were saved to the database but silently dropped when the style was reloaded,
+		/// because ProcessStyleRules had no case for ktptFontVariations.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void ConstructBasedOnStyle_FontFeatures()
+		{
+			ITsPropsBldr props;
+
+			IStStyle mainTitleStyle = AddTestStyle("Title Main", ContextValues.Title,
+				StructureValues.Body, FunctionValues.Prose, false, Cache.LangProject.StylesOC);
+			props = mainTitleStyle.Rules.GetBldr();
+			props.SetStrPropValue((int)FwTextPropType.ktptFontFamily, "Arial");
+			props.SetStrPropValue((int)FwTextPropType.ktptFontVariations, "smcp=1,ss01=2");
+			mainTitleStyle.Rules = props.GetTextProps();
+
+			DummyStyleInfo entry = new DummyStyleInfo(mainTitleStyle);
+			FontInfo fontInfo = entry.FontInfoForWs(-1);
+			Assert.IsNotNull(fontInfo);
+			Assert.IsTrue(fontInfo.m_features.IsExplicit,
+				"Default font features set on the style should be explicit, not inherited");
+			Assert.AreEqual("smcp=1,ss01=2", fontInfo.m_features.Value);
+		}
+
 		/// <summary>
 		/// Minimal test of an alternate constructor to verify that it records the cache from the style.
 		/// </summary>
