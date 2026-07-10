@@ -300,6 +300,7 @@ namespace SIL.LCModel.DomainServices
 			Assert.IsTrue(fontInfo.m_features.IsExplicit,
 				"Default font features set on the style should be explicit, not inherited");
 			Assert.AreEqual("smcp=1,ss01=2", fontInfo.m_features.Value);
+			Assert.AreEqual("Arial", (string)fontInfo.m_fontName.Value);
 		}
 
 		/// <summary>
@@ -428,6 +429,66 @@ namespace SIL.LCModel.DomainServices
 				"The child entry in the StyleInfoCollection did not inherit the fontName properly");
 			Assert.AreEqual(childOverrides.FontName.Value, "Fontastic",
 				"The child entry in the StyleInfoCollection did not inherit the fontName properly");
+		}
+
+		/// <summary>
+		/// Tests that a child style whose only explicit style-level default is font features
+		/// (ktptFontVariations) does not clobber the ws-specific overrides it inherits from its
+		/// based-on style. The explicitly-set default properties should be propagated to the ws
+		/// overrides, but the default's merely-inherited values must not overwrite what was just
+		/// inherited from the based-on style's ws override. See LT-22351.
+		/// </summary>
+		[Test]
+		public void SetBasedOnStyleAndInheritValues_ExplicitDefaultFeaturesDoNotClobberWsOverride()
+		{
+			// Font family override for the parent style
+			byte[] buffer = new byte[] {
+				0xC1, 0x87, 0x8B, 0x3B, // WS for english (little endian)
+				0x09, 0x00, // FF length
+				(byte)'F', 0,
+				(byte)'o', 0,
+				(byte)'n', 0,
+				(byte)'t', 0,
+				(byte)'a', 0,
+				(byte)'s', 0,
+				(byte)'t', 0,
+				(byte)'i', 0,
+				(byte)'c', 0,
+
+				0x00, 0x00, // Count of int props
+			};
+
+			ITsPropsBldr props;
+
+			var mainTitleStyle = AddTestStyle("Title Main", ContextValues.Title,
+				StructureValues.Body, FunctionValues.Prose, false, Cache.LangProject.StylesOC);
+			var inheritFromMain = AddTestStyle("Inherit Title", ContextValues.Title, StructureValues.Body,
+				FunctionValues.Prose, false, Cache.LangProject.StylesOC);
+			inheritFromMain.BasedOnRA = mainTitleStyle;
+			// The parent style has a ws-specific font override and a different default font
+			props = mainTitleStyle.Rules.GetBldr();
+			props.SetStrPropValue((int)FwTextPropType.ktptFontFamily, "Times New Roman");
+			props.SetStrPropValue((int)FwTextPropType.ktptWsStyle, DummyStyleInfo.MakeStringFromBuffer(buffer));
+			mainTitleStyle.Rules = props.GetTextProps();
+			// The child style's only explicit style-level default is font features
+			props = inheritFromMain.Rules.GetBldr();
+			props.SetStrPropValue((int)FwTextPropType.ktptFontVariations, "smcp=1");
+			inheritFromMain.Rules = props.GetTextProps();
+
+			var entry = new DummyStyleInfo(mainTitleStyle);
+			var childEntry = new DummyStyleInfo(inheritFromMain);
+			var styleInfos = new LcmStyleSheet.StyleInfoCollection();
+			styleInfos.Add(entry);
+			styleInfos.Add(childEntry);
+			// SUT
+			childEntry.SetBasedOnStyleAndInheritValues(styleInfos);
+			var childOverrides = childEntry.FontInfoForWs(Cache.DefaultAnalWs);
+			Assert.True(childOverrides.m_fontName.IsInherited,
+				"The child entry's ws override should still inherit the fontName");
+			Assert.AreEqual("Fontastic", childOverrides.m_fontName.Value,
+				"The fontName inherited from the parent's ws override should not be clobbered by the child's default font info");
+			Assert.AreEqual("smcp=1", childOverrides.m_features.Value,
+				"The child's explicit default font features should be propagated to its ws override");
 		}
 
 		/// ------------------------------------------------------------------------------------

@@ -936,7 +936,7 @@ namespace SIL.LCModel.DomainServices
 						break;
 
 					case (int)FwTextPropType.ktptFontVariations:
-						m_defaultFontInfo.m_features.ExplicitValue = sProp;
+						SetFontStringProp(tpt, m_defaultFontInfo, sProp);
 						break;
 
 					case (int)FwTextPropType.ktptBulNumTxtBef:
@@ -1440,7 +1440,11 @@ namespace SIL.LCModel.DomainServices
 				fontInfoOverride.Value.InheritAllProperties(inheritPropsFrom);
 				if (m_defaultFontInfo.IsAnyExplicit)
 				{
-					fontInfoOverride.Value.InheritAllProperties(m_defaultFontInfo);
+					// Propagate only the explicitly-set default (style-level) properties into the
+					// override; the default's other values were merely inherited from the based-on
+					// style's default and must not clobber what was just inherited from the
+					// based-on style's ws override.
+					fontInfoOverride.Value.InheritExplicitProperties(m_defaultFontInfo);
 				}
 			}
 			m_rtl.InheritValue(basedOn.m_rtl);
