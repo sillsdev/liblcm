@@ -210,13 +210,13 @@ namespace SIL.LCModel.DomainServices
 					{
 						fontInfo.m_fontName.ExplicitValue = blob.Substring(i, iPropLim - i);
 						i += (iPropLim - i + 1);
-						break;
+						continue;
 					}
 					else if (tpt == FwTextPropType.ktptFontVariations)
 					{
 						fontInfo.m_features.ExplicitValue = blob.Substring(i, iPropLim - i);
 						i += (iPropLim - i + 1);
-						break;
+						continue;
 					}
 
 					int nVal = (int)blob[i] + (int)(blob[i + 1] << 16);

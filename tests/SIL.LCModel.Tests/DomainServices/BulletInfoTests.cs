@@ -139,6 +139,37 @@ namespace SIL.LCModel.DomainServices
 
 			Assert.AreEqual(expectedFontInfo, bulletInfo2.FontInfo);
 		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests that we can save and restore a font info that has both a font name and font
+		/// features (ktptFontVariations) explicitly set. DecodeFontInfo used to stop parsing
+		/// after the first string property, so the font features (which are encoded after the
+		/// font name) were lost on every decode. See LT-22351.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void RoundTripEncodingAndDecodingOfFontInfo_FontNameAndFontFeatures()
+		{
+			// Setup what we expect
+			FontInfo expectedFontInfo = m_infoTable["TestStyle"].FontInfoForWs(-1);
+			expectedFontInfo.m_fontName = new InheritableStyleProp<string>("Algerian");
+			expectedFontInfo.m_features = new InheritableStyleProp<string>("smcp=1,ss01=2");
+
+			BulletInfo bulletInfo1 = new BulletInfo();
+			bulletInfo1.FontInfo = expectedFontInfo;
+
+			BulletInfo bulletInfo2 = new BulletInfo();
+			bulletInfo2.EncodedFontInfo = bulletInfo1.EncodedFontInfo;
+
+			Assert.IsTrue(bulletInfo2.FontInfo.m_fontName.IsExplicit,
+				"The font name should survive the round trip");
+			Assert.AreEqual("Algerian", bulletInfo2.FontInfo.m_fontName.Value);
+			Assert.IsTrue(bulletInfo2.FontInfo.m_features.IsExplicit,
+				"The font features should survive the round trip");
+			Assert.AreEqual("smcp=1,ss01=2", bulletInfo2.FontInfo.m_features.Value);
+			Assert.AreEqual(expectedFontInfo, bulletInfo2.FontInfo);
+		}
 		#endregion
 	}
 }
