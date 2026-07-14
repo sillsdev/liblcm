@@ -4194,7 +4194,7 @@
 </Name>
 <Description>
 <AStr ws="en">
-<Run ws="en">Use this domain for general words for all plants. Use a book of pictures to identify plant names and the scientific name. Languages divide plants into various domains that are not always comparable from language to language. Criterial features may be characteristics (trees and bushes are distinguished by size and number of trunks) and use (grass and weeds are distinguished by their desirability). A common distinction is between trees and non-trees, with trees described as being big, woody, and having a life expectancy of several years, while non-trees are small, non-woody, and have a life expectancy of typically not more than one year (Heine, Bernd and Karsten Legere. 1995. Swahili plants. Rudiger Koppe Verlag: Koln.). Agricultural societies will divide plants into wild and cultivated. However most plants for which there are names have some use. Therefore it does not seem helpful to divide plant names into domains for useful and non-useful plants. Since only parts of plants are eaten, edible parts of plants are listed under the domain 'Food'. Some languages may have more domains than are used in this list, others may have fewer. The classification system used here does not agree entirely with the system used by botanists. For instance botanists do not classify all the tree species together. The palm trees belong to the class Monocotyledoneae and are classified with lilies, bananas, and orchids. Apple and cherry trees belong to the class Dicotyledoneae and are classified in the rose family along with roses and blackberries. The acacia tree also belongs to the class Dicotyledoneae and is classified in the pulse family along with lupines and beans. However most folk taxonomies bring all the trees together. The scientific classification system for plants and animals is taken from: Carruth, Gorton, ed. 1989. The Volume Library, Vols. 1 and 2. The Southwestern Company: Nashville.</Run>
+<Run ws="en">Use this domain for general words for all plants. Use a book of pictures to identify plant names and the scientific name. Languages divide plants into various domains that are not always comparable from language to language. Some languages may have more domains than are used in this list, others may have fewer. The classification system used here does not agree entirely with the system used by botanists. For instance botanists do not classify all the tree species together. However most folk taxonomies bring all the trees together.</Run>
 </AStr>
 </Description>
 <OcmCodes>
@@ -35265,7 +35265,7 @@
 </Name>
 <Description>
 <AStr ws="en">
-<Run ws="en">Use this domain for words related to a particular game. The example words are from the card games. If you do not play card games in your culture, you can rename this domain and use it for one of your games. Add other domains for each of your games.</Run>
+<Run ws="en">Use this domain for words related to a particular game. If you do not play card games in your culture, you can rename this domain and use it for one of your games.</Run>
 </AStr>
 </Description>
 <Questions>
@@ -35336,7 +35336,7 @@
 </Name>
 <Description>
 <AStr ws="en">
-<Run ws="en">Use this domain for words related to a particular game. The example words are from the game of chess. If you do not play chess in your culture, you can rename this domain and use it for one of your games. Add other domains for each of your games.</Run>
+<Run ws="en">Use this domain for words related to a particular game. If you do not play chess in your culture, you can rename this domain and use it for one of your games.</Run>
 </AStr>
 </Description>
 <Questions>
@@ -35611,7 +35611,7 @@
 </Name>
 <Description>
 <AStr ws="en">
-<Run ws="en">Use this domain for words related to a particular sport. The example words are from the sport of football (also called soccer). If you do not play football in your culture, you can rename this domain and use it for one of your sports. Add other domains for each of your sports.</Run>
+<Run ws="en">Use this domain for words related to a particular sport. If you do not play football or soccer in your culture, you can rename this domain and use it for one of your sports.</Run>
 </AStr>
 </Description>
 <Questions>
@@ -35722,7 +35722,7 @@
 </Name>
 <Description>
 <AStr ws="en">
-<Run ws="en">Use this domain for words related to a particular sport. The example words are from the sport of basketball. If you do not play basketball in your culture, you can rename this domain and use it for one of your sports. Add other domains for each of your sports.</Run>
+<Run ws="en">Use this domain for words related to a particular sport. If you do not play basketball in your culture, you can rename this domain and use it for one of your sports.</Run>
 </AStr>
 </Description>
 <Questions>
@@ -46456,7 +46456,7 @@
 </Name>
 <Description>
 <AStr ws="en">
-<Run ws="en">Use this domain for words related to sacred writings. Examples are only given for the Christian sacred writings. However you should include words referring to the holy books of all religions .</Run>
+<Run ws="en">Use this domain for words related to sacred writings. You should include words referring to the holy books of all religions .</Run>
 </AStr>
 </Description>
 <Questions>
@@ -47674,7 +47674,7 @@
 </Name>
 <Description>
 <AStr ws="en">
-<Run ws="en">Use this domain for words referring to religious practitioners--people who practice a religion, who are members of the religion, believe in the religion, leaders of the religion, and followers of the religion. Each religion has its own terms for religious practitioners. List these terms separately for each religion. The examples given below are for the Christian religion.</Run>
+<Run ws="en">Use this domain for words referring to religious practitioners--people who practice a religion, who are members of the religion, believe in the religion, leaders of the religion, and followers of the religion. Each religion has its own terms for religious practitioners. List these terms separately for each religion.</Run>
 </AStr>
 </Description>
 <OcmCodes>
@@ -48587,7 +48587,7 @@
 </Name>
 <Description>
 <AStr ws="en">
-<Run ws="en">Use this domain for words referring to various ways of cooking food. It is necessary to think through different kinds of food and how they are cooked. An example is given below for cooking eggs.</Run>
+<Run ws="en">Use this domain for words referring to various ways of cooking food. It is necessary to think through different kinds of food and how they are cooked.</Run>
 </AStr>
 </Description>
 <Questions>
@@ -50934,7 +50934,7 @@
 </Name>
 <Description>
 <AStr ws="en">
-<Run ws="en">Use this domain for words referring to special clothes worn on special occasions. It is necessary to think through all the various special occasions in the culture and think of any special clothes worn on those occasions. Two examples are given below for work and graduation, but there are many others.</Run>
+<Run ws="en">Use this domain for words referring to special clothes worn on special occasions. It is necessary to think through all the various special occasions in the culture and think of any special clothes worn on those occasions.</Run>
 </AStr>
 </Description>
 <OcmCodes>
@@ -50976,7 +50976,7 @@
 </Name>
 <Description>
 <AStr ws="en">
-<Run ws="en">Use this domain for special clothes worn by special people. It is necessary to think through all the various special types of people in the culture and think of any special clothes worn by them. Several examples are given below, but there are many others.</Run>
+<Run ws="en">Use this domain for special clothes worn by special people. It is necessary to think through all the various special types of people in the culture and think of any special clothes worn by them.</Run>
 </AStr>
 </Description>
 <Questions>
@@ -90239,7 +90239,7 @@
 </Name>
 <Description>
 <AStr ws="en">
-<Run ws="en">Use this domain to list all adjectives. If there are many adjectives in your language, you should not try to list them all here. If you want to find all the adjectives, most dictionary programs can sort your dictionary by part of speech. However if your language only has a few adjectives, you can list them all in this domain. In the book, "Where Have All the Adjectives Gone?" R. M. W. Dixon [Dixon, R. M. W. 1982. Where have all the adjectives gone? Berlin: Mouton.] identifies seven universal semantic types that are often expressed by adjectives. They are: Age (new, young, old), Dimension (big, little, long, short, wide, narrow, thick, fat, thin), Value (good, bad, proper, perfect, excellent, fine, delicious, atrocious, poor), Color (black, white, red), Human propensity (jealous, happy, kind, clever, generous, cruel, rude, proud, wicked), Physical property (hard, soft, heavy, light, rough, smooth, hot, cold, sweet, sour), Speed (fast, slow). Words in the Human propensity class may be nouns. Words in the Physical property and Speed classes may be verbs.</Run>
+<Run ws="en">Use this domain to list all adjectives. If there are many adjectives in your language, you should not try to list them all here. If you want to find all the adjectives, most dictionary programs can sort your dictionary by part of speech. However if your language only has a few adjectives, you can list them all in this domain. [Dixon, R. M. W. 1982. Where have all the adjectives gone? Berlin: Mouton.] identifies seven universal semantic types that are often expressed by adjectives. They are: Age, Dimension, Value, Color, Human propensity, Physical property, Speed. Words in the Human propensity class may be nouns. Words in the Physical property and Speed classes may be verbs.</Run>
 </AStr>
 </Description>
 <Questions>
@@ -95516,7 +95516,7 @@
 </Name>
 <Description>
 <AStr ws="en">
-<Run ws="en">Use this domain for words that the speaker uses to show respect or a lack of respect to the person he is addressing. Some languages have elaborate systems of honorifics. Other languages have none. Languages with a stratified social structure often use honorifics. Egalitarian societies generally lack them, but some egalitarian societies may use them. For instance in Nahuatl there are four levels of honorifics. Level 1 is how one addresses intimates, small children, and pets. Level 2 is for strangers and persons treated formally. Level 3 is for respected persons, the dead, and God. Level 4 is for obsequious respect, as for the archbishop in an interview with a priest, and for ritual kin. (Jane H. Hill and Kenneth C. Hill. 1978. Honorific usage in modern Nahuatl: the expression of social distance and respect in the Nahuatl of the Malinche Volcano area, Language 54:123-155.) In Japanese, which has a stratified social structure, a person uses one set of words and affixes when speaking to someone below you in the social hierarchy, such as your wife, children, and pets. A different set of words is used when speaking to peers. Another set is used when speaking to a superior. A fourth set is used when speaking to the emperor. English used to have two pronouns for second person singular. 'Thou' was used for equals and inferiors, and 'you' was used for superiors. Your language may have special honorific words used as (1) pronouns, (2) affixes, (3) particles, (4) terms of direct address, (5) greetings (6) requests, (7) apologies.</Run>
+<Run ws="en">Use this domain for words that the speaker uses to show respect or a lack of respect to the person he is addressing. Some languages have elaborate systems of honorifics. Other languages have none. Languages with a stratified social structure often use honorifics. Egalitarian societies generally lack them, but some egalitarian societies may use them. For instance, in Japanese, which has a stratified social structure, a person uses one set of words and affixes when speaking to someone below him in the social hierarchy, such as his wife, children, and pets. A different set of words is used when speaking to peers. Another set is used when speaking to a superior. A fourth set is used when speaking to the emperor. Your language may have special honorific words used as (1) pronouns, (2) affixes, (3) particles, (4) terms of direct address, (5) greetings, (6) requests, (7) apologies.</Run>
 </AStr>
 </Description>
 <Questions>
