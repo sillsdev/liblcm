@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- [SIL.LCModel] Trim 12 overwordy semantic domain descriptions and fix 22 punctuation/whitespace issues in the SemDom.xml template, matching sillsdev/FwLocalizations#5 and sillsdev/FwLocalizations#7
 - [SIL.LCModel] `FileUtils.IsFileUriOrPath` checks for the presence of "file:" rather than the absence of known non-file URI schemes
 - Changed to target .Net Framework 4.6.2 instead of 4.6.1
 - Update libPalaso dependency from version 14.2.0-* to 17.0.0-*
