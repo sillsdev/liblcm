@@ -1,0 +1,744 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/sillsdev/liblcm/master/doc/lcm-grammar.schema.json",
+  "title": "LCM Grammar JSON",
+  "description": "Deterministic, GUID-keyed JSON projection of the parser-relevant subset of a FieldWorks/LCM project (phonology, morphology, lexicon). See lcm-grammar.md. This schema validates exactly what the current exporter emits; it evolves additively with the exporter within a major version.",
+  "type": "object",
+  "required": ["format", "version", "project", "featureSystems", "phonology", "morphology", "lexicon"],
+  "additionalProperties": false,
+  "properties": {
+    "format": { "enum": ["lcm-grammar"] },
+    "version": { "enum": [1] },
+    "project": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "vernacularWritingSystems": { "$ref": "#/definitions/wsTagArray" },
+        "analysisWritingSystems": { "$ref": "#/definitions/wsTagArray" }
+      }
+    },
+    "featureSystems": {
+      "type": "object",
+      "required": ["phonological", "morphosyntactic"],
+      "additionalProperties": false,
+      "properties": {
+        "phonological": { "$ref": "#/definitions/featureSystem" },
+        "morphosyntactic": { "$ref": "#/definitions/featureSystem" }
+      }
+    },
+    "phonology": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "phonemes": { "type": "array", "items": { "$ref": "#/definitions/phoneme" } },
+        "boundaryMarkers": { "type": "array", "items": { "$ref": "#/definitions/boundaryMarker" } },
+        "naturalClasses": { "type": "array", "items": { "$ref": "#/definitions/naturalClass" } },
+        "environments": { "type": "array", "items": { "$ref": "#/definitions/environment" } },
+        "rules": { "type": "array", "items": { "$ref": "#/definitions/phonologicalRule" } },
+        "featureConstraints": { "type": "array", "items": { "$ref": "#/definitions/featureConstraint" } }
+      }
+    },
+    "morphology": {
+      "type": "object",
+      "required": ["parserParameters"],
+      "additionalProperties": false,
+      "properties": {
+        "partsOfSpeech": { "type": "array", "items": { "$ref": "#/definitions/partOfSpeech" } },
+        "compoundRules": { "type": "array", "items": { "$ref": "#/definitions/compoundRule" } },
+        "adhocProhibitions": { "type": "array", "items": { "$ref": "#/definitions/adhocProhibition" } },
+        "exceptionFeatures": { "type": "array", "items": { "$ref": "#/definitions/exceptionFeature" } },
+        "lexEntryInflTypes": { "type": "array", "items": { "$ref": "#/definitions/lexEntryInflType" } },
+        "parserParameters": { "$ref": "#/definitions/parserParameters" }
+      }
+    },
+    "lexicon": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entries": { "type": "array", "items": { "$ref": "#/definitions/lexEntry" } }
+      }
+    }
+  },
+  "definitions": {
+    "guid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "guidArray": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/guid" }
+    },
+    "wsTagArray": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "wsForm": {
+      "type": "object",
+      "required": ["ws", "form"],
+      "additionalProperties": false,
+      "properties": {
+        "ws": { "type": "string", "minLength": 1 },
+        "form": { "type": "string", "minLength": 1 }
+      }
+    },
+    "wsFormArray": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/wsForm" }
+    },
+    "featureSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "closedFeatures": { "type": "array", "items": { "$ref": "#/definitions/closedFeature" } },
+        "complexFeatures": { "type": "array", "items": { "$ref": "#/definitions/complexFeature" } }
+      }
+    },
+    "closedFeature": {
+      "type": "object",
+      "required": ["guid", "name", "abbreviation"],
+      "additionalProperties": false,
+      "properties": {
+        "guid": { "$ref": "#/definitions/guid" },
+        "name": { "type": "string" },
+        "abbreviation": { "type": "string" },
+        "values": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["guid", "name", "abbreviation"],
+            "additionalProperties": false,
+            "properties": {
+              "guid": { "$ref": "#/definitions/guid" },
+              "name": { "type": "string" },
+              "abbreviation": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "complexFeature": {
+      "type": "object",
+      "required": ["guid", "name", "abbreviation"],
+      "additionalProperties": false,
+      "properties": {
+        "guid": { "$ref": "#/definitions/guid" },
+        "name": { "type": "string" },
+        "abbreviation": { "type": "string" },
+        "featureType": { "$ref": "#/definitions/guid" }
+      }
+    },
+    "featureStructure": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "values": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["feature", "value"],
+            "additionalProperties": false,
+            "properties": {
+              "feature": { "$ref": "#/definitions/guid" },
+              "value": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "required": ["kind", "value"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "kind": { "enum": ["closed"] },
+                      "value": { "$ref": "#/definitions/guid" }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "required": ["kind", "value"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "kind": { "enum": ["complex"] },
+                      "value": { "$ref": "#/definitions/featureStructure" }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "phoneme": {
+      "type": "object",
+      "required": ["guid", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "guid": { "$ref": "#/definitions/guid" },
+        "name": { "type": "string" },
+        "representations": { "$ref": "#/definitions/wsFormArray" },
+        "features": { "$ref": "#/definitions/featureStructure" },
+        "basicIpaSymbol": { "type": "string", "minLength": 1 }
+      }
+    },
+    "boundaryMarker": {
+      "type": "object",
+      "required": ["guid", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "guid": { "$ref": "#/definitions/guid" },
+        "name": { "type": "string" },
+        "representations": { "$ref": "#/definitions/wsFormArray" }
+      }
+    },
+    "naturalClass": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "guid", "name"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["segments"] },
+            "guid": { "$ref": "#/definitions/guid" },
+            "name": { "type": "string" },
+            "phonemes": { "$ref": "#/definitions/guidArray" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "guid", "name", "features"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["features"] },
+            "guid": { "$ref": "#/definitions/guid" },
+            "name": { "type": "string" },
+            "features": { "$ref": "#/definitions/featureStructure" }
+          }
+        }
+      ]
+    },
+    "environment": {
+      "type": "object",
+      "required": ["guid", "name", "representation"],
+      "additionalProperties": false,
+      "properties": {
+        "guid": { "$ref": "#/definitions/guid" },
+        "name": { "type": "string" },
+        "representation": { "type": "string" }
+      }
+    },
+    "featureConstraint": {
+      "type": "object",
+      "required": ["guid", "feature"],
+      "additionalProperties": false,
+      "properties": {
+        "guid": { "$ref": "#/definitions/guid" },
+        "feature": { "$ref": "#/definitions/guid" }
+      }
+    },
+    "ruleDirection": { "enum": ["leftToRight", "rightToLeft", "simultaneous"] },
+    "phonologicalRule": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "guid", "name", "direction"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["rewrite"] },
+            "guid": { "$ref": "#/definitions/guid" },
+            "name": { "type": "string" },
+            "direction": { "$ref": "#/definitions/ruleDirection" },
+            "structuralDescription": { "$ref": "#/definitions/phonContextArray" },
+            "featureConstraintVariables": { "$ref": "#/definitions/guidArray" },
+            "rightHandSides": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/definitions/rewriteRhs" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "guid", "name", "direction", "leftSwitchIndex", "rightSwitchIndex"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["metathesis"] },
+            "guid": { "$ref": "#/definitions/guid" },
+            "name": { "type": "string" },
+            "direction": { "$ref": "#/definitions/ruleDirection" },
+            "structuralDescription": { "$ref": "#/definitions/phonContextArray" },
+            "leftSwitchIndex": { "type": "integer" },
+            "rightSwitchIndex": { "type": "integer" }
+          }
+        }
+      ]
+    },
+    "rewriteRhs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "structuralChange": { "$ref": "#/definitions/phonContextArray" },
+        "leftContext": { "$ref": "#/definitions/phonContext" },
+        "rightContext": { "$ref": "#/definitions/phonContext" },
+        "requiredPartsOfSpeech": { "$ref": "#/definitions/guidArray" },
+        "requiredRuleFeatures": { "$ref": "#/definitions/guidArray" },
+        "excludedRuleFeatures": { "$ref": "#/definitions/guidArray" }
+      }
+    },
+    "phonContextArray": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/phonContext" }
+    },
+    "phonContext": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "members"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["sequence"] },
+            "members": { "type": "array", "items": { "$ref": "#/definitions/phonContext" } }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "min", "max", "member"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["iteration"] },
+            "min": { "type": "integer" },
+            "max": { "type": "integer", "description": "-1 = unbounded" },
+            "member": { "$ref": "#/definitions/phonContext" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "phoneme"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["segment"] },
+            "phoneme": { "$ref": "#/definitions/guid" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "naturalClass"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["naturalClass"] },
+            "naturalClass": { "$ref": "#/definitions/guid" },
+            "plusVariables": { "$ref": "#/definitions/guidArray" },
+            "minusVariables": { "$ref": "#/definitions/guidArray" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "marker"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["boundary"] },
+            "marker": { "$ref": "#/definitions/guid" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": { "kind": { "enum": ["wordBoundary"] } }
+        },
+        {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": { "kind": { "enum": ["variable"] } }
+        }
+      ]
+    },
+    "partOfSpeech": {
+      "type": "object",
+      "required": ["guid", "name", "abbreviation"],
+      "additionalProperties": false,
+      "properties": {
+        "guid": { "$ref": "#/definitions/guid" },
+        "name": { "type": "string" },
+        "abbreviation": { "type": "string" },
+        "children": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/partOfSpeech" } },
+        "inflectionClasses": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/inflectionClass" } },
+        "defaultInflectionClass": { "$ref": "#/definitions/guid" },
+        "inflectableFeatures": { "$ref": "#/definitions/guidArray" },
+        "stemNames": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/stemName" } },
+        "affixSlots": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/affixSlot" } },
+        "affixTemplates": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/affixTemplate" } }
+      }
+    },
+    "inflectionClass": {
+      "type": "object",
+      "required": ["guid", "name", "abbreviation"],
+      "additionalProperties": false,
+      "properties": {
+        "guid": { "$ref": "#/definitions/guid" },
+        "name": { "type": "string" },
+        "abbreviation": { "type": "string" },
+        "children": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/inflectionClass" } }
+      }
+    },
+    "stemName": {
+      "type": "object",
+      "required": ["guid", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "guid": { "$ref": "#/definitions/guid" },
+        "name": { "type": "string" },
+        "abbreviation": { "type": "string", "minLength": 1 },
+        "regions": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/featureStructure" } }
+      }
+    },
+    "affixSlot": {
+      "type": "object",
+      "required": ["guid", "name", "optional"],
+      "additionalProperties": false,
+      "properties": {
+        "guid": { "$ref": "#/definitions/guid" },
+        "name": { "type": "string" },
+        "optional": { "type": "boolean" }
+      }
+    },
+    "affixTemplate": {
+      "type": "object",
+      "required": ["guid", "name", "disabled", "isFinal"],
+      "additionalProperties": false,
+      "properties": {
+        "guid": { "$ref": "#/definitions/guid" },
+        "name": { "type": "string" },
+        "disabled": { "type": "boolean" },
+        "prefixSlots": { "$ref": "#/definitions/guidArray" },
+        "suffixSlots": { "$ref": "#/definitions/guidArray" },
+        "isFinal": { "type": "boolean" }
+      }
+    },
+    "compoundConstituent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "partOfSpeech": { "$ref": "#/definitions/guid" },
+        "exceptionFeatures": { "$ref": "#/definitions/guidArray" }
+      }
+    },
+    "compoundOutcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "partOfSpeech": { "$ref": "#/definitions/guid" },
+        "inflectionClass": { "$ref": "#/definitions/guid" }
+      }
+    },
+    "compoundRule": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "guid", "name", "disabled", "headLast", "left", "right", "overriding"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["endocentric"] },
+            "guid": { "$ref": "#/definitions/guid" },
+            "name": { "type": "string" },
+            "disabled": { "type": "boolean" },
+            "headLast": { "type": "boolean" },
+            "left": { "$ref": "#/definitions/compoundConstituent" },
+            "right": { "$ref": "#/definitions/compoundConstituent" },
+            "overriding": { "$ref": "#/definitions/compoundOutcome" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "guid", "name", "disabled", "left", "right", "to"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["exocentric"] },
+            "guid": { "$ref": "#/definitions/guid" },
+            "name": { "type": "string" },
+            "disabled": { "type": "boolean" },
+            "left": { "$ref": "#/definitions/compoundConstituent" },
+            "right": { "$ref": "#/definitions/compoundConstituent" },
+            "to": { "$ref": "#/definitions/compoundOutcome" }
+          }
+        }
+      ]
+    },
+    "adjacency": {
+      "enum": ["anywhere", "somewhereToLeft", "somewhereToRight", "adjacentToLeft", "adjacentToRight"]
+    },
+    "adhocProhibition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "guid", "disabled", "primary", "adjacency"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["allomorph"] },
+            "guid": { "$ref": "#/definitions/guid" },
+            "disabled": { "type": "boolean" },
+            "primary": { "$ref": "#/definitions/guid" },
+            "others": { "$ref": "#/definitions/guidArray" },
+            "adjacency": { "$ref": "#/definitions/adjacency" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "guid", "disabled", "primary", "adjacency"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["morpheme"] },
+            "guid": { "$ref": "#/definitions/guid" },
+            "disabled": { "type": "boolean" },
+            "primary": { "$ref": "#/definitions/guid" },
+            "others": { "$ref": "#/definitions/guidArray" },
+            "adjacency": { "$ref": "#/definitions/adjacency" }
+          }
+        }
+      ]
+    },
+    "exceptionFeature": {
+      "type": "object",
+      "required": ["guid", "name", "abbreviation"],
+      "additionalProperties": false,
+      "properties": {
+        "guid": { "$ref": "#/definitions/guid" },
+        "name": { "type": "string" },
+        "abbreviation": { "type": "string" }
+      }
+    },
+    "lexEntryInflType": {
+      "type": "object",
+      "required": ["guid", "name", "abbreviation", "glossPrepend", "glossAppend"],
+      "additionalProperties": false,
+      "properties": {
+        "guid": { "$ref": "#/definitions/guid" },
+        "name": { "type": "string" },
+        "abbreviation": { "type": "string" },
+        "glossPrepend": { "type": "string" },
+        "glossAppend": { "type": "string" },
+        "slots": { "$ref": "#/definitions/guidArray" },
+        "inflectionFeatures": { "$ref": "#/definitions/featureStructure" }
+      }
+    },
+    "parserParameters": {
+      "type": "object",
+      "required": ["notOnClitics", "acceptUnspecifiedGraphemes", "noDefaultCompounding"],
+      "additionalProperties": false,
+      "properties": {
+        "notOnClitics": { "type": "boolean" },
+        "acceptUnspecifiedGraphemes": { "type": "boolean" },
+        "noDefaultCompounding": { "type": "boolean" },
+        "strata": { "type": "string", "minLength": 1 },
+        "compoundRuleMaxApplications": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["compoundRule", "maxApplications"],
+            "additionalProperties": false,
+            "properties": {
+              "compoundRule": { "$ref": "#/definitions/guid" },
+              "maxApplications": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
+    "morphType": {
+      "enum": [
+        "stem", "boundStem", "root", "boundRoot", "prefix", "suffix", "infix", "circumfix",
+        "proclitic", "enclitic", "clitic", "particle", "phrase", "discontigPhrase",
+        "prefixingInterfix", "infixingInterfix", "suffixingInterfix"
+      ]
+    },
+    "lexEntry": {
+      "type": "object",
+      "required": ["guid", "lexemeMorphType", "allomorphs"],
+      "additionalProperties": false,
+      "properties": {
+        "guid": { "$ref": "#/definitions/guid" },
+        "citationForm": { "$ref": "#/definitions/wsFormArray" },
+        "lexemeMorphType": { "$ref": "#/definitions/morphType" },
+        "allomorphs": { "type": "array", "items": { "$ref": "#/definitions/allomorph" } },
+        "msas": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/msa" } },
+        "senses": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/sense" } },
+        "entryRefs": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/entryRef" } }
+      }
+    },
+    "allomorph": {
+      "type": "object",
+      "required": ["guid", "morphType", "isAbstract"],
+      "additionalProperties": false,
+      "properties": {
+        "guid": { "$ref": "#/definitions/guid" },
+        "morphType": { "$ref": "#/definitions/morphType" },
+        "isAbstract": { "type": "boolean" },
+        "forms": { "$ref": "#/definitions/wsFormArray" },
+        "environments": { "$ref": "#/definitions/guidArray" },
+        "positions": { "$ref": "#/definitions/guidArray" },
+        "stemName": { "$ref": "#/definitions/guid" },
+        "inflectionClasses": { "$ref": "#/definitions/guidArray" },
+        "msEnvFeatures": { "$ref": "#/definitions/featureStructure" },
+        "msEnvPartOfSpeech": { "$ref": "#/definitions/guid" },
+        "process": { "$ref": "#/definitions/affixProcess" }
+      }
+    },
+    "affixProcess": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "input": { "$ref": "#/definitions/phonContextArray" },
+        "output": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/ruleMapping" }
+        }
+      }
+    },
+    "ruleMapping": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "naturalClass"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["insertNaturalClass"] },
+            "naturalClass": { "$ref": "#/definitions/guid" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "part"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["copyFromInput"] },
+            "part": { "type": "integer", "minimum": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "text"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["insertSegments"] },
+            "text": { "type": "string", "minLength": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "part", "naturalClass"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["modifyFromInput"] },
+            "part": { "type": "integer", "minimum": 1 },
+            "naturalClass": { "$ref": "#/definitions/guid" }
+          }
+        }
+      ]
+    },
+    "msa": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "guid"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["stem"] },
+            "guid": { "$ref": "#/definitions/guid" },
+            "partOfSpeech": { "$ref": "#/definitions/guid" },
+            "inflectionClass": { "$ref": "#/definitions/guid" },
+            "features": { "$ref": "#/definitions/featureStructure" },
+            "exceptionFeatures": { "$ref": "#/definitions/guidArray" },
+            "fromPartsOfSpeech": { "$ref": "#/definitions/guidArray" },
+            "slots": { "$ref": "#/definitions/guidArray" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "guid"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["inflectional"] },
+            "guid": { "$ref": "#/definitions/guid" },
+            "partOfSpeech": { "$ref": "#/definitions/guid" },
+            "slots": { "$ref": "#/definitions/guidArray" },
+            "features": { "$ref": "#/definitions/featureStructure" },
+            "exceptionFeatures": { "$ref": "#/definitions/guidArray" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "guid"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["derivational"] },
+            "guid": { "$ref": "#/definitions/guid" },
+            "fromPartOfSpeech": { "$ref": "#/definitions/guid" },
+            "toPartOfSpeech": { "$ref": "#/definitions/guid" },
+            "fromFeatures": { "$ref": "#/definitions/featureStructure" },
+            "toFeatures": { "$ref": "#/definitions/featureStructure" },
+            "fromInflectionClass": { "$ref": "#/definitions/guid" },
+            "toInflectionClass": { "$ref": "#/definitions/guid" },
+            "fromExceptionFeatures": { "$ref": "#/definitions/guidArray" },
+            "toExceptionFeatures": { "$ref": "#/definitions/guidArray" },
+            "fromStemName": { "$ref": "#/definitions/guid" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "guid"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["unclassified"] },
+            "guid": { "$ref": "#/definitions/guid" },
+            "partOfSpeech": { "$ref": "#/definitions/guid" }
+          }
+        }
+      ]
+    },
+    "sense": {
+      "type": "object",
+      "required": ["guid"],
+      "additionalProperties": false,
+      "properties": {
+        "guid": { "$ref": "#/definitions/guid" },
+        "gloss": { "$ref": "#/definitions/wsFormArray" },
+        "definition": { "$ref": "#/definitions/wsFormArray" },
+        "msa": { "$ref": "#/definitions/guid" }
+      }
+    },
+    "entryRef": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "guid"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["variant"] },
+            "guid": { "$ref": "#/definitions/guid" },
+            "componentLexemes": { "$ref": "#/definitions/guidArray" },
+            "variantEntryTypes": { "$ref": "#/definitions/guidArray" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "guid", "complexEntryTypes"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["complexForm"] },
+            "guid": { "$ref": "#/definitions/guid" },
+            "componentLexemes": { "$ref": "#/definitions/guidArray" },
+            "complexEntryTypes": { "$ref": "#/definitions/guidArray" }
+          }
+        }
+      ]
+    }
+  }
+}

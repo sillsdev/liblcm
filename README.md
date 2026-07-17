@@ -8,6 +8,17 @@ The liblcm library is the core [FieldWorks](https://github.com/sillsdev/FieldWor
 linguistic analyses of languages. Tools in this library provide the ability to store and interact
 with language and culture data, including anthropological, text corpus, and linguistics data.
 
+## LCM Grammar JSON
+
+liblcm defines and exports **LCM Grammar JSON** — a deterministic, GUID-keyed JSON projection of
+the parser-relevant subset of a project (phonology, morphology, lexicon) for external
+morphological-parser tooling: grammar verification, conformance fixtures, and field deployment.
+Export with `SIL.LCModel.DomainServices.GrammarJsonServices.ExportGrammar(cache, writer)`. The
+format contract lives in this repository: the specification is
+[doc/lcm-grammar.md](doc/lcm-grammar.md) and the machine-checkable schema is
+[doc/lcm-grammar.schema.json](doc/lcm-grammar.schema.json) (enforced against the exporter by unit
+tests). It is a read-only projection — not an editing, synchronization, or storage format.
+
 ## Instructions
 
 1. Install Required Software
