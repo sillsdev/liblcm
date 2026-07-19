@@ -6,7 +6,6 @@ using SIL.LCModel.Core.WritingSystems;
 using SIL.LCModel.Infrastructure;
 using System.IO;
 using SIL.LCModel.Core.KernelInterfaces;
-using StructureMap.Diagnostics.TreeView;
 using SIL.LCModel.Core.Text;
 using System.Xml.Linq;
 using System.Security.Cryptography;

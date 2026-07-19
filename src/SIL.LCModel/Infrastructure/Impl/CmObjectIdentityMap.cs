@@ -82,8 +82,8 @@ namespace SIL.LCModel.Infrastructure.Impl
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Releases the memory stored in the IdentityMap. This is called automatically from
-		/// StructureMap when the StructureMap container is disposed.
+		/// Releases the memory stored in the IdentityMap. This is called automatically by the
+		/// DI container when the container is disposed.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public void Dispose()
