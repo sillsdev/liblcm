@@ -755,7 +755,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// Constructor
 		/// </summary>
 		/// <param name="identityMap"></param>
-		internal CmObjectSurrogateRepository(IdentityMap identityMap)
+		public CmObjectSurrogateRepository(IdentityMap identityMap)
 		{
 			if (identityMap == null) throw new ArgumentNullException("identityMap");
 			m_identityMap = identityMap;
@@ -797,7 +797,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		internal CmObjectSurrogateFactory(LcmCache cache)
+		public CmObjectSurrogateFactory(LcmCache cache)
 		{
 			if (cache == null) throw new ArgumentNullException("cache");
 

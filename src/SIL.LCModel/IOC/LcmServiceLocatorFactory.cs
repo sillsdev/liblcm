@@ -102,12 +102,10 @@ namespace SIL.LCModel.IOC
 				(ICmObjectRepositoryInternal)sp.GetRequiredService<ICmObjectRepository>());
 
 			// Add surrogate factory (internal);
-			services.AddSingleton<ICmObjectSurrogateFactory>(sp =>
-				new CmObjectSurrogateFactory(sp.GetRequiredService<LcmCache>()));
+			services.AddSingleton<ICmObjectSurrogateFactory, CmObjectSurrogateFactory>();
 
 			// Add surrogate repository (internal);
-			services.AddSingleton<ICmObjectSurrogateRepository>(sp =>
-				new CmObjectSurrogateRepository(sp.GetRequiredService<IdentityMap>()));
+			services.AddSingleton<ICmObjectSurrogateRepository, CmObjectSurrogateRepository>();
 
 			// Add BEP.
 			switch (m_backendProviderType)
