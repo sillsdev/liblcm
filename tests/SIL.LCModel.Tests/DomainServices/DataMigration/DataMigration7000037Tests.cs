@@ -4,7 +4,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Web;
+using System.Net;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using NUnit.Framework;
@@ -122,7 +122,7 @@ namespace SIL.LCModel.DomainServices.DataMigration
 			}
 			Assert.IsTrue(externalLink.StartsWith(FwUrlPrefix),
 				"silfw link should start with " + FwUrlPrefix);
-			string query = HttpUtility.UrlDecode(externalLink.Substring(FwUrlPrefix.Length));
+			string query = WebUtility.UrlDecode(externalLink.Substring(FwUrlPrefix.Length));
 			string[] rgsProps = query.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
 			string tool = null;
 			Guid guid = Guid.Empty;

@@ -148,6 +148,149 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
+		/// LT-22575: feature constraints are owned by the PhPhonData.FeatConstraintsOS pool and only
+		/// referenced by rule contexts, so CopyObject hands a duplicate references to the original's
+		/// constraints, not copies. The rule's delete-time GC must skip constraints with outside referrers.
+		/// </summary>
+		[Test]
+		public void DuplicateRegularRule_DeletingCloneDoesNotDeleteOriginalsFeatureConstraints()
+		{
+			var phData = Cache.LangProject.PhonologicalDataOA;
+
+			// Build a regular rule whose structural description contains a natural-class context that
+			// uses an alpha variable (a PhFeatureConstraint).
+			var rule = Cache.ServiceLocator.GetInstance<IPhRegularRuleFactory>().Create();
+			phData.PhonRulesOS.Add(rule);
+			var ctxt = Cache.ServiceLocator.GetInstance<IPhSimpleContextNCFactory>().Create();
+			rule.StrucDescOS.Add(ctxt);
+			var featConstr = Cache.ServiceLocator.GetInstance<IPhFeatureConstraintFactory>().Create();
+			phData.FeatConstraintsOS.Add(featConstr);
+			ctxt.PlusConstrRS.Add(featConstr);
+
+			Assert.That(rule.FeatureConstraints.Count(), Is.EqualTo(1), "original rule should have one feature constraint");
+			Assert.That(phData.FeatConstraintsOS.Count, Is.EqualTo(1));
+
+			// Duplicate the rule the same way the UI does (this drives PhRegularRule.SetCloneProperties).
+			var clone = (IPhRegularRule)CopyObject<IPhSegmentRule>.CloneLcmObject(rule, x => phData.PhonRulesOS.Add(x));
+			Assert.That(phData.PhonRulesOS.Count, Is.EqualTo(2), "clone should have been created");
+
+			// Delete the clone.
+			Cache.DomainDataByFlid.DeleteObj(clone.Hvo);
+
+			// The original rule must be completely unaffected by deleting its clone.
+			Assert.That(rule.IsValidObject, Is.True, "original rule should still exist");
+			Assert.That(rule.StrucDescOS.Count, Is.EqualTo(1), "original rule should still have its context");
+			Assert.That(rule.FeatureConstraints.Count(), Is.EqualTo(1),
+				"deleting the cloned rule must not remove the original rule's feature constraint");
+			Assert.That(rule.FeatureConstraints.First().IsValidObject, Is.True,
+				"the original rule's feature constraint must still be a valid object");
+		}
+
+		/// <summary>
+		/// LT-22575: one alpha variable referenced from both a StrucDesc (plus) and an RHS StrucChange
+		/// (minus) context, shared with the duplicate rather than copied. Deletes the original first to
+		/// prove survival follows remaining referrers, then checks the pool empties (GC still completes).
+		/// </summary>
+		[Test]
+		public void DuplicateRegularRule_SharedConstraintSurvivesUntilLastRuleDeleted()
+		{
+			var phData = Cache.LangProject.PhonologicalDataOA;
+
+			var rule = Cache.ServiceLocator.GetInstance<IPhRegularRuleFactory>().Create();
+			phData.PhonRulesOS.Add(rule);
+
+			// One alpha variable used in two owned contexts: StrucDesc (plus) and RHS StrucChange (minus).
+			var constr = Cache.ServiceLocator.GetInstance<IPhFeatureConstraintFactory>().Create();
+			phData.FeatConstraintsOS.Add(constr);
+			var descCtxt = Cache.ServiceLocator.GetInstance<IPhSimpleContextNCFactory>().Create();
+			rule.StrucDescOS.Add(descCtxt);
+			descCtxt.PlusConstrRS.Add(constr);
+			var changeCtxt = Cache.ServiceLocator.GetInstance<IPhSimpleContextNCFactory>().Create();
+			rule.RightHandSidesOS[0].StrucChangeOS.Add(changeCtxt);
+			changeCtxt.MinusConstrRS.Add(constr);
+
+			var clone = (IPhRegularRule)CopyObject<IPhSegmentRule>.CloneLcmObject(rule, x => phData.PhonRulesOS.Add(x));
+
+			// The clone references the same pooled constraint; no copies are made.
+			Assert.That(clone.FeatureConstraints.Single(), Is.EqualTo(constr));
+			Assert.That(phData.FeatConstraintsOS.Count, Is.EqualTo(1));
+
+			// Deleting the original must leave the shared constraint for the clone.
+			Cache.DomainDataByFlid.DeleteObj(rule.Hvo);
+			Assert.That(constr.IsValidObject, Is.True, "constraint is still referenced by the clone");
+			Assert.That(clone.FeatureConstraints.Single(), Is.EqualTo(constr));
+
+			// Deleting the last rule that uses it removes it from the pool.
+			Cache.DomainDataByFlid.DeleteObj(clone.Hvo);
+			Assert.That(phData.FeatConstraintsOS.Count, Is.EqualTo(0), "last referrer gone, constraint should be GCed");
+		}
+
+		/// <summary>
+		/// LT-22575: covers the edit path (RemoveObjectSideEffectsInternal on StrucDesc removal), which
+		/// previously GCed a constraint unused elsewhere in the same rule even when a duplicate used it.
+		/// The last-referrer check must span all rules, and still GC once no referrer remains.
+		/// </summary>
+		[Test]
+		public void DuplicateRegularRule_RemovingContextKeepsConstraintUsedByClone()
+		{
+			var phData = Cache.LangProject.PhonologicalDataOA;
+
+			var rule = Cache.ServiceLocator.GetInstance<IPhRegularRuleFactory>().Create();
+			phData.PhonRulesOS.Add(rule);
+			var ctxt = Cache.ServiceLocator.GetInstance<IPhSimpleContextNCFactory>().Create();
+			rule.StrucDescOS.Add(ctxt);
+			var constr = Cache.ServiceLocator.GetInstance<IPhFeatureConstraintFactory>().Create();
+			phData.FeatConstraintsOS.Add(constr);
+			ctxt.PlusConstrRS.Add(constr);
+
+			var clone = (IPhRegularRule)CopyObject<IPhSegmentRule>.CloneLcmObject(rule, x => phData.PhonRulesOS.Add(x));
+
+			// Editing the original: removing its context must not GC the constraint the clone still uses.
+			rule.StrucDescOS.Remove(ctxt);
+			Assert.That(constr.IsValidObject, Is.True, "constraint is still referenced by the clone");
+			Assert.That(clone.FeatureConstraints.Single(), Is.EqualTo(constr));
+
+			// Removing the clone's context too leaves no referrers, so the constraint is GCed.
+			clone.StrucDescOS.Remove(clone.StrucDescOS[0]);
+			Assert.That(phData.FeatConstraintsOS.Count, Is.EqualTo(0));
+		}
+
+		/// <summary>
+		/// LT-22575: sequence-environment members live in PhPhonData.ContextsOS and are held only by
+		/// reference (MembersRS), so both rules share them. Unguarded GC deleted them, emptying the
+		/// original's sequence, which then nulled the RHS LeftContextOA — silently wiping the environment.
+		/// </summary>
+		[Test]
+		public void DuplicateRegularRule_DeletingCloneKeepsSharedEnvironmentMembers()
+		{
+			var phData = Cache.LangProject.PhonologicalDataOA;
+
+			var rule = Cache.ServiceLocator.GetInstance<IPhRegularRuleFactory>().Create();
+			phData.PhonRulesOS.Add(rule);
+			var rhs = rule.RightHandSidesOS[0];
+			var seqCtxt = Cache.ServiceLocator.GetInstance<IPhSequenceContextFactory>().Create();
+			rhs.LeftContextOA = seqCtxt;
+			var member1 = Cache.ServiceLocator.GetInstance<IPhSimpleContextNCFactory>().Create();
+			phData.ContextsOS.Add(member1);
+			seqCtxt.MembersRS.Add(member1);
+			var member2 = Cache.ServiceLocator.GetInstance<IPhSimpleContextNCFactory>().Create();
+			phData.ContextsOS.Add(member2);
+			seqCtxt.MembersRS.Add(member2);
+
+			var clone = (IPhRegularRule)CopyObject<IPhSegmentRule>.CloneLcmObject(rule, x => phData.PhonRulesOS.Add(x));
+
+			// Deleting the duplicate must leave the original's environment intact.
+			Cache.DomainDataByFlid.DeleteObj(clone.Hvo);
+			Assert.That(rhs.LeftContextOA, Is.EqualTo(seqCtxt), "original environment should survive");
+			Assert.That(seqCtxt.MembersRS.Count, Is.EqualTo(2));
+			Assert.That(phData.ContextsOS.Count, Is.EqualTo(2));
+
+			// Deleting the original GCs the pooled members.
+			Cache.DomainDataByFlid.DeleteObj(rule.Hvo);
+			Assert.That(phData.ContextsOS.Count, Is.EqualTo(0));
+		}
+
+		/// <summary>
 		/// Trivial test that a newly created InflAffixTemplate has the Final property set to true.
 		/// </summary>
 		[Test]

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net462;net8.0</TargetFrameworks>
     <RootNamespace>SIL.LCModel</RootNamespace>
     <Description>The liblcm library is the core FieldWorks model for linguistic analyses of languages. Tools in this library provide the ability to store and interact with language and culture data, including anthropological, text corpus, and linguistics data.
 	SIL.LCModel is the main library.</Description>
@@ -106,10 +106,6 @@
     <GeneratedFiles Include="Infrastructure\Impl\GeneratedBackendProvider.cs" />
     <GeneratedFiles Include="IOC\GeneratedServiceLocatorBootstrapper.cs" />
     <Clean Include="@(GeneratedFiles)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System.Web" />
   </ItemGroup>
 
   <Target Name="GenerateModel" Inputs="MasterLCModel.xml" Outputs="@(GeneratedFiles)" BeforeTargets="BeforeCompile">

@@ -24,10 +24,6 @@ This package provides unit tests for SIL.LCModel.</Description>
     <ProjectReference Include="..\SIL.LCModel.Core.Tests\SIL.LCModel.Core.Tests.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="System.Web" />
-  </ItemGroup>
-
   <Target Name="CollectRuntimeOutputs" BeforeTargets="_GetPackageFiles">
     <ItemGroup>
       <None Include="$(OutputPath)\**\$(PackageId).dll.config" Pack="true" PackagePath="lib" />
