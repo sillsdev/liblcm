@@ -346,7 +346,7 @@ namespace SIL.LCModel
 		///  0. A string containing the name of the project (required);
 		///  1. An ILcmDirectories used to get needed directories (required);
 		///  2. An ISynchronizeInvoke used for invoking actions on the main UI thread (required);
-		///  3. An IWritingSystem to be used as the default analylis writing system (default: English);
+		///  3. An IWritingSystem to be used as the default analysis writing system (default: English);
 		///  4. An IWritingSystem to be used as the default vernacular writing system (default: French);
 		///  5. A string with the ICU locale of the UI writing system (default: "en").
 		///  6. A set of IWritingSystem to provide additional analysis writing systems (default: no more)
