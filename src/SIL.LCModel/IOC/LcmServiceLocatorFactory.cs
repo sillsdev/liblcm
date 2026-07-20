@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using CommonServiceLocator;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +19,6 @@ using SIL.LCModel.DomainServices;
 using SIL.LCModel.DomainServices.DataMigration;
 using SIL.LCModel.Infrastructure;
 using SIL.LCModel.Infrastructure.Impl;
-using SIL.Reporting;
 
 namespace SIL.LCModel.IOC
 {
@@ -81,8 +81,7 @@ namespace SIL.LCModel.IOC
 			services.AddSingleton<LcmCache>(sp => new LcmCache());
 
 			// Add IParagraphCounterRepository
-			services.AddSingleton<IParagraphCounterRepository>(sp =>
-				new ParagraphCounterRepository(sp.GetRequiredService<LcmCache>()));
+			services.AddSingleton<IParagraphCounterRepository, ParagraphCounterRepository>();
 
 			// Add MDC
 			services.AddSingleton<IFwMetaDataCacheManaged>(sp => new LcmMetaDataCache());
@@ -95,8 +94,7 @@ namespace SIL.LCModel.IOC
 				new Virtuals(sp.GetRequiredService<IFwMetaDataCacheManaged>()));
 
 			// Add IdentityMap
-			services.AddSingleton<IdentityMap>(sp =>
-				new IdentityMap(sp.GetRequiredService<IFwMetaDataCacheManaged>()));
+			services.AddSingleton<IdentityMap>();
 			// Register IdentityMap's other interface.
 			services.AddTransient<ICmObjectIdFactory>(sp =>
 				(ICmObjectIdFactory)sp.GetRequiredService<IdentityMap>());
@@ -117,37 +115,13 @@ namespace SIL.LCModel.IOC
 				default:
 					throw new InvalidOperationException(Strings.ksInvalidBackendProviderType);
 				case BackendProviderType.kXML:
-					services.AddSingleton<IDataSetup>(sp => new XMLBackendProvider(
-						sp.GetRequiredService<LcmCache>(),
-						sp.GetRequiredService<IdentityMap>(),
-						sp.GetRequiredService<ICmObjectSurrogateFactory>(),
-						sp.GetRequiredService<IFwMetaDataCacheManagedInternal>(),
-						sp.GetRequiredService<IDataMigrationManager>(),
-						sp.GetRequiredService<ILcmUI>(),
-						sp.GetRequiredService<ILcmDirectories>(),
-						sp.GetRequiredService<LcmSettings>()));
+					services.AddSingleton<IDataSetup, XMLBackendProvider>();
 					break;
 				case BackendProviderType.kMemoryOnly:
-					services.AddSingleton<IDataSetup>(sp => new MemoryOnlyBackendProvider(
-						sp.GetRequiredService<LcmCache>(),
-						sp.GetRequiredService<IdentityMap>(),
-						sp.GetRequiredService<ICmObjectSurrogateFactory>(),
-						sp.GetRequiredService<IFwMetaDataCacheManagedInternal>(),
-						sp.GetRequiredService<IDataMigrationManager>(),
-						sp.GetRequiredService<ILcmUI>(),
-						sp.GetRequiredService<ILcmDirectories>(),
-						sp.GetRequiredService<LcmSettings>()));
+					services.AddSingleton<IDataSetup, MemoryOnlyBackendProvider>();
 					break;
 				case BackendProviderType.kSharedXML:
-					services.AddSingleton<IDataSetup>(sp => new SharedXMLBackendProvider(
-						sp.GetRequiredService<LcmCache>(),
-						sp.GetRequiredService<IdentityMap>(),
-						sp.GetRequiredService<ICmObjectSurrogateFactory>(),
-						sp.GetRequiredService<IFwMetaDataCacheManagedInternal>(),
-						sp.GetRequiredService<IDataMigrationManager>(),
-						sp.GetRequiredService<ILcmUI>(),
-						sp.GetRequiredService<ILcmDirectories>(),
-						sp.GetRequiredService<LcmSettings>()));
+					services.AddSingleton<IDataSetup, SharedXMLBackendProvider>();
 					break;
 			}
 			// Register two additional interfaces of the BEP, which are injected into other services.
@@ -155,12 +129,7 @@ namespace SIL.LCModel.IOC
 			services.AddTransient<IDataReader>(sp => (IDataReader)sp.GetRequiredService<IDataSetup>());
 
 			// Add Mediator
-			services.AddSingleton<IUnitOfWorkService>(sp => new UnitOfWorkService(
-				sp.GetRequiredService<IDataStorer>(),
-				sp.GetRequiredService<IdentityMap>(),
-				sp.GetRequiredService<ICmObjectRepositoryInternal>(),
-				sp.GetRequiredService<ILcmUI>(),
-				logger));
+			services.AddSingleton<IUnitOfWorkService, UnitOfWorkService>();
 			// Register additional interfaces for the UnitOfWorkService.
 			services.AddTransient<ISilDataAccessHelperInternal>(sp =>
 				(ISilDataAccessHelperInternal)sp.GetRequiredService<IUnitOfWorkService>());
@@ -183,38 +152,20 @@ namespace SIL.LCModel.IOC
 			AddRepositories(services);
 
 			// Add IAnalysisRepository
-			services.AddSingleton<IAnalysisRepository>(sp => new AnalysisRepository(
-				sp.GetRequiredService<ICmObjectRepository>(),
-				sp.GetRequiredService<IWfiWordformRepository>(),
-				sp.GetRequiredService<IPunctuationFormRepository>(),
-				sp.GetRequiredService<IWfiAnalysisRepository>(),
-				sp.GetRequiredService<IWfiGlossRepository>()));
+			services.AddSingleton<IAnalysisRepository, AnalysisRepository>();
 
 			// Add ReferenceAdjusterService
 			services.AddSingleton<IReferenceAdjuster>(sp => new ReferenceAdjusterService());
 
 			// Add SDA
-			services.AddSingleton<ISilDataAccessManaged>(sp => new DomainDataByFlid(
-				sp.GetRequiredService<ICmObjectRepository>(),
-				sp.GetRequiredService<IStTextRepository>(),
-				sp.GetRequiredService<IFwMetaDataCacheManaged>(),
-				sp.GetRequiredService<ISilDataAccessHelperInternal>(),
-				sp.GetRequiredService<ILgWritingSystemFactory>()));
+			services.AddSingleton<ISilDataAccessManaged, DomainDataByFlid>();
 
 			// Add loader helper
-			services.AddSingleton<LoadingServices>(sp => new LoadingServices(
-				sp.GetRequiredService<IDataSetup>(),
-				sp.GetRequiredService<ICmObjectIdFactory>(),
-				sp.GetRequiredService<IFwMetaDataCacheManaged>(),
-				sp.GetRequiredService<ILgWritingSystemFactory>(),
-				sp.GetRequiredService<IUnitOfWorkService>(),
-				sp.GetRequiredService<ICmObjectSurrogateRepository>(),
-				sp.GetRequiredService<ICmObjectRepository>()));
+			services.AddSingleton<LoadingServices>();
 
 			// StTxtParaBldr is a stateful builder resolved by its concrete type. StructureMap
 			// auto-built it per request; register it transient to preserve that behavior.
-			services.AddTransient<StTxtParaBldr>(sp =>
-				new StTxtParaBldr(sp.GetRequiredService<LcmCache>()));
+			services.AddTransient<StTxtParaBldr>();
 
 			// Add writing system manager
 			services.AddSingleton<WritingSystemManager>(sp =>
@@ -342,13 +293,8 @@ namespace SIL.LCModel.IOC
 		protected override IEnumerable<object> DoGetAllInstances(Type serviceType)
 		{
 			var enumerableType = typeof(IEnumerable<>).MakeGenericType(serviceType);
-			var instances = (IEnumerable<object>)m_serviceProvider.GetService(enumerableType);
-			if (instances == null)
-				yield break;
-			foreach (object obj in instances)
-			{
-				yield return obj;
-			}
+			var instances = (IEnumerable<object>?)m_serviceProvider.GetServices(enumerableType);
+			return instances ?? Enumerable.Empty<object>();
 		}
 
 		#endregion
