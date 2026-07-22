@@ -291,7 +291,8 @@ namespace SIL.LCModel.IOC
 		protected override IEnumerable<object> DoGetAllInstances(Type serviceType)
 		{
 			var enumerableType = typeof(IEnumerable<>).MakeGenericType(serviceType);
-			var instances = (IEnumerable<object>?)m_serviceProvider.GetServices(enumerableType);
+            //not using GetServices because it will throw an exception if the service is not found.
+			var instances = (IEnumerable<object>?)m_serviceProvider.GetService(enumerableType);
 			return instances ?? Enumerable.Empty<object>();
 		}
 
