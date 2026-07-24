@@ -126,7 +126,6 @@ namespace SIL.LCModel.IOC
 			services.AddTransient<IDataStorer>(sp => (IDataStorer)sp.GetRequiredService<IDataSetup>());
 			services.AddTransient<IDataReader>(sp => (IDataReader)sp.GetRequiredService<IDataSetup>());
 
-			// Add Mediator
 			services.AddSingleton<IUnitOfWorkService, UnitOfWorkService>();
 			// Register additional interfaces for the UnitOfWorkService.
 			services.AddTransient<ISilDataAccessHelperInternal>(sp =>
@@ -187,7 +186,7 @@ namespace SIL.LCModel.IOC
 
 			var serviceProvider = services.BuildServiceProvider();
 
-			return new MediServiceLocator(serviceProvider);
+			return new MicrosoftServiceLocator(serviceProvider);
 		}
 	}
 
@@ -197,7 +196,7 @@ namespace SIL.LCModel.IOC
 	/// <see cref="ServiceLocatorImplBase"/> so downstream code that binds GetInstance&lt;T&gt;
 	/// to the interface method keeps working, source- and binary-compatible.
 	/// </summary>
-	internal sealed class MediServiceLocator : ServiceLocatorImplBase,
+	internal sealed class MicrosoftServiceLocator : ServiceLocatorImplBase,
 		ILcmServiceLocator, IServiceLocatorInternal, IDisposable
 	{
 		private ServiceProvider m_serviceProvider;
@@ -205,7 +204,7 @@ namespace SIL.LCModel.IOC
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		internal MediServiceLocator(ServiceProvider serviceProvider)
+		internal MicrosoftServiceLocator(ServiceProvider serviceProvider)
 		{
 			m_serviceProvider = serviceProvider;
 		}
@@ -213,7 +212,7 @@ namespace SIL.LCModel.IOC
 		#region Disposable stuff
 		#if DEBUG
 		/// <summary/>
-		~MediServiceLocator()
+		~MicrosoftServiceLocator()
 		{
 			Dispose(false);
 		}

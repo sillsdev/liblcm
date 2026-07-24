@@ -14,9 +14,7 @@ namespace SIL.LCModel.Infrastructure
 	[TestFixture]
 	public class LcmServiceLocatorTests : MemoryOnlyBackendProviderTestBase
 	{
-		/// <summary>
-		/// Verify that core services resolve and shortcut properties match GetInstance.
-		/// </summary>
+		/// <summary/>
 		[Test]
 		public void SmokeTest_ResolvesCoreServices()
 		{
@@ -33,9 +31,7 @@ namespace SIL.LCModel.Infrastructure
 			Assert.That(sl.ActionHandler, Is.SameAs(sl.GetInstance<IActionHandler>()));
 		}
 
-		/// <summary>
-		/// GetAllInstances returns registered services and an empty sequence for unknown types.
-		/// </summary>
+		/// <summary/>
 		[Test]
 		public void GetAllInstances_ReturnsRegisteredServices()
 		{
@@ -44,9 +40,8 @@ namespace SIL.LCModel.Infrastructure
 			Assert.That(instances[0], Is.SameAs(Cache.ServiceLocator.GetInstance<IDataSetup>()));
 		}
 
-		/// <summary>
-		/// GetAllInstances returns an empty sequence when the type is not registered.
-		/// </summary>
+
+		/// <summary/>
 		[Test]
 		public void GetAllInstances_ReturnsEmptyForUnregisteredType()
 		{
