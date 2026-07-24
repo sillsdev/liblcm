@@ -72,7 +72,7 @@ namespace SIL.LCModel.Tools
 #endif
 		public ParseState m_accept;
 		// support for actions
-		public virtual object Action(Parser yyp,SYMBOL yysym, int yyact) { return null; } // will be generated for the generated parser
+		public virtual object? Action(Parser yyp,SYMBOL yysym, int yyact) { return null; } // will be generated for the generated parser
 		public Hashtable types = new Hashtable(); // string->SCreator
 		// support for serialization
 		public int[] arr; // defined in generated subclass
@@ -139,9 +139,9 @@ namespace SIL.LCModel.Tools
 		public int action = 0;
 		internal ObjectList actions = new ObjectList();  // ParserAction
 		internal int action_num = 0; // for old actions
-		public SymbolType stypes = null; // the list of grammar symbols
+		public SymbolType? stypes = null; // the list of grammar symbols
 		internal int state=0; // for parsestates
-		public SymbolSet lahead = null; // support for lookahead sets
+		public SymbolSet? lahead = null; // support for lookahead sets
 		public bool Find(CSymbol sym)
 		{
 			if (sym.yytext.Equals("Null")) // special case
@@ -200,7 +200,7 @@ namespace SIL.LCModel.Tools
 			return s;
 		}
 		public override void Print() { Console.Write(m_sym.yytext); }
-		public CSymbol m_sym;
+		public CSymbol? m_sym;
 		public int m_len;
 		public override Boolean IsAction() { return true; }
 		public virtual int ActNum() { return 0; }
@@ -208,7 +208,7 @@ namespace SIL.LCModel.Tools
 		public ParserAction(SymbolsGen yyp) : base(yyp) {}
 #endif
 		protected ParserAction() {}
-		public new static object Serialise(object o,Serialiser s)
+		public new static object? Serialise(object o,Serialiser s)
 		{
 			ParserAction p = (ParserAction)o;
 			if (s.Encode)
@@ -246,7 +246,7 @@ namespace SIL.LCModel.Tools
 		}
 #endif
 		ParserOldAction() {}
-		public new static object Serialise(object o,Serialiser s)
+		public new static object? Serialise(object o,Serialiser s)
 		{
 			if (s==null)
 				return new ParserOldAction();
@@ -278,7 +278,7 @@ namespace SIL.LCModel.Tools
 		}
 #endif
 		ParserSimpleAction() {}
-		public new static object Serialise(object o,Serialiser s)
+		public new static object? Serialise(object o,Serialiser s)
 		{
 			if (s==null)
 				return new ParserSimpleAction();
@@ -293,7 +293,7 @@ namespace SIL.LCModel.Tools
 
 	public abstract class ParserEntry
 	{
-		public ParserAction m_action;
+		public ParserAction? m_action;
 		[NonSerialized] public int m_priority = 0;
 		public ParserEntry() { m_action = null; }
 		public ParserEntry(ParserAction action) { m_action=action; }
@@ -306,7 +306,7 @@ namespace SIL.LCModel.Tools
 			if (m_action!=null)
 				m_action.Print();
 		}
-		public static object Serialise(object o, Serialiser s)
+		public static object? Serialise(object o, Serialiser s)
 		{
 			ParserEntry p = (ParserEntry)o;
 			if (s.Encode)
@@ -356,7 +356,7 @@ namespace SIL.LCModel.Tools
 			Transition.Follow(t).Print();
 		}
 #endif
-		public new static object Serialise(object o,Serialiser s)
+		public new static object? Serialise(object o,Serialiser s)
 		{
 			if (s==null)
 				return new ParserShift();
@@ -380,7 +380,7 @@ namespace SIL.LCModel.Tools
 		public ParserReduce(ParserAction action,int depth,Production prod) : base(action) {m_depth=depth; m_prod = prod; }
 		ParserReduce() {}
 #if (GENTIME)
-		public SymbolSet m_lookAhead = null;
+		public SymbolSet? m_lookAhead = null;
 		public void BuildLookback(Transition a)
 		{
 			SymbolsGen sg = a.m_ps.m_sgen;
@@ -428,7 +428,7 @@ namespace SIL.LCModel.Tools
 			m_lookAhead.Print();
 		}
 #endif
-		public new static object Serialise(object o,Serialiser s)
+		public new static object? Serialise(object o,Serialiser s)
 		{
 			if (s==null)
 				return new ParserReduce();
@@ -473,7 +473,7 @@ namespace SIL.LCModel.Tools
 					return syms.GetSymbolInfo(m_A.yytext);
 			}
 		}
-		public ParserShift m_next = null;
+		public ParserShift? m_next = null;
 		public Hashtable m_reduce = new Hashtable(); // Production->ParserReduce
 		Hashtable m_reads = new Hashtable(); // Transition->bool
 		Hashtable m_includes = new Hashtable(); // Transition->bool
@@ -557,7 +557,7 @@ namespace SIL.LCModel.Tools
 		{
 			Symbols syms = t.m_ps.m_sgen.m_symbols;
 			ParsingInfo pi = t.ParsingInfo;
-			ParserReduce red = null;
+			ParserReduce? red = null;
 			foreach (ParserReduce pr in t.m_reduce.Values)
 			{
 					if (t.m_ps.m_sgen.m_lalrParser?
@@ -840,9 +840,9 @@ namespace SIL.LCModel.Tools
 	{
 		public Parser yyps;
 		public int m_state;
-		public SYMBOL m_value;
+		public SYMBOL? m_value;
 		public ParseStackEntry(Parser yyp) {yyps = yyp; }
-		public ParseStackEntry(Parser yyp,int state,SYMBOL value)
+		public ParseStackEntry(Parser yyp,int state,SYMBOL? value)
 		{
 			yyps=yyp;m_state=state; m_value = value;
 		}
@@ -857,7 +857,7 @@ namespace SIL.LCModel.Tools
 			m_symName = name;
 		}
 		ParsingInfo() {}
-		public static object Serialise(object o,Serialiser s)
+		public static object? Serialise(object o,Serialiser s)
 		{
 			if (s==null)
 				return new ParsingInfo();
@@ -1115,7 +1115,7 @@ namespace SIL.LCModel.Tools
 		}
 		public override bool Matches(string s) { return false; }
 
-		internal ParseState Next(ParseState p)
+		internal ParseState? Next(ParseState p)
 		{
 			if (!p.m_transitions.Contains(yytext))
 				return null;
@@ -1124,7 +1124,7 @@ namespace SIL.LCModel.Tools
 				return null;
 			return ps.m_next;
 		}
-		internal Hashtable Reduce(ParseState p) // Objectlist of ParserReduce to distinct productions
+		internal Hashtable? Reduce(ParseState p) // Objectlist of ParserReduce to distinct productions
 		{
 			if (!p.m_transitions.Contains(yytext))
 				return null;
@@ -1134,7 +1134,7 @@ namespace SIL.LCModel.Tools
 		public virtual string TypeStr() { return yytext; }
 
 		// for terminals
-		public Precedence m_prec;
+		public Precedence? m_prec;
 		public bool ShiftPrecedence(Production prod,ParseState ps)
 		{
 			if (prod==null) // no reduce available
@@ -1184,16 +1184,16 @@ namespace SIL.LCModel.Tools
 				m_first.Contains(m_first.m_symbols.m_symbols.EmptySequence));
 		}
 		// for nodesymbols
-		public CSymbol m_refSymbol;  // maybe null
+		public CSymbol? m_refSymbol;  // maybe null
 
 		// class definition info
 		public string m_initialisation=""; // may be empty
 		public bool m_defined = false;
 		public bool m_emitted = false;
-		public Production m_prod;  // production where this initialisation occurs: maybe null
+		public Production? m_prod;  // production where this initialisation occurs: maybe null
 #endif
 		protected CSymbol() {}
-		public static object Serialise(object o,Serialiser s)
+		public static object? Serialise(object o,Serialiser s)
 		{
 			if (s==null)
 				return new CSymbol();
@@ -1266,7 +1266,7 @@ namespace SIL.LCModel.Tools
 	{
 		public int m_pno;
 #if (GENTIME)
-		public CSymbol m_lhs;
+		public CSymbol? m_lhs;
 		public bool m_actionsOnly;
 		public int m_prec;
 		public Production(SymbolsGen syms)
@@ -1332,7 +1332,7 @@ namespace SIL.LCModel.Tools
 		}
 #endif
 		Production() {}
-		public static object Serialise(object o,Serialiser s)
+		public static object? Serialise(object o,Serialiser s)
 		{
 			if (s==null)
 				return new Production();
@@ -1361,10 +1361,10 @@ namespace SIL.LCModel.Tools
 			m_pos = 0;
 			m_done=false;
 		}
-		public Production m_prod;
+		public Production? m_prod;
 		public int m_pos;
 		public bool m_done;
-		public CSymbol Next()
+		public CSymbol? Next()
 		{
 			if (m_pos<m_prod.m_rhs.Count)
 				return (CSymbol)m_prod.m_rhs[m_pos];
@@ -1375,7 +1375,7 @@ namespace SIL.LCModel.Tools
 		{
 			return (m_pos==m_prod.m_rhs.Count-1) && Next().IsAction();
 		}
-		SymbolSet follow = null;
+		SymbolSet? follow = null;
 		public SymbolSet FirstOfRest(SymbolsGen syms)
 		{
 			if (follow!=null)
@@ -1429,8 +1429,8 @@ namespace SIL.LCModel.Tools
 
 	internal class ProdItemList
 	{
-		public ProdItem m_pi;
-		public ProdItemList m_next;
+		public ProdItem? m_pi;
+		public ProdItemList? m_next;
 		public ProdItemList (ProdItem pi,ProdItemList n) { m_pi=pi; m_next=n; }
 		public ProdItemList() { m_pi=null; m_next=null; } // sentinel only
 		public bool Add(ProdItem pi)
@@ -1469,7 +1469,7 @@ namespace SIL.LCModel.Tools
 		}
 		public Lexer m_lexer;
 		internal ObjectList m_stack = new ObjectList(); // ParseStackEntry
-		internal SYMBOL m_ungot;
+		internal SYMBOL? m_ungot;
 
 		void Create()
 		{
@@ -1546,7 +1546,7 @@ namespace SIL.LCModel.Tools
 			return Parse();
 		}
 		// The Parsing Algorithm
-		SYMBOL Parse()
+		SYMBOL? Parse()
 		{
 			ParserEntry pe;
 			SYMBOL newtop;
@@ -1584,7 +1584,7 @@ namespace SIL.LCModel.Tools
 					return null;
 				if (m_debug)
 				{
-					object ob = null;
+					object? ob = null;
 					if (top.m_value!=null)
 					{
 						ob = top.m_value.m_dollar;
@@ -1610,7 +1610,7 @@ namespace SIL.LCModel.Tools
 			{
 				elt = (ParseStackEntry)m_stack.Pop();
 				if (m_symbols.m_concrete) // building the concrete syntax tree
-					ns.kids.Push(elt.m_value); // else will be garbage collected
+				ns.kids.Push(elt.m_value!); // else will be garbage collected
 			}
 			if (depth!=0)
 				m_symbols.erh.Error(new CSToolsException(14,m_lexer,"Pop failed"));
@@ -1631,7 +1631,7 @@ namespace SIL.LCModel.Tools
 		}
 		public SYMBOL NextSym()
 		{ // like lexer.Next but allows a one-token pushback for reduce
-			SYMBOL ret = m_ungot;
+			SYMBOL? ret = m_ungot;
 			if (ret != null)
 			{
 				m_ungot = null;
@@ -1640,7 +1640,7 @@ namespace SIL.LCModel.Tools
 			ret = (SYMBOL)m_lexer.Next();
 			if (ret==null)
 				ret = m_symbols.EOFSymbol;
-			return ret;
+			return ret!;
 		}
 		public void Error(int n,SYMBOL sym, string s)
 		{
@@ -1653,7 +1653,7 @@ namespace SIL.LCModel.Tools
 
 	public class error : SYMBOL
 	{
-		public SYMBOL ast = null;
+		public SYMBOL? ast = null;
 		public error(Parser yyp,SYMBOL s):base(yyp) { ast=s; }
 		public error(Parser yyp):base(yyp) {}
 		public override string yyname() { return "error"; }
@@ -1687,7 +1687,7 @@ namespace SIL.LCModel.Tools
 
 	public class Sfactory
 	{
-		public static object create(string cls_name,Parser yyp)
+		public static object? create(string cls_name,Parser yyp)
 		{
 			SCreator cr = (SCreator)yyp.m_symbols.types[cls_name];
 			// Console.WriteLine("TCreating {0} <{1}>",cls_name,yyl.yytext);

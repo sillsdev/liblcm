@@ -2,6 +2,8 @@
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
+#nullable enable
+
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -25,14 +27,14 @@ namespace SIL.LCModel.Utils
 		/// Sets the name of the company used for registry settings.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static string CompanyName { get; set; }
+		public static string? CompanyName { get; set; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Sets the name of the product used for registry settings.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static string ProductName { get; set; }
+		public static string? ProductName { get; set; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -132,7 +134,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="value">[out] value of the registry entry if it exists; null otherwise.</param>
 		/// <returns><c>true</c> if the registry entry exists, otherwise <c>false</c></returns>
 		/// ------------------------------------------------------------------------------------
-		public static bool RegEntryValueExists(RegistryKey key, string subKey, string regEntry, out object value)
+		public static bool RegEntryValueExists(RegistryKey key, string subKey, string regEntry, out object? value)
 		{
 			if (key == null)
 				throw new ArgumentNullException(nameof(key));
@@ -180,7 +182,7 @@ namespace SIL.LCModel.Utils
 		/// NOTE: This key is not opened for write access, because 64-bit apps should write to their own registry space.
 		/// </summary>
 		/// <param name="subKeys">Zero or more subkeys (e.g., a specific application name, project name, etc.)</param>
-		public static RegistryKey SettingsKeyOld32Bit(params string[] subKeys)
+		public static RegistryKey? SettingsKeyOld32Bit(params string[] subKeys)
 		{
 			return CompanyKeyOld32Bit?.OpenSubKey(GetSubkeyName(subKeys));
 		}
@@ -191,7 +193,7 @@ namespace SIL.LCModel.Utils
 		/// NOTE: This key is not opened for write access because it will fail on non-administrator logins.
 		/// </summary>
 		/// <param name="subKeys">Zero or more subkeys (e.g., a specific application name, project name, etc.)</param>
-		public static RegistryKey SettingsKeyLocalMachine(params string[] subKeys)
+		public static RegistryKey? SettingsKeyLocalMachine(params string[] subKeys)
 		{
 			try
 			{
@@ -209,7 +211,7 @@ namespace SIL.LCModel.Utils
 		/// NOTE: This key is not opened for write access because it will fail on non-administrator logins.
 		/// </summary>
 		/// <param name="subKeys">Zero or more subkeys (e.g., a specific application name, project name, etc.)</param>
-		public static RegistryKey SettingsKeyLocalMachineOld32Bit(params string[] subKeys)
+		public static RegistryKey? SettingsKeyLocalMachineOld32Bit(params string[] subKeys)
 		{
 			try
 			{
@@ -346,7 +348,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="value">The value.</param>
 		/// <returns></returns>
 		/// ------------------------------------------------------------------------------------
-		protected virtual object GetPersistableForm(T value)
+		protected virtual object? GetPersistableForm(T value)
 		{
 			return value;
 		}
@@ -489,20 +491,6 @@ namespace SIL.LCModel.Utils
 		/// ------------------------------------------------------------------------------------
 		public RegistryBoolSetting(RegistryKey regKey, string entry, bool defaultValue) :
 			base(regKey, entry, defaultValue)
-		{
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Constructor for instantiating an object for setting\retrieving a boolean registry
-		/// value for use in views where we do not want to persist settings or in tests.
-		/// </summary>
-		/// <param name="keyName">The key whose value is to be stored/retrieved</param>
-		/// <param name="defaultValue">The default value to use when retrieving the value of an
-		/// unitialized key</param>
-		/// ------------------------------------------------------------------------------------
-		public RegistryBoolSetting(string keyName, bool defaultValue)
-			: base(null, keyName, defaultValue)
 		{
 		}
 

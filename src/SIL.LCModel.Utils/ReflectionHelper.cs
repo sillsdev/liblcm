@@ -7,6 +7,8 @@
 // Responsibility: FW Team, especially David Olson (this is of interest to PA also)
 // ---------------------------------------------------------------------------------------------
 
+#nullable enable
+
 using System;
 using System.Configuration;
 using System.Diagnostics;
@@ -117,7 +119,7 @@ namespace SIL.LCModel.Utils
 			}
 
 			string className = className1.Trim();
-			Object thing = null;
+			object? thing = null;
 			try
 			{
 				//make the object
@@ -187,7 +189,7 @@ namespace SIL.LCModel.Utils
 		{
 			Assembly assembly;
 			var codeBase = Assembly.GetExecutingAssembly().CodeBase;
-			string baseDir = Path.GetDirectoryName(codeBase)?.Substring(Environment.OSVersion.Platform == PlatformID.Unix ? 5 : 6);
+			string? baseDir = Path.GetDirectoryName(codeBase)?.Substring(Environment.OSVersion.Platform == PlatformID.Unix ? 5 : 6);
 			if (baseDir == null)
 				throw new InvalidOperationException("Could not get assembly base directory from CodeBase " + codeBase);
 			string assemblyPath = Path.Combine(baseDir, assemblyName);
@@ -225,9 +227,9 @@ namespace SIL.LCModel.Utils
 		/// <param name="methodName">Name of the method to call.</param>
 		/// <param name="args">An array of arguments to pass to the method call.</param>
 		/// ------------------------------------------------------------------------------------
-		public static string GetStrResult(object binding, string methodName, params object[] args)
+		public static string? GetStrResult(object binding, string methodName, params object[] args)
 		{
-			return (GetResult(binding, methodName, args) as string);
+			return GetResult(binding, methodName, args) as string;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -445,7 +447,7 @@ namespace SIL.LCModel.Utils
 		/// specified binding.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		private static object Invoke(object binding, string name, object[] args, BindingFlags flags)
+		private static object Invoke(object binding, string name, object[]? args, BindingFlags flags)
 		{
 			// If binding is a Type then assume we're invoking a static method, property
 			// or field. Otherwise invoke an instance method, property or field.

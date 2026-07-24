@@ -25,7 +25,7 @@ namespace SIL.LCModel.Build.Tasks
 		/// <value>The XML file.</value>
 		/// ------------------------------------------------------------------------------------
 		[Required]
-		public string XmlFile { get; set; }
+		public string? XmlFile { get; set; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -34,7 +34,7 @@ namespace SIL.LCModel.Build.Tasks
 		/// <value>The output directory.</value>
 		/// ------------------------------------------------------------------------------------
 		[Required]
-		public string OutputDir { get; set; }
+		public string? OutputDir { get; set; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -43,7 +43,7 @@ namespace SIL.LCModel.Build.Tasks
 		/// <value>The output file name.</value>
 		/// ------------------------------------------------------------------------------------
 		[Required]
-		public string OutputFile { get; set; }
+		public string? OutputFile { get; set; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -52,7 +52,7 @@ namespace SIL.LCModel.Build.Tasks
 		/// <value>The template file.</value>
 		/// ------------------------------------------------------------------------------------
 		[Required]
-		public string TemplateFile { get; set; }
+		public string? TemplateFile { get; set; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -60,18 +60,18 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value>The template file.</value>
 		/// ------------------------------------------------------------------------------------
-		public string BackendTemplateFiles { get; set; }
+		public string? BackendTemplateFiles { get; set; }
 
 		/// <summary>
 		/// Gets or sets the working directory.
 		/// </summary>
 		/// <value>The working directory.</value>
-		public string WorkingDirectory { get; set; }
+		public string? WorkingDirectory { get; set; }
 
 		/// <summary>
 		/// Gets or sets the directory that contains HandGenerated.xml and IntPropTypeOverrides.xml
 		/// </summary>
-		public string HandGeneratedDir { get; set; }
+		public string? HandGeneratedDir { get; set; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -83,13 +83,13 @@ namespace SIL.LCModel.Build.Tasks
 			string origDir = Directory.GetCurrentDirectory();
 			string oldDir;
 			if (!String.IsNullOrEmpty(WorkingDirectory))
-				oldDir = WorkingDirectory;
+				oldDir = WorkingDirectory!;
 			else
 				oldDir = origDir;
 			try
 			{
 				var doc = new XmlDocument();
-				string xmlPath = XmlFile;
+				string xmlPath = XmlFile!;
 				if (!Path.IsPathRooted(xmlPath))
 					xmlPath = Path.Combine(oldDir, XmlFile);
 				try
@@ -118,14 +118,14 @@ namespace SIL.LCModel.Build.Tasks
 					{
 						var props = new List<string>();
 // ReSharper disable PossibleNullReferenceException
-						foreach (XmlNode propertyNode in node.SelectNodes("property"))
+						foreach (XmlNode propertyNode in node.SelectNodes("property")!)
 // ReSharper restore PossibleNullReferenceException
 						{
-							props.Add(propertyNode.Attributes["name"].Value);
+							props.Add(propertyNode.Attributes["name"]!.Value);
 						}
 						if (props.Count > 0)
 						{
-							handGeneratedClasses.Add(node.Attributes["id"].Value, props);
+							handGeneratedClasses.Add(node.Attributes["id"]!.Value, props);
 						}
 					}
 				}
@@ -147,16 +147,14 @@ namespace SIL.LCModel.Build.Tasks
 					{
 						// Dictionary<PropertyName, PropertyType>
 						var props = new Dictionary<string, string>();
-// ReSharper disable PossibleNullReferenceException
-						foreach (XmlNode propertyNode in node.SelectNodes("property"))
-// ReSharper restore PossibleNullReferenceException
+						foreach (XmlNode propertyNode in node.SelectNodes("property")!)
 						{
-							props.Add(propertyNode.Attributes["name"].Value,
-								propertyNode.Attributes["type"].Value);
+							props.Add(propertyNode.Attributes["name"]!.Value,
+								propertyNode.Attributes["type"]!.Value);
 						}
 						if (props.Count > 0)
 						{
-							intPropTypeOverridesClasses.Add(node.Attributes["id"].Value, props);
+							intPropTypeOverridesClasses.Add(node.Attributes["id"]!.Value, props);
 						}
 					}
 				}
@@ -173,7 +171,7 @@ namespace SIL.LCModel.Build.Tasks
 					var originalCurrentDirectory = Directory.GetCurrentDirectory();
 
 					Log.LogMessage(MessageImportance.Low, "Processing template {0}.", TemplateFile);
-					string outputDirPath = OutputDir;
+					string outputDirPath = OutputDir!;
 					if (!Path.IsPathRooted(OutputDir))
 						outputDirPath = Path.Combine(oldDir, OutputDir);
 					var lcmGenerate = new LcmGenerateImpl(doc, outputDirPath)
@@ -181,11 +179,11 @@ namespace SIL.LCModel.Build.Tasks
 											Overrides = handGeneratedClasses,
 											IntPropTypeOverrides = intPropTypeOverridesClasses
 										};
-					string outputPath = OutputFile;
+					string outputPath = OutputFile!;
 					if (!Path.IsPathRooted(outputPath))
 						outputPath = Path.Combine(outputDirPath, OutputFile);
 					// Generate the main code.
-					if (Path.GetDirectoryName(TemplateFile).Length > 0)
+					if (Path.GetDirectoryName(TemplateFile)!.Length > 0)
 						Directory.SetCurrentDirectory(Path.GetDirectoryName(TemplateFile));
 					lcmGenerate.SetOutput(outputPath);
 					lcmGenerate.Process(Path.GetFileName(TemplateFile));
@@ -193,7 +191,7 @@ namespace SIL.LCModel.Build.Tasks
 					// Generate the backend provider(s) code.
 					if (!string.IsNullOrEmpty(BackendTemplateFiles))
 					{
-						foreach (var backendDir in BackendTemplateFiles.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+						foreach (var backendDir in BackendTemplateFiles!.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
 						{
 							var beDir = backendDir.Trim();
 							if (beDir == string.Empty) continue;

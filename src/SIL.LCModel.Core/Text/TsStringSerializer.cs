@@ -8,6 +8,8 @@
 // <remarks>
 // </remarks>
 
+#nullable enable
+
 using System;
 using System.Linq;
 using System.Text;
@@ -60,7 +62,7 @@ namespace SIL.LCModel.Core.Text
 				}
 
 				// Write the properties and text for each run
-				string fieldName = null;
+				string? fieldName = null;
 				for (int i = 0; i < normalizedTss.RunCount; i++)
 				{
 					TsRunInfo tri;
@@ -113,7 +115,7 @@ namespace SIL.LCModel.Core.Text
 							TsPropsSerializer.WriteIntProperty(writer, lgwsf, tpt, var, value);
 					}
 
-					byte[] pict = null;
+					byte[]? pict = null;
 					bool hotGuid = false;
 					for (int j = 0; j < textProps.StrPropCount; j++)
 					{

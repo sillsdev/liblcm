@@ -20,7 +20,7 @@ public class ObjectList
 		else
 			last = last.next = a;
 	}
-	object Get0(Link a,int x) {
+	object? Get0(Link a,int x) {
 		if (a==null || x<0)  // safety
 			return null;
 		if (x==0)
@@ -39,7 +39,7 @@ public class ObjectList
 	public class OListEnumerator : IEnumerator
 	{
 		ObjectList list;
-		Link cur = null;
+		Link? cur = null;
 		public object Current { get { return cur.it; }}
 		public OListEnumerator(ObjectList o)
 		{

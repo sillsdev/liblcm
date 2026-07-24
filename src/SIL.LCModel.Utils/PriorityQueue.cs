@@ -14,19 +14,12 @@ namespace SIL.LCModel.Utils
 	/// priority values, such as an enumeration. The queue is indexed by the values so that
 	/// <c>Remove</c> and <c>Contains</c> are close to O(1).
 	/// </summary>
-	public class PriorityQueue<P, T> : ICollection<T>
+	public class PriorityQueue<P, T> : ICollection<T> where P : notnull
 	{
 		private struct IndexEntry
 		{
-			public P Priority
-			{
-				get; set;
-			}
-
-			public LinkedListNode<T> Node
-			{
-				get; set;
-			}
+			public P Priority { get; set; }
+			public LinkedListNode<T> Node { get; set; }
 		}
 
 		private readonly SortedDictionary<P, LinkedList<T>> m_queues;
@@ -36,7 +29,7 @@ namespace SIL.LCModel.Utils
 		/// Initializes a new instance of the <see cref="PriorityQueue&lt;P, T&gt;"/> class.
 		/// </summary>
 		public PriorityQueue()
-			: this (Comparer<P>.Default, EqualityComparer<T>.Default)
+			: this(Comparer<P>.Default, EqualityComparer<T>.Default)
 		{
 		}
 
@@ -278,7 +271,7 @@ namespace SIL.LCModel.Utils
 		/// <param name="item">The object to add.</param>
 		public void Add(T item)
 		{
-			Enqueue(default(P), item);
+			Enqueue(default!, item);
 		}
 
 		/// <summary>
