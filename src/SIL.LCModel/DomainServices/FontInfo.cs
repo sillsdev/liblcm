@@ -273,5 +273,40 @@ namespace SIL.LCModel.DomainServices
 			m_offset.InheritValue(basedOnFontInfo.m_offset);
 			m_features.InheritValue(basedOnFontInfo.m_features);
 		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Inherit the values of only those properties that are explicitly set on the specified
+		/// font info, but don't force a change in the inherit value.
+		/// </summary>
+		/// <remarks>Explicitly set values on this font info will not be affected</remarks>
+		/// <param name="basedOnFontInfo">The font info from which to get the explicitly set
+		/// values.</param>
+		/// ------------------------------------------------------------------------------------
+		internal void InheritExplicitProperties(FontInfo basedOnFontInfo)
+		{
+			if (basedOnFontInfo.m_fontName.IsExplicit)
+				m_fontName.InheritValue(basedOnFontInfo.m_fontName);
+			if (basedOnFontInfo.m_fontSize.IsExplicit)
+				m_fontSize.InheritValue(basedOnFontInfo.m_fontSize);
+			if (basedOnFontInfo.m_fontColor.IsExplicit)
+				m_fontColor.InheritValue(basedOnFontInfo.m_fontColor);
+			if (basedOnFontInfo.m_backColor.IsExplicit)
+				m_backColor.InheritValue(basedOnFontInfo.m_backColor);
+			if (basedOnFontInfo.m_bold.IsExplicit)
+				m_bold.InheritValue(basedOnFontInfo.m_bold);
+			if (basedOnFontInfo.m_italic.IsExplicit)
+				m_italic.InheritValue(basedOnFontInfo.m_italic);
+			if (basedOnFontInfo.m_superSub.IsExplicit)
+				m_superSub.InheritValue(basedOnFontInfo.m_superSub);
+			if (basedOnFontInfo.m_underline.IsExplicit)
+				m_underline.InheritValue(basedOnFontInfo.m_underline);
+			if (basedOnFontInfo.m_underlineColor.IsExplicit)
+				m_underlineColor.InheritValue(basedOnFontInfo.m_underlineColor);
+			if (basedOnFontInfo.m_offset.IsExplicit)
+				m_offset.InheritValue(basedOnFontInfo.m_offset);
+			if (basedOnFontInfo.m_features.IsExplicit)
+				m_features.InheritValue(basedOnFontInfo.m_features);
+		}
 	}
 }

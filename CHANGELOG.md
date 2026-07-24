@@ -28,6 +28,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- [SIL.LCModel] BaseStyleInfo now loads default font features (ktptFontVariations) from style rules, fixing font features set as style defaults being dropped on reload (LT-22351)
+- [SIL.LCModel] BaseStyleInfo no longer clobbers ws-specific font overrides inherited from a based-on style with the default font info's merely-inherited values; only explicitly-set default properties are propagated to ws overrides (LT-22351)
+- [SIL.LCModel] BulletInfo now decodes all properties of an encoded bullet font info instead of stopping at the first string property, fixing bullet font features (ktptFontVariations) being lost when a bullet font name was also set (LT-22351)
 - [SIL.LCModel] Deleting a duplicated phonological rule no longer deletes pooled feature constraints and environment contexts the original rule still references (LT-22575)
 - [SIL.LCModel] Fixed crash when bulk deleting entries involved in a lexical relation (LT-21598)
 - [SIL.LCModel.FixData] Find and Fix removes duplicate Targets from a LexReference (and deletes it if fewer than two distinct Targets remain) (LT-21598)
