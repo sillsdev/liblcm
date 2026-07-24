@@ -3,7 +3,6 @@
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System;
-using SIL.LCModel.IOC;
 
 namespace SIL.LCModel
 {
@@ -128,9 +127,9 @@ namespace SIL.LCModel
 				// NOTE: this needs to be last since it calls LcmCache.Dispose() which
 				// sets all member variables to null.
 				// This will also dispose all Singletons which includes m_serviceLocator.GetInstance<IDataSetup>()
-				var serviceLocatorWrapper = m_serviceLocator as StructureMapServiceLocator;
-				if (serviceLocatorWrapper != null)
-					serviceLocatorWrapper.Dispose();
+				var disposableServiceLocator = m_serviceLocator as IDisposable;
+				if (disposableServiceLocator != null)
+					disposableServiceLocator.Dispose();
 			}
 
 			// Dispose unmanaged resources here, whether disposing is true or false.

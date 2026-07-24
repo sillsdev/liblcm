@@ -117,9 +117,9 @@ namespace SIL.LCModel
 
 		public static IEnumerable<TService> GetAllInstances<TService>(this IServiceProvider provider)
 		{
-			//structure map might not work the same way as the standard service provider, so we need to handle it separately.
+			// A CommonServiceLocator-based provider exposes GetAllInstances directly.
 			if (provider is IServiceLocator serviceLocator) return serviceLocator.GetAllInstances<TService>();
-			//the standard service provider handles listing all services like this, however that might not work the same in structure map if an IEnumerable is explicitly registered.
+			// A plain IServiceProvider resolves all registrations as an IEnumerable<T>.
 			return (IEnumerable<TService>) provider.GetService(typeof(IEnumerable<TService>));
 		}
 	}

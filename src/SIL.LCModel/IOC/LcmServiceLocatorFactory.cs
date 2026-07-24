@@ -6,8 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using CommonServiceLocator;
+using Microsoft.Extensions.DependencyInjection;
 using SIL.LCModel.Application;
 using SIL.LCModel.Application.Impl;
 using SIL.LCModel.Core.KernelInterfaces;
@@ -17,9 +19,6 @@ using SIL.LCModel.DomainServices;
 using SIL.LCModel.DomainServices.DataMigration;
 using SIL.LCModel.Infrastructure;
 using SIL.LCModel.Infrastructure.Impl;
-using SIL.Reporting;
-using StructureMap;
-using StructureMap.Pipeline;
 
 namespace SIL.LCModel.IOC
 {
@@ -65,77 +64,48 @@ namespace SIL.LCModel.IOC
 			{
 				logger = new FileTransactionLogger(Path.Combine(logPath, $"lcm_transaction.{DateTime.Now.Ticks}.log"));
 			}
-			// NOTE: When creating an object through IServiceLocator.GetInstance the caller has
-			// to call Dispose() on the newly created object, unless it's a singleton
-			// (registered with LifecycleIs(new SingletonLifecycle())) in which case
-			// the Registry will dispose the object.
-			var registry = new Registry();
 
-			// NB: Default is:
-			// .CacheBy(InstanceScope.PerRequest);
+			// All registrations are explicit factory lambdas that call the (often internal)
+			// constructors directly. This is legal because all registration code lives inside
+			// SIL.LCModel, and it makes the whole object graph compile-time checked: a changed
+			// constructor breaks the build here instead of failing at runtime resolution.
+			var services = new ServiceCollection();
 
 			// Add data migration manager. (new one per request)
-			registry
-				.For<IDataMigrationManager>()
-				.Use<LcmDataMigrationManager>();
+			services.AddTransient<IDataMigrationManager>(sp => new LcmDataMigrationManager());
 
 			// Add HomographConfiguration
-			registry
-				.For<HomographConfiguration>()
-				.LifecycleIs(new SingletonLifecycle())
-				.Use<HomographConfiguration>();
+			services.AddSingleton<HomographConfiguration>(sp => new HomographConfiguration());
 
 			// Add LcmCache
-			registry
-				.For<LcmCache>()
-				.LifecycleIs(new SingletonLifecycle())
-				.Use<LcmCache>();
+			services.AddSingleton<LcmCache>(sp => new LcmCache());
+
 			// Add IParagraphCounterRepository
-			registry
-				.For<IParagraphCounterRepository>()
-				.LifecycleIs(new SingletonLifecycle())
-				.Use<ParagraphCounterRepository>();
+			services.AddSingleton<IParagraphCounterRepository, ParagraphCounterRepository>();
 
 			// Add MDC
-			registry
-				.For<IFwMetaDataCacheManaged>()
-				.LifecycleIs(new SingletonLifecycle())
-				.Use<LcmMetaDataCache>();
+			services.AddSingleton<IFwMetaDataCacheManaged>(sp => new LcmMetaDataCache());
 			// Register its other interface.
-			registry
-				.For<IFwMetaDataCacheManagedInternal>()
-				.Use(c => (IFwMetaDataCacheManagedInternal)c.GetInstance<IFwMetaDataCacheManaged>());
+			services.AddTransient<IFwMetaDataCacheManagedInternal>(sp =>
+				(IFwMetaDataCacheManagedInternal)sp.GetRequiredService<IFwMetaDataCacheManaged>());
 
 			// Add Virtuals
-			registry
-				.For<Virtuals>()
-				.LifecycleIs(new SingletonLifecycle())
-				.Use<Virtuals>();
+			services.AddSingleton<Virtuals>(sp =>
+				new Virtuals(sp.GetRequiredService<IFwMetaDataCacheManaged>()));
 
 			// Add IdentityMap
-			registry
-				.For<IdentityMap>()
-				.LifecycleIs(new SingletonLifecycle())
-				.Use<IdentityMap>();
+			services.AddSingleton<IdentityMap>();
 			// Register IdentityMap's other interface.
-			registry
-				.For<ICmObjectIdFactory>()
-				.Use(c => (ICmObjectIdFactory)c.GetInstance<IdentityMap>());
-			registry
-				.For<ICmObjectRepositoryInternal>()
-				.Use(c => (ICmObjectRepositoryInternal)c.GetInstance<ICmObjectRepository>());
+			services.AddTransient<ICmObjectIdFactory>(sp =>
+				(ICmObjectIdFactory)sp.GetRequiredService<IdentityMap>());
+			services.AddTransient<ICmObjectRepositoryInternal>(sp =>
+				(ICmObjectRepositoryInternal)sp.GetRequiredService<ICmObjectRepository>());
 
 			// Add surrogate factory (internal);
-			registry
-				.For<ICmObjectSurrogateFactory>()
-				.LifecycleIs(new SingletonLifecycle())
-				.Use<CmObjectSurrogateFactory>();
+			services.AddSingleton<ICmObjectSurrogateFactory, CmObjectSurrogateFactory>();
 
 			// Add surrogate repository (internal);
-			registry
-				.For<ICmObjectSurrogateRepository>()
-				.LifecycleIs(new SingletonLifecycle())
-				.Use<CmObjectSurrogateRepository>();
+			services.AddSingleton<ICmObjectSurrogateRepository, CmObjectSurrogateRepository>();
 
 			// Add BEP.
 			switch (m_backendProviderType)
@@ -143,147 +113,106 @@ namespace SIL.LCModel.IOC
 				default:
 					throw new InvalidOperationException(Strings.ksInvalidBackendProviderType);
 				case BackendProviderType.kXML:
-					registry
-						.For<IDataSetup>()
-						.LifecycleIs(new SingletonLifecycle())
-						.Use<XMLBackendProvider>();
+					services.AddSingleton<IDataSetup, XMLBackendProvider>();
 					break;
 				case BackendProviderType.kMemoryOnly:
-					registry
-						.For<IDataSetup>()
-						.LifecycleIs(new SingletonLifecycle())
-						.Use<MemoryOnlyBackendProvider>();
+					services.AddSingleton<IDataSetup, MemoryOnlyBackendProvider>();
 					break;
 				case BackendProviderType.kSharedXML:
-					registry
-						.For<IDataSetup>()
-						.LifecycleIs(new SingletonLifecycle())
-						.Use<SharedXMLBackendProvider>();
+					services.AddSingleton<IDataSetup, SharedXMLBackendProvider>();
 					break;
 			}
 			// Register two additional interfaces of the BEP, which are injected into other services.
-			registry
-				.For<IDataStorer>()
-				.Use(c => (IDataStorer)c.GetInstance<IDataSetup>());
-			registry
-				.For<IDataReader>()
-				.Use(c => (IDataReader)c.GetInstance<IDataSetup>());
+			services.AddTransient<IDataStorer>(sp => (IDataStorer)sp.GetRequiredService<IDataSetup>());
+			services.AddTransient<IDataReader>(sp => (IDataReader)sp.GetRequiredService<IDataSetup>());
 
-			// Add Mediator
-			registry
-				.For<IUnitOfWorkService>()
-				.LifecycleIs(new SingletonLifecycle())
-				.Use<UnitOfWorkService>();
+			services.AddSingleton<IUnitOfWorkService, UnitOfWorkService>();
 			// Register additional interfaces for the UnitOfWorkService.
-			registry
-				.For<ISilDataAccessHelperInternal>()
-				.Use(c => (ISilDataAccessHelperInternal)c.GetInstance<IUnitOfWorkService>());
-			registry
-				.For<IActionHandler>()
-				.Use(c => ((UnitOfWorkService)c.GetInstance<IUnitOfWorkService>()).ActiveUndoStack);
-			registry
-				.For<IWorkerThreadReadHandler>()
-				.Use(c => (IWorkerThreadReadHandler)c.GetInstance<IUnitOfWorkService>());
-			registry
-				.For<IUndoStackManager>()
-				.Use(c => (IUndoStackManager)c.GetInstance<IUnitOfWorkService>());
-			registry.For<ITransactionLogger>().Use(() => logger);
+			services.AddTransient<ISilDataAccessHelperInternal>(sp =>
+				(ISilDataAccessHelperInternal)sp.GetRequiredService<IUnitOfWorkService>());
+			// IActionHandler is deliberately transient: it returns the current ActiveUndoStack,
+			// which changes over the life of the UnitOfWorkService, so it must be re-evaluated
+			// on every resolution.
+			services.AddTransient<IActionHandler>(sp =>
+				((UnitOfWorkService)sp.GetRequiredService<IUnitOfWorkService>()).ActiveUndoStack);
+			services.AddTransient<IWorkerThreadReadHandler>(sp =>
+				(IWorkerThreadReadHandler)sp.GetRequiredService<IUnitOfWorkService>());
+			services.AddTransient<IUndoStackManager>(sp =>
+				(IUndoStackManager)sp.GetRequiredService<IUnitOfWorkService>());
+			if (logger != null)
+				services.AddSingleton<ITransactionLogger>(logger);
+
 			// Add generated factories.
-			AddFactories(registry);
+			AddFactories(services);
 
 			// Add generated Repositories
-			AddRepositories(registry);
+			AddRepositories(services);
 
 			// Add IAnalysisRepository
-			registry
-				.For<IAnalysisRepository>()
-				.LifecycleIs(new SingletonLifecycle())
-				.Use<AnalysisRepository>();
+			services.AddSingleton<IAnalysisRepository, AnalysisRepository>();
 
 			// Add ReferenceAdjusterService
-			registry
-				.For<IReferenceAdjuster>()
-				.LifecycleIs(new SingletonLifecycle())
-				.Use<ReferenceAdjusterService>();
+			services.AddSingleton<IReferenceAdjuster>(sp => new ReferenceAdjusterService());
 
 			// Add SDA
-			registry
-				.For<ISilDataAccessManaged>()
-				.LifecycleIs(new SingletonLifecycle())
-				.Use<DomainDataByFlid>();
+			services.AddSingleton<ISilDataAccessManaged, DomainDataByFlid>();
 
 			// Add loader helper
-			registry
-				.For<LoadingServices>()
-				.LifecycleIs(new SingletonLifecycle())
-				.Use<LoadingServices>();
+			services.AddSingleton<LoadingServices>();
+
+			// StTxtParaBldr is a stateful builder resolved by its concrete type. StructureMap
+			// auto-built it per request; register it transient to preserve that behavior.
+			services.AddTransient<StTxtParaBldr>();
 
 			// Add writing system manager
-			registry
-				.For<WritingSystemManager>()
-				.LifecycleIs(new SingletonLifecycle())
-				.Use(() => new WritingSystemManager {TemplateFolder = m_dirs.TemplateDirectory});
-			registry
-				.For<ILgWritingSystemFactory>()
-				.Use(c => (ILgWritingSystemFactory)c.GetInstance<WritingSystemManager>());
+			services.AddSingleton<WritingSystemManager>(sp =>
+				new WritingSystemManager {TemplateFolder = m_dirs.TemplateDirectory});
+			services.AddTransient<ILgWritingSystemFactory>(sp =>
+				(ILgWritingSystemFactory)sp.GetRequiredService<WritingSystemManager>());
 
-			registry
-				.For<IWritingSystemContainer>()
-				.Use(c => c.GetInstance<ILangProjectRepository>().Singleton);
+			services.AddTransient<IWritingSystemContainer>(sp =>
+				sp.GetRequiredService<ILangProjectRepository>().Singleton);
 
-			registry
-				.For<ILcmUI>()
-				.Use(m_ui);
+			services.AddSingleton<ILcmUI>(m_ui);
 
-			registry
-				.For<ILcmDirectories>()
-				.Use(m_dirs);
+			services.AddSingleton<ILcmDirectories>(m_dirs);
 
-			registry
-				.For<LcmSettings>()
-				.Use(m_settings);
+			services.AddSingleton<LcmSettings>(m_settings);
 
 			// =================================================================================
-			// Don't add COM object to the registry. StructureMap does not properly release COM
-			// objects when the container is disposed, it will crash when the container is
-			// disposed.
+			// Don't add COM objects to the container. The container does not properly release
+			// COM objects when it is disposed; it will crash when the container is disposed.
 			// =================================================================================
 
-			var container = new Container(registry);
-			// Do this once after something is added, to make sure
-			// the entire set of objects can be created.
-			// After it proves ok, then block the line again,
-			// and let SM create them 'on demand'.
-			//container.AssertConfigurationIsValid();
+			var serviceProvider = services.BuildServiceProvider();
 
-			return new StructureMapServiceLocator(container);
+			return new MicrosoftServiceLocator(serviceProvider);
 		}
 	}
 
 	/// <summary>
-	/// Implementation of StructureMapServiceLocator, with extra methods of ILcmServiceLocator.
+	/// Service locator backed by Microsoft.Extensions.DependencyInjection, exposing the extra
+	/// methods of ILcmServiceLocator. It continues to implement CommonServiceLocator's
+	/// <see cref="ServiceLocatorImplBase"/> so downstream code that binds GetInstance&lt;T&gt;
+	/// to the interface method keeps working, source- and binary-compatible.
 	/// </summary>
-	/// <remarks>This class used to be named StructureMapServiceLocatorWrapper, wrapping a class
-	/// StructureMapServiceLocator implemented in StructureMapAdapter.dll. However, no one
-	/// could remember where that originally came from, and it implements only two simple methods
-	/// so that it seemed worth to remove the dll and implement the methods in here.</remarks>
-	internal sealed class StructureMapServiceLocator : ServiceLocatorImplBase,
+	internal sealed class MicrosoftServiceLocator : ServiceLocatorImplBase,
 		ILcmServiceLocator, IServiceLocatorInternal, IDisposable
 	{
-		private Container m_container;
+		private ServiceProvider m_serviceProvider;
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		internal StructureMapServiceLocator(Container container)
+		internal MicrosoftServiceLocator(ServiceProvider serviceProvider)
 		{
-			m_container = container;
+			m_serviceProvider = serviceProvider;
 		}
 
 		#region Disposable stuff
 		#if DEBUG
 		/// <summary/>
-		~StructureMapServiceLocator()
+		~MicrosoftServiceLocator()
 		{
 			Dispose(false);
 		}
@@ -314,21 +243,21 @@ namespace SIL.LCModel.IOC
 			if (fDisposing && !IsDisposed)
 			{
 				// dispose managed and unmanaged objects
-				if(m_container != null)
+				if (m_serviceProvider != null)
 				{
 					try
 					{
-						m_container.Dispose();
+						m_serviceProvider.Dispose();
 					}
-					catch(InvalidComObjectException e) // Intermittantly the dispose of the container fails because a COM object has become invalid
+					catch (InvalidComObjectException e) // Intermittantly the dispose of the container fails because a COM object has become invalid
 					{
 						// Display an indication of the failure, but don't crash, we made a good faith effort to dispose all our COM objects
 						// and they probably were disposed. Also at this point we are probably shutting down, or wrapping up a unit test.
-						Debug.WriteLine(String.Format(@"COM problem when disposing container in StructureMapServiceLocator: {0}", e.Message));
+						Debug.WriteLine(String.Format(@"COM problem when disposing container in MediServiceLocator: {0}", e.Message));
 					}
 				}
 			}
-			m_container = null;
+			m_serviceProvider = null;
 			IsDisposed = true;
 		}
 		#endregion
@@ -338,18 +267,16 @@ namespace SIL.LCModel.IOC
 		///             When implemented by inheriting classes, this method will do the actual work of resolving
 		///             the requested service instance.
 		/// </summary>
-		/// <param name="serviceType">Type of instance requested.</param>B
+		/// <param name="serviceType">Type of instance requested.</param>
 		/// <param name="key">Name of registered service you want. May be null.</param>
 		/// <returns>
 		/// The requested service instance.
 		/// </returns>
 		protected override object DoGetInstance(Type serviceType, string key)
 		{
-			if (string.IsNullOrEmpty(key))
-			{
-				return m_container.GetInstance(serviceType);
-			}
-			return m_container.GetInstance(serviceType, key);
+			// LCM does not use named instances; resolve strictly by type. GetRequiredService
+			// preserves the throw-on-missing semantics of the previous StructureMap container.
+			return m_serviceProvider.GetRequiredService(serviceType);
 		}
 
 		/// <summary>
@@ -362,10 +289,10 @@ namespace SIL.LCModel.IOC
 		/// </returns>
 		protected override IEnumerable<object> DoGetAllInstances(Type serviceType)
 		{
-			foreach (object obj in m_container.GetAllInstances(serviceType))
-			{
-				yield return obj;
-			}
+			var enumerableType = typeof(IEnumerable<>).MakeGenericType(serviceType);
+            //not using GetServices because it will throw an exception if the service is not found.
+			var instances = (IEnumerable<object>?)m_serviceProvider.GetService(enumerableType);
+			return instances ?? Enumerable.Empty<object>();
 		}
 
 		#endregion

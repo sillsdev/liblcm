@@ -153,7 +153,7 @@ namespace SIL.LCModel.Infrastructure.Impl
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		internal UnitOfWorkService(IDataStorer dataStorer, IdentityMap identityMap, ICmObjectRepositoryInternal objectRepository, ILcmUI ui, ITransactionLogger logger)
+		public UnitOfWorkService(IDataStorer dataStorer, IdentityMap identityMap, ICmObjectRepositoryInternal objectRepository, ILcmUI ui, ITransactionLogger? logger = null)
 		{
 			if (dataStorer == null) throw new ArgumentNullException("dataStorer");
 			if (identityMap == null) throw new ArgumentNullException("identityMap");
