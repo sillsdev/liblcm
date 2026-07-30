@@ -5,7 +5,7 @@
     <RootNamespace>SIL.LCModel.Utils</RootNamespace>
     <Description>The liblcm library is the core FieldWorks model for linguistic analyses of languages. Tools in this library provide the ability to store and interact with language and culture data, including anthropological, text corpus, and linguistics data.
 This package provides unit tests for SIL.LCModel.Utils and test utility classes</Description>
-    <IsPackable>true</IsPackable>
+    <IsPackable>false</IsPackable>
 	  <Nullable>disable</Nullable>
   </PropertyGroup>
 
@@ -21,6 +21,14 @@ This package provides unit tests for SIL.LCModel.Utils and test utility classes<
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SIL.LCModel.Utils\SIL.LCModel.Utils.csproj" />
+    <ProjectReference Include="..\SIL.LCModel.TestUtilities\SIL.LCModel.TestUtilities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="DummyFileMaker.cs" />
+    <Compile Remove="TestSmallDictionary.cs" />
+    <Compile Remove="MockFileOs.cs" />
+    <Compile Remove="Attributes\CleanupSingletonsAttribute.cs" />
   </ItemGroup>
 
   <Target Name="CollectRuntimeOutputs" BeforeTargets="_GetPackageFiles">
