@@ -14,13 +14,6 @@
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <OutputPath>$(MSBuildThisFileDirectory)artifacts/$(Configuration)/$(TargetFramework)</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <!-- AppendTargetFrameworkToOutputPath=false strips $(TargetFramework) from
-         IntermediateOutputPath as well as OutputPath, so every target framework of a
-         multi-targeted project would share one obj folder - and therefore one reference
-         assembly in obj/ref. Whichever framework built last won, which is how a
-         netstandard2.0 compile ended up referencing the net8.0 build of SIL.LCModel.Core
-         (CS1705, System.Drawing.Primitives 8.0.0.0). OutputPath already carries the
-         framework, so only the intermediate path needs restoring here. -->
     <IntermediateOutputPath Condition="'$(TargetFramework)' != ''">obj/$(Configuration)/$(TargetFramework)/</IntermediateOutputPath>
     <PackageOutputPath>$(MSBuildThisFileDirectory)/artifacts</PackageOutputPath>
     <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
