@@ -86,7 +86,10 @@ SIL.LCModel.Core provides a base library with core functionality.</Description>
   </ItemGroup>
 
   <PropertyGroup>
-    <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">obj/x86/$(Configuration)/</IntermediateOutputPath>
+    <!-- IntermediateOutputPath comes from Directory.Build.props, which scopes it per target
+         framework. The old obj/x86/$(Configuration)/ override here predates multi-targeting:
+         it gave all three frameworks one obj folder, and Platform is "Any CPU" repo-wide, so
+         the x86 segment bought nothing. -->
     <MsBuildCommand Condition="'$(MsBuildRuntimeType)'=='Core' And '$(MsBuildCommand)'==''">dotnet build</MsBuildCommand>
     <MsbuildCommand Condition="'$(OS)'=='Windows_NT' And '$(MsBuildCommand)'==''">"$(MSBuildBinPath)\msbuild.exe"</MsbuildCommand>
     <MsbuildCommand Condition="'$(OS)'=='Unix' And '$(MsBuildCommand)'==''">msbuild</MsbuildCommand>
