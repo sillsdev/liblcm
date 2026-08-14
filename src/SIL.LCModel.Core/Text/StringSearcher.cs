@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using Icu;
@@ -30,7 +31,11 @@ namespace SIL.LCModel.Core.Text
 		/// <summary>
 		/// Matches any words in a string.
 		/// </summary>
-		FullText
+		FullText,
+		/// <summary>
+		/// Matches any portion within a string.
+		/// </summary>
+		Substring
 	}
 
 	/// <summary>
@@ -120,6 +125,7 @@ namespace SIL.LCModel.Core.Text
 		#endregion SortKeyIndex class
 
 		private readonly Dictionary<Tuple<int, int>, SortKeyIndex> m_indices = new Dictionary<Tuple<int, int>, SortKeyIndex>();
+		private readonly Dictionary<Tuple<int, int>, List<KeyValuePair<T, string>>> m_rawIndices = new Dictionary<Tuple<int, int>, List<KeyValuePair<T, string>>>();
 		private readonly SearchType m_type;
 		private readonly Func<int, string, byte[]> m_sortKeySelector;
 		private readonly Func<int, string, IEnumerable<string>> m_tokenizer;
@@ -195,6 +201,10 @@ namespace SIL.LCModel.Core.Text
 					foreach (string token in RemoveWhitespaceAndPunctTokens(m_tokenizer(wsId, text)))
 						index.Add(m_sortKeySelector(wsId, token), item);
 					break;
+
+				case SearchType.Substring:
+					GetRawIndex(indexId, wsId).Add(new KeyValuePair<T, string>(item, text ?? string.Empty));
+					break;
 			}
 		}
 
@@ -268,6 +278,16 @@ namespace SIL.LCModel.Core.Text
 						results = results == null ? items : results.Intersect(items);
 					}
 					return results;
+
+				case SearchType.Substring:
+					{
+						List<KeyValuePair<T, string>> raw;
+						if (!m_rawIndices.TryGetValue(Tuple.Create(indexId, wsId), out raw))
+							return Enumerable.Empty<T>();
+						CompareInfo ci = CultureInfo.InvariantCulture.CompareInfo;
+						return raw.Where(kv => ci.IndexOf(kv.Value, text,
+							CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0).Select(kv => kv.Key);
+					}
 			}
 
 			return Enumerable.Empty<T>();
@@ -284,6 +304,7 @@ namespace SIL.LCModel.Core.Text
 		public void Clear()
 		{
 			m_indices.Clear();
+			m_rawIndices.Clear();
 		}
 
 		private SortKeyIndex GetIndex(int indexId, int ws)
@@ -297,6 +318,18 @@ namespace SIL.LCModel.Core.Text
 				return index;
 			}
 			return index;
+		}
+
+		private List<KeyValuePair<T, string>> GetRawIndex(int indexId, int ws)
+		{
+			var key = Tuple.Create(indexId, ws);
+			List<KeyValuePair<T, string>> list;
+			if (!m_rawIndices.TryGetValue(key, out list))
+			{
+				list = new List<KeyValuePair<T, string>>();
+				m_rawIndices[key] = list;
+			}
+			return list;
 		}
 
 		private static IEnumerable<Tuple<int, string>> GetWsStrings(ITsString tss)
