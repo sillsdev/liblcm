@@ -23,22 +23,9 @@ with language and culture data, including anthropological, text corpus, and ling
 3. Build liblcm
 
     - cd into the directory of the cloned liblcm repository.
+    - Run `dotnet build` to build the liblcm library (or open `LCM.sln` in Visual Studio / Rider and build there).
 
-    On Windows:
-
-    - Run the appropriate `vsvars*.bat`. Alternatively, `LCM.sln` can be built from within Visual Studio.
-    - Run `build.cmd` to build the liblcm library.
-
-    On Linux:
-
-    - Run `build.sh` to build the liblcm library.
-
-By default, this will build liblcm in the Debug configuration.
-To build with a different configuration, use:
-
-```bash
-build.(cmd|sh) (Debug|Release)
-```
+    By default this uses the Debug configuration. For Release: `dotnet build --configuration Release`.
 
 ## Debugging
 
@@ -51,7 +38,7 @@ To publish and consume LCModel through local sources:
   local network) to publish locally-built packages
 - See [these instructions](https://docs.microsoft.com/en-us/nuget/hosting-packages/local-feeds)
   to enable local package sources
-- `build /t:pack` will pack nuget packages and publish them to `LOCAL_NUGET_REPO`
+- `dotnet pack` will produce NuGet packages; configure your local feed so they are published to `LOCAL_NUGET_REPO` (e.g. `dotnet nuget push artifacts/*.nupkg -s %LOCAL_NUGET_REPO%`)
 
 ## Tests
 
