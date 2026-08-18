@@ -124,8 +124,31 @@ namespace SIL.LCModel.Core.Text
 
 		#endregion SortKeyIndex class
 
+		#region SubstringEntry struct
+
+		/// <summary>
+		/// Pairs an indexed item with the raw text scanned for substring matches. Used by
+		/// <see cref="SearchType.Substring"/>.
+		/// </summary>
+		private struct SubstringEntry
+		{
+			private readonly T m_item;
+			private readonly string m_text;
+
+			public SubstringEntry(T item, string text)
+			{
+				m_item = item;
+				m_text = text;
+			}
+
+			public T Item { get { return m_item; } }
+			public string Text { get { return m_text; } }
+		}
+
+		#endregion SubstringEntry struct
+
 		private readonly Dictionary<Tuple<int, int>, SortKeyIndex> m_indices = new Dictionary<Tuple<int, int>, SortKeyIndex>();
-		private readonly Dictionary<Tuple<int, int>, List<KeyValuePair<T, string>>> m_rawIndices = new Dictionary<Tuple<int, int>, List<KeyValuePair<T, string>>>();
+		private readonly Dictionary<Tuple<int, int>, List<SubstringEntry>> m_rawIndices = new Dictionary<Tuple<int, int>, List<SubstringEntry>>();
 		private readonly SearchType m_type;
 		private readonly Func<int, string, byte[]> m_sortKeySelector;
 		private readonly Func<int, string, IEnumerable<string>> m_tokenizer;
@@ -189,21 +212,26 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		public void Add(T item, int indexId, int wsId, string text)
 		{
-			SortKeyIndex index = GetIndex(indexId, wsId);
+			if (string.IsNullOrEmpty(text))
+				return;
+
 			switch (m_type)
 			{
 				case SearchType.Exact:
 				case SearchType.Prefix:
-					index.Add(m_sortKeySelector(wsId, text), item);
+					GetIndex(indexId, wsId).Add(m_sortKeySelector(wsId, text), item);
 					break;
 
 				case SearchType.FullText:
+				{
+					SortKeyIndex index = GetIndex(indexId, wsId);
 					foreach (string token in RemoveWhitespaceAndPunctTokens(m_tokenizer(wsId, text)))
 						index.Add(m_sortKeySelector(wsId, token), item);
 					break;
+				}
 
 				case SearchType.Substring:
-					GetRawIndex(indexId, wsId).Add(new KeyValuePair<T, string>(item, text ?? string.Empty));
+					GetRawIndex(indexId, wsId).Add(new SubstringEntry(item, text));
 					break;
 			}
 		}
@@ -243,12 +271,12 @@ namespace SIL.LCModel.Core.Text
 			if (string.IsNullOrEmpty(text))
 				return Enumerable.Empty<T>();
 
-			SortKeyIndex index = GetIndex(indexId, wsId);
 			switch (m_type)
 			{
 				case SearchType.Exact:
 				case SearchType.Prefix:
 					{
+						SortKeyIndex index = GetIndex(indexId, wsId);
 						byte[] sortKey = m_sortKeySelector(wsId, text);
 						var lower = new byte[text.Length * SortKeyFactor];
 						Collator.GetSortKeyBound(sortKey, UColBoundMode.UCOL_BOUND_LOWER, ref lower);
@@ -262,31 +290,34 @@ namespace SIL.LCModel.Core.Text
 					}
 
 				case SearchType.FullText:
-					IEnumerable<T> results = null;
-					string[] tokens = RemoveWhitespaceAndPunctTokens(m_tokenizer(wsId, text)).ToArray();
-					for (int i = 0; i < tokens.Length; i++)
 					{
-						byte[] sortKey = m_sortKeySelector(wsId, tokens[i]);
-						var lower = new byte[tokens[i].Length*SortKeyFactor];
-						Collator.GetSortKeyBound(sortKey, UColBoundMode.UCOL_BOUND_LOWER, ref lower);
-						var upper = new byte[tokens[i].Length*SortKeyFactor];
-						Collator.GetSortKeyBound(sortKey,
-											i < tokens.Length - 1
-												? UColBoundMode.UCOL_BOUND_UPPER
-												: UColBoundMode.UCOL_BOUND_UPPER_LONG, ref upper);
-						IEnumerable<T> items = index.GetItems(lower, upper);
-						results = results == null ? items : results.Intersect(items);
+						SortKeyIndex index = GetIndex(indexId, wsId);
+						IEnumerable<T> results = null;
+						string[] tokens = RemoveWhitespaceAndPunctTokens(m_tokenizer(wsId, text)).ToArray();
+						for (int i = 0; i < tokens.Length; i++)
+						{
+							byte[] sortKey = m_sortKeySelector(wsId, tokens[i]);
+							var lower = new byte[tokens[i].Length*SortKeyFactor];
+							Collator.GetSortKeyBound(sortKey, UColBoundMode.UCOL_BOUND_LOWER, ref lower);
+							var upper = new byte[tokens[i].Length*SortKeyFactor];
+							Collator.GetSortKeyBound(sortKey,
+												i < tokens.Length - 1
+													? UColBoundMode.UCOL_BOUND_UPPER
+													: UColBoundMode.UCOL_BOUND_UPPER_LONG, ref upper);
+							IEnumerable<T> items = index.GetItems(lower, upper);
+							results = results == null ? items : results.Intersect(items);
+						}
+						return results;
 					}
-					return results;
 
 				case SearchType.Substring:
 					{
-						List<KeyValuePair<T, string>> raw;
+						List<SubstringEntry> raw;
 						if (!m_rawIndices.TryGetValue(Tuple.Create(indexId, wsId), out raw))
 							return Enumerable.Empty<T>();
 						CompareInfo ci = CultureInfo.InvariantCulture.CompareInfo;
-						return raw.Where(kv => ci.IndexOf(kv.Value, text,
-							CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0).Select(kv => kv.Key);
+						return raw.Where(entry => ci.IndexOf(entry.Text, text,
+							CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0).Select(entry => entry.Item);
 					}
 			}
 
@@ -320,13 +351,13 @@ namespace SIL.LCModel.Core.Text
 			return index;
 		}
 
-		private List<KeyValuePair<T, string>> GetRawIndex(int indexId, int ws)
+		private List<SubstringEntry> GetRawIndex(int indexId, int ws)
 		{
 			var key = Tuple.Create(indexId, ws);
-			List<KeyValuePair<T, string>> list;
+			List<SubstringEntry> list;
 			if (!m_rawIndices.TryGetValue(key, out list))
 			{
-				list = new List<KeyValuePair<T, string>>();
+				list = new List<SubstringEntry>();
 				m_rawIndices[key] = list;
 			}
 			return list;
