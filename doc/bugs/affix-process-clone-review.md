@@ -2,7 +2,10 @@
 
 Companion to `affix-process-split-sense-stale-clone.md`. Written after Phase 1
 (reproduction) and Phase 2 (the minimal fix) were done and verified; see that
-commit history for the actual change.
+commit history for the actual change. Updated after an adversarial-review /
+mutation-testing round (§6) that found two weak tests, an untouched third
+clone path, and a residual bug in the fix itself; all three are now closed,
+see §6 for what changed and what didn't.
 
 ## 1. Is `PostClone`-taking-the-whole-copy-map the right API?
 
@@ -124,7 +127,8 @@ No. A full-repo search for `PostClone` turns up only:
   in the future) that I have not written dedicated tests for. The task's
   own bar — implement only if tests can prove it correct — argues against
   landing it now: the minimal fix already makes all 5 reproduction tests
-  and the full 1732-test suite pass with zero regressions, so nothing
+  and the full suite (1734 tests as of the final commit) pass with zero
+  regressions, so nothing
   currently broken demands the larger change. Doing it without tests for
   those edge cases would be "half-doing it." I'm recommending it as a
   well-scoped follow-up, not doing it here.
@@ -157,3 +161,105 @@ things are outside this repo's reach:
 2. **Packaging.** Per the bug doc's Scope section, FieldWorks needs a
    `liblcm` package bump to pick up this fix at all; that step is outside
    this worktree.
+
+## 6. Adversarial review round
+
+An independent reviewer mutation-tested the fix and probed two more paths.
+Summary of what came back and what changed:
+
+**Core Hvo-scoping logic survived mutation testing.** The `copyMap.TryGetValue(Hvo, ...)`
+lookup itself could not be broken.
+
+**Two tests passed for the wrong reason.** The reviewer mutated the fix to
+capture index 1 instead of index 0 as "the default" — right final count,
+wrong object removed, real content silently lost. `TwoProcessAllomorphs_NeitherLosesRealContent`
+and `ContentRAPointsIntoOwnClonesInputOS` both still passed, because they
+asserted counts and `Contains()` membership, not identity at each position.
+Added `AssertNonTrivialRuleClonedCorrectly` (checks `ClassID` at every
+`InputOS`/`OutputOS` slot, and reference-equality of each mapping's `ContentRA`
+to the exact slot it must target) and applied it to all affected tests.
+Confirmed the transition directly: re-applied the index-1 mutation and watched
+all 5 in-memory/round-trip tests fail (previously 3 failed, 2 passed); reverted
+and confirmed all pass again.
+
+Two further mutations the reviewer found — dropping the `IsValidObject` guard
+on the removed default output, and reverting the identity-based `Remove(...)`
+back to index-based `RemoveAt(0)` — are currently behavioral no-ops given
+`LcmOwningSequence.Remove`'s no-op-when-absent semantics and the fact that
+nothing reorders `InputOS`/`OutputOS` between capture and removal. Rather than
+contorting a test to force a difference that doesn't exist today, both pieces
+of code were kept, each with a one-line comment stating plainly that they're
+defensive against a future change in those invariants, not required by any
+current test. (Both are now moot in the categorical rewrite below, which no
+longer captures-then-removes a specific object at all — see §6.3.)
+
+**§6.1 A third clone path, confirmed corrupted pre-fix, untested until now.**
+`MoveSenseToCopy` reaches `MoAffixProcess` a *second*, independent time
+through `CreateMatchingAllomorphInTargetEntry` (`OverridesLing_Lex.cs:1803`),
+called from `UpdateReferencesForSenseMove` (`:1758-1786`). When a
+`WfiMorphBundle` references the moved sense's morph, and that morph's `Form`
+is blank — which is the *normal* case for a process affix (the model's own
+doc comment says `Form` is undefined for `MoAffixProcess`) —
+`IsMatchingAllomorph` can never find a match (its loop only ever sets `found`
+when both sides have non-empty text for some writing system), so
+`mb.MorphRA` fails over to a brand-new, independent
+`CopyObject<IMoForm>.CloneLcmObject` call on the very same source. Neither
+the original bug report nor the four original reproduction tests exercised
+this path. Added `MoveSenseToCopy_AffixProcessClone_ViaMorphBundleFailoverPath_PreservesNonTrivialRule`;
+confirmed it fails against the pre-fix `PostClone` (`OutputOS` Expected 2, But
+was 1 — the same shape as the single-allomorph case) and passes against the
+Hvo-scoped fix without any further code change, confirming the fix
+generalizes correctly to a clone path it was never written with in mind.
+
+That test also hits a separate, pre-existing bug: undoing the `WfiMorphBundle`
+reference changes made during its setup throws `KeyNotFoundException` out of
+`LcmAtomicRefPropertyChanged.Undo()` during `TestTearDown`'s `UndoAll()` —
+reproducible identically at both the pre-fix and post-fix commits. Not fixed
+(out of scope, pre-existing, unrelated to affix-process cloning); the test
+instead calls `Cache.ActionHandlerAccessor.Commit()` in a `finally` block,
+which is exactly what `UndoAll()` itself does at its own end, so the
+undo-stack is already empty by the time teardown's `Undo()` loop would
+otherwise run into the bug.
+
+**§6.2 A residual bug in the fix, demonstrated against already-fixed code.**
+An affix process whose `InputOS`/`OutputOS` are legitimately empty (`Clear()`,
+no re-add — legal at the LCM level; `MoAffixProcess` has no
+`IsFieldRequired` guard forcing non-empty content) still ended up with a
+leaked default `PhVariable`/`MoCopyFromInput` pair: source 0, clone 1. The
+`Count > 1` guard in the first fix could not tell "genuinely zero real
+content" (clone count 1: only the seeded default) apart from "one real item
+survives, one leaked default also survives" (also clone count 1, after a
+different bug) — both looked identical by count alone.
+
+**§6.3 The fix, rewritten categorically.** `PostClone` now compares the
+clone's counts against `this` — the source object it belongs to, always in
+hand, since `PostClone` is an instance method called as
+`source.PostClone(copyMap)` — and removes exactly the surplus:
+`clonedProcess.InputOS.Count - InputOS.Count` leading items, then (recomputed
+*after* that removal, not assumed independently, since removing the default
+input can itself cascade into removing the default output)
+`clonedProcess.OutputOS.Count - OutputOS.Count` leading items. This is no
+longer a heuristic about what the clone's shape "should" look like; it is a
+direct comparison to the one ground truth already available. It also
+subsumes the identity-capture machinery from the first fix (capturing
+`defaultInput`/`defaultOutput` by reference before removing anything) — with
+the surplus computed by count and removed via a tight `RemoveAt(0)` loop with
+no intervening work, there is no window for the object-identity concern that
+motivated capturing references in the first place, so that indirection was
+removed rather than kept alongside the new logic. Verified red against the
+`Count > 1` fix (Expected 0, But was 1) and green against this rewrite; added
+`MoveSenseToCopy_AffixProcessClone_ZeroRealContent_NoLeakedDefault` as a
+permanent regression test.
+
+**§6.4 Not for me to act on (per reviewer's own scoping).** The reviewer ran
+a Class-A sweep (objects that seed owned-sequence defaults, have no
+`ICloneableCmObject`, and have no `PostClone`) and found `PhTerminalUnit.CodesOS`
+and `MoStemName.RegionsOC` share this class's shape, but are unreachable from
+any current clone call site — latent only, not exercised, not fixed here.
+Noted as a follow-up for whoever next touches cloning in those areas. The
+coordinator's original bug report also carried a worry that `LexemeFormOA`
+and `AlternateFormsOS` get separate, non-communicating `CopyObject` maps
+during `MoveSenseToCopy` (relevant to whether that split could itself cause
+cross-referencing bugs); the reviewer reports this was disproved by schema
+inspection. I did not redo that inspection myself — noting it here as
+closed per the reviewer's finding, not something I independently verified.
