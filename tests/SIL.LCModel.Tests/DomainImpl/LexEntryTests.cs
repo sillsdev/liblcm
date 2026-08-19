@@ -531,6 +531,41 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
+		/// Asserts that a clone produced from a MakeNonTrivialRuleContent source has exactly the
+		/// right objects in exactly the right order -- not merely the right counts. A mutant that
+		/// removes the wrong list element (e.g. index 1 instead of index 0) can leave counts and
+		/// simple containment checks satisfied while corrupting the actual content; checking
+		/// ClassID at each position, and checking that each mapping's ContentRA is reference-equal
+		/// to the specific InputOS slot it is supposed to target, catches that.
+		/// </summary>
+		private void AssertNonTrivialRuleClonedCorrectly(IMoAffixProcess clone)
+		{
+			Assert.That(clone.InputOS.Count, Is.EqualTo(2),
+				"clone should have exactly the two real inputs: no leaked default, no lost real content");
+			Assert.That(clone.InputOS[0].ClassID, Is.EqualTo(PhSimpleContextNCTags.kClassId),
+				"position 0 must be the real natural-class context -- not a leaked default PhVariable, " +
+				"and not some other real item shifted into this slot by removing the wrong element");
+			Assert.That(clone.InputOS[1].ClassID, Is.EqualTo(PhVariableTags.kClassId),
+				"position 1 must be the real variable");
+
+			Assert.That(clone.OutputOS.Count, Is.EqualTo(2),
+				"clone should have exactly the two real outputs: no leaked default, no lost real content");
+			Assert.That(clone.OutputOS[0].ClassID, Is.EqualTo(MoCopyFromInputTags.kClassId),
+				"position 0 must be the real copy-mapping");
+			Assert.That(clone.OutputOS[1].ClassID, Is.EqualTo(MoModifyFromInputTags.kClassId),
+				"position 1 must be the real modify-mapping");
+
+			var copy = (IMoCopyFromInput)clone.OutputOS[0];
+			var modify = (IMoModifyFromInput)clone.OutputOS[1];
+			Assert.That(copy.ContentRA, Is.EqualTo(clone.InputOS[0]),
+				"the copy-mapping's ContentRA must be exactly this clone's own natural-class input object, " +
+				"identified by reference, not merely 'some' member of InputOS");
+			Assert.That(modify.ContentRA, Is.EqualTo(clone.InputOS[1]),
+				"the modify-mapping's ContentRA must be exactly this clone's own variable input object, " +
+				"identified by reference, not merely 'some' member of InputOS");
+		}
+
+		/// <summary>
 		/// Case 1 from doc/bugs/affix-process-split-sense-stale-clone.md: single affix-process
 		/// allomorph (as LexemeFormOA) carrying a non-trivial rule. Because this process's own
 		/// clone is the very first entry PostClone's copyMap sees (it is cloned before any of its
@@ -559,15 +594,7 @@ namespace SIL.LCModel.DomainImpl
 			var clonedProcess = newEntry.LexemeFormOA as IMoAffixProcess;
 			Assert.That(clonedProcess, Is.Not.Null, "clone should still be an affix process");
 
-			Assert.That(clonedProcess.InputOS.Count, Is.EqualTo(sourceProcess.InputOS.Count),
-				"clone should have exactly the source's inputs, no leftover default PhVariable");
-			Assert.That(clonedProcess.OutputOS.Count, Is.EqualTo(sourceProcess.OutputOS.Count),
-				"clone should have exactly the source's outputs, no leftover default MoCopyFromInput");
-			Assert.That(clonedProcess.InputOS[0].ClassID, Is.EqualTo(PhSimpleContextNCTags.kClassId),
-				"first input should be the real natural-class context, not a leaked default PhVariable");
-			Assert.That(clonedProcess.InputOS[1].ClassID, Is.EqualTo(PhVariableTags.kClassId));
-			Assert.That(clonedProcess.OutputOS[0].ClassID, Is.EqualTo(MoCopyFromInputTags.kClassId));
-			Assert.That(clonedProcess.OutputOS[1].ClassID, Is.EqualTo(MoModifyFromInputTags.kClassId));
+			AssertNonTrivialRuleClonedCorrectly(clonedProcess);
 		}
 
 		/// <summary>
@@ -601,12 +628,7 @@ namespace SIL.LCModel.DomainImpl
 			var clonedProcess = newEntry.AlternateFormsOS[1] as IMoAffixProcess;
 			Assert.That(clonedProcess, Is.Not.Null, "second allomorph clone should still be an affix process");
 
-			Assert.That(clonedProcess.InputOS.Count, Is.EqualTo(sourceProcess.InputOS.Count),
-				"defect (A): a preceding non-process allomorph clone in the shared copyMap makes PostClone " +
-				"return before ever reaching (and repairing) this process's own clone");
-			Assert.That(clonedProcess.OutputOS.Count, Is.EqualTo(sourceProcess.OutputOS.Count));
-			Assert.That(clonedProcess.InputOS[0].ClassID, Is.EqualTo(PhSimpleContextNCTags.kClassId),
-				"first input should be the real natural-class context, not a leaked default PhVariable");
+			AssertNonTrivialRuleClonedCorrectly(clonedProcess);
 		}
 
 		/// <summary>
@@ -646,14 +668,12 @@ namespace SIL.LCModel.DomainImpl
 			Assert.That(clonedA, Is.Not.Null);
 			Assert.That(clonedB, Is.Not.Null);
 
-			Assert.That(clonedA.InputOS.Count, Is.EqualTo(sourceA.InputOS.Count),
-				"defect (B): the second allomorph's PostClone call re-strips the first allomorph's " +
-				"already-repaired clone, deleting real content");
-			Assert.That(clonedA.OutputOS.Count, Is.EqualTo(sourceA.OutputOS.Count));
-			Assert.That(clonedB.InputOS.Count, Is.EqualTo(sourceB.InputOS.Count),
-				"defect (B): this allomorph's own defaults are never stripped because PostClone " +
-				"returns as soon as it hits the first allomorph's clone's owned children");
-			Assert.That(clonedB.OutputOS.Count, Is.EqualTo(sourceB.OutputOS.Count));
+			// Identity-at-position, not just counts: a mutant that removes the wrong list element
+			// (e.g. index 1 instead of index 0) can leave clonedA.InputOS.Count == sourceA.InputOS.Count
+			// while a leaked default PhVariable survives at index 0 and a real item is gone --
+			// AssertNonTrivialRuleClonedCorrectly checks the actual ClassID/identity at each slot.
+			AssertNonTrivialRuleClonedCorrectly(clonedA);
+			AssertNonTrivialRuleClonedCorrectly(clonedB);
 		}
 
 		/// <summary>
@@ -686,6 +706,11 @@ namespace SIL.LCModel.DomainImpl
 			var newEntry = senseToMove.Entry;
 			var clonedA = (IMoAffixProcess)newEntry.AlternateFormsOS[0];
 			var clonedB = (IMoAffixProcess)newEntry.AlternateFormsOS[1];
+
+			// Identity-at-position first: confirms each clone's own InputOS/OutputOS is exactly
+			// right (no leaked default swapped in for a real item at the same slot count).
+			AssertNonTrivialRuleClonedCorrectly(clonedA);
+			AssertNonTrivialRuleClonedCorrectly(clonedB);
 
 			foreach (var clone in new[] { clonedA, clonedB })
 			{

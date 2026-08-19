@@ -4068,8 +4068,10 @@ namespace SIL.LCModel.DomainImpl
 			IPhContextOrVar defaultInput = clonedProcess.InputOS.Count > 1 ? clonedProcess.InputOS[0] : null;
 			IMoRuleMapping defaultOutput = clonedProcess.OutputOS.Count > 1 ? clonedProcess.OutputOS[0] : null;
 
+			// Remove(defaultInput), not RemoveAt(0): stays correct even if InputOS is ever reordered first.
 			if (defaultInput != null)
 				clonedProcess.InputOS.Remove(defaultInput);
+			// Defensive: Remove() already no-ops if defaultOutput isn't present.
 			if (defaultOutput != null && defaultOutput.IsValidObject)
 				clonedProcess.OutputOS.Remove(defaultOutput);
 		}
