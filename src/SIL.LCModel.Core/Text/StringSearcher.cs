@@ -316,8 +316,13 @@ namespace SIL.LCModel.Core.Text
 						if (!m_rawIndices.TryGetValue(Tuple.Create(indexId, wsId), out raw))
 							return Enumerable.Empty<T>();
 						CompareInfo ci = CultureInfo.InvariantCulture.CompareInfo;
-						return raw.Where(entry => ci.IndexOf(entry.Text, text,
-							CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0).Select(entry => entry.Item);
+						// Fold diacritics only when the search term itself has none: an unmarked query
+						// matches accented text ("cafe" finds "café"), but a query that includes an accent
+						// is treated as specific ("café" does not match a bare "cafe").
+						CompareOptions options = ContainsDiacritic(text)
+							? CompareOptions.IgnoreCase
+							: CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace;
+						return raw.Where(entry => ci.IndexOf(entry.Text, text, options) >= 0).Select(entry => entry.Item);
 					}
 			}
 
@@ -327,6 +332,15 @@ namespace SIL.LCModel.Core.Text
 		private static IEnumerable<string> RemoveWhitespaceAndPunctTokens(IEnumerable<string> tokens)
 		{
 			return tokens.Where(t => !t.All(c => Character.IsSpace(c) || Character.IsPunct(c)));
+		}
+
+		/// <summary>
+		/// True if the string contains a diacritic.
+		/// </summary>
+		private static bool ContainsDiacritic(string value)
+		{
+			return value.Normalize(NormalizationForm.FormD)
+				.Any(ch => Character.GetCharType(ch) == Character.UCharCategory.NON_SPACING_MARK);
 		}
 
 		/// <summary>

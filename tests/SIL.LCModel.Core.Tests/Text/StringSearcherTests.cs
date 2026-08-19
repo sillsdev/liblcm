@@ -215,5 +215,58 @@ namespace SIL.LCModel.Core.Text
 			Assert.That(substring.Search(0, outOfOrder), Does.Not.Contain(0),
 				"substring needs the query contiguous, so out-of-order words do not match");
 		}
+
+		/// <summary>
+		/// Substring diacritic matching is asymmetric. An unmarked query folds
+		/// diacritics (so it matches accented text), but a query that itself contains an accent is treated
+		/// as specific -- it matches only that accent, not the bare letter or a different accent.
+		/// </summary>
+		[Test]
+		public void SubstringDiacriticMatch_isAsymmetric()
+		{
+			// Precomposed accented letters, built from code points to keep the source ASCII.
+			string aTilde = ((char)0x00E3).ToString(); // a with tilde
+			string eAcute = ((char)0x00E9).ToString(); // e with acute
+			string eGrave = ((char)0x00E8).ToString(); // e with grave
+
+			var searcher = new StringSearcher<int>(SearchType.Substring, m_wsManager);
+			searcher.Add(0, 0, TsStringUtils.MakeString(aTilde + "pple", m_enWs)); // accented "apple"
+			searcher.Add(1, 0, TsStringUtils.MakeString("apple", m_enWs));         // plain "apple"
+			searcher.Add(2, 0, TsStringUtils.MakeString("caf" + eAcute, m_enWs));  // "cafe" with acute
+			searcher.Add(3, 0, TsStringUtils.MakeString("caf" + eGrave, m_enWs));  // "cafe" with grave
+
+			// Unmarked query folds diacritics: "ap" matches both the accented and the plain word.
+			CheckSearch(searcher, TsStringUtils.MakeString("ap", m_enWs), new[] {0, 1});
+			// A marked query matches its own accented text...
+			CheckSearch(searcher, TsStringUtils.MakeString(aTilde + "p", m_enWs), new[] {0});
+			// ...but not the bare, unaccented text.
+			Assert.That(searcher.Search(0, TsStringUtils.MakeString(aTilde, m_enWs)), Does.Not.Contain(1),
+				"an accented query should not match unaccented text");
+			// A marked query matches only the same accent, not a different one.
+			CheckSearch(searcher, TsStringUtils.MakeString("caf" + eAcute, m_enWs), new[] {2});
+			Assert.That(searcher.Search(0, TsStringUtils.MakeString("caf" + eAcute, m_enWs)), Does.Not.Contain(3),
+				"one accent should not match a different accent");
+		}
+
+		/// <summary>
+		/// Substring matching is insensitive to Unicode normalization: a composed character and its
+		/// decomposed (base + combining mark) form match each other, in either direction.
+		/// </summary>
+		[Test]
+		public void SubstringMatch_isNormalizationInsensitive()
+		{
+			// Cyrillic short-I: one precomposed code point vs. base + combining breve.
+			string composed = ((char)0x0439).ToString();
+			string decomposed = ((char)0x0438).ToString() + ((char)0x0306).ToString();
+			Assert.That(composed, Is.Not.EqualTo(decomposed), "the two forms should differ byte-for-byte");
+
+			var indexComposed = new StringSearcher<int>(SearchType.Substring, m_wsManager);
+			indexComposed.Add(0, 0, TsStringUtils.MakeString(composed, m_enWs));
+			CheckSearch(indexComposed, TsStringUtils.MakeString(decomposed, m_enWs), new[] {0});
+
+			var indexDecomposed = new StringSearcher<int>(SearchType.Substring, m_wsManager);
+			indexDecomposed.Add(0, 0, TsStringUtils.MakeString(decomposed, m_enWs));
+			CheckSearch(indexDecomposed, TsStringUtils.MakeString(composed, m_enWs), new[] {0});
+		}
 	}
 }
