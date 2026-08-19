@@ -4055,16 +4055,23 @@ namespace SIL.LCModel.DomainImpl
 		/// </summary>
 		public override void PostClone(Dictionary<int, ICmObject> copyMap)
 		{
-			foreach (var cmObject in copyMap.Values)
-			{
-				var clonedProcess = cmObject as IMoAffixProcess;
-				if (clonedProcess == null)
-					return;
-				if (clonedProcess.InputOS.Count > 1)
-					clonedProcess.InputOS.RemoveAt(0);
-				if (clonedProcess.OutputOS.Count > 1)
-					clonedProcess.OutputOS.RemoveAt(0);
-			}
+			// copyMap holds every object cloned in this CopyObject pass, not just this object's own
+			// clone (e.g. when several allomorphs of an entry are cloned together, it holds all of
+			// their clones and owned children). Look up only our own clone, and repair only it.
+			if (!copyMap.TryGetValue(Hvo, out var clone) || !(clone is IMoAffixProcess clonedProcess))
+				return;
+
+			// Capture the two specific default objects (rather than just "whatever is at index 0")
+			// before removing anything: removing the default input can itself cascade, via
+			// RemoveObjectSideEffectsInternal below, into removing the default output. If that
+			// already happened, we must not then remove a second, real, output entry.
+			IPhContextOrVar defaultInput = clonedProcess.InputOS.Count > 1 ? clonedProcess.InputOS[0] : null;
+			IMoRuleMapping defaultOutput = clonedProcess.OutputOS.Count > 1 ? clonedProcess.OutputOS[0] : null;
+
+			if (defaultInput != null)
+				clonedProcess.InputOS.Remove(defaultInput);
+			if (defaultOutput != null && defaultOutput.IsValidObject)
+				clonedProcess.OutputOS.Remove(defaultOutput);
 		}
 		/// <summary>
 		/// Gets all of the feature constraints in this rule.
