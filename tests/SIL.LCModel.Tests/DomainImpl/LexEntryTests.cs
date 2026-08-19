@@ -735,6 +735,73 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
+		/// A third clone path, found in adversarial review, that neither the original bug report
+		/// nor the four tests above exercise: MoveSenseToCopy reaches MoAffixProcess a SECOND time
+		/// through CreateMatchingAllomorphInTargetEntry (OverridesLing_Lex.cs:1803), called from
+		/// UpdateReferencesForSenseMove (:1758-1786), whenever a WfiMorphBundle references the moved
+		/// sense's morph. IsMatchingAllomorph compares Form text across writing systems; an affix
+		/// process's Form is normally left blank (the model's own doc comment says Form is
+		/// undefined for process affixes), so it never matches the already-cloned LexemeFormOA, and
+		/// the failover clones the SOURCE process a second, independent time via its own
+		/// CopyObject&lt;IMoForm&gt; call, landing in AlternateFormsOS rather than LexemeFormOA.
+		/// </summary>
+		[Test]
+		public void MoveSenseToCopy_AffixProcessClone_ViaMorphBundleFailoverPath_PreservesNonTrivialRule()
+		{
+			ILexEntry entry = null;
+			ILexSense senseToMove = null;
+			IMoAffixProcess sourceProcess = null;
+			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor, () =>
+			{
+				entry = MakeEntry();
+				sourceProcess = Cache.ServiceLocator.GetInstance<IMoAffixProcessFactory>().Create();
+				entry.LexemeFormOA = sourceProcess;
+				// Deliberately leave Form blank: that is the normal state for a process affix, and
+				// it is exactly what makes IsMatchingAllomorph fail to match the already-cloned
+				// LexemeFormOA, forcing the CreateMatchingAllomorphInTargetEntry failover.
+				sourceProcess.MorphTypeRA = Cache.ServiceLocator.GetInstance<IMoMorphTypeRepository>()
+					.GetObject(MoMorphTypeTags.kguidMorphSuffix);
+				MakeNonTrivialRuleContent(sourceProcess);
+
+				MakeSense(entry, "stay");
+				senseToMove = MakeSense(entry, "move");
+
+				var wf = MakeWordform("ted");
+				MakeAnalysis(wf, senseToMove);
+			});
+
+			entry.MoveSenseToCopy(senseToMove);
+
+			try
+			{
+				var newEntry = senseToMove.Entry;
+				Assert.That(newEntry, Is.Not.EqualTo(entry));
+
+				var mb = (IWfiMorphBundle)senseToMove.ReferringObjects.First(o => o is IWfiMorphBundle);
+				var failoverClone = mb.MorphRA as IMoAffixProcess;
+				Assert.That(failoverClone, Is.Not.Null,
+					"the blank-Form failover should have created a second clone of the affix process");
+				Assert.That(newEntry.AlternateFormsOS.Contains(failoverClone), Is.True,
+					"the failover clone should be a real allomorph on the new entry");
+				Assert.That(failoverClone, Is.Not.EqualTo(newEntry.LexemeFormOA),
+					"the failover path creates a SECOND, independent clone, distinct from the one made " +
+					"by the normal LexemeFormOA clone path");
+
+				AssertNonTrivialRuleClonedCorrectly(failoverClone);
+			}
+			finally
+			{
+				// Pre-existing bug, reproducible identically before and after this fix: undoing the
+				// WfiMorphBundle.MorphRA reference changes this test's setup UOW recorded throws
+				// KeyNotFoundException out of LcmAtomicRefPropertyChanged.Undo() during
+				// TestTearDown's UndoAll(). Committing here -- which is exactly what UndoAll() itself
+				// does at its own end -- clears the undo stack first, so that unrelated crash can't
+				// happen and mask this test's own pass/fail.
+				Cache.ActionHandlerAccessor.Commit();
+			}
+		}
+
+		/// <summary>
 		/// Test PrimaryEntryRoots and the closely related NonTrivialEntryRoots.
 		/// </summary>
 		[Test]
