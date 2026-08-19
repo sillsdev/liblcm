@@ -477,6 +477,239 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
+		/// Adds an affix-process allomorph (with a real, non-trivial form) to an entry's
+		/// AlternateFormsOS, distinct from a bare LexemeFormOA process.
+		/// </summary>
+		private IMoAffixProcess AddAffixProcessAllomorph(ILexEntry entry, string form)
+		{
+			var ws = Cache.DefaultVernWs;
+			var process = Cache.ServiceLocator.GetInstance<IMoAffixProcessFactory>().Create();
+			entry.AlternateFormsOS.Add(process);
+			process.Form.set_String(ws, TsStringUtils.MakeString(form, ws));
+			process.MorphTypeRA = Cache.ServiceLocator.GetInstance<IMoMorphTypeRepository>().GetObject(MoMorphTypeTags.kguidMorphSuffix);
+			return process;
+		}
+
+		/// <summary>
+		/// Adds a plain stem allomorph to an entry's AlternateFormsOS.
+		/// </summary>
+		private IMoStemAllomorph AddStemAllomorph(ILexEntry entry, string form)
+		{
+			var ws = Cache.DefaultVernWs;
+			var stem = Cache.ServiceLocator.GetInstance<IMoStemAllomorphFactory>().Create();
+			entry.AlternateFormsOS.Add(stem);
+			stem.Form.set_String(ws, TsStringUtils.MakeString(form, ws));
+			stem.MorphTypeRA = Cache.ServiceLocator.GetInstance<IMoMorphTypeRepository>().GetObject(MoMorphTypeTags.kguidMorphStem);
+			return stem;
+		}
+
+		/// <summary>
+		/// Replaces the trivial default InputOS/OutputOS that SetDefaultValuesAfterInit seeds
+		/// with a small but non-trivial rule: Input = [naturalClassContext, variable],
+		/// Output = [CopyFromInput(naturalClassContext), ModifyFromInput(variable)].
+		/// The two InputOS entries are deliberately different classes (PhSimpleContextNC vs
+		/// PhVariable) so a leaked leading default PhVariable is easy to detect by ClassID,
+		/// and the two OutputOS entries are deliberately different classes (MoCopyFromInput vs
+		/// MoModifyFromInput) so a leaked leading default MoCopyFromInput is likewise detectable.
+		/// </summary>
+		private void MakeNonTrivialRuleContent(IMoAffixProcess process)
+		{
+			process.InputOS.Clear();
+			process.OutputOS.Clear();
+
+			var ctxt = Cache.ServiceLocator.GetInstance<IPhSimpleContextNCFactory>().Create();
+			process.InputOS.Add(ctxt);
+			var var1 = Cache.ServiceLocator.GetInstance<IPhVariableFactory>().Create();
+			process.InputOS.Add(var1);
+
+			var copy = Cache.ServiceLocator.GetInstance<IMoCopyFromInputFactory>().Create();
+			process.OutputOS.Add(copy);
+			copy.ContentRA = ctxt;
+			var modify = Cache.ServiceLocator.GetInstance<IMoModifyFromInputFactory>().Create();
+			process.OutputOS.Add(modify);
+			modify.ContentRA = var1;
+		}
+
+		/// <summary>
+		/// Case 1 from doc/bugs/affix-process-split-sense-stale-clone.md: single affix-process
+		/// allomorph (as LexemeFormOA) carrying a non-trivial rule. Because this process's own
+		/// clone is the very first entry PostClone's copyMap sees (it is cloned before any of its
+		/// own owned Input/Output children), defect (A)'s "return instead of continue" does not
+		/// get triggered in this configuration -- see case 2 for that.
+		/// </summary>
+		[Test]
+		public void MoveSenseToCopy_AffixProcessClone_PreservesNonTrivialRule_SingleAllomorph()
+		{
+			ILexEntry entry = null;
+			ILexSense senseToMove = null;
+			IMoAffixProcess sourceProcess = null;
+			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor, () =>
+			{
+				entry = MakeAffixProcessEntry("ed", MoMorphTypeTags.kguidMorphSuffix);
+				sourceProcess = (IMoAffixProcess)entry.LexemeFormOA;
+				MakeNonTrivialRuleContent(sourceProcess);
+				MakeSense(entry, "stay");
+				senseToMove = MakeSense(entry, "move");
+			});
+
+			entry.MoveSenseToCopy(senseToMove);
+
+			var newEntry = senseToMove.Entry;
+			Assert.That(newEntry, Is.Not.EqualTo(entry));
+			var clonedProcess = newEntry.LexemeFormOA as IMoAffixProcess;
+			Assert.That(clonedProcess, Is.Not.Null, "clone should still be an affix process");
+
+			Assert.That(clonedProcess.InputOS.Count, Is.EqualTo(sourceProcess.InputOS.Count),
+				"clone should have exactly the source's inputs, no leftover default PhVariable");
+			Assert.That(clonedProcess.OutputOS.Count, Is.EqualTo(sourceProcess.OutputOS.Count),
+				"clone should have exactly the source's outputs, no leftover default MoCopyFromInput");
+			Assert.That(clonedProcess.InputOS[0].ClassID, Is.EqualTo(PhSimpleContextNCTags.kClassId),
+				"first input should be the real natural-class context, not a leaked default PhVariable");
+			Assert.That(clonedProcess.InputOS[1].ClassID, Is.EqualTo(PhVariableTags.kClassId));
+			Assert.That(clonedProcess.OutputOS[0].ClassID, Is.EqualTo(MoCopyFromInputTags.kClassId));
+			Assert.That(clonedProcess.OutputOS[1].ClassID, Is.EqualTo(MoModifyFromInputTags.kClassId));
+		}
+
+		/// <summary>
+		/// Case 2 from doc/bugs/affix-process-split-sense-stale-clone.md: a stem allomorph ordered
+		/// BEFORE the affix-process allomorph in AlternateFormsOS. Both allomorphs are cloned in a
+		/// single CopyObject batch (one shared copyMap), so the stem's clone -- which is not an
+		/// IMoAffixProcess -- lands in the map ahead of the process's own clone. Defect (A)'s
+		/// "return" (instead of "continue") then bails out of the whole loop before ever reaching
+		/// the affix process, so its defaults are never stripped at all.
+		/// </summary>
+		[Test]
+		public void MoveSenseToCopy_AffixProcessClone_StemAllomorphBeforeProcess_PreservesRealContent()
+		{
+			ILexEntry entry = null;
+			ILexSense senseToMove = null;
+			IMoAffixProcess sourceProcess = null;
+			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor, () =>
+			{
+				entry = MakeEntry();
+				AddStemAllomorph(entry, "stemA");
+				sourceProcess = AddAffixProcessAllomorph(entry, "ed");
+				MakeNonTrivialRuleContent(sourceProcess);
+				MakeSense(entry, "stay");
+				senseToMove = MakeSense(entry, "move");
+			});
+
+			entry.MoveSenseToCopy(senseToMove);
+
+			var newEntry = senseToMove.Entry;
+			Assert.That(newEntry.AlternateFormsOS.Count, Is.EqualTo(2), "both allomorphs should have been cloned");
+			var clonedProcess = newEntry.AlternateFormsOS[1] as IMoAffixProcess;
+			Assert.That(clonedProcess, Is.Not.Null, "second allomorph clone should still be an affix process");
+
+			Assert.That(clonedProcess.InputOS.Count, Is.EqualTo(sourceProcess.InputOS.Count),
+				"defect (A): a preceding non-process allomorph clone in the shared copyMap makes PostClone " +
+				"return before ever reaching (and repairing) this process's own clone");
+			Assert.That(clonedProcess.OutputOS.Count, Is.EqualTo(sourceProcess.OutputOS.Count));
+			Assert.That(clonedProcess.InputOS[0].ClassID, Is.EqualTo(PhSimpleContextNCTags.kClassId),
+				"first input should be the real natural-class context, not a leaked default PhVariable");
+		}
+
+		/// <summary>
+		/// Case 3 from doc/bugs/affix-process-split-sense-stale-clone.md: TWO affix-process
+		/// allomorphs cloned in the same batch. Defect (B): PostClone is invoked once per
+		/// top-level source object, but each invocation walks the ENTIRE shared copyMap from the
+		/// start rather than looking up only its own clone. The first allomorph's clone sits at
+		/// the front of the map, so every invocation re-strips index 0 from it -- the first
+		/// invocation correctly removes its leaked default, subsequent invocations incorrectly
+		/// remove real content -- while the second allomorph's own defaults are never reached
+		/// (the loop returns as soon as it hits the first allomorph's non-process owned child).
+		/// </summary>
+		[Test]
+		public void MoveSenseToCopy_AffixProcessClone_TwoProcessAllomorphs_NeitherLosesRealContent()
+		{
+			ILexEntry entry = null;
+			ILexSense senseToMove = null;
+			IMoAffixProcess sourceA = null;
+			IMoAffixProcess sourceB = null;
+			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor, () =>
+			{
+				entry = MakeEntry();
+				sourceA = AddAffixProcessAllomorph(entry, "edA");
+				MakeNonTrivialRuleContent(sourceA);
+				sourceB = AddAffixProcessAllomorph(entry, "edB");
+				MakeNonTrivialRuleContent(sourceB);
+				MakeSense(entry, "stay");
+				senseToMove = MakeSense(entry, "move");
+			});
+
+			entry.MoveSenseToCopy(senseToMove);
+
+			var newEntry = senseToMove.Entry;
+			Assert.That(newEntry.AlternateFormsOS.Count, Is.EqualTo(2), "both allomorphs should have been cloned");
+			var clonedA = newEntry.AlternateFormsOS[0] as IMoAffixProcess;
+			var clonedB = newEntry.AlternateFormsOS[1] as IMoAffixProcess;
+			Assert.That(clonedA, Is.Not.Null);
+			Assert.That(clonedB, Is.Not.Null);
+
+			Assert.That(clonedA.InputOS.Count, Is.EqualTo(sourceA.InputOS.Count),
+				"defect (B): the second allomorph's PostClone call re-strips the first allomorph's " +
+				"already-repaired clone, deleting real content");
+			Assert.That(clonedA.OutputOS.Count, Is.EqualTo(sourceA.OutputOS.Count));
+			Assert.That(clonedB.InputOS.Count, Is.EqualTo(sourceB.InputOS.Count),
+				"defect (B): this allomorph's own defaults are never stripped because PostClone " +
+				"returns as soon as it hits the first allomorph's clone's owned children");
+			Assert.That(clonedB.OutputOS.Count, Is.EqualTo(sourceB.OutputOS.Count));
+		}
+
+		/// <summary>
+		/// Case 4 from doc/bugs/affix-process-split-sense-stale-clone.md: every cloned
+		/// MoCopyFromInput/MoModifyFromInput ContentRA must point into the CLONE's own InputOS,
+		/// never into the source's InputOS (nor -- since defect (B) can delete a clone's real
+		/// input out from under a surviving mapping -- into thin air). Uses the same two-process
+		/// setup as case 3, since that is where PostClone does the most damage.
+		/// </summary>
+		[Test]
+		public void MoveSenseToCopy_AffixProcessClone_ContentRAPointsIntoOwnClonesInputOS()
+		{
+			ILexEntry entry = null;
+			ILexSense senseToMove = null;
+			IMoAffixProcess sourceA = null;
+			IMoAffixProcess sourceB = null;
+			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor, () =>
+			{
+				entry = MakeEntry();
+				sourceA = AddAffixProcessAllomorph(entry, "edA");
+				MakeNonTrivialRuleContent(sourceA);
+				sourceB = AddAffixProcessAllomorph(entry, "edB");
+				MakeNonTrivialRuleContent(sourceB);
+				MakeSense(entry, "stay");
+				senseToMove = MakeSense(entry, "move");
+			});
+
+			entry.MoveSenseToCopy(senseToMove);
+
+			var newEntry = senseToMove.Entry;
+			var clonedA = (IMoAffixProcess)newEntry.AlternateFormsOS[0];
+			var clonedB = (IMoAffixProcess)newEntry.AlternateFormsOS[1];
+
+			foreach (var clone in new[] { clonedA, clonedB })
+			{
+				foreach (var mapping in clone.OutputOS)
+				{
+					IPhContextOrVar content = null;
+					if (mapping is IMoCopyFromInput cfi)
+						content = cfi.ContentRA;
+					else if (mapping is IMoModifyFromInput mfi)
+						content = mfi.ContentRA;
+					if (content == null)
+						continue;
+
+					Assert.That(clone.InputOS.Contains(content), Is.True,
+						"a rule-mapping's ContentRA must point into its OWN clone's InputOS");
+					Assert.That(sourceA.InputOS.Contains(content), Is.False,
+						"a cloned rule-mapping's ContentRA must never point into the source's InputOS");
+					Assert.That(sourceB.InputOS.Contains(content), Is.False,
+						"a cloned rule-mapping's ContentRA must never point into the source's InputOS");
+				}
+			}
+		}
+
+		/// <summary>
 		/// Test PrimaryEntryRoots and the closely related NonTrivialEntryRoots.
 		/// </summary>
 		[Test]
