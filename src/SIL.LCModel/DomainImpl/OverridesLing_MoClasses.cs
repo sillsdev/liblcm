@@ -4061,19 +4061,24 @@ namespace SIL.LCModel.DomainImpl
 			if (!copyMap.TryGetValue(Hvo, out var clone) || !(clone is IMoAffixProcess clonedProcess))
 				return;
 
-			// Capture the two specific default objects (rather than just "whatever is at index 0")
-			// before removing anything: removing the default input can itself cascade, via
-			// RemoveObjectSideEffectsInternal below, into removing the default output. If that
-			// already happened, we must not then remove a second, real, output entry.
-			IPhContextOrVar defaultInput = clonedProcess.InputOS.Count > 1 ? clonedProcess.InputOS[0] : null;
-			IMoRuleMapping defaultOutput = clonedProcess.OutputOS.Count > 1 ? clonedProcess.OutputOS[0] : null;
+			// The clone was created via the normal factory, which seeds exactly one default
+			// PhVariable input and one default MoCopyFromInput output (SetDefaultValuesAfterInit)
+			// before this object's own real content was cloned and appended after them. So the
+			// clone should end up with exactly as many inputs/outputs as THIS (the source) has --
+			// not "count > 1", which can't distinguish a genuinely empty source (0 real inputs) from
+			// a single leaked default (both look like count 1). Remove exactly the surplus leading
+			// items, computed from the source's own counts, rather than guessing from the clone's
+			// shape.
+			var surplusInputs = clonedProcess.InputOS.Count - InputOS.Count;
+			for (var i = 0; i < surplusInputs; i++)
+				clonedProcess.InputOS.RemoveAt(0);
 
-			// Remove(defaultInput), not RemoveAt(0): stays correct even if InputOS is ever reordered first.
-			if (defaultInput != null)
-				clonedProcess.InputOS.Remove(defaultInput);
-			// Defensive: Remove() already no-ops if defaultOutput isn't present.
-			if (defaultOutput != null && defaultOutput.IsValidObject)
-				clonedProcess.OutputOS.Remove(defaultOutput);
+			// Recompute rather than assume: removing the default input(s) above can itself cascade,
+			// via RemoveObjectSideEffectsInternal below, into also removing the default output, so
+			// OutputOS's own surplus must be measured after the input removal, not derived from it.
+			var surplusOutputs = clonedProcess.OutputOS.Count - OutputOS.Count;
+			for (var i = 0; i < surplusOutputs; i++)
+				clonedProcess.OutputOS.RemoveAt(0);
 		}
 		/// <summary>
 		/// Gets all of the feature constraints in this rule.

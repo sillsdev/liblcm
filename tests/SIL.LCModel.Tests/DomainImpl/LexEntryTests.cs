@@ -802,6 +802,47 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
+		/// Residual bug, found in adversarial review: an affix process whose InputOS/OutputOS are
+		/// legitimately empty (Clear(), no re-add -- legal at the LCM level; MoAffixProcess has no
+		/// IsFieldRequired guard forcing at least one of each) still ends up with a leaked default
+		/// PhVariable/MoCopyFromInput pair after MoveSenseToCopy. A "clonedProcess.Count > 1" guard
+		/// cannot tell "genuinely zero real content" (clone ends at 1: the seeded default) apart
+		/// from "one real item plus a leaked default" (also count 1 after a naive single strip) --
+		/// both look like count 1. The fix compares against the SOURCE's own (zero) counts instead.
+		/// </summary>
+		[Test]
+		public void MoveSenseToCopy_AffixProcessClone_ZeroRealContent_NoLeakedDefault()
+		{
+			ILexEntry entry = null;
+			ILexSense senseToMove = null;
+			IMoAffixProcess sourceProcess = null;
+			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor, () =>
+			{
+				entry = MakeAffixProcessEntry("ed", MoMorphTypeTags.kguidMorphSuffix);
+				sourceProcess = (IMoAffixProcess)entry.LexemeFormOA;
+				// Legitimately empty: Clear() with no re-add. Nothing at the LCM level requires a
+				// process affix to have any Input/Output content.
+				sourceProcess.InputOS.Clear();
+				sourceProcess.OutputOS.Clear();
+				MakeSense(entry, "stay");
+				senseToMove = MakeSense(entry, "move");
+			});
+
+			Assert.That(sourceProcess.InputOS.Count, Is.EqualTo(0));
+			Assert.That(sourceProcess.OutputOS.Count, Is.EqualTo(0));
+
+			entry.MoveSenseToCopy(senseToMove);
+
+			var newEntry = senseToMove.Entry;
+			var clonedProcess = newEntry.LexemeFormOA as IMoAffixProcess;
+			Assert.That(clonedProcess, Is.Not.Null);
+			Assert.That(clonedProcess.InputOS.Count, Is.EqualTo(0),
+				"a source with zero real inputs should clone to zero inputs, not one leaked default");
+			Assert.That(clonedProcess.OutputOS.Count, Is.EqualTo(0),
+				"a source with zero real outputs should clone to zero outputs, not one leaked default");
+		}
+
+		/// <summary>
 		/// Test PrimaryEntryRoots and the closely related NonTrivialEntryRoots.
 		/// </summary>
 		[Test]
