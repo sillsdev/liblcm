@@ -114,6 +114,12 @@ namespace SIL.LCModel.DomainImpl
 				Assert.That(clonedProcess.InputOS[1].ClassID, Is.EqualTo(PhVariableTags.kClassId));
 				Assert.That(clonedProcess.OutputOS[0].ClassID, Is.EqualTo(MoCopyFromInputTags.kClassId));
 				Assert.That(clonedProcess.OutputOS[1].ClassID, Is.EqualTo(MoModifyFromInputTags.kClassId));
+				var copy = (IMoCopyFromInput)clonedProcess.OutputOS[0];
+				var modify = (IMoModifyFromInput)clonedProcess.OutputOS[1];
+				Assert.That(copy.ContentRA, Is.SameAs(clonedProcess.InputOS[0]),
+					"reloaded copy mapping should reference the cloned natural-class input");
+				Assert.That(modify.ContentRA, Is.SameAs(clonedProcess.InputOS[1]),
+					"reloaded modify mapping should reference the cloned variable input");
 			}
 		}
 	}
