@@ -4048,34 +4048,21 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
-		/// Gives an object an opportunity to do any class-specific side-effect work when it has
-		/// been cloned with DomainServices.CopyObject. In this case, the creation of a MoAffixProcess
-		/// adds default initial values that are not wanted in the cloned copy, so PostClone()
-		/// removes them.
+		/// Removes initialization defaults from this affix process's clone.
 		/// </summary>
+		/// <param name="copyMap">The map from source object identifiers to their clones.</param>
 		public override void PostClone(Dictionary<int, ICmObject> copyMap)
 		{
-			// copyMap holds every object cloned in this CopyObject pass, not just this object's own
-			// clone (e.g. when several allomorphs of an entry are cloned together, it holds all of
-			// their clones and owned children). Look up only our own clone, and repair only it.
+			// The map can contain sibling clones; this source's identifier selects its own clone.
 			if (!copyMap.TryGetValue(Hvo, out var clone) || !(clone is IMoAffixProcess clonedProcess))
 				return;
 
-			// The clone was created via the normal factory, which seeds exactly one default
-			// PhVariable input and one default MoCopyFromInput output (SetDefaultValuesAfterInit)
-			// before this object's own real content was cloned and appended after them. So the
-			// clone should end up with exactly as many inputs/outputs as THIS (the source) has --
-			// not "count > 1", which can't distinguish a genuinely empty source (0 real inputs) from
-			// a single leaked default (both look like count 1). Remove exactly the surplus leading
-			// items, computed from the source's own counts, rather than guessing from the clone's
-			// shape.
+			// Factory-created clones contain leading defaults in addition to the source content.
 			var surplusInputs = clonedProcess.InputOS.Count - InputOS.Count;
 			for (var i = 0; i < surplusInputs; i++)
 				clonedProcess.InputOS.RemoveAt(0);
 
-			// Recompute rather than assume: removing the default input(s) above can itself cascade,
-			// via RemoveObjectSideEffectsInternal below, into also removing the default output, so
-			// OutputOS's own surplus must be measured after the input removal, not derived from it.
+			// Removing a default input can also remove its referenced default output.
 			var surplusOutputs = clonedProcess.OutputOS.Count - OutputOS.Count;
 			for (var i = 0; i < surplusOutputs; i++)
 				clonedProcess.OutputOS.RemoveAt(0);

@@ -12,12 +12,7 @@ using SIL.TestUtilities;
 namespace SIL.LCModel.DomainImpl
 {
 	/// <summary>
-	/// Case 5 from doc/bugs/affix-process-split-sense-stale-clone.md: a save/reload round trip
-	/// after LexEntry.MoveSenseToCopy, to check whether the affix-process clone bug is only an
-	/// in-memory artifact (masked by a warm cache) or actually persists to (and is reproduced
-	/// from) disk -- which is what the user's reported "comes back wrong later" symptom requires.
-	/// This uses a real file-backed cache (kXMLWithMemoryOnlyWsMgr), unlike the in-memory-only
-	/// fixture used by LexEntryTests.
+	/// Verifies affix-process clones using a file-backed cache.
 	/// </summary>
 	[TestFixture]
 	public class AffixProcessCloneRoundTripTests
@@ -41,12 +36,7 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
-		/// Build an entry with a non-trivial affix-process LexemeFormOA and two senses, split one
-		/// sense off with MoveSenseToCopy, save to disk, close the cache, reopen it from disk, and
-		/// re-examine the cloned affix process. If PostClone's repair is only cosmetically correct
-		/// in memory (e.g. because a UI slice renders the leaked default identically to real
-		/// content until a reload forces a rebuild), this is the test that would catch it; if the
-		/// in-memory clone is already wrong, this test proves the corruption is not transient.
+		/// Verifies a moved affix-process clone retains its rule after saving and reloading.
 		/// </summary>
 		[Test]
 		public void MoveSenseToCopy_AffixProcessClone_SurvivesSaveAndReload()
@@ -77,8 +67,7 @@ namespace SIL.LCModel.DomainImpl
 					process.MorphTypeRA = cache.ServiceLocator.GetInstance<IMoMorphTypeRepository>()
 						.GetObject(MoMorphTypeTags.kguidMorphSuffix);
 
-					// Non-trivial rule: real content the user would have entered, replacing the
-					// SetDefaultValuesAfterInit defaults.
+					// Distinct types make ordering and reference errors observable.
 					process.InputOS.Clear();
 					process.OutputOS.Clear();
 					var ctxt = cache.ServiceLocator.GetInstance<IPhSimpleContextNCFactory>().Create();

@@ -476,10 +476,6 @@ namespace SIL.LCModel.DomainImpl
 			return entry;
 		}
 
-		/// <summary>
-		/// Adds an affix-process allomorph (with a real, non-trivial form) to an entry's
-		/// AlternateFormsOS, distinct from a bare LexemeFormOA process.
-		/// </summary>
 		private IMoAffixProcess AddAffixProcessAllomorph(ILexEntry entry, string form)
 		{
 			var ws = Cache.DefaultVernWs;
@@ -490,9 +486,6 @@ namespace SIL.LCModel.DomainImpl
 			return process;
 		}
 
-		/// <summary>
-		/// Adds a plain stem allomorph to an entry's AlternateFormsOS.
-		/// </summary>
 		private IMoStemAllomorph AddStemAllomorph(ILexEntry entry, string form)
 		{
 			var ws = Cache.DefaultVernWs;
@@ -504,13 +497,7 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
-		/// Replaces the trivial default InputOS/OutputOS that SetDefaultValuesAfterInit seeds
-		/// with a small but non-trivial rule: Input = [naturalClassContext, variable],
-		/// Output = [CopyFromInput(naturalClassContext), ModifyFromInput(variable)].
-		/// The two InputOS entries are deliberately different classes (PhSimpleContextNC vs
-		/// PhVariable) so a leaked leading default PhVariable is easy to detect by ClassID,
-		/// and the two OutputOS entries are deliberately different classes (MoCopyFromInput vs
-		/// MoModifyFromInput) so a leaked leading default MoCopyFromInput is likewise detectable.
+		/// Replaces generated defaults with distinguishable rule content.
 		/// </summary>
 		private void MakeNonTrivialRuleContent(IMoAffixProcess process)
 		{
@@ -531,12 +518,7 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
-		/// Asserts that a clone produced from a MakeNonTrivialRuleContent source has exactly the
-		/// right objects in exactly the right order -- not merely the right counts. A mutant that
-		/// removes the wrong list element (e.g. index 1 instead of index 0) can leave counts and
-		/// simple containment checks satisfied while corrupting the actual content; checking
-		/// ClassID at each position, and checking that each mapping's ContentRA is reference-equal
-		/// to the specific InputOS slot it is supposed to target, catches that.
+		/// Verifies that a rule clone preserves item order and mapping references.
 		/// </summary>
 		private void AssertNonTrivialRuleClonedCorrectly(IMoAffixProcess clone)
 		{
@@ -566,11 +548,7 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
-		/// Case 1 from doc/bugs/affix-process-split-sense-stale-clone.md: single affix-process
-		/// allomorph (as LexemeFormOA) carrying a non-trivial rule. Because this process's own
-		/// clone is the very first entry PostClone's copyMap sees (it is cloned before any of its
-		/// own owned Input/Output children), defect (A)'s "return instead of continue" does not
-		/// get triggered in this configuration -- see case 2 for that.
+		/// Verifies moving a sense preserves a non-trivial lexeme-form affix process.
 		/// </summary>
 		[Test]
 		public void MoveSenseToCopy_AffixProcessClone_PreservesNonTrivialRule_SingleAllomorph()
@@ -598,12 +576,7 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
-		/// Case 2 from doc/bugs/affix-process-split-sense-stale-clone.md: a stem allomorph ordered
-		/// BEFORE the affix-process allomorph in AlternateFormsOS. Both allomorphs are cloned in a
-		/// single CopyObject batch (one shared copyMap), so the stem's clone -- which is not an
-		/// IMoAffixProcess -- lands in the map ahead of the process's own clone. Defect (A)'s
-		/// "return" (instead of "continue") then bails out of the whole loop before ever reaching
-		/// the affix process, so its defaults are never stripped at all.
+		/// Verifies moving a sense preserves an affix process preceded by a stem allomorph.
 		/// </summary>
 		[Test]
 		public void MoveSenseToCopy_AffixProcessClone_StemAllomorphBeforeProcess_PreservesRealContent()
@@ -632,14 +605,7 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
-		/// Case 3 from doc/bugs/affix-process-split-sense-stale-clone.md: TWO affix-process
-		/// allomorphs cloned in the same batch. Defect (B): PostClone is invoked once per
-		/// top-level source object, but each invocation walks the ENTIRE shared copyMap from the
-		/// start rather than looking up only its own clone. The first allomorph's clone sits at
-		/// the front of the map, so every invocation re-strips index 0 from it -- the first
-		/// invocation correctly removes its leaked default, subsequent invocations incorrectly
-		/// remove real content -- while the second allomorph's own defaults are never reached
-		/// (the loop returns as soon as it hits the first allomorph's non-process owned child).
+		/// Verifies moving a sense preserves two affix-process allomorphs cloned together.
 		/// </summary>
 		[Test]
 		public void MoveSenseToCopy_AffixProcessClone_TwoProcessAllomorphs_NeitherLosesRealContent()
@@ -668,20 +634,12 @@ namespace SIL.LCModel.DomainImpl
 			Assert.That(clonedA, Is.Not.Null);
 			Assert.That(clonedB, Is.Not.Null);
 
-			// Identity-at-position, not just counts: a mutant that removes the wrong list element
-			// (e.g. index 1 instead of index 0) can leave clonedA.InputOS.Count == sourceA.InputOS.Count
-			// while a leaked default PhVariable survives at index 0 and a real item is gone --
-			// AssertNonTrivialRuleClonedCorrectly checks the actual ClassID/identity at each slot.
 			AssertNonTrivialRuleClonedCorrectly(clonedA);
 			AssertNonTrivialRuleClonedCorrectly(clonedB);
 		}
 
 		/// <summary>
-		/// Case 4 from doc/bugs/affix-process-split-sense-stale-clone.md: every cloned
-		/// MoCopyFromInput/MoModifyFromInput ContentRA must point into the CLONE's own InputOS,
-		/// never into the source's InputOS (nor -- since defect (B) can delete a clone's real
-		/// input out from under a surviving mapping -- into thin air). Uses the same two-process
-		/// setup as case 3, since that is where PostClone does the most damage.
+		/// Verifies cloned rule mappings refer to inputs owned by the same clone.
 		/// </summary>
 		[Test]
 		public void MoveSenseToCopy_AffixProcessClone_ContentRAPointsIntoOwnClonesInputOS()
@@ -707,8 +665,6 @@ namespace SIL.LCModel.DomainImpl
 			var clonedA = (IMoAffixProcess)newEntry.AlternateFormsOS[0];
 			var clonedB = (IMoAffixProcess)newEntry.AlternateFormsOS[1];
 
-			// Identity-at-position first: confirms each clone's own InputOS/OutputOS is exactly
-			// right (no leaked default swapped in for a real item at the same slot count).
 			AssertNonTrivialRuleClonedCorrectly(clonedA);
 			AssertNonTrivialRuleClonedCorrectly(clonedB);
 
@@ -735,15 +691,7 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
-		/// A third clone path, found in adversarial review, that neither the original bug report
-		/// nor the four tests above exercise: MoveSenseToCopy reaches MoAffixProcess a SECOND time
-		/// through CreateMatchingAllomorphInTargetEntry (OverridesLing_Lex.cs:1803), called from
-		/// UpdateReferencesForSenseMove (:1758-1786), whenever a WfiMorphBundle references the moved
-		/// sense's morph. IsMatchingAllomorph compares Form text across writing systems; an affix
-		/// process's Form is normally left blank (the model's own doc comment says Form is
-		/// undefined for process affixes), so it never matches the already-cloned LexemeFormOA, and
-		/// the failover clones the SOURCE process a second, independent time via its own
-		/// CopyObject&lt;IMoForm&gt; call, landing in AlternateFormsOS rather than LexemeFormOA.
+		/// Verifies a moved sense preserves the affix process used by its morph bundle.
 		/// </summary>
 		[Test]
 		public void MoveSenseToCopy_AffixProcessClone_ViaMorphBundleFailoverPath_PreservesNonTrivialRule()
@@ -756,9 +704,7 @@ namespace SIL.LCModel.DomainImpl
 				entry = MakeEntry();
 				sourceProcess = Cache.ServiceLocator.GetInstance<IMoAffixProcessFactory>().Create();
 				entry.LexemeFormOA = sourceProcess;
-				// Deliberately leave Form blank: that is the normal state for a process affix, and
-				// it is exactly what makes IsMatchingAllomorph fail to match the already-cloned
-				// LexemeFormOA, forcing the CreateMatchingAllomorphInTargetEntry failover.
+				// A blank form exercises creation of a matching allomorph for the morph bundle.
 				sourceProcess.MorphTypeRA = Cache.ServiceLocator.GetInstance<IMoMorphTypeRepository>()
 					.GetObject(MoMorphTypeTags.kguidMorphSuffix);
 				MakeNonTrivialRuleContent(sourceProcess);
@@ -791,24 +737,14 @@ namespace SIL.LCModel.DomainImpl
 			}
 			finally
 			{
-				// Pre-existing bug, reproducible identically before and after this fix: undoing the
-				// WfiMorphBundle.MorphRA reference changes this test's setup UOW recorded throws
-				// KeyNotFoundException out of LcmAtomicRefPropertyChanged.Undo() during
-				// TestTearDown's UndoAll(). Committing here -- which is exactly what UndoAll() itself
-				// does at its own end -- clears the undo stack first, so that unrelated crash can't
-				// happen and mask this test's own pass/fail.
+				// Commit because undoing the morph-bundle references throws from
+				// LcmAtomicRefPropertyChanged.Undo during teardown.
 				Cache.ActionHandlerAccessor.Commit();
 			}
 		}
 
 		/// <summary>
-		/// Residual bug, found in adversarial review: an affix process whose InputOS/OutputOS are
-		/// legitimately empty (Clear(), no re-add -- legal at the LCM level; MoAffixProcess has no
-		/// IsFieldRequired guard forcing at least one of each) still ends up with a leaked default
-		/// PhVariable/MoCopyFromInput pair after MoveSenseToCopy. A "clonedProcess.Count > 1" guard
-		/// cannot tell "genuinely zero real content" (clone ends at 1: the seeded default) apart
-		/// from "one real item plus a leaked default" (also count 1 after a naive single strip) --
-		/// both look like count 1. The fix compares against the SOURCE's own (zero) counts instead.
+		/// Verifies moving a sense preserves an affix process with empty rule content.
 		/// </summary>
 		[Test]
 		public void MoveSenseToCopy_AffixProcessClone_ZeroRealContent_NoLeakedDefault()
@@ -820,8 +756,6 @@ namespace SIL.LCModel.DomainImpl
 			{
 				entry = MakeAffixProcessEntry("ed", MoMorphTypeTags.kguidMorphSuffix);
 				sourceProcess = (IMoAffixProcess)entry.LexemeFormOA;
-				// Legitimately empty: Clear() with no re-add. Nothing at the LCM level requires a
-				// process affix to have any Input/Output content.
 				sourceProcess.InputOS.Clear();
 				sourceProcess.OutputOS.Clear();
 				MakeSense(entry, "stay");
