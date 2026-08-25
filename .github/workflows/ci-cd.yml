@@ -23,6 +23,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-22.04]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
     env:
       DOTNET_NOLOGO: true
 
@@ -109,6 +110,8 @@ jobs:
   publish-test-results:
     runs-on: ubuntu-22.04
     needs: build
+    # Normally completes in <30s.
+    timeout-minutes: 5
     if: always()
     steps:
       - name: Download test results
