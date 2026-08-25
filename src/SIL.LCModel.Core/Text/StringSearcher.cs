@@ -231,7 +231,8 @@ namespace SIL.LCModel.Core.Text
 				}
 
 				case SearchType.Substring:
-					GetRawIndex(indexId, wsId).Add(new SubstringEntry(item, text));
+					// Store NFD so Search can compare same-form strings.
+					GetRawIndex(indexId, wsId).Add(new SubstringEntry(item, text.Normalize(NormalizationForm.FormD)));
 					break;
 			}
 		}
@@ -316,13 +317,14 @@ namespace SIL.LCModel.Core.Text
 						if (!m_rawIndices.TryGetValue(Tuple.Create(indexId, wsId), out raw))
 							return Enumerable.Empty<T>();
 						CompareInfo ci = CultureInfo.InvariantCulture.CompareInfo;
+						string query = text.Normalize(NormalizationForm.FormD);
 						// Fold diacritics only when the search term itself has none: an unmarked query
 						// matches accented text ("cafe" finds "café"), but a query that includes an accent
 						// is treated as specific ("café" does not match a bare "cafe").
-						CompareOptions options = ContainsDiacritic(text)
+						CompareOptions options = ContainsDiacritic(query)
 							? CompareOptions.IgnoreCase
 							: CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace;
-						return raw.Where(entry => ci.IndexOf(entry.Text, text, options) >= 0).Select(entry => entry.Item);
+						return raw.Where(entry => ci.IndexOf(entry.Text, query, options) >= 0).Select(entry => entry.Item);
 					}
 			}
 
