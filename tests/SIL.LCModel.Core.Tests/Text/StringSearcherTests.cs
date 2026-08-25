@@ -85,12 +85,13 @@ namespace SIL.LCModel.Core.Text
 		}
 
 		/// <summary>
-		/// Tests prefix matching.
+		/// Builds the shared multi-writing-system corpus used by both <see cref="FullTextSearchTest"/>
+		/// and <see cref="SubstringResultsIncludeAllFullTextResults"/>. Item 2 deliberately mixes a
+		/// French run and an English run.
 		/// </summary>
-		[Test]
-		public void FullTextSearchTest()
+		private StringSearcher<int> BuildMultiRunCorpus(SearchType type)
 		{
-			var searcher = new StringSearcher<int>(SearchType.FullText, m_wsManager);
+			var searcher = new StringSearcher<int>(type, m_wsManager);
 			searcher.Add(0, 0, TsStringUtils.MakeString("test", m_enWs));
 			searcher.Add(1, 0, TsStringUtils.MakeString("c'est une phrase", m_frWs));
 			ITsIncStrBldr tisb = TsStringUtils.MakeIncStrBldr();
@@ -100,11 +101,172 @@ namespace SIL.LCModel.Core.Text
 			tisb.Append("We use it for testing purposes.");
 			searcher.Add(2, 0, tisb.GetString());
 			searcher.Add(3, 0, TsStringUtils.MakeString("Hello, how are you doing? I am doing fine. That is good to know.", m_enWs));
+			return searcher;
+		}
+
+		/// <summary>
+		/// The queries exercised by <see cref="FullTextSearchTest"/>, so the substring-superset test
+		/// covers exactly the same scenarios. These are all single tokens or contiguous, in-order
+		/// phrases, and that is deliberate: substring is a superset of full-text ONLY for those shapes
+		/// (full-text ANDs word tokens regardless of order, while substring needs the whole query to
+		/// appear contiguously). Adding an out-of-order multi-word query here would make
+		/// <see cref="SubstringResultsIncludeAllFullTextResults"/> fail; that boundary is demonstrated
+		/// by <see cref="Substring_isNotASupersetForOutOfOrderMultiWordQueries"/>.
+		/// </summary>
+		private ITsString[] FullTextQueries()
+		{
+			return new[]
+			{
+				TsStringUtils.MakeString("test", m_enWs),
+				TsStringUtils.MakeString("c'est une", m_frWs),
+				TsStringUtils.MakeString("t", m_enWs),
+				TsStringUtils.MakeString("testing purpose", m_enWs)
+			};
+		}
+
+		/// <summary>
+		/// Tests full-text (word/prefix) matching.
+		/// </summary>
+		[Test]
+		public void FullTextSearchTest()
+		{
+			var searcher = BuildMultiRunCorpus(SearchType.FullText);
 
 			CheckSearch(searcher, TsStringUtils.MakeString("test", m_enWs), new[] {0, 2});
 			CheckSearch(searcher, TsStringUtils.MakeString("c'est une", m_frWs), new[] {1, 2});
 			CheckSearch(searcher, TsStringUtils.MakeString("t", m_enWs), new[] {0, 2, 3});
 			CheckSearch(searcher, TsStringUtils.MakeString("testing purpose", m_enWs), new[] {2});
+		}
+
+		/// <summary>
+		/// Tests substring (match-anywhere) matching, including infix, case- and diacritic-insensitivity.
+		/// </summary>
+		[Test]
+		public void SubstringSearchTest()
+		{
+			var searcher = new StringSearcher<int>(SearchType.Substring, m_wsManager);
+			searcher.Add(0, 0, TsStringUtils.MakeString("language", m_enWs));
+			searcher.Add(1, 0, TsStringUtils.MakeString("gauge", m_enWs));
+			searcher.Add(2, 0, TsStringUtils.MakeString("résumé", m_frWs));
+			searcher.Add(3, 0, TsStringUtils.MakeString("zebra", m_enWs));
+
+			// infix match: "uage" is not a prefix of "language" but is a substring (fails under Prefix/FullText).
+			CheckSearch(searcher, TsStringUtils.MakeString("uage", m_enWs), new[] {0});
+			// interior substring
+			CheckSearch(searcher, TsStringUtils.MakeString("gua", m_enWs), new[] {0});
+			CheckSearch(searcher, TsStringUtils.MakeString("aug", m_enWs), new[] {1});
+			// case-insensitive
+			CheckSearch(searcher, TsStringUtils.MakeString("LANG", m_enWs), new[] {0});
+			// diacritic-insensitive
+			CheckSearch(searcher, TsStringUtils.MakeString("resume", m_frWs), new[] {2});
+			// whole-string still matches
+			CheckSearch(searcher, TsStringUtils.MakeString("zebra", m_enWs), new[] {3});
+			// no match anywhere
+			CheckNoResultsSearch(searcher, TsStringUtils.MakeString("xyz", m_enWs));
+		}
+
+		/// <summary>
+		/// Substring search must not miss anything a full-text search would find on the same corpus and
+		/// queries: its result set is a near superset 
+		/// (see <see cref="Substring_isNotASupersetForOutOfOrderMultiWordQueries"/>) 
+		/// of the full-text result set. This guards the promise that switching Find Lexical Entry to 
+		/// substring never drops a result that used to appear.
+		/// (This is a superset, not equality: substring also returns extra infix matches.)
+		/// </summary>
+		[Test]
+		public void SubstringResultsIncludeAllFullTextResults()
+		{
+			var fullText = BuildMultiRunCorpus(SearchType.FullText);
+			var substring = BuildMultiRunCorpus(SearchType.Substring);
+
+			foreach (ITsString query in FullTextQueries())
+			{
+				// StringSearcher.Search can return the same item several times (once per matching word);
+				// the real consumer (SearchEngine) dedupes via a HashSet, so compare as sets here too.
+				int[] fullTextResults = fullText.Search(0, query).Distinct().ToArray();
+				Assert.That(fullTextResults, Is.Not.Empty,
+					"query '" + query.Text + "' should match something under full-text (otherwise the check is vacuous)");
+				Assert.That(substring.Search(0, query).Distinct(), Is.SupersetOf(fullTextResults),
+					"substring dropped a full-text match for query '" + query.Text + "'");
+			}
+		}
+
+		/// <summary>
+		/// Pins the boundary of the superset guarantee: it holds only for single-token or contiguous,
+		/// in-order queries. A multi-word query whose words appear OUT OF ORDER matches under full-text
+		/// (which ANDs the word tokens regardless of order) but NOT under substring (which needs the
+		/// whole query to appear contiguously). This is the concrete case behind the scoping note on
+		/// <see cref="FullTextQueries"/>.
+		/// </summary>
+		[Test]
+		public void Substring_isNotASupersetForOutOfOrderMultiWordQueries()
+		{
+			var fullText = new StringSearcher<int>(SearchType.FullText, m_wsManager);
+			var substring = new StringSearcher<int>(SearchType.Substring, m_wsManager);
+			ITsString text = TsStringUtils.MakeString("alpha beta gamma", m_enWs);
+			fullText.Add(0, 0, text);
+			substring.Add(0, 0, text);
+
+			// Words present but in a different order than the text.
+			ITsString outOfOrder = TsStringUtils.MakeString("gamma alpha", m_enWs);
+
+			Assert.That(fullText.Search(0, outOfOrder), Does.Contain(0),
+				"full-text ANDs the word tokens, so it matches the words in any order");
+			Assert.That(substring.Search(0, outOfOrder), Does.Not.Contain(0),
+				"substring needs the query contiguous, so out-of-order words do not match");
+		}
+
+		/// <summary>
+		/// Substring diacritic matching is asymmetric. An unmarked query folds
+		/// diacritics (so it matches accented text), but a query that itself contains an accent is treated
+		/// as specific -- it matches only that accent, not the bare letter or a different accent.
+		/// </summary>
+		[Test]
+		public void SubstringDiacriticMatch_isAsymmetric()
+		{
+			// Precomposed accented letters, built from code points to keep the source ASCII.
+			string aTilde = ((char)0x00E3).ToString(); // a with tilde
+			string eAcute = ((char)0x00E9).ToString(); // e with acute
+			string eGrave = ((char)0x00E8).ToString(); // e with grave
+
+			var searcher = new StringSearcher<int>(SearchType.Substring, m_wsManager);
+			searcher.Add(0, 0, TsStringUtils.MakeString(aTilde + "pple", m_enWs)); // accented "apple"
+			searcher.Add(1, 0, TsStringUtils.MakeString("apple", m_enWs));         // plain "apple"
+			searcher.Add(2, 0, TsStringUtils.MakeString("caf" + eAcute, m_enWs));  // "cafe" with acute
+			searcher.Add(3, 0, TsStringUtils.MakeString("caf" + eGrave, m_enWs));  // "cafe" with grave
+
+			// Unmarked query folds diacritics: "ap" matches both the accented and the plain word.
+			CheckSearch(searcher, TsStringUtils.MakeString("ap", m_enWs), new[] {0, 1});
+			// A marked query matches its own accented text...
+			CheckSearch(searcher, TsStringUtils.MakeString(aTilde + "p", m_enWs), new[] {0});
+			// ...but not the bare, unaccented text.
+			Assert.That(searcher.Search(0, TsStringUtils.MakeString(aTilde, m_enWs)), Does.Not.Contain(1),
+				"an accented query should not match unaccented text");
+			// A marked query matches only the same accent, not a different one.
+			CheckSearch(searcher, TsStringUtils.MakeString("caf" + eAcute, m_enWs), new[] {2});
+			Assert.That(searcher.Search(0, TsStringUtils.MakeString("caf" + eAcute, m_enWs)), Does.Not.Contain(3),
+				"one accent should not match a different accent");
+		}
+
+		/// <summary>
+		/// Substring matching is insensitive to Unicode normalization: a composed character and its
+		/// decomposed (base + combining mark) form match each other, in either direction.
+		/// </summary>
+		[Test]
+		public void SubstringMatch_isNormalizationInsensitive()
+		{
+			// Cyrillic short-I: one precomposed code point vs. base + combining breve.
+			string composed = ((char)0x0439).ToString();
+			string decomposed = ((char)0x0438).ToString() + ((char)0x0306).ToString();
+			Assert.That(composed, Is.Not.EqualTo(decomposed), "the two forms should differ byte-for-byte");
+
+			var indexComposed = new StringSearcher<int>(SearchType.Substring, m_wsManager);
+			indexComposed.Add(0, 0, TsStringUtils.MakeString(composed, m_enWs));
+			CheckSearch(indexComposed, TsStringUtils.MakeString(decomposed, m_enWs), new[] {0});
+
+			var indexDecomposed = new StringSearcher<int>(SearchType.Substring, m_wsManager);
+			indexDecomposed.Add(0, 0, TsStringUtils.MakeString(decomposed, m_enWs));
+			CheckSearch(indexDecomposed, TsStringUtils.MakeString(composed, m_enWs), new[] {0});
 		}
 	}
 }
