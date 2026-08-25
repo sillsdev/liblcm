@@ -476,6 +476,306 @@ namespace SIL.LCModel.DomainImpl
 			return entry;
 		}
 
+		private IMoAffixProcess AddAffixProcessAllomorph(ILexEntry entry, string form)
+		{
+			var ws = Cache.DefaultVernWs;
+			var process = Cache.ServiceLocator.GetInstance<IMoAffixProcessFactory>().Create();
+			entry.AlternateFormsOS.Add(process);
+			process.Form.set_String(ws, TsStringUtils.MakeString(form, ws));
+			process.MorphTypeRA = Cache.ServiceLocator.GetInstance<IMoMorphTypeRepository>().GetObject(MoMorphTypeTags.kguidMorphSuffix);
+			return process;
+		}
+
+		private IMoStemAllomorph AddStemAllomorph(ILexEntry entry, string form)
+		{
+			var ws = Cache.DefaultVernWs;
+			var stem = Cache.ServiceLocator.GetInstance<IMoStemAllomorphFactory>().Create();
+			entry.AlternateFormsOS.Add(stem);
+			stem.Form.set_String(ws, TsStringUtils.MakeString(form, ws));
+			stem.MorphTypeRA = Cache.ServiceLocator.GetInstance<IMoMorphTypeRepository>().GetObject(MoMorphTypeTags.kguidMorphStem);
+			return stem;
+		}
+
+		/// <summary>
+		/// Replaces generated defaults with distinguishable rule content.
+		/// </summary>
+		private void MakeNonTrivialRuleContent(IMoAffixProcess process)
+		{
+			process.InputOS.Clear();
+			process.OutputOS.Clear();
+
+			var ctxt = Cache.ServiceLocator.GetInstance<IPhSimpleContextNCFactory>().Create();
+			process.InputOS.Add(ctxt);
+			var var1 = Cache.ServiceLocator.GetInstance<IPhVariableFactory>().Create();
+			process.InputOS.Add(var1);
+
+			var copy = Cache.ServiceLocator.GetInstance<IMoCopyFromInputFactory>().Create();
+			process.OutputOS.Add(copy);
+			copy.ContentRA = ctxt;
+			var modify = Cache.ServiceLocator.GetInstance<IMoModifyFromInputFactory>().Create();
+			process.OutputOS.Add(modify);
+			modify.ContentRA = var1;
+		}
+
+		/// <summary>
+		/// Verifies that a rule clone preserves item order and mapping references.
+		/// </summary>
+		private void AssertNonTrivialRuleClonedCorrectly(IMoAffixProcess clone)
+		{
+			Assert.That(clone.InputOS.Count, Is.EqualTo(2),
+				"clone should have exactly the two real inputs: no leaked default, no lost real content");
+			Assert.That(clone.InputOS[0].ClassID, Is.EqualTo(PhSimpleContextNCTags.kClassId),
+				"position 0 must be the real natural-class context -- not a leaked default PhVariable, " +
+				"and not some other real item shifted into this slot by removing the wrong element");
+			Assert.That(clone.InputOS[1].ClassID, Is.EqualTo(PhVariableTags.kClassId),
+				"position 1 must be the real variable");
+
+			Assert.That(clone.OutputOS.Count, Is.EqualTo(2),
+				"clone should have exactly the two real outputs: no leaked default, no lost real content");
+			Assert.That(clone.OutputOS[0].ClassID, Is.EqualTo(MoCopyFromInputTags.kClassId),
+				"position 0 must be the real copy-mapping");
+			Assert.That(clone.OutputOS[1].ClassID, Is.EqualTo(MoModifyFromInputTags.kClassId),
+				"position 1 must be the real modify-mapping");
+
+			var copy = (IMoCopyFromInput)clone.OutputOS[0];
+			var modify = (IMoModifyFromInput)clone.OutputOS[1];
+			Assert.That(copy.ContentRA, Is.EqualTo(clone.InputOS[0]),
+				"the copy-mapping's ContentRA must be exactly this clone's own natural-class input object, " +
+				"identified by reference, not merely 'some' member of InputOS");
+			Assert.That(modify.ContentRA, Is.EqualTo(clone.InputOS[1]),
+				"the modify-mapping's ContentRA must be exactly this clone's own variable input object, " +
+				"identified by reference, not merely 'some' member of InputOS");
+		}
+
+		/// <summary>
+		/// Verifies moving a sense preserves a non-trivial lexeme-form affix process.
+		/// </summary>
+		[Test]
+		public void MoveSenseToCopy_AffixProcessClone_PreservesNonTrivialRule_SingleAllomorph()
+		{
+			ILexEntry entry = null;
+			ILexSense senseToMove = null;
+			IMoAffixProcess sourceProcess = null;
+			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor, () =>
+			{
+				entry = MakeAffixProcessEntry("ed", MoMorphTypeTags.kguidMorphSuffix);
+				sourceProcess = (IMoAffixProcess)entry.LexemeFormOA;
+				MakeNonTrivialRuleContent(sourceProcess);
+				MakeSense(entry, "stay");
+				senseToMove = MakeSense(entry, "move");
+			});
+
+			entry.MoveSenseToCopy(senseToMove);
+
+			var newEntry = senseToMove.Entry;
+			Assert.That(newEntry, Is.Not.EqualTo(entry));
+			var clonedProcess = newEntry.LexemeFormOA as IMoAffixProcess;
+			Assert.That(clonedProcess, Is.Not.Null, "clone should still be an affix process");
+
+			AssertNonTrivialRuleClonedCorrectly(clonedProcess);
+		}
+
+		/// <summary>
+		/// Verifies moving a sense preserves an affix process preceded by a stem allomorph.
+		/// </summary>
+		[Test]
+		public void MoveSenseToCopy_AffixProcessClone_StemAllomorphBeforeProcess_PreservesRealContent()
+		{
+			ILexEntry entry = null;
+			ILexSense senseToMove = null;
+			IMoAffixProcess sourceProcess = null;
+			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor, () =>
+			{
+				entry = MakeEntry();
+				AddStemAllomorph(entry, "stemA");
+				sourceProcess = AddAffixProcessAllomorph(entry, "ed");
+				MakeNonTrivialRuleContent(sourceProcess);
+				MakeSense(entry, "stay");
+				senseToMove = MakeSense(entry, "move");
+			});
+
+			entry.MoveSenseToCopy(senseToMove);
+
+			var newEntry = senseToMove.Entry;
+			Assert.That(newEntry.AlternateFormsOS.Count, Is.EqualTo(2), "both allomorphs should have been cloned");
+			var clonedProcess = newEntry.AlternateFormsOS[1] as IMoAffixProcess;
+			Assert.That(clonedProcess, Is.Not.Null, "second allomorph clone should still be an affix process");
+
+			AssertNonTrivialRuleClonedCorrectly(clonedProcess);
+		}
+
+		/// <summary>
+		/// Verifies moving a sense preserves two affix-process allomorphs cloned together.
+		/// </summary>
+		[Test]
+		public void MoveSenseToCopy_AffixProcessClone_TwoProcessAllomorphs_NeitherLosesRealContent()
+		{
+			ILexEntry entry = null;
+			ILexSense senseToMove = null;
+			IMoAffixProcess sourceA = null;
+			IMoAffixProcess sourceB = null;
+			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor, () =>
+			{
+				entry = MakeEntry();
+				sourceA = AddAffixProcessAllomorph(entry, "edA");
+				MakeNonTrivialRuleContent(sourceA);
+				sourceB = AddAffixProcessAllomorph(entry, "edB");
+				MakeNonTrivialRuleContent(sourceB);
+				MakeSense(entry, "stay");
+				senseToMove = MakeSense(entry, "move");
+			});
+
+			entry.MoveSenseToCopy(senseToMove);
+
+			var newEntry = senseToMove.Entry;
+			Assert.That(newEntry.AlternateFormsOS.Count, Is.EqualTo(2), "both allomorphs should have been cloned");
+			var clonedA = newEntry.AlternateFormsOS[0] as IMoAffixProcess;
+			var clonedB = newEntry.AlternateFormsOS[1] as IMoAffixProcess;
+			Assert.That(clonedA, Is.Not.Null);
+			Assert.That(clonedB, Is.Not.Null);
+
+			AssertNonTrivialRuleClonedCorrectly(clonedA);
+			AssertNonTrivialRuleClonedCorrectly(clonedB);
+		}
+
+		/// <summary>
+		/// Verifies cloned rule mappings refer to inputs owned by the same clone.
+		/// </summary>
+		[Test]
+		public void MoveSenseToCopy_AffixProcessClone_ContentRAPointsIntoOwnClonesInputOS()
+		{
+			ILexEntry entry = null;
+			ILexSense senseToMove = null;
+			IMoAffixProcess sourceA = null;
+			IMoAffixProcess sourceB = null;
+			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor, () =>
+			{
+				entry = MakeEntry();
+				sourceA = AddAffixProcessAllomorph(entry, "edA");
+				MakeNonTrivialRuleContent(sourceA);
+				sourceB = AddAffixProcessAllomorph(entry, "edB");
+				MakeNonTrivialRuleContent(sourceB);
+				MakeSense(entry, "stay");
+				senseToMove = MakeSense(entry, "move");
+			});
+
+			entry.MoveSenseToCopy(senseToMove);
+
+			var newEntry = senseToMove.Entry;
+			var clonedA = (IMoAffixProcess)newEntry.AlternateFormsOS[0];
+			var clonedB = (IMoAffixProcess)newEntry.AlternateFormsOS[1];
+
+			AssertNonTrivialRuleClonedCorrectly(clonedA);
+			AssertNonTrivialRuleClonedCorrectly(clonedB);
+
+			foreach (var clone in new[] { clonedA, clonedB })
+			{
+				foreach (var mapping in clone.OutputOS)
+				{
+					IPhContextOrVar content = null;
+					if (mapping is IMoCopyFromInput cfi)
+						content = cfi.ContentRA;
+					else if (mapping is IMoModifyFromInput mfi)
+						content = mfi.ContentRA;
+					if (content == null)
+						continue;
+
+					Assert.That(clone.InputOS.Contains(content), Is.True,
+						"a rule-mapping's ContentRA must point into its OWN clone's InputOS");
+					Assert.That(sourceA.InputOS.Contains(content), Is.False,
+						"a cloned rule-mapping's ContentRA must never point into the source's InputOS");
+					Assert.That(sourceB.InputOS.Contains(content), Is.False,
+						"a cloned rule-mapping's ContentRA must never point into the source's InputOS");
+				}
+			}
+		}
+
+		/// <summary>
+		/// Verifies a moved sense preserves the affix process used by its morph bundle.
+		/// </summary>
+		[Test]
+		public void MoveSenseToCopy_AffixProcessClone_ViaMorphBundleFailoverPath_PreservesNonTrivialRule()
+		{
+			ILexEntry entry = null;
+			ILexSense senseToMove = null;
+			IMoAffixProcess sourceProcess = null;
+			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor, () =>
+			{
+				entry = MakeEntry();
+				sourceProcess = Cache.ServiceLocator.GetInstance<IMoAffixProcessFactory>().Create();
+				entry.LexemeFormOA = sourceProcess;
+				// A blank form exercises creation of a matching allomorph for the morph bundle.
+				sourceProcess.MorphTypeRA = Cache.ServiceLocator.GetInstance<IMoMorphTypeRepository>()
+					.GetObject(MoMorphTypeTags.kguidMorphSuffix);
+				MakeNonTrivialRuleContent(sourceProcess);
+
+				MakeSense(entry, "stay");
+				senseToMove = MakeSense(entry, "move");
+
+				var wf = MakeWordform("ted");
+				MakeAnalysis(wf, senseToMove);
+			});
+
+			entry.MoveSenseToCopy(senseToMove);
+
+			try
+			{
+				var newEntry = senseToMove.Entry;
+				Assert.That(newEntry, Is.Not.EqualTo(entry));
+
+				var mb = (IWfiMorphBundle)senseToMove.ReferringObjects.First(o => o is IWfiMorphBundle);
+				var failoverClone = mb.MorphRA as IMoAffixProcess;
+				Assert.That(failoverClone, Is.Not.Null,
+					"the blank-Form failover should have created a second clone of the affix process");
+				Assert.That(newEntry.AlternateFormsOS.Contains(failoverClone), Is.True,
+					"the failover clone should be a real allomorph on the new entry");
+				Assert.That(failoverClone, Is.Not.EqualTo(newEntry.LexemeFormOA),
+					"the failover path creates a SECOND, independent clone, distinct from the one made " +
+					"by the normal LexemeFormOA clone path");
+
+				AssertNonTrivialRuleClonedCorrectly(failoverClone);
+			}
+			finally
+			{
+				// Commit because undoing the morph-bundle references throws from
+				// LcmAtomicRefPropertyChanged.Undo during teardown.
+				Cache.ActionHandlerAccessor.Commit();
+			}
+		}
+
+		/// <summary>
+		/// Verifies moving a sense preserves an affix process with empty rule content.
+		/// </summary>
+		[Test]
+		public void MoveSenseToCopy_AffixProcessClone_ZeroRealContent_NoLeakedDefault()
+		{
+			ILexEntry entry = null;
+			ILexSense senseToMove = null;
+			IMoAffixProcess sourceProcess = null;
+			UndoableUnitOfWorkHelper.Do("doit", "undoit", Cache.ActionHandlerAccessor, () =>
+			{
+				entry = MakeAffixProcessEntry("ed", MoMorphTypeTags.kguidMorphSuffix);
+				sourceProcess = (IMoAffixProcess)entry.LexemeFormOA;
+				sourceProcess.InputOS.Clear();
+				sourceProcess.OutputOS.Clear();
+				MakeSense(entry, "stay");
+				senseToMove = MakeSense(entry, "move");
+			});
+
+			Assert.That(sourceProcess.InputOS.Count, Is.EqualTo(0));
+			Assert.That(sourceProcess.OutputOS.Count, Is.EqualTo(0));
+
+			entry.MoveSenseToCopy(senseToMove);
+
+			var newEntry = senseToMove.Entry;
+			var clonedProcess = newEntry.LexemeFormOA as IMoAffixProcess;
+			Assert.That(clonedProcess, Is.Not.Null);
+			Assert.That(clonedProcess.InputOS.Count, Is.EqualTo(0),
+				"a source with zero real inputs should clone to zero inputs, not one leaked default");
+			Assert.That(clonedProcess.OutputOS.Count, Is.EqualTo(0),
+				"a source with zero real outputs should clone to zero outputs, not one leaked default");
+		}
+
 		/// <summary>
 		/// Test PrimaryEntryRoots and the closely related NonTrivialEntryRoots.
 		/// </summary>
