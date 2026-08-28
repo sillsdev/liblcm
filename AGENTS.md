@@ -25,11 +25,6 @@ CI runs on Windows and Ubuntu. See .github/workflows/ci-cd.yml:
 
 Always mirror this sequence when validating a change locally.
 
-### Local build scripts (not validated here)
-- Windows: build.cmd [Debug|Release] [Target] (uses MSBuild on LCM.sln).
-- Linux: build.sh [Debug|Release] [Target] (sources environ, uses msbuild on LCM.sln).
-These scripts call build/LCM.proj targets (Build/Test/Pack). If you use them, always run from repo root.
-
 ### Tests per README (not validated here)
 - Windows, ReSharper: open LCM.sln and “Run Unit Tests”.
 - Windows, no ReSharper: use MSBuild, then run nunit3-console.exe from artifacts/Debug/net462.
@@ -53,8 +48,6 @@ No command timeouts were observed.
 
 ### Key solution and build files
 - LCM.sln: solution entry point.
-- build.cmd / build.sh: wrapper scripts for MSBuild.
-- build/LCM.proj: orchestrated build/test/pack, uses NUnit console on output/ for legacy builds.
 - Directory.Build.props / Directory.Build.targets: repo-wide build settings and packaging.
 - Directory.Solution.props / Directory.Solution.targets: solution-level defaults.
 - GitVersion.yml: GitVersion configuration.
@@ -94,8 +87,6 @@ Code generation targets to know about:
 - .editorconfig
 - .gitattributes
 - .gitignore
-- build.cmd
-- build.sh
 - CHANGELOG.md
 - Directory.Build.props
 - Directory.Build.targets
@@ -113,13 +104,12 @@ Code generation targets to know about:
 - .github/ (GitHub Actions workflow)
 - .vscode/ (VS settings)
 - artifacts/ (build outputs)
-- build/ (LCM.proj)
 - src/ (production code)
 - tests/ (unit tests)
 
 ## README highlights (summary)
 - Describes liblcm as FieldWorks model library for linguistic analyses.
-- Build: use build.cmd (Windows) or build.sh (Linux). Default Debug, optional Release.
+- Build: use `dotnet build`. Default Debug, optional Release.
 - Debugging: use LOCAL_NUGET_REPO to publish local packages; see NuGet local feeds.
 - Tests: Windows via ReSharper or NUnit console; Linux via mono + NUnit console (requires environ).
 
