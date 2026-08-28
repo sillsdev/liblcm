@@ -25,6 +25,10 @@ CI runs on Windows and Ubuntu. See .github/workflows/ci-cd.yml:
 
 Always mirror this sequence when validating a change locally.
 
+Use `dotnet build -m:1` for a cold-start build (a tree with no generated sources yet).
+Parallel builds race on the generated sources and fail with `LcmGenerate` or `IdlImp`
+errors. Plain `dotnet build` is fine once those sources exist.
+
 ### Tests per README (not validated here)
 - Windows, ReSharper: open LCM.sln and “Run Unit Tests”.
 - Windows, no ReSharper: use MSBuild, then run nunit3-console.exe from artifacts/Debug/net462.
@@ -34,8 +38,6 @@ Always mirror this sequence when validating a change locally.
 - dotnet test .\LCM.sln → FAILED
 - dotnet build --configuration Release → FAILED
 Failure signature (both commands): GitVersion.MsBuild (netcoreapp3.1 gitversion.dll) exited with code 1. This blocks build/test in this environment. CI uses fetch-depth 0, so ensure a full git history is available. If GitVersion still fails, check GitVersion prerequisites and local .NET runtime compatibility.
-
-No command timeouts were observed.
 
 ### Known prerequisites and gotchas
 - GitVersion.MsBuild is used across projects; it requires git metadata. CI checks out with fetch-depth 0.
@@ -83,23 +85,6 @@ Code generation targets to know about:
 - Mono on Linux for some runtime/test workflows.
 - GitVersion.MsBuild for versioning (requires git metadata).
 
-## Root files list
-- .editorconfig
-- .gitattributes
-- .gitignore
-- CHANGELOG.md
-- Directory.Build.props
-- Directory.Build.targets
-- Directory.Solution.props
-- Directory.Solution.targets
-- environ
-- GitVersion.yml
-- global.json
-- LCM.sln
-- LCM.sln.DotSettings
-- LICENSE
-- README.md
-
 ## Repo top-level directories
 - .github/ (GitHub Actions workflow)
 - .vscode/ (VS settings)
@@ -115,3 +100,4 @@ Code generation targets to know about:
 
 ## Trust these instructions
 Follow this file first. Only search the repo if these instructions are incomplete or prove incorrect for your task.
+If these instructions fail notify the author of the task that they should verify and update the instructions if necessary.

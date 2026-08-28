@@ -13,7 +13,10 @@ with language and culture data, including anthropological, text corpus, and ling
 1. Install Required Software
 
     - git
-    - Visual Studio 2019 (with C++), MonoDevelop, or JetBrains Rider
+    - On Windows, Visual Studio 2022 with the "Desktop development with C++" workload.
+      The C++ build tools are required for any Windows build, not only for building
+      inside the IDE: code generation preprocesses the IDL with `cl.exe`.
+    - JetBrains Rider or MonoDevelop, if you prefer another IDE
 
 2. Clone the liblcm repository
 
@@ -26,18 +29,22 @@ with language and culture data, including anthropological, text corpus, and ling
 
     On Windows:
 
-    - Run `dotnet build` to build the liblcm library. Alternatively, `LCM.sln` can be built
-      from within Visual Studio.
+    - Run `dotnet build -m:1` to build the liblcm library. Alternatively, `LCM.sln` can be
+      built from within Visual Studio.
 
     On Linux:
 
-    - Source `environ`, then run `dotnet build` to build the liblcm library.
+    - Source `environ`, then run `dotnet build -m:1` to build the liblcm library.
+
+Use `-m:1` for a cold-start build (a fresh clone or worktree, with no generated sources
+yet). Parallel builds race on the generated sources. Plain `dotnet build` is fine once
+those sources exist.
 
 By default, this will build liblcm in the Debug configuration.
 To build with a different configuration, use:
 
 ```bash
-dotnet build --configuration (Debug|Release)
+dotnet build -m:1 --configuration (Debug|Release)
 ```
 
 ## Debugging
