@@ -1,103 +1,259 @@
 # AGENTS: liblcm (LCM)
 
 ## Summary
-liblcm (LCM) is the core FieldWorks Language & Culture Model library for linguistic analyses. It provides the data model, serialization, utilities, and tooling for linguistic, anthropological, and text corpus data. It is a multi-project .NET solution with code generation steps and multi-targeting for legacy .NET Framework and modern .NET.
 
-## High-level repo facts
-- Type: .NET solution (multi-project class libraries + build tasks + tools + tests).
-- Languages: C# (.cs), MSBuild (.proj/.csproj/.props/.targets), XML, shell/batch scripts.
-- Target frameworks: net462, netstandard2.0, net8.0 (see .csproj files in src/ and tests/).
-- Build tools: MSBuild, dotnet SDK, GitVersion.MsBuild, NUnit.
-- Output: artifacts/ (NuGet packages and binaries by configuration/TFM).
+liblcm is the core FieldWorks Language and Culture Model library. It provides the
+object-oriented data model, serialization, persistence, and domain services for linguistic,
+anthropological, and text corpus data used by
+[FieldWorks](https://github.com/sillsdev/FieldWorks).
 
-## Build and validation (validated commands and observations)
+The codebase is heavily code-generated from `MasterLCModel.xml`. Understand the generation
+pipeline and the rules below before changing anything.
 
-### What CI runs (GitHub Actions)
-CI runs on Windows and Ubuntu. See .github/workflows/ci-cd.yml:
-1) Install .NET SDK 8.x.
-2) Ubuntu: install mono-devel and icu-fw packages.
-3) Windows: remove c:\tools\php\icuuc*.dll; install .NET Framework 4.6.1 targeting pack.
-4) Build: dotnet build --configuration Release
-5) Test:
-   - Linux: . environ && dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release
-   - Windows: dotnet test --no-restore --no-build -p:ParallelizeAssembly=false --configuration Release
-6) Pack: dotnet pack --include-symbols --no-restore --no-build -p:SymbolPackageFormat=snupkg --configuration Release
+## Critical rules
 
-Always mirror this sequence when validating a change locally.
+Rules 2, 3 and 5 corrupt data when broken. Rule 4 breaks the build. Rule 1 does neither,
+which is what makes it the most dangerous of the five.
+
+1. **Never edit `Generated*.cs`.** Nine files are produced from `MasterLCModel.xml` via the
+   NVelocity templates in `LcmGenerate/*.vm.cs`:
+
+   - `GeneratedConstants.cs`, `GeneratedInterfaces.cs`, `GeneratedFactoryInterfaces.cs`,
+     `GeneratedRepositoryInterfaces.cs`
+   - `DomainImpl/GeneratedClasses.cs`, `DomainImpl/GeneratedFactoryImplementations.cs`
+   - `Infrastructure/Impl/GeneratedRepositoryImplementations.cs`,
+     `Infrastructure/Impl/GeneratedBackendProvider.cs`
+   - `IOC/GeneratedServiceLocatorBootstrapper.cs`
+
+   An edit there does not fail loudly. Regeneration is skipped while the file is newer than
+   `MasterLCModel.xml`, so the edit compiles into your local build and your tests pass,
+   while CI generates from the XML into a fresh tree and builds different code. The files
+   are gitignored, so the edit can never be committed, and any `MasterLCModel.xml` change
+   or `dotnet clean` destroys it. Edit the XML or the templates instead.
+
+   A fresh clone or worktree has none of these files until the first build. After switching
+   branches, delete them: a generated file left over from another branch is newer than the
+   XML, so it will be compiled as it stands.
+
+2. **Model changes require a version bump and migration.** Almost every change to
+   `MasterLCModel.xml` requires incrementing the `version` attribute and writing a data
+   migration class. The only exceptions are editing `<comment>` or `<notes>` elements,
+   editing XML comments, and adding attributes that only affect the code generator. Read the
+   `WARNING` block at the top of `MasterLCModel.xml`; it is authoritative, and it also
+   requires a matching update to the FLEx Bridge metadata cache.
+
+3. **All data changes must occur within a UnitOfWork.** Use `UndoableUnitOfWorkHelper` for
+   user actions or `NonUndoableUnitOfWorkHelper` for system operations. Changes outside a
+   UOW throw or silently fail.
+
+4. **No references to `System.Windows.Forms`.** Enforced by the `CheckWinForms` target in
+   `SIL.LCModel`, `SIL.LCModel.Core` and `SIL.LCModel.Utils`.
+
+5. **Model version bumps require a matching migration registration.** New migrations must be
+   registered in the `LcmDataMigrationManager` constructor dictionary. Even a no-op version
+   bump needs an entry, for which `m_bumpNumberOnlyMigration` exists.
+
+## Proving a change
 
 Use `dotnet build -m:1` for a cold-start build (a tree with no generated sources yet).
 Parallel builds race on the generated sources and fail with `LcmGenerate` or `IdlImp`
 errors. Plain `dotnet build` is fine once those sources exist.
 
-### Tests per README (not validated here)
-- Windows, ReSharper: open LCM.sln and “Run Unit Tests”.
-- Windows, no ReSharper: use MSBuild, then run nunit3-console.exe from artifacts/Debug/net462.
-- Linux terminal: source environ, then run mono with nunit3-console.exe on *Tests.dll in artifacts/Debug/net462.
+```
+dotnet build -m:1 --configuration Release
+dotnet test tests/<Project>/<Project>.csproj --configuration Release --no-restore --no-build -p:ParallelizeAssembly=false
+```
 
-### Commands actually run during onboarding
-- dotnet test .\LCM.sln → FAILED
-- dotnet build --configuration Release → FAILED
-Failure signature (both commands): GitVersion.MsBuild (netcoreapp3.1 gitversion.dll) exited with code 1. This blocks build/test in this environment. CI uses fetch-depth 0, so ensure a full git history is available. If GitVersion still fails, check GitVersion prerequisites and local .NET runtime compatibility.
+`--no-restore --no-build` require a completed build in the same configuration. Scope tests to
+one project while iterating. `-p:ParallelizeAssembly=false` is not optional: ICU and the
+writing system subsystems hold shared state.
 
-### Known prerequisites and gotchas
-- GitVersion.MsBuild is used across projects; it requires git metadata. CI checks out with fetch-depth 0.
-- net462 builds on Windows require the .NET Framework 4.6.1 targeting pack (CI installs it).
-- ICU data generation requires ICU binaries (CI installs icu-fw on Ubuntu).
-- Some projects warn on NU1701; treat as warnings unless build breaks.
-- The build prohibits references to System.Windows.Forms (CheckWinForms target).
+Windows builds need the Visual Studio C++ tools whether or not you use the IDE, because code
+generation preprocesses the IDL with `cl.exe`, located via `vswhere`.
 
-## Project layout and architecture
+ICU needs no manual environment setup. Test assemblies declare
+`[assembly: InitializeIcu(IcuDataPath = "IcuData")]`, which resolves against the build output.
 
-### Key solution and build files
-- LCM.sln: solution entry point.
-- Directory.Build.props / Directory.Build.targets: repo-wide build settings and packaging.
-- Directory.Solution.props / Directory.Solution.targets: solution-level defaults.
-- GitVersion.yml: GitVersion configuration.
-- global.json: SDK roll-forward config.
-- .editorconfig: formatting rules.
+A root build compiles every project, and any stray `.cs` file inside a project directory
+joins that compilation. Run `git status --porcelain` first: files left over from another
+branch produce compile errors that look like your change broke something.
 
-### Major source projects (src/)
-- src/SIL.LCModel: main LCM library (net462; netstandard2.0).
-- src/SIL.LCModel.Core: core utilities and ICU data generation (netstandard2.0; net462; net8.0).
-- src/SIL.LCModel.Utils: shared utilities (net462; netstandard2.0).
-- src/SIL.LCModel.Build.Tasks: MSBuild tasks used for code generation.
-- src/SIL.LCModel.FixData: data-fix utilities.
-- src/CSTools: auxiliary tools (pg/lg/Tools).
+The SDK floor, the target frameworks and the exact CI sequence are defined in `global.json`,
+the `.csproj` files and `.github/workflows/ci-cd.yml`. Read those rather than a transcription
+here.
 
-Code generation targets to know about:
-- SIL.LCModel: GenerateModel (MasterLCModel.xml → Generated*.cs).
-- SIL.LCModel.Core: GenerateKernelCs, GenerateIcuData.
+### Versioning
 
-### Tests (tests/)
-- SIL.LCModel.Tests
-- SIL.LCModel.Core.Tests
-- SIL.LCModel.Utils.Tests
-- SIL.LCModel.FixData.Tests
-- TestHelper (support project)
+Every project uses `GitVersion.MsBuild`, configured by `GitVersion.yml`, and it needs real
+git history. Two checkouts break it, and both reach you through MSBuild as
+`MSB3073 ... gitversion.dll ... exited with code 1`. The actual reason is in a log line above
+that, not in the error:
 
-### CI/validation checks
-- GitHub Actions: .github/workflows/ci-cd.yml (build, test, pack, publish).
-- Tests run with dotnet test and ParallelizeAssembly=false.
-- Packaging uses dotnet pack with symbol packages.
+- A shallow clone: `Cannot find commit <sha>. Please ensure that the repository is an
+  unshallow clone with git fetch --unshallow`. CI checks out with `fetch-depth: 0`; locally,
+  run `git fetch --unshallow`.
+- A detached HEAD, which is what `git worktree add` gives you without `-b`: `Without a proper
+  branch name GitVersion cannot determine the build version`.
 
-### Dependencies not obvious from layout
-- ICU data and binaries (icu-fw) for Core ICU generation.
-- Mono on Linux for some runtime/test workflows.
-- GitVersion.MsBuild for versioning (requires git metadata).
+### Worktrees
 
-## Repo top-level directories
-- .github/ (GitHub Actions workflow)
-- .vscode/ (VS settings)
-- artifacts/ (build outputs)
-- src/ (production code)
-- tests/ (unit tests)
+```
+git worktree add -b <branch> .claude/worktrees/<name> origin/master
+```
 
-## README highlights (summary)
-- Describes liblcm as FieldWorks model library for linguistic analyses.
-- Build: use `dotnet build`. Default Debug, optional Release.
-- Debugging: use LOCAL_NUGET_REPO to publish local packages; see NuGet local feeds.
-- Tests: Windows via ReSharper or NUnit console; Linux via mono + NUnit console (requires environ).
+Always a named branch, or GitVersion fails as described under Versioning.
+
+To remove one, leave the directory first, then force it, since build output is untracked:
+
+```
+dotnet build-server shutdown
+git worktree remove --force .claude/worktrees/<name>
+```
+
+## Architecture
+
+### Code generation
+
+`MasterLCModel.xml` is the single source of truth. The `GenerateModel` target runs
+`LcmGenerate` from `SIL.LCModel.Build.Tasks`, which parses the XML and uses the NVelocity
+templates in `LcmGenerate/*.vm.cs` to produce the nine generated C# files.
+
+`SIL.LCModel.Core` has a second generator: `GenerateKernelCs` runs the `IdlImp` task from the
+same build-tasks assembly over `KernelInterfaces/*.idh` to produce `Kernel.cs`.
+
+### MasterLCModel.xml schema
+
+The model is organized into `CellarModule` elements containing `class` elements. Read the
+module ids and numbers off the file rather than memorizing them. Each class carries:
+
+- `id`: class name, e.g. `LexEntry`
+- `num`: class number within its module
+- `base`: parent class; all classes descend from `CmObject`
+- `abstract`, `depth`, `abbr`
+- `owner`: `required` (default), `optional`, or `none`
+- `singleton`: whether only one instance exists, e.g. `LangProject`
+
+Properties come in three kinds:
+
+- `<basic>`: value types. `sig` is `Integer`, `Boolean`, `String`, `Unicode`, `MultiString`,
+  `MultiUnicode`, `Time`, `GenDate`, `Binary`, `Guid` or `TextPropBinary`
+- `<owning>`: ownership. `card` is `atomic`, `seq` or `col`; `sig` is the target class
+- `<rel>`: non-owning references, same attributes as `<owning>`
+
+Field ids (flids) are the module number, then the class number to three digits, then the
+field number to three digits. `LexSenseTags.kflidDefinition` is `5016005`: Ling module 5,
+`LexSense` class 16, `Definition` field 5.
+
+`Unicode` and `MultiUnicode` are plain character sequences with no formatting. `String` and
+`MultiString` carry embedded runs with writing systems, styles and other properties.
+
+### Partial class pattern
+
+Generated classes are `partial`. Hand-written code extends them in `DomainImpl/Overrides*.cs`,
+split by domain: `OverridesLing_Lex.cs`, `OverridesCellar.cs`, `OverridesLing_Wfi.cs`,
+`OverridesLing_MoClasses.cs`, `OverridesLangProj.cs`, `OverridesLing_Disc.cs`,
+`OverridesNotebk.cs`.
+
+These add virtual properties (`[VirtualProperty]`), convenience methods, business logic and
+side-effect handlers. Virtual properties are discovered by reflection, so they need no XML and
+no registration. Partial interface extensions live in `InterfaceAdditions.cs`.
+
+### Persistence and infrastructure
+
+**LcmCache** (`LcmCache.cs`) is the entry point for all data access. Despite the name it is a
+service locator facade, not a cache. Key accessors: `ServiceLocator`, `LanguageProject`,
+`DomainDataByFlid`, `ActionHandlerAccessor`.
+
+**Backend providers**, all in `Infrastructure/Impl/`:
+
+- `XMLBackendProvider` -- file-based XML storage, the `.fwdata` format
+- `MemoryOnlyBackendProvider` -- in-memory, used by tests
+- `SharedXMLBackendProvider` -- multi-process shared access via memory-mapped files
+
+**Surrogate and IdentityMap.** Objects load lazily. The backend reads XML into
+`CmObjectSurrogate` placeholders; on first access to `.Object` the surrogate parses the XML and
+creates the real `CmObject`. `IdentityMap` guarantees one instance per Guid and Hvo. Bulk
+loading by domain is available through `BackendProvider.LoadDomain()`.
+
+**Dependency injection.** `LcmServiceLocatorFactory` builds a
+`Microsoft.Extensions.DependencyInjection` container and wraps it in `MicrosoftServiceLocator`,
+which derives from `ServiceLocatorImplBase` so `GetInstance<T>()` keeps working. Each type is registered as a singleton by its concrete
+type, with the interface registered as an alias resolving to the same instance. Generated code
+supplies the factory and repository registrations in `GeneratedServiceLocatorBootstrapper.cs`.
+
+### Data migration
+
+Migrations live in `DomainServices/DataMigration/` and are registered in
+`LcmDataMigrationManager`. They operate on raw XML through `DomainObjectDTO`; no live
+`ICmObject` is available. See the `writing-a-data-migration` skill for structure and repository
+behaviour.
+
+### Key domain classes
+
+Simplified ownership hierarchy:
+
+```
+LangProject (singleton, owner=none)
+  +-- LexDb (atomic)
+  |     +-- [Entries reached through a virtual property; LexEntry has owner=none]
+  |           +-- LexSense (seq)
+  |           |     +-- LexExampleSentence (seq)
+  |           +-- MoForm / MoStemAllomorph / MoAffixAllomorph
+  |           +-- MoMorphSynAnalysis (col: MorphoSyntaxAnalyses)
+  +-- PartsOfSpeech (CmPossibilityList, atomic)
+  +-- SemanticDomainList (CmPossibilityList, atomic)
+  +-- ResearchNotebook (RnResearchNbk, atomic)
+  +-- TranslatedScripture (Scripture, atomic)
+  +-- Styles (StStyle, col)
+```
+
+`CmPossibility` and `CmPossibilityList` are the list and list-item pattern used throughout for
+categories, types, domains and other enumerated values.
+
+Projects have vernacular writing systems (the language being studied) and analysis writing
+systems (languages used for descriptions). `MultiUnicode` and `MultiString` properties store
+alternatives keyed by writing system.
+
+## Project layout
+
+```
+src/
+  SIL.LCModel/                  Main library
+    MasterLCModel.xml            Model source of truth
+    MasterLCModel.xsd            Schema for the model
+    LcmGenerate/                 NVelocity templates + HandGenerated.xml
+    DomainImpl/                  Generated and hand-written class implementations
+    DomainServices/              Business logic and domain services
+      DataMigration/             Migration classes and the migration manager
+    Infrastructure/Impl/         Backend providers, UnitOfWork, IdentityMap
+    IOC/                         Dependency injection setup
+  SIL.LCModel.Core/             Cellar types, ICU, writing systems, Kernel interfaces
+  SIL.LCModel.Utils/            Shared utilities
+  SIL.LCModel.Build.Tasks/      MSBuild tasks: LcmGenerate and IdlImp
+  SIL.LCModel.FixData/          Data-fix utilities
+  CSTools/                       Auxiliary tools (pg/lg)
+tests/
+  SIL.LCModel.Tests/            Main library tests
+  SIL.LCModel.Core.Tests/       Core tests
+  SIL.LCModel.Utils.Tests/      Utility tests
+  SIL.LCModel.FixData.Tests/    FixData tests
+  TestHelper/                    Test support project
+```
+
+## Common tasks
+
+Step-by-step guides live in `.claude/skills/`. Read the SKILL.md directly if your agent does
+not load them automatically.
+
+- Adding a property to an existing class -- `.claude/skills/adding-a-property/SKILL.md`
+- Adding a new class to the model -- `.claude/skills/adding-a-new-class/SKILL.md`
+- Adding a virtual property, computed and not persisted --
+  `.claude/skills/adding-a-virtual-property/SKILL.md`
+- Writing a data migration -- `.claude/skills/writing-a-data-migration/SKILL.md`
+- Writing tests -- `.claude/skills/writing-tests/SKILL.md`
 
 ## Trust these instructions
-Follow this file first. Only search the repo if these instructions are incomplete or prove incorrect for your task.
-If these instructions fail notify the author of the task that they should verify and update the instructions if necessary.
+
+Follow this file first. Only search the repo if these instructions are incomplete or prove
+incorrect for your task. If these instructions fail notify the author of the task that they
+should verify and update the instructions if necessary.
