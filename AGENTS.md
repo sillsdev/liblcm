@@ -82,14 +82,26 @@ The SDK floor, the target frameworks and the exact CI sequence are defined in `g
 the `.csproj` files and `.github/workflows/ci-cd.yml`. Read those rather than a transcription
 here.
 
+### Versioning
+
+Every project uses `GitVersion.MsBuild`, configured by `GitVersion.yml`, and it needs real
+git history. Two checkouts break it, and both reach you through MSBuild as
+`MSB3073 ... gitversion.dll ... exited with code 1`. The actual reason is in a log line above
+that, not in the error:
+
+- A shallow clone: `Cannot find commit <sha>. Please ensure that the repository is an
+  unshallow clone with git fetch --unshallow`. CI checks out with `fetch-depth: 0`; locally,
+  run `git fetch --unshallow`.
+- A detached HEAD, which is what `git worktree add` gives you without `-b`: `Without a proper
+  branch name GitVersion cannot determine the build version`.
+
 ### Worktrees
 
 ```
 git worktree add -b <branch> .claude/worktrees/<name> origin/master
 ```
 
-Always a named branch. GitVersion cannot version a detached HEAD, and the build then fails
-with `MSB3073` errors whose real cause appears only in a `WARN` line above them.
+Always a named branch, or GitVersion fails as described under Versioning.
 
 To remove one, leave the directory first, then force it, since build output is untracked:
 
