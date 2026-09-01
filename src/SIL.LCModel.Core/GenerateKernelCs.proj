@@ -23,7 +23,9 @@
 
 		<UsingNamespaces Include="SIL.LCModel.Utils" />
 	</ItemGroup>
-	<Target Name="GenerateKernelCs" Inputs="@(KernelIdhFiles)" Outputs="$(OutDir)KernelInterfaces/FwKernelTlb.json">
+	<!-- No Inputs/Outputs: the parent GenerateKernelCs target already decides when to run.
+	     Skipping here when FwKernelTlb.json exists leaves Kernel.cs missing after a clean of generated sources. -->
+	<Target Name="GenerateKernelCs">
 		<Exec Command="$(PreprocessCommand) $(KernelIdl) > $(PreprocessedKernelIdl)" />
 		<IdlImp Output="KernelInterfaces/Kernel.cs"
 				Namespace="SIL.LCModel.Core.KernelInterfaces"

@@ -6,6 +6,8 @@
     <Description>The liblcm library is the core FieldWorks model for linguistic analyses of languages. Tools in this library provide the ability to store and interact with language and culture data, including anthropological, text corpus, and linguistics data.
 SIL.LCModel.Core provides a base library with core functionality.</Description>
     <LangVersion>latest</LangVersion>
+    <!-- Inner TFMs share Kernel.cs in the project tree; parallel inner builds race on IdlImp. -->
+    <InnerBuildInParallel>false</InnerBuildInParallel>
   </PropertyGroup>
 
   <ItemGroup>
