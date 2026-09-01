@@ -29,22 +29,18 @@ with language and culture data, including anthropological, text corpus, and ling
 
     On Windows:
 
-    - Run `dotnet build -m:1` to build the liblcm library. Alternatively, `LCM.sln` can be
+    - Run `dotnet build` to build the liblcm library. Alternatively, `LCM.sln` can be
       built from within Visual Studio.
 
     On Linux:
 
-    - Source `environ`, then run `dotnet build -m:1` to build the liblcm library.
-
-Use `-m:1` for a cold-start build (a fresh clone or worktree, with no generated sources
-yet). Parallel builds race on the generated sources. Plain `dotnet build` is fine once
-those sources exist.
+    - Source `environ`, then run `dotnet build` to build the liblcm library.
 
 By default, this will build liblcm in the Debug configuration.
 To build with a different configuration, use:
 
 ```bash
-dotnet build -m:1 --configuration (Debug|Release)
+dotnet build --configuration (Debug|Release)
 ```
 
 ## Debugging
