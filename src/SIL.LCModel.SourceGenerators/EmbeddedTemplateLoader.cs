@@ -21,9 +21,10 @@ namespace SIL.LCModel.SourceGenerators
 	/// there is no meaningful current directory.
 	/// </summary>
 	/// <remarks>
-	/// The template set is supplied via the static <see cref="Templates"/> property. Because the
-	/// NVelocity <c>RuntimeSingleton</c> and this loader are process-global, generation is
-	/// serialized by the host (see <see cref="LcmGenerateImpl"/>), so a static template set is safe.
+	/// The template set is supplied per engine through the <c>embedded.resource.loader.lcm-templates</c>
+	/// property (see <see cref="LcmGenerateImpl"/>), which NVelocity hands to <see cref="Init"/> as
+	/// this loader instance's configuration. Nothing here is shared between engines, so concurrent
+	/// generations are independent.
 	/// </remarks>
 	internal sealed class EmbeddedTemplateLoader : ResourceLoader
 	{

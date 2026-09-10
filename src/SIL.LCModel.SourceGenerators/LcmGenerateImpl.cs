@@ -8,7 +8,6 @@ using System.IO;
 using System.Xml;
 using NVelocity;
 using NVelocity.App;
-using NVelocity.Runtime;
 
 namespace SIL.LCModel.SourceGenerators
 {
@@ -21,9 +20,6 @@ namespace SIL.LCModel.SourceGenerators
 	/// ----------------------------------------------------------------------------------------
 	internal class LcmGenerateImpl
 	{
-		/// <summary></summary>
-		public static LcmGenerateImpl Generator;
-
 		private string m_OutputFileName;
 		private readonly VelocityEngine m_Engine;
 		private readonly VelocityContext m_Context;
@@ -46,10 +42,9 @@ namespace SIL.LCModel.SourceGenerators
 		/// ------------------------------------------------------------------------------------
 		public LcmGenerateImpl(XmlDocument doc, IReadOnlyDictionary<string, string> templates)
 		{
-			Generator = this;
 			m_Document = doc;
 			var entireModel = (XmlElement)doc.GetElementsByTagName("EntireModel")[0];
-			m_Model = new Model(entireModel);
+			m_Model = new Model(entireModel, this);
 
 			m_Engine = new VelocityEngine();
 			// Serve templates from the embedded-resource loader rather than the file system.
@@ -69,12 +64,6 @@ namespace SIL.LCModel.SourceGenerators
 			m_Context = new VelocityContext();
 			m_Context.Put("lcmgenerate", this);
 			m_Context.Put("model", m_Model);
-
-			// The model wrappers (e.g. Property) look up the override lists through this global
-			// attribute, so keep publishing it. Generation is serialized by the host, so the use
-			// of the process-global RuntimeSingleton is safe.
-			RuntimeSingleton.RuntimeServices.SetApplicationAttribute("LcmGenerate.Engine", m_Engine);
-			RuntimeSingleton.RuntimeServices.SetApplicationAttribute("LcmGenerate.Context", m_Context);
 		}
 
 		/// ------------------------------------------------------------------------------------

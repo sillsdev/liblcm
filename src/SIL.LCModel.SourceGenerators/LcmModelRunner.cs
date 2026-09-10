@@ -18,12 +18,13 @@ namespace SIL.LCModel.SourceGenerators
 	/// </summary>
 	internal static class LcmModelRunner
 	{
-		// NVelocity's RuntimeSingleton and the EmbeddedTemplateLoader template set are
-		// process-global, so serialize generation to keep concurrent compilations from
-		// interfering with each other.
-		private static readonly object s_gate = new object();
-
-		private static IReadOnlyDictionary<string, string> s_templates;
+		// The embedded template set is immutable, so cache it once (thread-safely) and share it.
+		// Everything else in a generation run is instance-local: each call gets its own
+		// VelocityEngine, model wrappers and output dictionary, and the model reaches its override
+		// lists through the object graph rather than any process-global state, so concurrent
+		// generations do not interfere and no lock is needed.
+		private static readonly Lazy<IReadOnlyDictionary<string, string>> s_templates =
+			new Lazy<IReadOnlyDictionary<string, string>>(LoadEmbeddedTemplates);
 
 		/// <summary>
 		/// Runs the generator over the given model inputs and returns the generated sources,
@@ -36,29 +37,24 @@ namespace SIL.LCModel.SourceGenerators
 		public static IReadOnlyDictionary<string, string> Generate(
 			string masterModelXml, string handGeneratedXml, string intPropTypeOverridesXml)
 		{
-			lock (s_gate)
+			var doc = new XmlDocument();
+			doc.LoadXml(masterModelXml);
+
+			var handGenerated = ParseHandGenerated(handGeneratedXml);
+			var intPropOverrides = ParseIntPropTypeOverrides(intPropTypeOverridesXml);
+
+			var impl = new LcmGenerateImpl(doc, s_templates.Value)
 			{
-				var templates = s_templates ??= LoadEmbeddedTemplates();
+				Overrides = handGenerated,
+				IntPropTypeOverrides = intPropOverrides
+			};
 
-				var doc = new XmlDocument();
-				doc.LoadXml(masterModelXml);
+			// main.vm.cs writes the class implementations to this output and, via nested
+			// SetOutput/Process calls, produces the other eight outputs.
+			impl.SetOutput("DomainImpl/GeneratedClasses.cs");
+			impl.Process("main.vm.cs");
 
-				var handGenerated = ParseHandGenerated(handGeneratedXml);
-				var intPropOverrides = ParseIntPropTypeOverrides(intPropTypeOverridesXml);
-
-				var impl = new LcmGenerateImpl(doc, templates)
-				{
-					Overrides = handGenerated,
-					IntPropTypeOverrides = intPropOverrides
-				};
-
-				// main.vm.cs writes the class implementations to this output and, via nested
-				// SetOutput/Process calls, produces the other eight outputs.
-				impl.SetOutput("DomainImpl/GeneratedClasses.cs");
-				impl.Process("main.vm.cs");
-
-				return impl.Outputs;
-			}
+			return impl.Outputs;
 		}
 
 		/// <summary>Loads every embedded "*.vm.cs" template, keyed by its bare file name.</summary>

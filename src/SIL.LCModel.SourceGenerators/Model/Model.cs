@@ -21,15 +21,24 @@ namespace SIL.LCModel.SourceGenerators
 		private StringKeyCollection<CellarModule> m_modules;
 		private readonly XmlElement m_node;
 
+		/// <summary>
+		/// The generator that owns this model. Nodes reach it through the parent chain
+		/// (e.g. Property -&gt; Class -&gt; CellarModule -&gt; Model) to read the override lists,
+		/// which avoids any process-global state.
+		/// </summary>
+		public LcmGenerateImpl LcmGenerate { get; }
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Model"/> class.
 		/// </summary>
 		/// <param name="node">The node.</param>
+		/// <param name="lcmGenerate">The owning generator.</param>
 		/// ------------------------------------------------------------------------------------
-		public Model(XmlElement node)
+		public Model(XmlElement node, LcmGenerateImpl lcmGenerate)
 		{
 			m_node = node;
+			LcmGenerate = lcmGenerate;
 		}
 
 		/// <summary>
