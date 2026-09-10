@@ -5,64 +5,59 @@
 using System;
 using System.Xml;
 
-namespace SIL.LCModel.Build.Tasks
+namespace SIL.LCModel.SourceGenerators
 {
-	#region StringKeyCollection
-
-	#endregion
-
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>
-	///
+	/// Represents a module description in the XMI file
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
-	internal class Model
+	internal class CellarModule: Base<Model>
 	{
-		private StringKeyCollection<CellarModule> m_modules;
-		private readonly XmlElement m_node;
+		private StringKeyCollection<Class> m_classes;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Model"/> class.
+		/// Initializes a new instance of the <see cref="CellarModule"/> class.
 		/// </summary>
 		/// <param name="node">The node.</param>
+		/// <param name="parent">The model</param>
 		/// ------------------------------------------------------------------------------------
-		public Model(XmlElement node)
+		public CellarModule(XmlElement node, Model parent)
+			: base(node, parent)
 		{
-			m_node = node;
-		}
-
-		/// <summary>
-		/// Get the model's version number.
-		/// </summary>
-		public int VersionNumber
-		{
-			get { return Int32.Parse(m_node.GetAttribute("version")); }
 		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Gets the modules.
+		/// Gets the number of the module.
 		/// </summary>
-		/// <value>The modules.</value>
+		/// <value>The number.</value>
 		/// ------------------------------------------------------------------------------------
-		public StringKeyCollection<CellarModule> Modules
+		public int Number
+		{
+			get { return Convert.ToInt32(m_node.Attributes["num"].Value); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets the classes defined in this module.
+		/// </summary>
+		/// <value>The classes.</value>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<Class> Classes
 		{
 			get
 			{
-				if (m_modules == null)
+				if (m_classes == null)
 				{
-					m_modules = new StringKeyCollection<CellarModule>();
+					m_classes = new StringKeyCollection<Class>();
 
 					foreach (XmlElement elem in m_node.ChildNodes)
-					{
-						// Skip FeatSys, since it is empty.
-						if (elem.Name == "FeatSys") continue;
-
-						m_modules.Add(new CellarModule(elem, this));
-					}
+						m_classes.Add(new Class(elem, this));
 				}
-				return m_modules;
+
+				return m_classes;
 			}
 		}
 	}

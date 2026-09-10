@@ -7,7 +7,7 @@ using System.Xml;
 using NVelocity;
 using NVelocity.Runtime;
 
-namespace SIL.LCModel.Build.Tasks
+namespace SIL.LCModel.SourceGenerators
 {
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>
