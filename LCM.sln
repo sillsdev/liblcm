@@ -53,6 +53,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.LCModel.FixData", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestHelper", "tests\TestHelper\TestHelper.csproj", "{99270559-03D8-49F7-B61B-22E9DBC5D42B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.LCModel.SourceGenerators", "src\SIL.LCModel.SourceGenerators\SIL.LCModel.SourceGenerators.csproj", "{688D1F13-8FAC-4FED-A908-1274B576D81B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,10 @@ Global
 		{99270559-03D8-49F7-B61B-22E9DBC5D42B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99270559-03D8-49F7-B61B-22E9DBC5D42B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99270559-03D8-49F7-B61B-22E9DBC5D42B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{688D1F13-8FAC-4FED-A908-1274B576D81B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{688D1F13-8FAC-4FED-A908-1274B576D81B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{688D1F13-8FAC-4FED-A908-1274B576D81B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{688D1F13-8FAC-4FED-A908-1274B576D81B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -130,6 +136,7 @@ Global
 		{8ECAF4C5-E651-4EA0-91FF-9251428E3890} = {B9B859EC-6E0D-447E-A0CD-ABF16E7278B1}
 		{8E5F8AF6-6ED0-4205-826C-6BD80D04BDD1} = {040CD95F-B637-493B-9B1C-2989DF3A0D91}
 		{99270559-03D8-49F7-B61B-22E9DBC5D42B} = {B9B859EC-6E0D-447E-A0CD-ABF16E7278B1}
+		{688D1F13-8FAC-4FED-A908-1274B576D81B} = {040CD95F-B637-493B-9B1C-2989DF3A0D91}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C625E82E-381D-4590-A382-0B4EF1EF916E}

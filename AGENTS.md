@@ -65,13 +65,14 @@ No command timeouts were observed.
 - src/SIL.LCModel: main LCM library (net462; netstandard2.0).
 - src/SIL.LCModel.Core: core utilities and ICU data generation (netstandard2.0; net462; net8.0).
 - src/SIL.LCModel.Utils: shared utilities (net462; netstandard2.0).
-- src/SIL.LCModel.Build.Tasks: MSBuild tasks used for code generation.
+- src/SIL.LCModel.Build.Tasks: the IdlImp MSBuild task (kernel-interface code generation).
+- src/SIL.LCModel.SourceGenerators: Roslyn source generator for the LCM domain model (MasterLCModel.xml → Generated*.cs), built on the NVelocity templates in its Templates/vm folder.
 - src/SIL.LCModel.FixData: data-fix utilities.
 - src/CSTools: auxiliary tools (pg/lg/Tools).
 
-Code generation targets to know about:
-- SIL.LCModel: GenerateModel (MasterLCModel.xml → Generated*.cs).
-- SIL.LCModel.Core: GenerateKernelCs, GenerateIcuData.
+Code generation to know about:
+- SIL.LCModel: the LcmModelGenerator source generator turns MasterLCModel.xml (with HandGenerated.xml and IntPropTypeOverrides.xml, wired in as AdditionalFiles) into the domain-model Generated*.cs sources at compile time.
+- SIL.LCModel.Core: GenerateKernelCs (IdlImp task), GenerateIcuData.
 
 ### Tests (tests/)
 - SIL.LCModel.Tests

@@ -5,7 +5,7 @@
 using System;
 using System.Xml;
 
-namespace SIL.LCModel.Build.Tasks
+namespace SIL.LCModel.SourceGenerators
 {
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>

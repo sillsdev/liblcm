@@ -1,23 +1,28 @@
-﻿// Copyright (c) 2006-2015 SIL International
+// Copyright (c) 2006-2015 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
-namespace SIL.LCModel.Build.Tasks
+namespace SIL.LCModel.SourceGenerators
 {
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>
-	///
+	/// Used for non-Cellar classes
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
-	internal interface IClass
+	internal class DummyClass : IClass
 	{
+		#region IClass Members
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Gets the abbreviation.
 		/// </summary>
 		/// <value>The abbreviation.</value>
 		/// ------------------------------------------------------------------------------------
-		string Abbreviation { get; }
+		public string Abbreviation
+		{
+			get { return string.Empty; }
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -25,7 +30,10 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value>The base class.</value>
 		/// ------------------------------------------------------------------------------------
-		Class BaseClass { get; }
+		public Class BaseClass
+		{
+			get { return null; }
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -33,7 +41,10 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value>The optional comment, or an empty string.</value>
 		/// ------------------------------------------------------------------------------------
-		string Comment { get; }
+		public string Comment
+		{
+			get { return string.Empty; }
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -41,7 +52,10 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value>The optional notes, or an empty string.</value>
 		/// ------------------------------------------------------------------------------------
-		string Notes { get; }
+		public string Notes
+		{
+			get { return string.Empty; }
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -49,7 +63,10 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value>The depth.</value>
 		/// ------------------------------------------------------------------------------------
-		int Depth { get; }
+		public int Depth
+		{
+			get { return 0; }
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -59,7 +76,23 @@ namespace SIL.LCModel.Build.Tasks
 		/// 	<c>true</c> if this instance is abstract; otherwise, <c>false</c>.
 		/// </value>
 		/// ------------------------------------------------------------------------------------
-		bool IsAbstract { get; }
+		public bool IsAbstract
+		{
+			get { return false; }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets a value indicating whether this instance is hand generated.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this instance is hand generated; otherwise, <c>false</c>.
+		/// </value>
+		/// ------------------------------------------------------------------------------------
+		public bool IsHandGenerated
+		{
+			get { return false; }
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -67,7 +100,10 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value><c>true</c>, if the class is a singleton, otherwise <c>false</c>.</value>
 		/// ------------------------------------------------------------------------------------
-		bool IsSingleton { get; }
+		public bool IsSingleton
+		{
+			get { return false; }
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -78,7 +114,10 @@ namespace SIL.LCModel.Build.Tasks
 		/// of the Create method.
 		/// Return <c>false</c> when the NotSupportedExceptin is to be thrown.</value>
 		/// ------------------------------------------------------------------------------------
-		bool GenerateFullCreateMethod { get; }
+		public bool GenerateFullCreateMethod
+		{
+			get { return true; }
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -86,7 +125,10 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value>'required', 'none', 'optional'.</value>
 		/// ------------------------------------------------------------------------------------
-		string OwnerStatus { get; }
+		public string OwnerStatus
+		{
+			get { return "required"; }
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -94,7 +136,10 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value>The number.</value>
 		/// ------------------------------------------------------------------------------------
-		int Number { get; }
+		public int Number
+		{
+			get { return 0; }
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -102,7 +147,10 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value>The properties.</value>
 		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<Property> Properties { get; }
+		public StringKeyCollection<Property> Properties
+		{
+			get { return new StringKeyCollection<Property>(); }
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -110,151 +158,248 @@ namespace SIL.LCModel.Build.Tasks
 		/// </summary>
 		/// <value>The sub classes.</value>
 		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<Class> SubClasses { get; }
+		public StringKeyCollection<Class> SubClasses
+		{
+			get { return new StringKeyCollection<Class>(); }
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Get the object properties (owning/reference atomic/col/seq).
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<RelationalProperty> ObjectProperties { get; }
+		public StringKeyCollection<RelationalProperty> ObjectProperties
+		{
+			get { return new StringKeyCollection<RelationalProperty>(); }
+		}
+
+		/// <summary>
+		/// Get the atomic reference properties
+		/// </summary>
+		public StringKeyCollection<RelationalProperty> AtomicRefProperties
+		{
+			get { return new StringKeyCollection<RelationalProperty>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the atomic owning properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<RelationalProperty> AtomicOwnProperties
+		{
+			get { return new StringKeyCollection<RelationalProperty>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the vector object properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<RelationalProperty> VectorProperties
+		{
+			get { return new StringKeyCollection<RelationalProperty>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the object owning properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<RelationalProperty> OwningProperties
+		{
+			get { return new StringKeyCollection<RelationalProperty>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the object owning collection properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<RelationalProperty> CollectionOwnProperties
+		{
+			get { return new StringKeyCollection<RelationalProperty>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the object owning sequence properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<RelationalProperty> SequenceOwnProperties
+		{
+			get { return new StringKeyCollection<RelationalProperty>(); }
+		}
+
+		/// <summary>
+		/// Get the object reference collection properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<RelationalProperty> CollectionRefProperties
+		{
+			get { return new StringKeyCollection<RelationalProperty>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the object reference sequence properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<RelationalProperty> SequenceRefProperties
+		{
+			get { return new StringKeyCollection<RelationalProperty>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the reference properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<RelationalProperty> ReferenceProperties
+		{
+			get { return new StringKeyCollection<RelationalProperty>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the non-object properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<Property> BasicProperties
+		{
+			get { return new StringKeyCollection<Property>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the object collection properties (owning and reference)
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<RelationalProperty> CollectionProperties
+		{
+			get { return new StringKeyCollection<RelationalProperty>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the object sequence properties (owning and reference)
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<RelationalProperty> SequenceProperties
+		{
+			get { return new StringKeyCollection<RelationalProperty>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the integer properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<Property> IntegerProperties
+		{
+			get { return new StringKeyCollection<Property>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the boolean properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<Property> BooleanProperties
+		{
+			get { return new StringKeyCollection<Property>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the Guid properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<Property> GuidProperties
+		{
+			get { return new StringKeyCollection<Property>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the DateTime properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<Property> DateTimeProperties
+		{
+			get { return new StringKeyCollection<Property>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the GenDate properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<Property> GenDateProperties
+		{
+			get { return new StringKeyCollection<Property>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the Binary properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<Property> BinaryProperties
+		{
+			get { return new StringKeyCollection<Property>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the TsString properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<Property> StringProperties
+		{
+			get { return new StringKeyCollection<Property>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the Multi (string/Unicode) properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<Property> MultiProperties
+		{
+			get { return new StringKeyCollection<Property>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the Unicode (regular C#) properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<Property> UnicodeProperties
+		{
+			get { return new StringKeyCollection<Property>(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the TextPropBinary properties
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public StringKeyCollection<Property> TextPropBinaryProperties
+		{
+			get { return new StringKeyCollection<Property>(); }
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Get the atomic object properties
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<RelationalProperty> AtomicProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the atomic reference properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<RelationalProperty> AtomicRefProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the atomic owning properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<RelationalProperty> AtomicOwnProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the vector object properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<RelationalProperty> VectorProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the object owning properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<RelationalProperty> OwningProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the object owning collection properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<RelationalProperty> CollectionOwnProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the object owning sequence properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<RelationalProperty> SequenceOwnProperties { get; }
-		/// <summary>
-		/// Get the object reference collection properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<RelationalProperty> CollectionRefProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the object reference sequence properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<RelationalProperty> SequenceRefProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the reference properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<RelationalProperty> ReferenceProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the non-object properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<Property> BasicProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the object collection properties (owning and reference)
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<RelationalProperty> CollectionProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the object sequence properties (owning and reference)
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<RelationalProperty> SequenceProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the integer properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<Property> IntegerProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the boolean properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<Property> BooleanProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the Guid properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<Property> GuidProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the DateTime properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<Property> DateTimeProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the GenDate properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<Property> GenDateProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the Binary properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<Property> BinaryProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the TsString properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<Property> StringProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the Multi (string/Unicode) properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<Property> MultiProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the Unicode (regular C#) properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<Property> UnicodeProperties { get; }
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Get the TextPropBinary properties
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		StringKeyCollection<Property> TextPropBinaryProperties { get; }
+		public StringKeyCollection<RelationalProperty> AtomicProperties
+		{
+			get { return new StringKeyCollection<RelationalProperty>(); }
+		}
+
+		#endregion
 	}
 }

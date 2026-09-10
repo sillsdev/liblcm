@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>SIL.LCModel.SourceGenerators</RootNamespace>
+    <Description>Roslyn source generator that produces the LCM domain model classes from MasterLCModel.xml. Replaces the former LcmGenerate MSBuild task.</Description>
+    <Product>liblcm</Product>
+    <IsRoslynComponent>true</IsRoslynComponent>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IsPackable>false</IsPackable>
+    <!-- The generator ships its own assembly + NVelocity.dll into consumers; suppress the
+         "no lib content" pack warning if this is ever packed. -->
+    <NoWarn>$(NoWarn);NU5128;RS2008</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all" />
+    <PackageReference Include="NVelocity" Version="1.2.0" GeneratePathProperty="true" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- Embed the NVelocity templates, keyed by their bare file name so #parse("class.vm.cs")
+       and the EmbeddedTemplateLoader resolve them directly. -->
+  <ItemGroup>
+    <Compile Remove="Templates\vm\*.vm.cs" />
+    <EmbeddedResource Include="Templates\vm\*.vm.cs">
+      <LogicalName>%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <!-- Flow NVelocity.dll alongside the generator assembly so it is available in the analyzer
+       load context (both as a ProjectReference analyzer and when packed). -->
+  <PropertyGroup>
+    <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+  </PropertyGroup>
+  <Target Name="GetDependencyTargetPaths">
+    <ItemGroup>
+      <TargetPathWithTargetPlatformMoniker Include="$(PkgNVelocity)\lib\netstandard2.0\NVelocity.dll" IncludeRuntimeDependency="false" />
+    </ItemGroup>
+  </Target>
+
+</Project>

@@ -5,7 +5,7 @@
 using System;
 using System.Xml;
 
-namespace SIL.LCModel.Build.Tasks
+namespace SIL.LCModel.SourceGenerators
 {
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>
@@ -82,7 +82,7 @@ namespace SIL.LCModel.Build.Tasks
 
 			var retval = string.Empty;
 			foreach (XmlNode paraNode in parentNode.SelectNodes("para"))
-				retval = retval + tabs+ "/// " + paraNode.OuterXml + Environment.NewLine;
+				retval = retval + tabs+ "/// " + paraNode.OuterXml + "\r\n";
 			return retval.TrimEnd();
 		}
 	}
