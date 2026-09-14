@@ -3,6 +3,7 @@
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System;
+using System.Threading;
 using System.Xml;
 
 namespace SIL.LCModel.SourceGenerators
@@ -42,7 +43,7 @@ namespace SIL.LCModel.SourceGenerators
 		public Property(XmlElement node, Class parent)
 			: base(node, parent)
 		{
-			m_id = s_id++;
+			m_id = Interlocked.Increment(ref s_id);
 		}
 
 		/// ------------------------------------------------------------------------------------
