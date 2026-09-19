@@ -11,7 +11,7 @@ using NVelocity.Exception;
 using NVelocity.Runtime.Resource;
 using NVelocity.Runtime.Resource.Loader;
 
-namespace SIL.LCModel.SourceGenerators
+namespace SIL.LCModel.ModelGeneration
 {
 	/// <summary>
 	/// An NVelocity <see cref="ResourceLoader"/> that serves templates from an in-memory

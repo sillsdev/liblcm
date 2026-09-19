@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 
-namespace SIL.LCModel.SourceGenerators
+namespace SIL.LCModel.ModelGeneration
 {
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>

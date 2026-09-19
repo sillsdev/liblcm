@@ -9,7 +9,7 @@ using System.Xml;
 using NVelocity;
 using NVelocity.App;
 
-namespace SIL.LCModel.SourceGenerators
+namespace SIL.LCModel.ModelGeneration
 {
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>

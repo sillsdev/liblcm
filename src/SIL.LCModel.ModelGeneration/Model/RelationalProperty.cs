@@ -5,7 +5,7 @@
 using System.Text;
 using System.Xml;
 
-namespace SIL.LCModel.SourceGenerators
+namespace SIL.LCModel.ModelGeneration
 {
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>

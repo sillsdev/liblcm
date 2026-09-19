@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>SIL.LCModel.ModelGeneration</RootNamespace>
+    <Description>The NVelocity-based engine that renders LCM model templates. Shared by the SIL.LCModel.SourceGenerators source generator (domain model) and the SIL.LCModel.Build.Tasks LcmGenerate task (FieldWorks C++ headers).</Description>
+    <Product>liblcm</Product>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NVelocity" Version="1.2.0" />
+  </ItemGroup>
+
+  <!-- The engine types are internal; the two build-time consumers reach them directly. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="SIL.LCModel.SourceGenerators" />
+    <InternalsVisibleTo Include="SIL.LCModel.Build.Tasks" />
+  </ItemGroup>
+
+</Project>

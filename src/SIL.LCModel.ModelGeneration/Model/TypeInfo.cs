@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace SIL.LCModel.SourceGenerators
+namespace SIL.LCModel.ModelGeneration
 {
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>
