@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all" />
-    <ProjectReference Include="..\SIL.LCModel.ModelGeneration\SIL.LCModel.ModelGeneration.csproj" />
+    <ProjectReference Include="..\SIL.LCModel.ModelGeneration\SIL.LCModel.ModelGeneration.csproj" PrivateAssets="all" />
   </ItemGroup>
 
   <!-- Embed the NVelocity templates, keyed by their bare file name so #parse("class.vm.cs")

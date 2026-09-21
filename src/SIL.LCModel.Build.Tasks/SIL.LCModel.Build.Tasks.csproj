@@ -17,9 +17,11 @@ SIL.LCModel.Build.Tasks provides the IdlImp and LcmGenerate msbuild tasks for ge
     <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
   </ItemGroup>
 
-  <!-- The LcmGenerate task reuses the shared NVelocity engine. -->
+  <!-- The LcmGenerate task reuses the shared NVelocity engine. PrivateAssets=all keeps
+       ModelGeneration (which is not itself packed) out of this package's dependency list; the
+       engine assembly is instead packed directly into tools/ below. -->
   <ItemGroup>
-    <ProjectReference Include="..\SIL.LCModel.ModelGeneration\SIL.LCModel.ModelGeneration.csproj" />
+    <ProjectReference Include="..\SIL.LCModel.ModelGeneration\SIL.LCModel.ModelGeneration.csproj" PrivateAssets="all" />
   </ItemGroup>
 
   <Target Name="CopyTargetsAndProps" AfterTargets="Build">
