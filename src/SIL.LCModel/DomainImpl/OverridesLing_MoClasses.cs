@@ -4048,23 +4048,24 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
-		/// Gives an object an opportunity to do any class-specific side-effect work when it has
-		/// been cloned with DomainServices.CopyObject. In this case, the creation of a MoAffixProcess
-		/// adds default initial values that are not wanted in the cloned copy, so PostClone()
-		/// removes them.
+		/// Removes initialization defaults from this affix process's clone.
 		/// </summary>
+		/// <param name="copyMap">The map from source object identifiers to their clones.</param>
 		public override void PostClone(Dictionary<int, ICmObject> copyMap)
 		{
-			foreach (var cmObject in copyMap.Values)
-			{
-				var clonedProcess = cmObject as IMoAffixProcess;
-				if (clonedProcess == null)
-					return;
-				if (clonedProcess.InputOS.Count > 1)
-					clonedProcess.InputOS.RemoveAt(0);
-				if (clonedProcess.OutputOS.Count > 1)
-					clonedProcess.OutputOS.RemoveAt(0);
-			}
+			// The map can contain sibling clones; this source's identifier selects its own clone.
+			if (!copyMap.TryGetValue(Hvo, out var clone) || !(clone is IMoAffixProcess clonedProcess))
+				return;
+
+			// Factory-created clones contain leading defaults in addition to the source content.
+			var surplusInputs = clonedProcess.InputOS.Count - InputOS.Count;
+			for (var i = 0; i < surplusInputs; i++)
+				clonedProcess.InputOS.RemoveAt(0);
+
+			// Removing a default input can also remove its referenced default output.
+			var surplusOutputs = clonedProcess.OutputOS.Count - OutputOS.Count;
+			for (var i = 0; i < surplusOutputs; i++)
+				clonedProcess.OutputOS.RemoveAt(0);
 		}
 		/// <summary>
 		/// Gets all of the feature constraints in this rule.
