@@ -3,11 +3,10 @@
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
 using System;
+using System.Threading;
 using System.Xml;
-using NVelocity;
-using NVelocity.Runtime;
 
-namespace SIL.LCModel.Build.Tasks
+namespace SIL.LCModel.ModelGeneration
 {
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>
@@ -44,7 +43,7 @@ namespace SIL.LCModel.Build.Tasks
 		public Property(XmlElement node, Class parent)
 			: base(node, parent)
 		{
-			m_id = s_id++;
+			m_id = Interlocked.Increment(ref s_id);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -198,9 +197,8 @@ namespace SIL.LCModel.Build.Tasks
 		{
 			get
 			{
-				var context = (VelocityContext)
-					RuntimeSingleton.GetApplicationAttribute("LcmGenerate.Context");
-				var lcmGenerate = (LcmGenerateImpl)context.Get("lcmgenerate");
+				// Property -> Class -> CellarModule -> Model, which holds the generator.
+				var lcmGenerate = Parent.Parent.Parent.LcmGenerate;
 
 				var className = Parent.Name;
 				return lcmGenerate.Overrides.ContainsKey(className)
@@ -219,9 +217,8 @@ namespace SIL.LCModel.Build.Tasks
 		{
 			get
 			{
-				var context = (VelocityContext)
-					RuntimeSingleton.GetApplicationAttribute("LcmGenerate.Context");
-				var lcmGenerate = (LcmGenerateImpl)context.Get("lcmgenerate");
+				// Property -> Class -> CellarModule -> Model, which holds the generator.
+				var lcmGenerate = Parent.Parent.Parent.LcmGenerate;
 
 				var className = Parent.Name;
 				if (lcmGenerate.IntPropTypeOverrides.ContainsKey(className))

@@ -8,12 +8,24 @@
     <Product>liblcm</Product>
   </PropertyGroup>
 
+  <!-- The domain-model sources are produced by the SIL.LCModel.SourceGenerators source generator.
+       Exclude any on-disk copies (left behind by the old MSBuild-task codegen) from compilation so
+       the generator is their sole producer. -->
   <ItemGroup>
-    <Compile Remove="LcmGenerate\*.vm.cs" />
+    <Compile Remove="Generated*.cs" />
+    <Compile Remove="DomainImpl\Generated*.cs" />
+    <Compile Remove="Infrastructure\Impl\Generated*.cs" />
+    <Compile Remove="IOC\Generated*.cs" />
   </ItemGroup>
 
+  <!-- The source generator and the model files that drive it. -->
   <ItemGroup>
-    <None Include="LcmGenerate\*.vm.cs" />
+    <ProjectReference Include="..\SIL.LCModel.SourceGenerators\SIL.LCModel.SourceGenerators.csproj"
+                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <AdditionalFiles Include="MasterLCModel.xml" LcmModel="true" />
+    <AdditionalFiles Include="LcmGenerate\HandGenerated.xml" LcmModel="true" />
+    <AdditionalFiles Include="LcmGenerate\IntPropTypeOverrides.xml" LcmModel="true" />
+    <CompilerVisibleItemMetadata Include="AdditionalFiles" MetadataName="LcmModel" />
   </ItemGroup>
 
   <ItemGroup>
@@ -87,35 +99,6 @@
     <None Update="Styles.dtd" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Templates\*.*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <MsBuildCommand Condition="'$(MsBuildRuntimeType)'=='Core' And '$(MsBuildCommand)'==''">dotnet build</MsBuildCommand>
-    <MsbuildCommand Condition="'$(OS)'=='Windows_NT' And '$(MsBuildCommand)'==''">"$(MSBuildBinPath)\msbuild.exe"</MsbuildCommand>
-    <MsbuildCommand Condition="'$(OS)'=='Unix' And '$(MsBuildCommand)'==''">msbuild</MsbuildCommand>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <GeneratedFiles Include="GeneratedConstants.cs" />
-    <GeneratedFiles Include="GeneratedInterfaces.cs" />
-    <GeneratedFiles Include="GeneratedFactoryInterfaces.cs" />
-    <GeneratedFiles Include="GeneratedRepositoryInterfaces.cs" />
-    <GeneratedFiles Include="DomainImpl\GeneratedClasses.cs" />
-    <GeneratedFiles Include="DomainImpl\GeneratedFactoryImplementations.cs" />
-    <GeneratedFiles Include="Infrastructure\Impl\GeneratedRepositoryImplementations.cs" />
-    <GeneratedFiles Include="Infrastructure\Impl\GeneratedBackendProvider.cs" />
-    <GeneratedFiles Include="IOC\GeneratedServiceLocatorBootstrapper.cs" />
-    <Clean Include="@(GeneratedFiles)" />
-  </ItemGroup>
-
-  <Target Name="GenerateModel" Inputs="MasterLCModel.xml" Outputs="@(GeneratedFiles)" BeforeTargets="BeforeCompile">
-    <!-- Call the LcmGenerate task from SIL.LCModel.Build.Tasks in a separate msbuild process,
-         so it doesn't lock the SIL.LCModel.Build.Tasks.dll in VS. -->
-    <Exec Command="$(MsbuildCommand) GenerateModel.proj /p:Configuration=$(Configuration) /p:OutDir=$(OutDir)" />
-  <ItemGroup>
-      <Compile Remove="@(GeneratedFiles)" />
-      <Compile Include="@(GeneratedFiles)" />
-  </ItemGroup>
-  </Target>
 
   <Target Name="CollectRuntimeOutputs" BeforeTargets="_GetPackageFiles">
   <ItemGroup>

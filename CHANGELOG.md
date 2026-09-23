@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- [SIL.LCModel] The domain-model `Generated*.cs` sources are now produced at compile time by the new `SIL.LCModel.SourceGenerators` Roslyn source generator, instead of the `LcmGenerate` MSBuild task running the NVelocity templates in a child MSBuild process. The NVelocity engine and model wrappers moved to a shared `SIL.LCModel.ModelGeneration` project used by both the source generator and the (retained) `LcmGenerate` task, which still renders other templates from the model (e.g. the FieldWorks C++ cellar-constants header). Templates and generated output are byte-for-byte identical. No public API change.
 - [SIL.LCModel] Replaced the internal StructureMap (`structuremap.patched`) IoC container with `Microsoft.Extensions.DependencyInjection` (8.x). No public API change.
 - [SIL.LCModel] Trim 12 overwordy semantic domain descriptions and fix 22 punctuation/whitespace issues in the SemDom.xml template, matching sillsdev/FwLocalizations#5 and sillsdev/FwLocalizations#7
 - [SIL.LCModel] `FileUtils.IsFileUriOrPath` checks for the presence of "file:" rather than the absence of known non-file URI schemes

@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>SIL.LCModel.SourceGenerators</RootNamespace>
+    <Description>Roslyn source generator that produces the LCM domain model classes from MasterLCModel.xml. Replaces the former LcmGenerate MSBuild task.</Description>
+    <Product>liblcm</Product>
+    <IsRoslynComponent>true</IsRoslynComponent>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IsPackable>false</IsPackable>
+    <NoWarn>$(NoWarn);NU5128;RS2008</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all" />
+    <ProjectReference Include="..\SIL.LCModel.ModelGeneration\SIL.LCModel.ModelGeneration.csproj" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- Embed the NVelocity templates, keyed by their bare file name so #parse("class.vm.cs")
+       and the EmbeddedTemplateLoader resolve them directly. -->
+  <ItemGroup>
+    <Compile Remove="Templates\vm\*.vm.cs" />
+    <EmbeddedResource Include="Templates\vm\*.vm.cs">
+      <LogicalName>%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <!-- Flow the engine (SIL.LCModel.ModelGeneration.dll) and its NVelocity dependency alongside
+       the generator assembly so they are present in the Roslyn analyzer load context. -->
+  <PropertyGroup>
+    <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+  </PropertyGroup>
+  <Target Name="GetDependencyTargetPaths" DependsOnTargets="ResolveReferences">
+    <ItemGroup>
+      <TargetPathWithTargetPlatformMoniker Include="@(ReferencePath)"
+                                           Condition="'%(Filename)' == 'SIL.LCModel.ModelGeneration' Or '%(Filename)' == 'NVelocity'"
+                                           IncludeRuntimeDependency="false" />
+    </ItemGroup>
+  </Target>
+
+</Project>
