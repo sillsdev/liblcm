@@ -738,7 +738,7 @@ namespace SIL.LCModel.DomainImpl
 			finally
 			{
 				// Commit because undoing the morph-bundle references throws from
-				// LcmAtomicRefPropertyChanged.Undo during teardown.
+				// LcmAtomicRefPropertyChanged.Undo during teardown (LT-22830).
 				Cache.ActionHandlerAccessor.Commit();
 			}
 		}
