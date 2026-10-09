@@ -37,15 +37,7 @@ namespace SIL.LCModel.Core.Attributes
 			if (IcuVersion > 0)
 				Wrapper.ConfineIcuVersions(IcuVersion);
 
-			try
-			{
-				Wrapper.Init();
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine($"InitializeIcuAttribute: ERROR: failed when calling Wrapper.Init() with {e.GetType()}: {e.Message}");
-			}
-
+			// ICU_DATA has to be resolved before InitIcuDataDir hands the data directory to ICU.
 			EnsureIcuDataEnvironmentVariableIsSet();
 
 			try
@@ -54,7 +46,7 @@ namespace SIL.LCModel.Core.Attributes
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine($"InitializeIcuAttribute: ERROR: failed with {e.GetType()}: {e.Message}");
+				Console.WriteLine($"InitializeIcuAttribute: ERROR: failed when calling InitIcuDataDir() with {e.GetType()}: {e.Message}");
 			}
 		}
 
