@@ -185,9 +185,8 @@ namespace SIL.LCModel.Infrastructure.Impl
 				RawXmlBytes = surr.RawXmlBytes;
 			else
 				Xml = sourceSurrogate.XML;
-			ICmObjectId objId = surr.Id;
-			m_guid = objId is CmObjectIdWithHvo ? objId
-				: ((IServiceLocatorInternal)cache.ServiceLocator).IdentityMap.CreateObjectIdWithHvo(objId.Guid);
+			// An HVO from the source cache means nothing in this one, so always take one from this cache.
+			m_guid = ((IServiceLocatorInternal)cache.ServiceLocator).IdentityMap.CreateObjectIdWithHvo(surr.Id.Guid);
 			SetClassName(surr.m_classname);
 		}
 
