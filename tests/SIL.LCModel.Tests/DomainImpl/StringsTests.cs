@@ -286,6 +286,27 @@ namespace SIL.LCModel.DomainImpl
 			Assert.AreEqual("Saltillo Mejico", Cache.LangProject.FieldWorkLocation.get_String(spanish.Handle).Text);
 		}
 
+		/// <summary>
+		/// LT-22834: an AUni alternative in a writing system the cache has not seen yet must be
+		/// kept (created on demand, as AStr runs are), not dropped.
+		/// </summary>
+		[Test]
+		public void ReadMultiUnicodeAlternative_UnknownWritingSystem_IsKept()
+		{
+			const string wsId = "qaa-x-lt22834";
+			var wsManager = Cache.ServiceLocator.WritingSystemManager;
+			Assert.AreEqual(0, wsManager.GetWsFromStr(wsId), "precondition: ws must be unknown");
+			var node = System.Xml.Linq.XElement.Parse("<AUni ws=\"" + wsId + "\">kept</AUni>");
+
+			ITsString tss;
+			var ws = MultiUnicodeAccessor.ReadMultiUnicodeAlternative(node, Cache.WritingSystemFactory, out tss);
+
+			Assert.AreNotEqual(0, ws, "alternative in an unknown writing system was dropped");
+			Assert.AreEqual(ws, wsManager.GetWsFromStr(wsId));
+			Assert.AreEqual("kept", tss.Text);
+			Assert.AreEqual(ws, tss.get_WritingSystemAt(0));
+		}
+
 		[Test]
 		public void ToXml_WorksAsExpected()
 		{
