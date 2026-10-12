@@ -929,10 +929,21 @@ namespace SIL.LCModel.DomainImpl
 			var wsVal = aUniNode.Attribute("ws");
 			if (wsVal == null || String.IsNullOrEmpty(wsVal.Value))
 				return 0;
-			var wsHvo = wsf.GetWsFromStr(wsVal.Value);
+			// Like the runs of an AStr (see TsStringSerializer.GetWsForId), create the writing
+			// system on demand: GetWsFromStr returns 0 for one the cache has not seen yet, which
+			// dropped the alternative and made the result depend on activation order (LT-22834).
+			int wsHvo;
+			try
+			{
+				wsHvo = wsf.get_Engine(wsVal.Value).Handle;
+			}
+			catch (Exception)
+			{
+				// An identifier that cannot be made into a writing system is still dropped.
+				wsHvo = 0;
+			}
 			// Throwing out a string without a ws is probably better than crashing
 			// and preventing a db from being opened.
-			// This code currently accepts this data, only storing en__IPA and fr strings.
 			// <Form>
 			// <AUni ws="en" />
 			// <AUni ws="en__IPA">problematic</AUni>

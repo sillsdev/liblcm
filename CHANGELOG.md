@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- [SIL.LCModel] Multi-string (AUni) alternatives in writing systems the cache has not seen yet are no longer dropped on load; the writing system is created on demand, as for string runs, so the result no longer depends on activation order (LT-22834)
 - [SIL.LCModel] BaseStyleInfo now loads default font features (ktptFontVariations) from style rules, fixing font features set as style defaults being dropped on reload (LT-22351)
 - [SIL.LCModel] BaseStyleInfo no longer clobbers ws-specific font overrides inherited from a based-on style with the default font info's merely-inherited values; only explicitly-set default properties are propagated to ws overrides (LT-22351)
 - [SIL.LCModel] BulletInfo now decodes all properties of an encoded bullet font info instead of stopping at the first string property, fixing bullet font features (ktptFontVariations) being lost when a bullet font name was also set (LT-22351)
