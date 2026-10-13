@@ -26,7 +26,7 @@ CI runs on Windows and Ubuntu. See .github/workflows/ci-cd.yml:
 Always mirror this sequence when validating a change locally.
 
 Use `dotnet build -m:1` for a cold-start build (a tree with no generated sources yet).
-Parallel builds race on the generated sources and fail with `LcmGenerate` or `IdlImp`
+Parallel builds race on the generated sources and fail with `IdlImp`
 errors. Plain `dotnet build` is fine once those sources exist.
 
 ### Tests per README (not validated here)
