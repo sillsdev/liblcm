@@ -250,6 +250,77 @@ namespace SIL.LCModel.Infrastructure.Impl
 			}
 			sourceGuids.Clear();
 		}
+
+		/// <summary>
+		/// A copy taken from a source whose objects are only partly activated must still give every
+		/// object in the target an HVO of its own, including objects created in the target afterwards.
+		/// </summary>
+		[Test]
+		public void PortFromPartlyActivatedSourceGivesMemoryOnlyTargetUniqueHvos()
+		{
+			var sourceProjectId = new TestProjectId(BackendProviderType.kXMLWithMemoryOnlyWsMgr,
+				GenerateBackendStartupParameters(false, BackendProviderType.kXMLWithMemoryOnlyWsMgr).ProjectId.Path);
+			using (var newCache = LcmCache.CreateCacheWithNewBlankLangProj(sourceProjectId, "en", "fr", "en", new DummyLcmUI(),
+				m_lcmDirectories, new LcmSettings()))
+			{
+				newCache.ServiceLocator.GetInstance<IUndoStackManager>().Save();
+			}
+
+			using (var sourceCache = LcmCache.CreateCacheFromExistingData(sourceProjectId, "en", new DummyLcmUI(),
+				m_lcmDirectories, new LcmSettings(), new DummyProgressDlg()))
+			{
+				var dormant = IdentityMapOf(sourceCache).AllObjectsOrSurrogates().Where(item => !item.HasObject).ToList();
+				Assert.That(dormant.Count, Is.GreaterThan(10), "The source should start mostly dormant.");
+				// Activate every other dormant object so the copy sees both activated and dormant sources.
+				for (var i = 0; i < dormant.Count; i += 2)
+					Assert.That(dormant[i].Object, Is.Not.Null);
+
+				var targetProjectId = new TestProjectId(BackendProviderType.kMemoryOnly, null);
+				using (var targetCache = LcmCache.CreateCacheCopy(targetProjectId, "en", new DummyLcmUI(),
+					m_lcmDirectories, new LcmSettings(), sourceCache))
+				{
+					AssertHvosAreUnique(targetCache, "after the copy");
+
+					var entryFactory = targetCache.ServiceLocator.GetInstance<ILexEntryFactory>();
+					NonUndoableUnitOfWorkHelper.Do(targetCache.ActionHandlerAccessor, () =>
+					{
+						for (var i = 0; i < dormant.Count; i++)
+							entryFactory.Create();
+					});
+					AssertHvosAreUnique(targetCache, "after creating objects in the target");
+
+					var repository = targetCache.ServiceLocator.GetInstance<ICmObjectRepository>();
+					foreach (var pair in HvosOf(targetCache).ToList())
+						Assert.That(repository.GetObject(pair.Value).Guid, Is.EqualTo(pair.Key), "Wrong object for HVO " + pair.Value);
+				}
+			}
+		}
+
+		private static IdentityMap IdentityMapOf(LcmCache cache)
+		{
+			return ((IServiceLocatorInternal)cache.ServiceLocator).IdentityMap;
+		}
+
+		/// <summary>
+		/// The HVO of every object in the cache that has one, read without activating any dormant object.
+		/// </summary>
+		private static IEnumerable<KeyValuePair<Guid, int>> HvosOf(LcmCache cache)
+		{
+			foreach (var item in IdentityMapOf(cache).AllObjectsOrSurrogates())
+			{
+				if (item.HasObject)
+					yield return new KeyValuePair<Guid, int>(item.Id.Guid, item.Object.Hvo);
+				else if (item.Id is CmObjectIdWithHvo idWithHvo)
+					yield return new KeyValuePair<Guid, int>(item.Id.Guid, idWithHvo.Hvo);
+			}
+		}
+
+		private static void AssertHvosAreUnique(LcmCache cache, string when)
+		{
+			var shared = HvosOf(cache).GroupBy(pair => pair.Value).Where(group => group.Count() > 1).ToList();
+			Assert.That(shared.Count, Is.Zero, "HVOs shared by more than one object " + when + ": "
+				+ string.Join(", ", shared.Take(5).Select(group => group.Key + " (" + group.Count() + " objects)")));
+		}
 		#endregion
 	}
 }
