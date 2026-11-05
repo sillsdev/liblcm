@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
@@ -796,13 +797,26 @@ namespace SIL.LCModel.Core.Text
 			writer.WriteAttributeString(attrName, guid.ToString());
 		}
 
+		private static readonly Regex UnpairedSurrogateRegex = new Regex(
+			@"[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]", RegexOptions.Compiled);
+
 		/// <summary>
-		/// Gets the NFC form of a string attribute value, without the characters XML cannot
-		/// represent (the same treatment run text gets).
+		/// Gets the NFC form of a string attribute value, without unpaired surrogates or other
+		/// characters XML cannot represent. Unpaired surrogates are removed before normalizing,
+		/// because ICU cannot encode them.
 		/// </summary>
+		/// <remarks>
+		/// Deliberately separate from the run-text handling in <see cref="TsStringSerializer"/>:
+		/// offsets index into run text, so run text must keep its length, whereas nothing indexes
+		/// into a property value (a font name, bullet text), so a property value can simply drop
+		/// what XML cannot hold.
+		/// </remarks>
 		private static string GetXmlSafeString(string value)
 		{
-			return TsStringSerializer.GetXmlSafeText(value);
+			string stripped = TsStringSerializer.StripInvalidXmlChars(UnpairedSurrogateRegex.Replace(value, string.Empty));
+			if (stripped.Length != value.Length)
+				Debug.WriteLine("TsPropsSerializer: characters XML cannot represent were removed from a string property.");
+			return TsStringSerializer.StripInvalidXmlChars(Normalizer.Normalize(stripped, Normalizer.UNormalizationMode.UNORM_NFC));
 		}
 
 		#endregion
