@@ -99,7 +99,7 @@ namespace SIL.LCModel.Core.Text
 					}
 					break;
 				case FwTextPropType.ktptFontSize:
-					writer.WriteAttributeString("fontsize", value.ToString());
+					writer.WriteAttributeString("fontsize", value.ToString(CultureInfo.InvariantCulture));
 					if (var != FwTextPropVar.ktpvDefault)
 						writer.WriteAttributeString("fontsizeUnit", GetVariationString(var));
 					break;
@@ -110,7 +110,7 @@ namespace SIL.LCModel.Core.Text
 					writer.WriteAttributeString("italic", GetToggleValueString(value));
 					break;
 				case FwTextPropType.ktptOffset:
-					writer.WriteAttributeString("offset", value.ToString());
+					writer.WriteAttributeString("offset", value.ToString(CultureInfo.InvariantCulture));
 					writer.WriteAttributeString("offsetUnit", GetVariationString(var));
 					break;
 				case FwTextPropType.ktptSuperscript:
@@ -131,27 +131,28 @@ namespace SIL.LCModel.Core.Text
 					writer.WriteAttributeString("align", GetAlignmentTypeString(value));
 					break;
 				case FwTextPropType.ktptFirstIndent:
-					writer.WriteAttributeString("firstIndent", value.ToString());
+					writer.WriteAttributeString("firstIndent", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptLeadingIndent:
-					writer.WriteAttributeString("leadingIndent", value.ToString());
+					writer.WriteAttributeString("leadingIndent", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptTrailingIndent:
-					writer.WriteAttributeString("trailingIndent", value.ToString());
+					writer.WriteAttributeString("trailingIndent", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptSpaceBefore:
-					writer.WriteAttributeString("spaceBefore", value.ToString());
+					writer.WriteAttributeString("spaceBefore", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptSpaceAfter:
-					writer.WriteAttributeString("spaceAfter", value.ToString());
+					writer.WriteAttributeString("spaceAfter", value.ToString(CultureInfo.InvariantCulture));
 					break;
-				case FwTextPropType.ktptTabDef:
-					writer.WriteAttributeString("tabDef", value.ToString());
-					break;
+				// ktptTabDef is not written: tabs are not supported and the readers have always
+				// ignored the attribute.
 				case FwTextPropType.ktptLineHeight:
-					writer.WriteAttributeString("lineHeight", Math.Abs(value).ToString());
+					// negative millipoints means "exact" internally; other variations keep their sign
+					// (long, so that int.MinValue can be negated)
+					writer.WriteAttributeString("lineHeight", (var == FwTextPropVar.ktpvMilliPoint ? Math.Abs((long) value) : value)
+						.ToString(CultureInfo.InvariantCulture));
 					writer.WriteAttributeString("lineHeightUnit", GetVariationString(var));
-					// negative means "exact" internally
 					if (var == FwTextPropVar.ktpvMilliPoint)
 						writer.WriteAttributeString("lineHeightType", value < 0 ? "exact" : "atLeast");
 					break;
@@ -161,80 +162,84 @@ namespace SIL.LCModel.Core.Text
 
 				// Properties from Views
 				case FwTextPropType.ktptRightToLeft:
-					writer.WriteAttributeString("rightToLeft", value.ToString());
+					writer.WriteAttributeString("rightToLeft", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptPadLeading:
-					writer.WriteAttributeString("padLeading", value.ToString());
+					writer.WriteAttributeString("padLeading", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptPadTrailing:
-					writer.WriteAttributeString("padTrailing", value.ToString());
+					writer.WriteAttributeString("padTrailing", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptMarginTop:
-					writer.WriteAttributeString("MarginTop", value.ToString());
+					// Older versions wrote "MarginTop", which no reader accepted; the readers accept both.
+					writer.WriteAttributeString("marginTop", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptPadTop:
-					writer.WriteAttributeString("padTop", value.ToString());
+					writer.WriteAttributeString("padTop", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptPadBottom:
-					writer.WriteAttributeString("padBottom", value.ToString());
+					writer.WriteAttributeString("padBottom", value.ToString(CultureInfo.InvariantCulture));
 					break;
 
 				case FwTextPropType.ktptBorderTop:
-					writer.WriteAttributeString("borderTop", value.ToString());
+					writer.WriteAttributeString("borderTop", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptBorderBottom:
-					writer.WriteAttributeString("borderBottom", value.ToString());
+					writer.WriteAttributeString("borderBottom", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptBorderLeading:
-					writer.WriteAttributeString("borderLeading", value.ToString());
+					writer.WriteAttributeString("borderLeading", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptBorderTrailing:
-					writer.WriteAttributeString("borderTrailing", value.ToString());
+					writer.WriteAttributeString("borderTrailing", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptBorderColor:
 					writer.WriteAttributeString("borderColor", GetColorString(value));
 					break;
 				case FwTextPropType.ktptBulNumScheme:
-					writer.WriteAttributeString("bulNumScheme", value.ToString());
+					writer.WriteAttributeString("bulNumScheme", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptBulNumStartAt:
-					writer.WriteAttributeString("bulNumStartAt", (value == int.MinValue ? 0 : value).ToString());
+					writer.WriteAttributeString("bulNumStartAt", (value == int.MinValue ? 0 : value).ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptDirectionDepth:
-					writer.WriteAttributeString("directionDepth", value.ToString());
+					writer.WriteAttributeString("directionDepth", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptKeepWithNext:
-					writer.WriteAttributeString("keepWithNext", value.ToString());
+					writer.WriteAttributeString("keepWithNext", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptKeepTogether:
-					writer.WriteAttributeString("keepTogether", value.ToString());
+					writer.WriteAttributeString("keepTogether", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptHyphenate:
-					writer.WriteAttributeString("hyphenate", value.ToString());
+					writer.WriteAttributeString("hyphenate", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptWidowOrphanControl:
-					writer.WriteAttributeString("widowOrphan", value.ToString());
+					writer.WriteAttributeString("widowOrphan", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptMaxLines:
-					writer.WriteAttributeString("maxLines", value.ToString());
+					writer.WriteAttributeString("maxLines", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptCellBorderWidth:
-					writer.WriteAttributeString("cellBorderWidth", value.ToString());
+					writer.WriteAttributeString("cellBorderWidth", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptCellSpacing:
-					writer.WriteAttributeString("cellSpacing", value.ToString());
+					writer.WriteAttributeString("cellSpacing", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptCellPadding:
-					writer.WriteAttributeString("cellPadding", value.ToString());
+					writer.WriteAttributeString("cellPadding", value.ToString(CultureInfo.InvariantCulture));
 					break;
-				case FwTextPropType.ktptEditable:
-					writer.WriteAttributeString("editable", GetEditableString(value));
-					break;
+				// ktptEditable is not written: it is set by view constructors on display strings,
+				// and the string reader has always ignored it, so persisting it would make
+				// existing text read-only once loaded.
+				// ktptTableRule is not written either: it is only set by the views table layout,
+				// and an attribute name older readers do not know would make the record unloadable
+				// for them.
 				case FwTextPropType.ktptSetRowDefaults:
-					writer.WriteAttributeString("setRowDefaults", value.ToString());
+					writer.WriteAttributeString("setRowDefaults", value.ToString(CultureInfo.InvariantCulture));
 					break;
 				case FwTextPropType.ktptRelLineHeight:
-					writer.WriteAttributeString("relLineHeight", value.ToString());
+					writer.WriteAttributeString("relLineHeight", value.ToString(CultureInfo.InvariantCulture));
 					break;
 			}
 		}
@@ -243,11 +248,11 @@ namespace SIL.LCModel.Core.Text
 		{
 			switch (tpt)
 			{
-				case FwTextPropType.ktptCharStyle:
-					writer.WriteAttributeString("charStyle", Normalizer.Normalize(value, Normalizer.UNormalizationMode.UNORM_NFC));
-					break;
+				// ktptCharStyle, ktptParaStyle and ktptTabList are not written: they are obsolete
+				// (superseded by ktptNamedStyle; tabs are not supported) and the readers have always
+				// ignored them.
 				case FwTextPropType.ktptFontFamily:
-					writer.WriteAttributeString("fontFamily", Normalizer.Normalize(value, Normalizer.UNormalizationMode.UNORM_NFC));
+					writer.WriteAttributeString("fontFamily", GetXmlSafeString(value));
 					break;
 				case FwTextPropType.ktptObjData:
 					if (string.IsNullOrEmpty(value))
@@ -262,25 +267,25 @@ namespace SIL.LCModel.Core.Text
 							writer.WriteAttributeString("type", "picture");
 							break;
 						case FwObjDataTypes.kodtNameGuidHot:
-							writer.WriteAttributeString("link", GetGuidString(value));
+							WriteGuidAttribute(writer, "link", value);
 							break;
 						case FwObjDataTypes.kodtExternalPathName:
-							writer.WriteAttributeString("externalLink", Normalizer.Normalize(value.Substring(1), Normalizer.UNormalizationMode.UNORM_NFC));
+							writer.WriteAttributeString("externalLink", GetXmlSafeString(value.Substring(1)));
 							break;
 						case FwObjDataTypes.kodtOwnNameGuidHot:
-							writer.WriteAttributeString("ownlink", GetGuidString(value));
+							WriteGuidAttribute(writer, "ownlink", value);
 							break;
 						case FwObjDataTypes.kodtEmbeddedObjectData:
 							// This is only used for copying to the clipboard
 							// We assume that the buffer contains valid XML and that the receiving code
 							// knows what to do with it!
-							writer.WriteAttributeString("embedded", Normalizer.Normalize(value.Substring(1), Normalizer.UNormalizationMode.UNORM_NFC));
+							writer.WriteAttributeString("embedded", GetXmlSafeString(value.Substring(1)));
 							break;
 						case FwObjDataTypes.kodtContextString:
 							// This is a generated context-sensitive string.  The next 8 characters give a
 							// GUID, which is from to a known set of GUIDs that have special meaning to a
 							// view contructor.
-							writer.WriteAttributeString("contextString", GetGuidString(value));
+							WriteGuidAttribute(writer, "contextString", value);
 							break;
 						case FwObjDataTypes.kodtGuidMoveableObjDisp:
 							// This results in a call-back to the VC, with a new VwEnv, to create any
@@ -289,20 +294,23 @@ namespace SIL.LCModel.Core.Text
 							// occur immediately following the paragraph line that contains the ORC,
 							// which functions as an anchor, but may be moved down past following text
 							// to improve page breaking.
-							writer.WriteAttributeString("moveableObj", GetGuidString(value));
+							WriteGuidAttribute(writer, "moveableObj", value);
 							break;
 					}
 					break;
 
 				// Properties from Views
 				case FwTextPropType.ktptNamedStyle:
-					writer.WriteAttributeString("namedStyle", Normalizer.Normalize(value, Normalizer.UNormalizationMode.UNORM_NFC));
+					writer.WriteAttributeString("namedStyle", GetXmlSafeString(value));
 					break;
 				case FwTextPropType.ktptBulNumTxtBef:
-					writer.WriteAttributeString("bulNumTxtBef", Normalizer.Normalize(value, Normalizer.UNormalizationMode.UNORM_NFC));
+					writer.WriteAttributeString("bulNumTxtBef", GetXmlSafeString(value));
 					break;
 				case FwTextPropType.ktptBulNumTxtAft:
-					writer.WriteAttributeString("bulNumTxtAft", Normalizer.Normalize(value, Normalizer.UNormalizationMode.UNORM_NFC));
+					writer.WriteAttributeString("bulNumTxtAft", GetXmlSafeString(value));
+					break;
+				case FwTextPropType.ktptCustomBullet:
+					writer.WriteAttributeString("bulCusTxt", GetXmlSafeString(value));
 					break;
 				case FwTextPropType.ktptBulNumFontInfo:
 					// BulNumFontInfo is written separately.
@@ -311,18 +319,14 @@ namespace SIL.LCModel.Core.Text
 					// WsStyle is written separately.
 					break;
 				case FwTextPropType.ktptFontVariations:
-					writer.WriteAttributeString("fontVariations", Normalizer.Normalize(value, Normalizer.UNormalizationMode.UNORM_NFC));
-					break;
-				case FwTextPropType.ktptParaStyle:
-					writer.WriteAttributeString("paraStyle", Normalizer.Normalize(value, Normalizer.UNormalizationMode.UNORM_NFC));
-					break;
-				case FwTextPropType.ktptTabList:
-					writer.WriteAttributeString("tabList", Normalizer.Normalize(value, Normalizer.UNormalizationMode.UNORM_NFC));
+					writer.WriteAttributeString("fontVariations", GetXmlSafeString(value));
 					break;
 				case FwTextPropType.ktptTags:
 					const int guidLength = 16;
 					byte[] bytes = Encoding.Unicode.GetBytes(value);
 					int guidCount = bytes.Length / guidLength;
+					if (guidCount == 0)
+						break; // nothing but an incomplete GUID: malformed, leave it out
 					var sb = new StringBuilder();
 					for (int i = 0; i < guidCount; i++)
 					{
@@ -353,17 +357,28 @@ namespace SIL.LCModel.Core.Text
 			// Write the integer valued properties in alphabetical order
 			var props = new SortedDictionary<string, string>();
 			var otherProps = new List<KeyValuePair<string, string>>();
+			var strProps = new List<KeyValuePair<string, string>>();
 			int i = 0;
 			while (i < bulNumFontInfo.Length)
 			{
 				var tpt = (FwTextPropType) bulNumFontInfo[i];
 				i++;
-				if (tpt == FwTextPropType.ktptFontFamily)
+				if (tpt == FwTextPropType.ktptFontFamily || tpt == FwTextPropType.ktptFontVariations)
 				{
-					string fontFamily = bulNumFontInfo.Substring(i, bulNumFontInfo.Length - i - 1);
-					otherProps.Add(new KeyValuePair<string, string>("fontFamily", fontFamily));
-					break;
+					// String properties are terminated by a NUL (BulletInfo writes the font family
+					// then the font features).
+					int end = bulNumFontInfo.IndexOf('\0', i);
+					if (end < 0)
+						end = bulNumFontInfo.Length;
+					string strValue = bulNumFontInfo.Substring(i, end - i);
+					strProps.Add(new KeyValuePair<string, string>(tpt == FwTextPropType.ktptFontFamily ? "fontFamily" : "fontVariations",
+						GetXmlSafeString(strValue)));
+					i = end + 1;
+					continue;
 				}
+
+				if (i + 2 > bulNumFontInfo.Length)
+					break; // truncated: leave out the incomplete property rather than fail the save
 
 				int value = bulNumFontInfo[i] + (bulNumFontInfo[i + 1] << 16);
 				i += 2;
@@ -382,10 +397,10 @@ namespace SIL.LCModel.Core.Text
 						props["underline"] = GetUnderlineTypeString(value);
 						break;
 					case FwTextPropType.ktptFontSize:
-						props["fontsize"] = string.Format("{0}mpt", value);
+						props["fontsize"] = string.Format(CultureInfo.InvariantCulture, "{0}mpt", value);
 						break;
 					case FwTextPropType.ktptOffset:
-						props["offset"] = string.Format("{0}mpt", value);
+						props["offset"] = string.Format(CultureInfo.InvariantCulture, "{0}mpt", value);
 						break;
 					case FwTextPropType.ktptForeColor:
 						props["forecolor"] = GetColorString(value);
@@ -397,13 +412,19 @@ namespace SIL.LCModel.Core.Text
 						props["undercolor"] = GetColorString(value);
 						break;
 					default:
-						otherProps.Add(new KeyValuePair<string, string>(string.Format("prop_{0}", (int) tpt), value.ToString()));
+						otherProps.Add(new KeyValuePair<string, string>(string.Format(CultureInfo.InvariantCulture, "{0}{1}", BulNumFontInfoOtherPropPrefix, (int) tpt), value.ToString(CultureInfo.InvariantCulture)));
 						break;
 				}
 			}
 
-			return props.Concat(otherProps);
+			return props.Concat(otherProps).Concat(strProps);
 		}
+
+		/// <summary>
+		/// Prefix of the attribute used for an integer property in BulNumFontInfo that has no
+		/// attribute name of its own.
+		/// </summary>
+		private const string BulNumFontInfoOtherPropPrefix = "prop_";
 
 		private static void WriteWsStyles(XmlWriter writer, ILgWritingSystemFactory lgwsf, string wsStyles)
 		{
@@ -452,10 +473,13 @@ namespace SIL.LCModel.Core.Text
 
 		private static IDictionary<int, WSStyleInfo> DecodeWSStyles(string wsStyles)
 		{
+			// A truncated (malformed) entry is left out rather than failing the whole save.
 			var results = new SortedDictionary<int, WSStyleInfo>();
 			int i = 0;
 			while (i < wsStyles.Length)
 			{
+				if (i + 3 > wsStyles.Length)
+					break;
 				int ws = wsStyles[i] | (wsStyles[i + 1] << 16);
 				i += 2;
 
@@ -463,6 +487,8 @@ namespace SIL.LCModel.Core.Text
 
 				int len = wsStyles[i];
 				i++;
+				if (i + len + 1 > wsStyles.Length)
+					break;
 				if (len > 0)
 					wsStyleInfo.FontFamily = ConvertSpecialFontNames(wsStyles.Substring(i, len));
 				i += len;
@@ -476,20 +502,28 @@ namespace SIL.LCModel.Core.Text
 					// propCount = -1 * the number of them.
 					for (int j = propCount; j < 0; j++)
 					{
+						if (i + 2 > wsStyles.Length)
+							return results;
 						var tpt = (FwTextPropType) wsStyles[i];
 						i++;
 						len = wsStyles[i];
 						i++;
+						if (i + len > wsStyles.Length)
+							return results;
 						if (tpt == FwTextPropType.ktptFontVariations)
 							wsStyleInfo.FontVariations = wsStyles.Substring(i, len);
 						i += len;
 					}
 
+					if (i + 1 > wsStyles.Length)
+						return results;
 					propCount = (short) wsStyles[i];
 					i++;
 				}
 
 				// Integer properties
+				if (propCount < 0 || i + propCount * 4 > wsStyles.Length)
+					break;
 				for (int j = 0; j < propCount; j++)
 				{
 					var tpt = (FwTextPropType) wsStyles[i];
@@ -637,7 +671,7 @@ namespace SIL.LCModel.Core.Text
 				case FwTextToggleVal.kttvInvert:
 					return "invert";
 				default:
-					return value.ToString();
+					return value.ToString(CultureInfo.InvariantCulture);
 			}
 		}
 
@@ -654,7 +688,7 @@ namespace SIL.LCModel.Core.Text
 				case FwTextPropVar.ktpvRelative:
 					return "rel";
 				default:
-					return ((int) var).ToString();
+					return ((int) var).ToString(CultureInfo.InvariantCulture);
 			}
 		}
 
@@ -669,7 +703,7 @@ namespace SIL.LCModel.Core.Text
 				case FwSuperscriptVal.kssvSub:
 					return "sub";
 				default:
-					return value.ToString();
+					return value.ToString(CultureInfo.InvariantCulture);
 			}
 		}
 
@@ -692,7 +726,7 @@ namespace SIL.LCModel.Core.Text
 				case FwUnderlineType.kuntSquiggle:
 					return "squiggle";
 				default:
-					return value.ToString();
+					return value.ToString(CultureInfo.InvariantCulture);
 			}
 		}
 
@@ -707,7 +741,7 @@ namespace SIL.LCModel.Core.Text
 				case SpellingModes.ksmForceCheck:
 					return "forceCheck";
 				default:
-					return value.ToString();
+					return value.ToString(CultureInfo.InvariantCulture);
 			}
 		}
 
@@ -728,29 +762,30 @@ namespace SIL.LCModel.Core.Text
 				case FwTextAlign.ktalJustify:
 					return "justify";
 				default:
-					return value.ToString();
+					return value.ToString(CultureInfo.InvariantCulture);
 			}
 		}
 
-		private static string GetEditableString(int value)
+		/// <summary>
+		/// Writes the GUID that follows the object data type character. Object data too short to
+		/// hold a GUID is malformed; it is left out rather than failing the whole save.
+		/// </summary>
+		private static void WriteGuidAttribute(XmlWriter writer, string attrName, string objData)
 		{
-			switch ((TptEditable) value)
-			{
-				case TptEditable.ktptNotEditable:
-					return "not";
-				case TptEditable.ktptIsEditable:
-					return "is";
-				case TptEditable.ktptSemiEditable:
-					return "semi";
-				default:
-					return value.ToString();
-			}
+			const int guidLength = 8; // in UTF-16 characters
+			if (objData.Length < 1 + guidLength)
+				return;
+			Guid guid = MiscUtils.GetGuidFromObjData(objData.Substring(1));
+			writer.WriteAttributeString(attrName, guid.ToString());
 		}
 
-		private static string GetGuidString(string value)
+		/// <summary>
+		/// Gets the NFC form of a string attribute value, without the characters XML cannot
+		/// represent (the same treatment run text gets).
+		/// </summary>
+		private static string GetXmlSafeString(string value)
 		{
-			Guid guid = MiscUtils.GetGuidFromObjData(value.Substring(1));
-			return guid.ToString();
+			return TsStringSerializer.StripInvalidXmlChars(Normalizer.Normalize(value, Normalizer.UNormalizationMode.UNORM_NFC));
 		}
 
 		#endregion
@@ -817,7 +852,25 @@ namespace SIL.LCModel.Core.Text
 		{
 			int intValue, type, var;
 			string strValue;
-			ITsPropsBldr fontProps = GetPropAttributesForElement(bulFontInfo, lgwsf);
+			// The writer writes an integer property that has no attribute name of its own as
+			// prop_<number>; read those directly.
+			var otherProps = new List<KeyValuePair<int, int>>();
+			var namedAttrs = new XElement(bulFontInfo.Name);
+			foreach (XAttribute attr in bulFontInfo.Attributes())
+			{
+				int otherType;
+				if (attr.Name.LocalName.StartsWith(BulNumFontInfoOtherPropPrefix, StringComparison.Ordinal)
+					&& int.TryParse(attr.Name.LocalName.Substring(BulNumFontInfoOtherPropPrefix.Length), NumberStyles.None,
+						CultureInfo.InvariantCulture, out otherType))
+				{
+					otherProps.Add(new KeyValuePair<int, int>(otherType, GetIntValueFromStr(attr.Value)));
+				}
+				else
+				{
+					namedAttrs.Add(new XAttribute(attr));
+				}
+			}
+			ITsPropsBldr fontProps = GetPropAttributesForElement(namedAttrs, lgwsf);
 
 			// Add the integer properties to the bullet props string
 			StringBuilder bulletProps = new StringBuilder(fontProps.IntPropCount * 3 + fontProps.StrPropCount * 20);
@@ -826,6 +879,11 @@ namespace SIL.LCModel.Core.Text
 				intValue = fontProps.GetIntProp(i, out type, out var);
 				bulletProps.Append((char)type);
 				WriteIntToStrBuilder(bulletProps, intValue);
+			}
+			foreach (KeyValuePair<int, int> otherProp in otherProps)
+			{
+				bulletProps.Append((char)otherProp.Key);
+				WriteIntToStrBuilder(bulletProps, otherProp.Value);
 			}
 
 			// Add the string properties to the bullet props string
@@ -938,7 +996,7 @@ namespace SIL.LCModel.Core.Text
 						break;
 					case "borderBottom":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptBorderBottom, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "borderColor":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptBorderColor, 0,
@@ -946,23 +1004,23 @@ namespace SIL.LCModel.Core.Text
 						break;
 					case "borderLeading":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptBorderLeading, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "borderTop":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptBorderTop, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "borderTrailing":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptBorderTrailing, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "bulNumScheme":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptBulNumScheme, (int)FwTextPropVar.ktpvEnum,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "bulNumStartAt":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptBulNumStartAt, 0,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "bulNumTxtAft":
 						propsBldr.SetStrPropValue((int)FwTextPropType.ktptBulNumTxtAft, attr.Value);
@@ -974,7 +1032,11 @@ namespace SIL.LCModel.Core.Text
 						propsBldr.SetStrPropValue((int)FwTextPropType.ktptCustomBullet, attr.Value);
 						break;
 					case "charStyle":
-						Debug.Fail("We don't support the old charStyle attribute!");
+					case "paraStyle":
+					case "tabDef":
+					case "tabList":
+						// Obsolete or unsupported; older versions wrote them, but they have never
+						// been read back.
 						break;
 					case "contextString":
 						AddObjDataToBldr(propsBldr, attr, FwObjDataTypes.kodtContextString);
@@ -989,7 +1051,7 @@ namespace SIL.LCModel.Core.Text
 						break;
 					case "firstIndent":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptFirstIndent, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, true));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "fontFamily":
 						propsBldr.SetStrPropValue((int)FwTextPropType.ktptFontFamily, attr.Value);
@@ -1013,15 +1075,15 @@ namespace SIL.LCModel.Core.Text
 						break;
 					case "keepTogether":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptKeepTogether, (int)FwTextPropVar.ktpvEnum,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "keepWithNext":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptKeepWithNext, (int)FwTextPropVar.ktpvEnum,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "leadingIndent":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptLeadingIndent, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "lineHeight":
 						AddSizePropertyToBldr(propsBldr, attr.Value, (int)FwTextPropType.ktptLineHeight,
@@ -1036,19 +1098,20 @@ namespace SIL.LCModel.Core.Text
 						break;
 					case "marginBottom":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptMarginBottom, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "marginLeading":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptMarginLeading, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "marginTop":
+					case "MarginTop": // written by older versions
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptMarginTop, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "marginTrailing":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptMarginTrailing, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "moveableObj":
 						AddObjDataToBldr(propsBldr, attr, FwObjDataTypes.kodtGuidMoveableObjDisp);
@@ -1058,7 +1121,7 @@ namespace SIL.LCModel.Core.Text
 						break;
 					case "offset":
 						AddSizePropertyToBldr(propsBldr, attr.Value, (int)FwTextPropType.ktptOffset,
-							xml.Attribute("offsetUnit"), null, true);
+							xml.Attribute("offsetUnit"), null);
 						break;
 					case "offsetUnit":
 						break; // Ignore. Its handled in the offset
@@ -1067,38 +1130,35 @@ namespace SIL.LCModel.Core.Text
 						break;
 					case "padBottom":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptPadBottom, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "padLeading":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptPadLeading, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "padTop":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptPadTop, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "padTrailing":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptPadTrailing, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "paracolor":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptParaColor, 0,
 							GetColorValueForStr(attr.Value));
 						break;
-					case "paraStyle":
-						Debug.Fail("We don't support the old paraStyle attribute!");
-						break;
 					case "rightToLeft":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptRightToLeft, (int)FwTextPropVar.ktpvEnum,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "spaceAfter":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptSpaceAfter, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, true));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "spaceBefore":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptSpaceBefore, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, true));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "spellcheck":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptSpellCheck, (int)FwTextPropVar.ktpvEnum,
@@ -1108,19 +1168,13 @@ namespace SIL.LCModel.Core.Text
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptSuperscript, (int)FwTextPropVar.ktpvEnum,
 							GetSuperscriptValueForStr(attr.Value));
 						break;
-					case "tabDef":
-						Debug.Fail("We don't support the tabDef property!");
-						break;
-					case "tabList":
-						Debug.Fail("We don't support the tabList property!");
-						break;
 					case "tags":
 						propsBldr.SetStrPropValue((int)FwTextPropType.ktptTags,
 							GetGuidValuesForStr(attr.Value));
 						break;
 					case "trailingIndent":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptTrailingIndent, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "type":
 						Debug.Assert(attr.Value == "chars", "Embedded pictures are not supported!");
@@ -1135,7 +1189,39 @@ namespace SIL.LCModel.Core.Text
 						break;
 					case "widowOrphan":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptWidowOrphanControl, (int)FwTextPropVar.ktpvEnum,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
+						break;
+					case "cellBorderWidth":
+						propsBldr.SetIntPropValues((int)FwTextPropType.ktptCellBorderWidth, (int)FwTextPropVar.ktpvMilliPoint,
+							GetIntValueFromStr(attr.Value));
+						break;
+					case "cellPadding":
+						propsBldr.SetIntPropValues((int)FwTextPropType.ktptCellPadding, (int)FwTextPropVar.ktpvMilliPoint,
+							GetIntValueFromStr(attr.Value));
+						break;
+					case "cellSpacing":
+						propsBldr.SetIntPropValues((int)FwTextPropType.ktptCellSpacing, (int)FwTextPropVar.ktpvMilliPoint,
+							GetIntValueFromStr(attr.Value));
+						break;
+					case "directionDepth":
+						propsBldr.SetIntPropValues((int)FwTextPropType.ktptDirectionDepth, (int)FwTextPropVar.ktpvDefault,
+							GetIntValueFromStr(attr.Value));
+						break;
+					case "hyphenate":
+						propsBldr.SetIntPropValues((int)FwTextPropType.ktptHyphenate, (int)FwTextPropVar.ktpvEnum,
+							GetIntValueFromStr(attr.Value));
+						break;
+					case "maxLines":
+						propsBldr.SetIntPropValues((int)FwTextPropType.ktptMaxLines, (int)FwTextPropVar.ktpvDefault,
+							GetIntValueFromStr(attr.Value));
+						break;
+					case "relLineHeight":
+						propsBldr.SetIntPropValues((int)FwTextPropType.ktptRelLineHeight, (int)FwTextPropVar.ktpvMilliPoint,
+							GetIntValueFromStr(attr.Value));
+						break;
+					case "setRowDefaults":
+						propsBldr.SetIntPropValues((int)FwTextPropType.ktptSetRowDefaults, (int)FwTextPropVar.ktpvEnum,
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "ws":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptWs, 0,
@@ -1149,6 +1235,7 @@ namespace SIL.LCModel.Core.Text
 						Debug.Fail("We don't support the old wsStyle attribute!");
 						break;
 					case "space":
+					case "editable": // a display-only property older versions wrote; never read back
 						break;
 					default:
 						throw new XmlSchemaException("Unknown Prop attribute: " + attr.Name.LocalName);
@@ -1191,7 +1278,7 @@ namespace SIL.LCModel.Core.Text
 						break;
 					case "borderBottom":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptBorderBottom, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "borderColor":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptBorderColor, 0,
@@ -1199,23 +1286,23 @@ namespace SIL.LCModel.Core.Text
 						break;
 					case "borderLeading":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptBorderLeading, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "borderTop":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptBorderTop, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "borderTrailing":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptBorderTrailing, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "bulNumScheme":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptBulNumScheme, (int)FwTextPropVar.ktpvEnum,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "bulNumStartAt":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptBulNumStartAt, 0,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "bulNumTxtAft":
 						strBldr.SetStrPropValue((int)FwTextPropType.ktptBulNumTxtAft, attr.Value);
@@ -1227,7 +1314,11 @@ namespace SIL.LCModel.Core.Text
 						strBldr.SetStrPropValue((int)FwTextPropType.ktptCustomBullet, attr.Value);
 						break;
 					case "charStyle":
-						Debug.Fail("We don't support the old charStyle attribute!");
+					case "paraStyle":
+					case "tabDef":
+					case "tabList":
+						// Obsolete or unsupported; older versions wrote them, but they have never
+						// been read back.
 						break;
 					case "contextString":
 						AddObjDataToBldr(strBldr, attr, FwObjDataTypes.kodtContextString);
@@ -1243,7 +1334,7 @@ namespace SIL.LCModel.Core.Text
 						break;
 					case "firstIndent":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptFirstIndent, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, true));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "fontFamily":
 						strBldr.SetStrPropValue((int)FwTextPropType.ktptFontFamily, attr.Value);
@@ -1267,15 +1358,15 @@ namespace SIL.LCModel.Core.Text
 						break;
 					case "keepTogether":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptKeepTogether, (int)FwTextPropVar.ktpvEnum,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "keepWithNext":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptKeepWithNext, (int)FwTextPropVar.ktpvEnum,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "leadingIndent":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptLeadingIndent, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "lineHeight":
 						AddSizePropertyToBldr(strBldr, attr.Value, (int)FwTextPropType.ktptLineHeight,
@@ -1291,19 +1382,20 @@ namespace SIL.LCModel.Core.Text
 						break;
 					case "marginBottom":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptMarginBottom, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "marginLeading":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptMarginLeading, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "marginTop":
+					case "MarginTop": // written by older versions
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptMarginTop, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "marginTrailing":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptMarginTrailing, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "moveableObj":
 						AddObjDataToBldr(strBldr, attr, FwObjDataTypes.kodtGuidMoveableObjDisp);
@@ -1324,38 +1416,35 @@ namespace SIL.LCModel.Core.Text
 						break;
 					case "padBottom":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptPadBottom, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "padLeading":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptPadLeading, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "padTop":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptPadTop, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "padTrailing":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptPadTrailing, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "paracolor":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptParaColor, 0,
 							GetColorValueForStr(attr.Value));
 						break;
-					case "paraStyle":
-						Debug.Fail("We don't support the old paraStyle attribute!");
-						break;
 					case "rightToLeft":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptRightToLeft, (int)FwTextPropVar.ktpvEnum,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "spaceAfter":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptSpaceAfter, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, true));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "spaceBefore":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptSpaceBefore, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, true));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "spellcheck":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptSpellCheck, (int)FwTextPropVar.ktpvEnum,
@@ -1365,19 +1454,13 @@ namespace SIL.LCModel.Core.Text
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptSuperscript, (int)FwTextPropVar.ktpvEnum,
 							GetSuperscriptValueForStr(attr.Value));
 						break;
-					case "tabDef":
-						Debug.Fail("We don't support the tabDef property!");
-						break;
-					case "tabList":
-						Debug.Fail("We don't support the tabList property!");
-						break;
 					case "tags":
 						strBldr.SetStrPropValue((int)FwTextPropType.ktptTags,
 							GetGuidValuesForStr(attr.Value));
 						break;
 					case "trailingIndent":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptTrailingIndent, (int)FwTextPropVar.ktpvMilliPoint,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "type":
 						Debug.Assert(attr.Value == "chars", "Embedded pictures are not supported!");
@@ -1392,7 +1475,39 @@ namespace SIL.LCModel.Core.Text
 						break;
 					case "widowOrphan":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptWidowOrphanControl, (int)FwTextPropVar.ktpvEnum,
-							GetIntValueFromStr(attr.Value, false));
+							GetIntValueFromStr(attr.Value));
+						break;
+					case "cellBorderWidth":
+						strBldr.SetIntPropValues((int)FwTextPropType.ktptCellBorderWidth, (int)FwTextPropVar.ktpvMilliPoint,
+							GetIntValueFromStr(attr.Value));
+						break;
+					case "cellPadding":
+						strBldr.SetIntPropValues((int)FwTextPropType.ktptCellPadding, (int)FwTextPropVar.ktpvMilliPoint,
+							GetIntValueFromStr(attr.Value));
+						break;
+					case "cellSpacing":
+						strBldr.SetIntPropValues((int)FwTextPropType.ktptCellSpacing, (int)FwTextPropVar.ktpvMilliPoint,
+							GetIntValueFromStr(attr.Value));
+						break;
+					case "directionDepth":
+						strBldr.SetIntPropValues((int)FwTextPropType.ktptDirectionDepth, (int)FwTextPropVar.ktpvDefault,
+							GetIntValueFromStr(attr.Value));
+						break;
+					case "hyphenate":
+						strBldr.SetIntPropValues((int)FwTextPropType.ktptHyphenate, (int)FwTextPropVar.ktpvEnum,
+							GetIntValueFromStr(attr.Value));
+						break;
+					case "maxLines":
+						strBldr.SetIntPropValues((int)FwTextPropType.ktptMaxLines, (int)FwTextPropVar.ktpvDefault,
+							GetIntValueFromStr(attr.Value));
+						break;
+					case "relLineHeight":
+						strBldr.SetIntPropValues((int)FwTextPropType.ktptRelLineHeight, (int)FwTextPropVar.ktpvMilliPoint,
+							GetIntValueFromStr(attr.Value));
+						break;
+					case "setRowDefaults":
+						strBldr.SetIntPropValues((int)FwTextPropType.ktptSetRowDefaults, (int)FwTextPropVar.ktpvEnum,
+							GetIntValueFromStr(attr.Value));
 						break;
 					case "ws":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptWs, 0,
@@ -1406,7 +1521,7 @@ namespace SIL.LCModel.Core.Text
 						Debug.Fail("We don't support the old wsStyle attribute!");
 						break;
 					case "space":
-					case "editable":
+					case "editable": // a display-only property older versions wrote; never read back
 						break;
 					default:
 						throw new XmlSchemaException("Unknown Prop attribute: " + attr.Name.LocalName);
@@ -1421,7 +1536,6 @@ namespace SIL.LCModel.Core.Text
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Adds a size property to the specified props builder with the specified prop type.
-		/// This default does not allow negative sizes.
 		/// </summary>
 		/// <param name="propsBldr">The props builder.</param>
 		/// <param name="value">The string representation of the size value.</param>
@@ -1432,32 +1546,16 @@ namespace SIL.LCModel.Core.Text
 		private static void AddSizePropertyToBldr(ITsPropsBldr propsBldr, string value, int proptype,
 			XAttribute unitAttr, XAttribute typeAttr)
 		{
-			AddSizePropertyToBldr(propsBldr, value, proptype, unitAttr, typeAttr, false);
-		}
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Adds a size property to the specified props builder with the specified prop type.
-		/// </summary>
-		/// <param name="propsBldr">The props builder.</param>
-		/// <param name="value">The string representation of the size value.</param>
-		/// <param name="proptype">The property type.</param>
-		/// <param name="unitAttr">The attribute containing the size unit (can be null).</param>
-		/// <param name="typeAttr">The attribute containing the size type (can be null).</param>
-		/// <param name="allowNegative">true if negative size is allowed (e.g., baseline offset)</param>
-		/// ------------------------------------------------------------------------------------
-		private static void AddSizePropertyToBldr(ITsPropsBldr propsBldr, string value, int proptype,
-			XAttribute unitAttr, XAttribute typeAttr, bool allowNegative)
-		{
 			int var;
-			int intValue = GetSizeValue(value, unitAttr, typeAttr, allowNegative, out var);
+			int intValue = GetSizeValue(value, unitAttr, typeAttr, out var);
 			propsBldr.SetIntPropValues(proptype, var, intValue);
 		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Adds a size property to the specified props builder with the specified prop type.
+		/// Adds a size property to the specified string builder with the specified prop type.
 		/// </summary>
-		/// <param name="propsBldr">The props builder.</param>
+		/// <param name="propsBldr">The string builder.</param>
 		/// <param name="value">The string representation of the size value.</param>
 		/// <param name="proptype">The property type.</param>
 		/// <param name="unitAttr">The attribute containing the size unit (can be null).</param>
@@ -1467,10 +1565,11 @@ namespace SIL.LCModel.Core.Text
 			XAttribute unitAttr, XAttribute typeAttr)
 		{
 			int var;
-			int intValue = GetSizeValue(value, unitAttr, typeAttr, false, out var);
+			int intValue = GetSizeValue(value, unitAttr, typeAttr, out var);
 			propsBldr.SetIntPropValues(proptype, var, intValue);
 		}
-		private static int GetSizeValue(string value, XAttribute unitAttr, XAttribute typeAttr, bool allowNegative, out int var)
+
+		private static int GetSizeValue(string value, XAttribute unitAttr, XAttribute typeAttr, out int var)
 		{
 			if (value.EndsWith("mpt"))
 			{
@@ -1479,18 +1578,18 @@ namespace SIL.LCModel.Core.Text
 			}
 
 			var = GetUnitValueForStr(unitAttr);
-			int intValue = GetIntValueFromStr(value, allowNegative);
+			int intValue = GetIntValueFromStr(value);
 			if (typeAttr != null)
 			{
 				switch (typeAttr.Value)
 				{
 					case "exact":
 						if (var == (int)FwTextPropVar.ktpvMilliPoint)
-							intValue = -intValue; // negative means "exact" internally.  See FWC-20.
+							intValue = unchecked(-intValue); // negative means "exact" internally.  See FWC-20.
 						break;
 					case "atLeast":
 						break; // This is the default value
-					default:
+				default:
 						throw new XmlSchemaException("Invalid type specified: " + typeAttr.Value);
 				}
 			}
@@ -1552,6 +1651,8 @@ namespace SIL.LCModel.Core.Text
 				case "super": return (int)FwSuperscriptVal.kssvSuper;
 				case "sub": return (int)FwSuperscriptVal.kssvSub;
 				default:
+					if (TryGetEnumNumber(str, out int value))
+						return value; // the writer writes values outside the enumeration as numbers
 					throw new XmlSchemaException("Invalid superscript value: " + str);
 			}
 		}
@@ -1570,6 +1671,8 @@ namespace SIL.LCModel.Core.Text
 				case "forceCheck": return (int)SpellingModes.ksmForceCheck;
 				case "doNotCheck": return (int)SpellingModes.ksmDoNotCheck;
 				default:
+					if (TryGetEnumNumber(str, out int value))
+						return value; // the writer writes values outside the enumeration as numbers
 					throw new XmlSchemaException("Invalid spell check value: " + str);
 			}
 		}
@@ -1592,6 +1695,8 @@ namespace SIL.LCModel.Core.Text
 				case "squiggle": return (int)FwUnderlineType.kuntSquiggle;
 				case "strikethrough": return (int)FwUnderlineType.kuntStrikethrough;
 				default:
+					if (TryGetEnumNumber(str, out int value))
+						return value; // the writer writes values outside the enumeration as numbers
 					throw new XmlSchemaException("Invalid underline type: " + str);
 			}
 		}
@@ -1612,6 +1717,8 @@ namespace SIL.LCModel.Core.Text
 				case "mpt": return (int)FwTextPropVar.ktpvMilliPoint;
 				case "rel": return (int)FwTextPropVar.ktpvRelative;
 				default:
+					if (TryGetEnumNumber(attr.Value, out int value))
+						return value; // the writer writes other variations as numbers
 					throw new XmlSchemaException("Invalid value for unit type: " + attr.Value);
 			}
 		}
@@ -1637,30 +1744,31 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Gets the integer value from the specified string.
+		/// Gets the integer value from the specified string. Any 32-bit value is accepted: the
+		/// writer writes values as signed numbers, and values above int.MaxValue (an unsigned
+		/// form) are read as the same 32 bits.
 		/// </summary>
 		/// <param name="str">The string.</param>
-		/// <param name="fAllowNegative"><c>True</c> to allow negative numbers, false otherwise.
-		/// </param>
 		/// ------------------------------------------------------------------------------------
-		private static int GetIntValueFromStr(string str, bool fAllowNegative)
+		private static int GetIntValueFromStr(string str)
 		{
-			if (fAllowNegative)
-				return int.Parse(str, CultureInfo.InvariantCulture);
-
-			try
-			{
-				return (int)uint.Parse(str, CultureInfo.InvariantCulture);
-			}
-			catch (OverflowException)
-			{
-				throw new XmlSchemaException("Negative number is not valid for this attribute");
-			}
-			catch (FormatException)
-			{
+			long value;
+			if (!long.TryParse(str, NumberStyles.Integer, CultureInfo.InvariantCulture, out value))
 				throw new XmlSchemaException("Invalid number for this attribute: " + str);
-			}
+			if (value < int.MinValue || value > uint.MaxValue)
+				throw new XmlSchemaException("Number out of range for this attribute: " + str);
+			return unchecked((int)value);
 		}
+
+		/// <summary>
+		/// Gets the number for an enumerated attribute written as a number, which the writer
+		/// does for values that have no name.
+		/// </summary>
+		private static bool TryGetEnumNumber(string str, out int value)
+		{
+			return int.TryParse(str, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out value);
+		}
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Gets the integer representation of an 'on', 'off', or 'invert' value
@@ -1675,6 +1783,8 @@ namespace SIL.LCModel.Core.Text
 				case "invert": return (int)FwTextToggleVal.kttvInvert;
 				case "off": return (int)FwTextToggleVal.kttvOff;
 				default:
+					if (TryGetEnumNumber(str, out int value))
+						return value; // the writer writes values outside the enumeration as numbers
 					throw new XmlSchemaException("Invalid value for toggle attribute. Needed 'on', 'off', or 'invert'");
 			}
 		}
@@ -1726,7 +1836,10 @@ namespace SIL.LCModel.Core.Text
 				case "left": return (int)FwTextAlign.ktalLeft;
 				case "right": return (int)FwTextAlign.ktalRight;
 				case "trailing": return (int)FwTextAlign.ktalTrailing;
-				default: throw new XmlSchemaException("Invalid value for align attribute: " + str);
+				default:
+					if (TryGetEnumNumber(str, out int value))
+						return value; // the writer writes values outside the enumeration as numbers
+					throw new XmlSchemaException("Invalid value for align attribute: " + str);
 			}
 		}
 		#endregion

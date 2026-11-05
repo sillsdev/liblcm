@@ -375,8 +375,8 @@ namespace SIL.LCModel.Core.Text
 		[Test]
 		public void SerializePropsToXml_MarginTop()
 		{
-			CheckSerializeIntProp(FwTextPropType.ktptMarginTop, 0, FwTextPropVar.ktpvMilliPoint, "MarginTop", "0");
-			CheckSerializeIntProp(FwTextPropType.ktptMarginTop, 12, FwTextPropVar.ktpvMilliPoint, "MarginTop", "12");
+			CheckSerializeIntProp(FwTextPropType.ktptMarginTop, 0, FwTextPropVar.ktpvMilliPoint, "marginTop", "0");
+			CheckSerializeIntProp(FwTextPropType.ktptMarginTop, 12, FwTextPropVar.ktpvMilliPoint, "marginTop", "12");
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -790,15 +790,14 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'borderBottom' attribute with an
-		/// invalid value.
+		/// Tests the DeserializePropsFromXml method with a 'borderBottom' attribute with a negative
+		/// value, which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_BorderBottom_Fail()
+		public void DeserializePropsFromXml_BorderBottom_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("borderBottom", "-1", 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("borderBottom", "-1", FwTextPropType.ktptBorderBottom, -1, FwTextPropVar.ktpvMilliPoint);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -843,15 +842,14 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'borderLeading' attribute with an
-		/// invalid value.
+		/// Tests the DeserializePropsFromXml method with a 'borderLeading' attribute with a negative
+		/// value, which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_BorderLeading_Fail()
+		public void DeserializePropsFromXml_BorderLeading_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("borderLeading", "-1", 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("borderLeading", "-1", FwTextPropType.ktptBorderLeading, -1, FwTextPropVar.ktpvMilliPoint);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -868,15 +866,14 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'borderTop' attribute with an
-		/// invalid value.
+		/// Tests the DeserializePropsFromXml method with a 'borderTop' attribute with a negative
+		/// value, which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_BorderTop_Fail()
+		public void DeserializePropsFromXml_BorderTop_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("borderTop", "-1", 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("borderTop", "-1", FwTextPropType.ktptBorderTop, -1, FwTextPropVar.ktpvMilliPoint);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -893,15 +890,14 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'borderTrailing' attribute with an
-		/// invalid value.
+		/// Tests the DeserializePropsFromXml method with a 'borderTrailing' attribute with a negative
+		/// value, which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_BorderTrailing_Fail()
+		public void DeserializePropsFromXml_BorderTrailing_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("borderTrailing", "-1", 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("borderTrailing", "-1", FwTextPropType.ktptBorderTrailing, -1, FwTextPropVar.ktpvMilliPoint);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -941,15 +937,14 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'bulNumScheme' attribute with an
-		/// invalid value.
+		/// Tests the DeserializePropsFromXml method with a 'bulNumScheme' attribute with a negative
+		/// value, which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_BulNumScheme_Fail()
+		public void DeserializePropsFromXml_BulNumScheme_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("bulNumScheme", "-1", 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("bulNumScheme", "-1", FwTextPropType.ktptBulNumScheme, -1, FwTextPropVar.ktpvEnum);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -966,15 +961,14 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'bulNumStartAt' attribute with an
-		/// invalid value.
+		/// Tests the DeserializePropsFromXml method with a 'bulNumStartAt' attribute with a negative
+		/// value, which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_BulNumStartAt_Fail()
+		public void DeserializePropsFromXml_BulNumStartAt_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("bulNumStartAt", "-1", 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("bulNumStartAt", "-1", FwTextPropType.ktptBulNumStartAt, -1, FwTextPropVar.ktpvDefault);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1055,16 +1049,15 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'fontsize' attribute with an invalid
-		/// value.
+		/// Tests the DeserializePropsFromXml method with a 'fontsize' attribute with a negative
+		/// value, which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_Fontsize_Fail1()
+		public void DeserializePropsFromXml_Fontsize_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("fontsize='-10' fontsizeUnit='mpt'",
-				FwTextPropType.ktptFontSize, 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("fontsize='-10' fontsizeUnit='mpt'",
+				FwTextPropType.ktptFontSize, -10, FwTextPropVar.ktpvMilliPoint);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1214,15 +1207,14 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'leadingIndent' attribute with an
-		/// invalid value.
+		/// Tests the DeserializePropsFromXml method with a 'leadingIndent' attribute with a negative
+		/// value, which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_LeadingIndent_Fail()
+		public void DeserializePropsFromXml_LeadingIndent_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("leadingIndent", "-1", 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("leadingIndent", "-1", FwTextPropType.ktptLeadingIndent, -1, FwTextPropVar.ktpvMilliPoint);
 
 		}
 
@@ -1244,15 +1236,14 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'lineHeight' attribute with an invalid
-		/// value.
+		/// Tests the DeserializePropsFromXml method with a negative 'lineHeight' and no type,
+		/// which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_LineHeight_Fail1()
+		public void DeserializePropsFromXml_LineHeight_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("lineHeight='-10' lineHeightUnit='mpt'", FwTextPropType.ktptFontSize, 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("lineHeight='-10' lineHeightUnit='mpt'", FwTextPropType.ktptLineHeight, -10, FwTextPropVar.ktpvMilliPoint);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1306,15 +1297,14 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'marginBottom' attribute with an
-		/// invalid value.
+		/// Tests the DeserializePropsFromXml method with a 'marginBottom' attribute with a negative
+		/// value, which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_MarginBottom_Fail()
+		public void DeserializePropsFromXml_MarginBottom_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("marginBottom", "-1", 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("marginBottom", "-1", FwTextPropType.ktptMarginBottom, -1, FwTextPropVar.ktpvMilliPoint);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1331,15 +1321,14 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'marginLeading' attribute with an
-		/// invalid value.
+		/// Tests the DeserializePropsFromXml method with a 'marginLeading' attribute with a negative
+		/// value, which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_MarginLeading_Fail()
+		public void DeserializePropsFromXml_MarginLeading_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("marginLeading", "-1", 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("marginLeading", "-1", FwTextPropType.ktptMarginLeading, -1, FwTextPropVar.ktpvMilliPoint);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1356,15 +1345,14 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'marginTop' attribute with an
-		/// invalid value.
+		/// Tests the DeserializePropsFromXml method with a 'marginTop' attribute with a negative
+		/// value, which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_MarginTop_Fail()
+		public void DeserializePropsFromXml_MarginTop_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("marginTop", "-1", 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("marginTop", "-1", FwTextPropType.ktptMarginTop, -1, FwTextPropVar.ktpvMilliPoint);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1381,15 +1369,14 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'marginTrailing' attribute with an
-		/// invalid value.
+		/// Tests the DeserializePropsFromXml method with a 'marginTrailing' attribute with a negative
+		/// value, which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_MarginTrailing_Fail()
+		public void DeserializePropsFromXml_MarginTrailing_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("marginTrailing", "-1", 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("marginTrailing", "-1", FwTextPropType.ktptMarginTrailing, -1, FwTextPropVar.ktpvMilliPoint);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1484,15 +1471,14 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'padBottom' attribute with an
-		/// invalid value.
+		/// Tests the DeserializePropsFromXml method with a 'padBottom' attribute with a negative
+		/// value, which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_PadBottom_Fail()
+		public void DeserializePropsFromXml_PadBottom_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("padBottom", "-1", 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("padBottom", "-1", FwTextPropType.ktptPadBottom, -1, FwTextPropVar.ktpvMilliPoint);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1509,15 +1495,14 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'padLeading' attribute with an
-		/// invalid value.
+		/// Tests the DeserializePropsFromXml method with a 'padLeading' attribute with a negative
+		/// value, which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_PadLeading_Fail()
+		public void DeserializePropsFromXml_PadLeading_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("padLeading", "-1", 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("padLeading", "-1", FwTextPropType.ktptPadLeading, -1, FwTextPropVar.ktpvMilliPoint);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1534,15 +1519,14 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'padTop' attribute with an
-		/// invalid value.
+		/// Tests the DeserializePropsFromXml method with a 'padTop' attribute with a negative
+		/// value, which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_PadTop_Fail()
+		public void DeserializePropsFromXml_PadTop_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("padTop", "-1", 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("padTop", "-1", FwTextPropType.ktptPadTop, -1, FwTextPropVar.ktpvMilliPoint);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1559,15 +1543,14 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'padTrailing' attribute with an
-		/// invalid value.
+		/// Tests the DeserializePropsFromXml method with a 'padTrailing' attribute with a negative
+		/// value, which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_PadTrailing_Fail()
+		public void DeserializePropsFromXml_PadTrailing_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("padTrailing", "-1", 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("padTrailing", "-1", FwTextPropType.ktptPadTrailing, -1, FwTextPropVar.ktpvMilliPoint);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1613,15 +1596,14 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'rightToLeft' attribute with an
-		/// invalid attribute.
+		/// Tests the DeserializePropsFromXml method with a 'rightToLeft' attribute with a negative
+		/// value, which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_RightToLeft_Fail()
+		public void DeserializePropsFromXml_RightToLeft_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("rightToLeft", "-1", FwTextPropType.ktptRightToLeft, 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("rightToLeft", "-1", FwTextPropType.ktptRightToLeft, -1, FwTextPropVar.ktpvEnum);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1759,15 +1741,14 @@ namespace SIL.LCModel.Core.Text
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests the DeserializePropsFromXml method with a 'trailingIndent' attribute with an
-		/// invalid value.
+		/// Tests the DeserializePropsFromXml method with a 'trailingIndent' attribute with a negative
+		/// value, which loads: the writer writes whatever value the property holds.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void DeserializePropsFromXml_TrailingIndent_Fail()
+		public void DeserializePropsFromXml_TrailingIndent_Negative()
 		{
-			Assert.That(() => CheckDeserializeIntProp("trailingIndent", "-1", 0, 0),
-				Throws.TypeOf<XmlSchemaException>());
+			CheckDeserializeIntProp("trailingIndent", "-1", FwTextPropType.ktptTrailingIndent, -1, FwTextPropVar.ktpvMilliPoint);
 		}
 
 		/// ------------------------------------------------------------------------------------

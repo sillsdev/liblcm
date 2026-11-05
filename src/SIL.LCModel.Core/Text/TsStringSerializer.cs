@@ -84,7 +84,7 @@ namespace SIL.LCModel.Core.Text
 						if (!string.IsNullOrEmpty(runFieldName))
 						{
 							writer.WriteStartElement("Field");
-							writer.WriteAttributeString("name", runFieldName);
+							writer.WriteAttributeString("name", StripInvalidXmlChars(runFieldName));
 						}
 						fieldName = runFieldName;
 					}
