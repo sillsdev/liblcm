@@ -95,7 +95,13 @@ namespace SIL.LCModel.Core.Text
 					if (value > 0)
 					{
 						string id = lgwsf.GetStrFromWs(value);
-						writer.WriteAttributeString(tpt == FwTextPropType.ktptWs ? "ws" : "wsBase", Normalizer.Normalize(id, Normalizer.UNormalizationMode.UNORM_NFC));
+						string attrName = tpt == FwTextPropType.ktptWs ? "ws" : "wsBase";
+						// An unknown handle has no id. Writing it as ws="" would produce XML that no reader accepts
+						// (the property is optional, so it is safer to leave it out).
+						if (string.IsNullOrEmpty(id))
+							Trace.TraceWarning("TsPropsSerializer: omitting '" + attrName + "' attribute for unknown writing system handle " + value);
+						else
+							writer.WriteAttributeString(attrName, Normalizer.Normalize(id, Normalizer.UNormalizationMode.UNORM_NFC));
 					}
 					break;
 				case FwTextPropType.ktptFontSize:
@@ -863,6 +869,8 @@ namespace SIL.LCModel.Core.Text
 				if (wsAttrib == null)
 					throw new XmlSchemaException("WsProp must contain a 'ws' attribute");
 				wsAttrib.Remove(); // Make sure we don't count it twice
+				if (wsAttrib.Value.Length == 0)
+					continue; // tolerate an empty ws written by older versions for an unknown handle
 				WriteIntToStrBuilder(wsStyleProps, TsStringSerializer.GetWsForId(wsAttrib.Value, lgwsf));
 
 				// Get the font family for the prop override
@@ -1138,12 +1146,15 @@ namespace SIL.LCModel.Core.Text
 							GetIntValueFromStr(attr.Value, false));
 						break;
 					case "ws":
-						propsBldr.SetIntPropValues((int)FwTextPropType.ktptWs, 0,
-							TsStringSerializer.GetWsForId(attr.Value, lgwsf));
+						// Older versions wrote ws="" for an unknown handle; drop it rather than failing to load.
+						if (attr.Value.Length > 0)
+							propsBldr.SetIntPropValues((int)FwTextPropType.ktptWs, 0,
+								TsStringSerializer.GetWsForId(attr.Value, lgwsf));
 						break;
 					case "wsBase":
-						propsBldr.SetIntPropValues((int)FwTextPropType.ktptBaseWs, 0,
-							TsStringSerializer.GetWsForId(attr.Value, lgwsf));
+						if (attr.Value.Length > 0)
+							propsBldr.SetIntPropValues((int)FwTextPropType.ktptBaseWs, 0,
+								TsStringSerializer.GetWsForId(attr.Value, lgwsf));
 						break;
 					case "wsStyle":
 						Debug.Fail("We don't support the old wsStyle attribute!");
@@ -1395,12 +1406,15 @@ namespace SIL.LCModel.Core.Text
 							GetIntValueFromStr(attr.Value, false));
 						break;
 					case "ws":
-						strBldr.SetIntPropValues((int)FwTextPropType.ktptWs, 0,
-							TsStringSerializer.GetWsForId(attr.Value, lgwsf));
+						// Older versions wrote ws="" for an unknown handle; drop it rather than failing to load.
+						if (attr.Value.Length > 0)
+							strBldr.SetIntPropValues((int)FwTextPropType.ktptWs, 0,
+								TsStringSerializer.GetWsForId(attr.Value, lgwsf));
 						break;
 					case "wsBase":
-						strBldr.SetIntPropValues((int)FwTextPropType.ktptBaseWs, 0,
-							TsStringSerializer.GetWsForId(attr.Value, lgwsf));
+						if (attr.Value.Length > 0)
+							strBldr.SetIntPropValues((int)FwTextPropType.ktptBaseWs, 0,
+								TsStringSerializer.GetWsForId(attr.Value, lgwsf));
 						break;
 					case "wsStyle":
 						Debug.Fail("We don't support the old wsStyle attribute!");

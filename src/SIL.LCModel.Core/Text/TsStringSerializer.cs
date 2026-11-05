@@ -9,6 +9,7 @@
 // </remarks>
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -51,6 +52,8 @@ namespace SIL.LCModel.Core.Text
 				if (ws > 0)
 				{
 					string id = lgwsf.GetStrFromWs(ws);
+					if (string.IsNullOrEmpty(id))
+						throw new ArgumentException("Unknown writing system handle " + ws + "; cannot write an <AStr> without a ws.", "ws");
 					writer.WriteStartElement("AStr");
 					writer.WriteAttributeString("ws", Normalizer.Normalize(id, Normalizer.UNormalizationMode.UNORM_NFC));
 				}
@@ -61,6 +64,7 @@ namespace SIL.LCModel.Core.Text
 
 				// Write the properties and text for each run
 				string fieldName = null;
+				int previousWs = 0;
 				for (int i = 0; i < normalizedTss.RunCount; i++)
 				{
 					TsRunInfo tri;
@@ -152,6 +156,10 @@ namespace SIL.LCModel.Core.Text
 						}
 					}
 
+					// Work out the text that will actually be written, so that we can tell whether the reader
+					// will require a ws on this run.
+					string writtenText;
+					bool preserveSpace = false;
 					if (pict != null)
 					{
 						// Write the bytes of the picture data
@@ -162,20 +170,46 @@ namespace SIL.LCModel.Core.Text
 							if (j % 32 == 31)
 								sb.AppendLine();
 						}
-						writer.WriteString(sb.ToString());
+						writtenText = sb.ToString();
 					}
 					else if (hotGuid)
 					{
-						writer.WriteString(string.Empty);
+						writtenText = string.Empty;
 					}
 					else
 					{
 						string runText = normalizedTss.get_RunText(i) ?? string.Empty;
-						if (runText != string.Empty && runText.All(char.IsWhiteSpace))
-							writer.WriteAttributeString("xml", "space", "", "preserve");
+						preserveSpace = runText != string.Empty && runText.All(char.IsWhiteSpace);
 						// TODO: should we escape quotation marks? this is not necessary but different than the behavior of the C++ implementation
-						writer.WriteString(StripInvalidXmlChars(Normalizer.Normalize(runText, Normalizer.UNormalizationMode.UNORM_NFC)));
+						writtenText = StripInvalidXmlChars(Normalizer.Normalize(runText, Normalizer.UNormalizationMode.UNORM_NFC));
 					}
+
+					// A run that needs a ws but has none we can write (an unknown handle, or no ws at all) gets a
+					// fallback ws. Otherwise we would write a record that no reader can load, and throwing here
+					// would stop the whole project from being saved.
+					int runWs;
+					FwTextPropVar wsVar;
+					bool hasKnownWs = textProps.TryGetIntValue(FwTextPropType.ktptWs, out wsVar, out runWs) && runWs > 0
+						&& !string.IsNullOrEmpty(lgwsf.GetStrFromWs(runWs));
+					if (hasKnownWs)
+					{
+						previousWs = runWs;
+					}
+					else if (RunNeedsWs(writtenText))
+					{
+						int fallbackWs = GetFallbackWs(lgwsf, ws, previousWs);
+						if (fallbackWs > 0)
+						{
+							Trace.TraceWarning("TsStringSerializer: run has no usable writing system (handle " + runWs +
+								"); writing it with fallback ws '" + lgwsf.GetStrFromWs(fallbackWs) + "'.");
+							writer.WriteAttributeString("ws", Normalizer.Normalize(lgwsf.GetStrFromWs(fallbackWs), Normalizer.UNormalizationMode.UNORM_NFC));
+							previousWs = fallbackWs;
+						}
+					}
+
+					if (preserveSpace)
+						writer.WriteAttributeString("xml", "space", "", "preserve");
+					writer.WriteString(writtenText);
 
 					writer.WriteEndElement();
 					if (markItem)
@@ -277,17 +311,67 @@ namespace SIL.LCModel.Core.Text
 
 			var strBldr = TsStringUtils.MakeIncStrBldr();
 
+			// The ws of the enclosing <AStr>, if it has one, is the best fallback for a run whose ws is empty. It is
+			// resolved lazily, only when a fallback is needed: resolving it can create the ws or fail, and records
+			// whose runs all have a ws must load exactly as they always did.
+			string enclosingWsId = null;
+			bool enclosingWsMissing = false;
+			if (xml.Name.LocalName == "AStr")
+			{
+				XAttribute astrWs = xml.Attribute("ws");
+				if (astrWs != null && astrWs.Value.Length > 0)
+					enclosingWsId = astrWs.Value;
+				else
+					enclosingWsMissing = true;
+			}
+			int previousWs = 0;
+
 			foreach (XElement runElement in runs)
 			{
 				if (runElement == null)
 					throw new XmlSchemaException("TsString XML must contain a <Run> element contained in a <" + xml.Name.LocalName + "> element");
 				string runText = runElement.Value;
-				if (runElement.Attribute("ws") == null && (runText.Length == 0 || runText[0] > 13))
+				XAttribute runWsAttr = runElement.Attribute("ws");
+				if (runWsAttr == null && RunNeedsWs(runText))
 					throw new XmlSchemaException("Run element must contain a ws attribute. Run text: " + runElement.Value);
 
+				bool needsFallbackWs = runWsAttr != null && runWsAttr.Value.Length == 0 && RunNeedsWs(runText);
 				// Make sure the text is in the decomposed form (FWR-148)
 				runText = Normalizer.Normalize(runText, Normalizer.UNormalizationMode.UNORM_NFD);
 				bool isOrcNeeded = TsPropsSerializer.GetPropAttributesForElement(runElement, lgwsf, strBldr);
+
+				if (runWsAttr != null && runWsAttr.Value.Length > 0)
+				{
+					previousWs = GetWsForId(runWsAttr.Value, lgwsf);
+				}
+				else if (needsFallbackWs)
+				{
+					// An empty ws was written by older versions for an unknown handle. Give the run a known ws so that
+					// it can be saved again. If the enclosing <AStr> has no ws either, the run's ws would become the key
+					// of the alternative (see MultiAccessor.ReadAstrElementOfMultiString), so do not invent one then:
+					// that could overwrite a real alternative.
+					int enclosingWs = 0;
+					if (enclosingWsId != null)
+					{
+						try
+						{
+							enclosingWs = GetWsForId(enclosingWsId, lgwsf);
+						}
+						catch (XmlSchemaException)
+						{
+							// not usable as a fallback; try the next choice
+						}
+					}
+					int fallbackWs = enclosingWs > 0 ? enclosingWs : previousWs > 0 ? previousWs :
+						(enclosingWsMissing ? 0 : GetFallbackWs(lgwsf, 0, 0));
+					Trace.TraceWarning("TsStringSerializer: run has an empty ws; " + (fallbackWs > 0
+						? "using fallback ws '" + lgwsf.GetStrFromWs(fallbackWs) + "'." : "leaving it without a ws."));
+					if (fallbackWs > 0)
+					{
+						strBldr.SetIntPropValues((int)FwTextPropType.ktptWs, 0, fallbackWs);
+						previousWs = fallbackWs;
+					}
+				}
 
 				// Add an ORC character, if needed, for the run
 				if (runText.Length == 0 && isOrcNeeded)
@@ -323,8 +407,8 @@ namespace SIL.LCModel.Core.Text
 				return null; // Way too complex for this simple case
 
 			XAttribute wsAttribute = textElement.Attributes().First();
-			if (wsAttribute.Name.LocalName != "ws")
-				return null; // we handle only single runs with only the ws attribute.
+			if (wsAttribute.Name.LocalName != "ws" || wsAttribute.Value.Length == 0)
+				return null; // we handle only single runs with only a (non-empty) ws attribute; an empty ws, written by older versions for an unknown handle, is dropped by the general path.
 			// Make sure the text is in the decomposed form (FWR-148)
 			string runText = Normalizer.Normalize(textElement.Value, Normalizer.UNormalizationMode.UNORM_NFD);
 			return TsStringUtils.MakeString(runText, GetWsForId(wsAttribute.Value, lgwsf));
@@ -333,6 +417,33 @@ namespace SIL.LCModel.Core.Text
 
 		#region Internal methods
 		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Whether the reader requires a ws attribute on a run whose text, as written to XML, is
+		/// <paramref name="writtenText"/>. A run that is empty (e.g. an ORC or link run) or starts with an ordinary
+		/// character needs one; a run starting with a control character up to U+000D (tab, newline...) does not.
+		/// </summary>
+		internal static bool RunNeedsWs(string writtenText)
+		{
+			return writtenText.Length == 0 || writtenText[0] > 13;
+		}
+
+		/// <summary>
+		/// Chooses a known ws for a run that has none: the enclosing ws, else the previous run's ws, else the user ws.
+		/// Returns 0 if none is known.
+		/// </summary>
+		internal static int GetFallbackWs(ILgWritingSystemFactory lgwsf, int enclosingWs, int previousWs)
+		{
+			foreach (int candidate in new[] { enclosingWs, previousWs })
+			{
+				if (candidate > 0 && !string.IsNullOrEmpty(lgwsf.GetStrFromWs(candidate)))
+					return candidate;
+			}
+			// The user ws is the established default. In FieldWorks it is always set. A factory with no user ws
+			// creates one ("en") here; that is preferable to failing the save, which would block the whole project.
+			int userWs = lgwsf.UserWs;
+			return userWs > 0 && !string.IsNullOrEmpty(lgwsf.GetStrFromWs(userWs)) ? userWs : 0;
+		}
+
 		/// <summary>
 		/// Gets the ws handle for specified writing system identifier.
 		/// </summary>

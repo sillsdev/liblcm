@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- [SIL.LCModel.Core] A writing-system handle the factory does not know is no longer saved as `ws=""`/`wsBase=""`, which no reader could load. An unknown `ws`/`wsBase` on text properties is omitted; a text run with no usable ws is written with a fallback ws (the enclosing `<AStr>` ws, else the previous run's, else the user ws) and a trace warning. Readers give a run with an existing empty `ws` the same fallback, so such records load and can be saved again. `MultiAccessor` and `MultiUnicodeAccessor` skip alternatives keyed by an unknown ws (#411)
 - [SIL.LCModel] BaseStyleInfo now loads default font features (ktptFontVariations) from style rules, fixing font features set as style defaults being dropped on reload (LT-22351)
 - [SIL.LCModel] BaseStyleInfo no longer clobbers ws-specific font overrides inherited from a based-on style with the default font info's merely-inherited values; only explicitly-set default properties are propagated to ws overrides (LT-22351)
 - [SIL.LCModel] BulletInfo now decodes all properties of an encoded bullet font info instead of stopping at the first string property, fixing bullet font features (ktptFontVariations) being lost when a bullet font name was also set (LT-22351)

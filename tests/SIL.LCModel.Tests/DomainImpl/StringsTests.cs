@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 using NUnit.Framework;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
@@ -303,6 +304,88 @@ namespace SIL.LCModel.DomainImpl
 			Cache.LangProject.MainCountry.set_String(english.Handle, tsString);
 			var xml = ToXml(Cache.LangProject.MainCountry);
 			Assert.AreEqual("<AUni ws=\"en\">test</AUni>", xml, "XML does not contain expected string element.");
+		}
+
+		private const int UnknownWs = 987654;
+
+		/// <summary>
+		/// An alternative keyed by a writing system handle the factory does not know cannot be written. It is skipped
+		/// (rather than failing the whole save), and the real alternatives are still written.
+		/// </summary>
+		[Test]
+		public void ToXml_AlternativeWithUnknownWs_IsSkipped()
+		{
+			var english = Cache.LangProject.CurrentAnalysisWritingSystems.First();
+			var region = Cache.LangProject.Description;
+			region.set_String(english.Handle, TsStringUtils.MakeString("Real", english.Handle));
+			((MultiAccessor)region).Add(UnknownWs, TsStringUtils.MakeString("Stale", UnknownWs));
+
+			string xml = null;
+			Assert.That(() => xml = ToXml(region), Throws.Nothing);
+
+			Assert.That(xml, Does.Contain("Real"));
+			Assert.That(xml, Does.Not.Contain("Stale"));
+			Assert.That(xml, Does.Not.Contain("ws=\"\""));
+		}
+
+		/// <summary>
+		/// The same for a MultiUnicode (&lt;AUni&gt;) alternative.
+		/// </summary>
+		[Test]
+		public void ToXml_UnicodeAlternativeWithUnknownWs_IsSkipped()
+		{
+			var english = Cache.LangProject.CurrentAnalysisWritingSystems.First();
+			var country = Cache.LangProject.MainCountry;
+			country.set_String(english.Handle, TsStringUtils.MakeString("Real", english.Handle));
+			((MultiAccessor)country).Add(UnknownWs, TsStringUtils.MakeString("Stale", UnknownWs));
+
+			string xml = null;
+			Assert.That(() => xml = ToXml(country), Throws.Nothing);
+
+			Assert.That(xml, Does.Contain("<AUni ws=\"en\">Real</AUni>"));
+			Assert.That(xml, Does.Not.Contain("Stale"));
+		}
+
+		/// <summary>
+		/// A run with an empty ws, written by older versions, is loaded with the ws of its alternative, and what is
+		/// saved from it can be loaded again.
+		/// </summary>
+		[Test]
+		public void FromXml_AStrWithEmptyRunWs_UsesAStrWsAndResaves()
+		{
+			var english = Cache.LangProject.CurrentAnalysisWritingSystems.First();
+			var region = Cache.LangProject.Description;
+			var wsf = Cache.WritingSystemFactory;
+
+			((MultiAccessor)region).Clear();
+			((MultiAccessor)region).LoadFromDataStoreInternal(
+				XElement.Parse("<Description><AStr ws=\"en\"><Run ws=\"\">legacy</Run></AStr></Description>"), wsf);
+
+			Assert.That(region.get_String(english.Handle).Text, Is.EqualTo("legacy"));
+			Assert.That(region.get_String(english.Handle).get_WritingSystem(0), Is.EqualTo(english.Handle));
+			string xml = ToXml(region);
+			Assert.That(xml, Does.Not.Contain("ws=\"\""));
+			ITsString tss;
+			Assert.That(MultiAccessor.ReadAstrElementOfMultiString(XElement.Parse("<r>" + xml + "</r>").Elements("AStr").First(a => a.Attribute("ws").Value == "en"), wsf, out tss), Is.EqualTo(english.Handle));
+			Assert.That(tss.Text, Is.EqualTo("legacy"));
+		}
+
+		/// <summary>
+		/// An alternative with no ws on either the AStr or its run cannot be placed. It must not be given the user
+		/// ws, which would overwrite the real alternative in that ws.
+		/// </summary>
+		[Test]
+		public void FromXml_AStrAndRunWithEmptyWs_DoesNotOverwriteRealAlternative()
+		{
+			var english = Cache.WritingSystemFactory.GetWsFromStr("en");
+			var region = Cache.LangProject.Description;
+			var wsf = Cache.WritingSystemFactory;
+			Cache.ServiceLocator.WritingSystemManager.UserWs = english;
+			region.set_String(english, TsStringUtils.MakeString("Real", english));
+			((MultiAccessor)region).LoadFromDataStoreInternal(
+				XElement.Parse("<Description><AStr ws=\"\"><Run ws=\"\">lost</Run></AStr></Description>"), wsf);
+
+			Assert.That(region.get_String(english).Text, Is.EqualTo("Real"));
 		}
 
 		private string ToXml(ITsMultiString multiString)

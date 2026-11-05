@@ -368,6 +368,14 @@ namespace SIL.LCModel.DomainImpl
 			if (string.IsNullOrEmpty(alternative.Text))
 				return; // Skip writing TsStrings with no content.
 
+			// An alternative whose ws the factory does not know has no id to write, and giving it another ws could
+			// overwrite a real alternative. Skip it rather than fail the whole save.
+			if (string.IsNullOrEmpty(wsf.GetStrFromWs(ws)))
+			{
+				Trace.TraceWarning("MultiAccessor: skipping alternative with unknown writing system handle " + ws);
+				return;
+			}
+
 			writer.WriteRaw(TsStringUtils.GetXmlRep(alternative, wsf, ws));
 		}
 
@@ -897,6 +905,13 @@ namespace SIL.LCModel.DomainImpl
 			var text = alternative.Text;
 			if (string.IsNullOrEmpty(text))
 				return; // Skip writing TsStrings with no content.
+
+			// An alternative whose ws the factory does not know has no id to write. Skip it rather than fail the whole save.
+			if (string.IsNullOrEmpty(wsf.GetStrFromWs(ws)))
+			{
+				Trace.TraceWarning("MultiUnicodeAccessor: skipping alternative with unknown writing system handle " + ws);
+				return;
+			}
 
 			writer.WriteStartElement("AUni");
 			writer.WriteAttributeString("ws", m_object.Services.WritingSystemManager.Get(ws).Id);
