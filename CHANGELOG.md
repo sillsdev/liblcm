@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- [SIL.LCModel.Core] `TsPropsSerializer` no longer writes `ws=""`/`wsBase=""` for a writing-system handle the factory does not know (the attribute is omitted instead), and `TsStringSerializer` throws instead of writing a run or `<AStr>` with an unknown ws. Readers now ignore an existing empty `ws`/`wsBase`, so records saved with `ws=""` load (#411)
 - [SIL.LCModel] BaseStyleInfo now loads default font features (ktptFontVariations) from style rules, fixing font features set as style defaults being dropped on reload (LT-22351)
 - [SIL.LCModel] BaseStyleInfo no longer clobbers ws-specific font overrides inherited from a based-on style with the default font info's merely-inherited values; only explicitly-set default properties are propagated to ws overrides (LT-22351)
 - [SIL.LCModel] BulletInfo now decodes all properties of an encoded bullet font info instead of stopping at the first string property, fixing bullet font features (ktptFontVariations) being lost when a bullet font name was also set (LT-22351)

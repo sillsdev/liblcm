@@ -51,6 +51,8 @@ namespace SIL.LCModel.Core.Text
 				if (ws > 0)
 				{
 					string id = lgwsf.GetStrFromWs(ws);
+					if (string.IsNullOrEmpty(id))
+						throw new ArgumentException("Unknown writing system handle " + ws + "; cannot write an <AStr> without a ws.", "ws");
 					writer.WriteStartElement("AStr");
 					writer.WriteAttributeString("ws", Normalizer.Normalize(id, Normalizer.UNormalizationMode.UNORM_NFC));
 				}
@@ -87,6 +89,18 @@ namespace SIL.LCModel.Core.Text
 							writer.WriteAttributeString("name", runFieldName);
 						}
 						fieldName = runFieldName;
+					}
+
+					// A run of ordinary text must carry a ws (the reader rejects it otherwise), and an unknown handle
+					// has no id to write. Fail here rather than save a record that cannot be loaded.
+					int runWs;
+					FwTextPropVar wsVar;
+					if (textProps.TryGetIntValue(FwTextPropType.ktptWs, out wsVar, out runWs) && runWs > 0
+						&& string.IsNullOrEmpty(lgwsf.GetStrFromWs(runWs)))
+					{
+						string wsCheckText = normalizedTss.get_RunText(i) ?? string.Empty;
+						if (wsCheckText.Length > 0 && wsCheckText[0] > 13)
+							throw new InvalidOperationException("Cannot serialize run with unknown writing system handle " + runWs + ". Run text: " + wsCheckText);
 					}
 
 					bool markItem;
@@ -323,8 +337,8 @@ namespace SIL.LCModel.Core.Text
 				return null; // Way too complex for this simple case
 
 			XAttribute wsAttribute = textElement.Attributes().First();
-			if (wsAttribute.Name.LocalName != "ws")
-				return null; // we handle only single runs with only the ws attribute.
+			if (wsAttribute.Name.LocalName != "ws" || wsAttribute.Value.Length == 0)
+				return null; // we handle only single runs with only a (non-empty) ws attribute; an empty ws, written by older versions for an unknown handle, is dropped by the general path.
 			// Make sure the text is in the decomposed form (FWR-148)
 			string runText = Normalizer.Normalize(textElement.Value, Normalizer.UNormalizationMode.UNORM_NFD);
 			return TsStringUtils.MakeString(runText, GetWsForId(wsAttribute.Value, lgwsf));
