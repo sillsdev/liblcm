@@ -1201,7 +1201,10 @@ namespace SIL.LCModel.Core.Text
 							GetIntValueFromStr(attr.Value));
 						break;
 					case "type":
-						Debug.Assert(attr.Value == "chars", "Embedded pictures are not supported!");
+						// The writer writes type="picture" for picture object data (an antique kludge);
+						// the picture is not read back. Not an assertion: this is data the writer emits.
+						if (attr.Value != "chars")
+							Trace.TraceWarning("TsPropsSerializer: embedded pictures are not supported; type=\"" + attr.Value + "\" ignored.");
 						break;
 					case "undercolor":
 						propsBldr.SetIntPropValues((int)FwTextPropType.ktptUnderColor, 0,
@@ -1487,7 +1490,10 @@ namespace SIL.LCModel.Core.Text
 							GetIntValueFromStr(attr.Value));
 						break;
 					case "type":
-						Debug.Assert(attr.Value == "chars", "Embedded pictures are not supported!");
+						// The writer writes type="picture" for picture object data (an antique kludge);
+						// the picture is not read back. Not an assertion: this is data the writer emits.
+						if (attr.Value != "chars")
+							Trace.TraceWarning("TsPropsSerializer: embedded pictures are not supported; type=\"" + attr.Value + "\" ignored.");
 						break;
 					case "undercolor":
 						strBldr.SetIntPropValues((int)FwTextPropType.ktptUnderColor, 0,
