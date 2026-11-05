@@ -25,8 +25,8 @@ namespace SIL.LCModel.Core.Text
 	{
 		private const char High = '\uD800';
 		private const char Low = '\uDC00';
-		private const string Fffd = "�";
-		private const string Acute = "́";
+		private const string Fffd = "\uFFFD";
+		private const string Acute = "\u0301";
 
 		private static readonly string[][] NamedCases =
 		{
@@ -64,7 +64,7 @@ namespace SIL.LCModel.Core.Text
 					i++;
 				}
 				else
-					sb.Append(char.IsSurrogate(s[i]) ? '�' : s[i]);
+					sb.Append(char.IsSurrogate(s[i]) ? '\uFFFD' : s[i]);
 			}
 			return sb.ToString();
 		}
@@ -112,6 +112,18 @@ namespace SIL.LCModel.Core.Text
 			string xml1 = TsStringSerializer.SerializeTsStringToXml(tss, WritingSystemManager);
 			ITsString reloaded = TsStringSerializer.DeserializeTsStringFromXml(xml1, WritingSystemManager);
 			Assert.That(TsStringSerializer.SerializeTsStringToXml(reloaded, WritingSystemManager), Is.EqualTo(xml1));
+		}
+
+		[Test]
+		public void SerializeTsStringToXml_LoneSurrogatesAreReplacedBeforeInvalidCharsAreStripped()
+		{
+			// Order matters: if the control character were stripped first, the lone high and lone low surrogate
+			// would become adjacent and read as a valid pair (U+10000), changing the text. Each is lone, so each
+			// becomes U+FFFD, and the control character is then removed.
+			ITsString tss = TsStringUtils.MakeString("x" + High + "\u0002" + Low + "y", EnWS);
+			string xml = TsStringSerializer.SerializeTsStringToXml(tss, WritingSystemManager);
+			Assert.That(TsStringSerializer.DeserializeTsStringFromXml(xml, WritingSystemManager).Text,
+				Is.EqualTo("x" + Fffd + Fffd + "y"));
 		}
 
 		[Test]
@@ -222,17 +234,17 @@ namespace SIL.LCModel.Core.Text
 		[Test]
 		public void NormalizedForm_LoneSurrogate_StillNormalizesTheRest()
 		{
-			ITsString tss = TsStringUtils.MakeString("e" + Acute + High + "ö", EnWS);
-			Assert.That(tss.get_NormalizedForm(FwNormalizationMode.knmNFC).Text, Is.EqualTo("é" + High + "ö"));
-			ITsString composed = TsStringUtils.MakeString("é" + Low + "ö", EnWS);
-			Assert.That(composed.get_NormalizedForm(FwNormalizationMode.knmNFD).Text, Is.EqualTo("e" + Acute + Low + "ö"));
+			ITsString tss = TsStringUtils.MakeString("e" + Acute + High + "o\u0308", EnWS);
+			Assert.That(tss.get_NormalizedForm(FwNormalizationMode.knmNFC).Text, Is.EqualTo("\u00E9" + High + "\u00F6"));
+			ITsString composed = TsStringUtils.MakeString("\u00E9" + Low + "\u00F6", EnWS);
+			Assert.That(composed.get_NormalizedForm(FwNormalizationMode.knmNFD).Text, Is.EqualTo("e" + Acute + Low + "o\u0308"));
 		}
 
 		[Test]
 		public void NormalizedForm_LoneSurrogate_AcrossRuns_NFD()
 		{
 			var bldr = TsStringUtils.MakeStrBldr();
-			bldr.Replace(0, 0, "é" + High, TsStringUtils.MakeProps(null, EnWS));
+			bldr.Replace(0, 0, "\u00E9" + High, TsStringUtils.MakeProps(null, EnWS));
 			bldr.Replace(bldr.Length, bldr.Length, Acute + "x", TsStringUtils.MakeProps(null, EsWS));
 			Assert.DoesNotThrow(() => bldr.GetString().get_NormalizedForm(FwNormalizationMode.knmNFD));
 			Assert.DoesNotThrow(() => bldr.GetString().get_NormalizedForm(FwNormalizationMode.knmNFSC));
@@ -242,7 +254,7 @@ namespace SIL.LCModel.Core.Text
 		public void NfdAndFixOffsets_LoneSurrogate_FixesOffsets()
 		{
 			// U+00E9 decomposes to two chars, so the offset of "b" moves from 2 to 3. The lone high surrogate is kept.
-			ITsString tss = TsStringUtils.MakeString("é" + High + "b", EnWS);
+			ITsString tss = TsStringUtils.MakeString("\u00E9" + High + "b", EnWS);
 			IntPtr offset = Marshal.AllocHGlobal(sizeof(int));
 			IntPtr table = Marshal.AllocHGlobal(IntPtr.Size);
 			try
@@ -319,7 +331,7 @@ namespace SIL.LCModel.Core.Text
 		{
 			// Lone highs and lows at the start, middle and end of random text.
 			var rng = new Random(414);
-			string[] alphabet = { "a", "b", " ", ".", "é", Acute, "\U0001F98A", "" + High, "" + Low, "\uDBFF", "\uDFFF" };
+			string[] alphabet = { "a", "b", " ", ".", "\u00E9", Acute, "\U0001F98A", "" + High, "" + Low, "\uDBFF", "\uDFFF" };
 			for (int n = 0; n < 2000; n++)
 			{
 				var sb = new StringBuilder();

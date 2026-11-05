@@ -207,7 +207,10 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		internal static string GetXmlSafeText(string text)
 		{
-			string cleaned = Surrogates.ReplaceLoneSurrogates(StripInvalidXmlChars(text));
+			// Replace lone surrogates first: removing a control character can bring a high and a low surrogate
+			// together into a "pair" that was never one, and the result must not depend on whether
+			// StripInvalidXmlChars itself removes lone surrogates.
+			string cleaned = StripInvalidXmlChars(Surrogates.ReplaceLoneSurrogates(text));
 			return StripInvalidXmlChars(Normalizer.Normalize(cleaned, Normalizer.UNormalizationMode.UNORM_NFC));
 		}
 		#endregion

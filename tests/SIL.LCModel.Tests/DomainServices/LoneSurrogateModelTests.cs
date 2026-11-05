@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using SIL.LCModel.Core.Cellar;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Core.Text;
 using SIL.LCModel.Infrastructure;
@@ -25,7 +26,7 @@ namespace SIL.LCModel.DomainServices
 	{
 		private const string High = "\uD800";
 		private const string Low = "\uDC00";
-		private const string Fffd = "�";
+		private const string Fffd = "\uFFFD";
 
 		// The test base already has a unit of work open for each test.
 		private static void InUow(Action task)
@@ -96,6 +97,23 @@ namespace SIL.LCModel.DomainServices
 		}
 
 		[Test]
+		public void CustomStringField_SetString_ReplacesLoneSurrogate_AndNormalizes()
+		{
+			var mdc = Cache.ServiceLocator.GetInstance<IFwMetaDataCacheManaged>();
+			int flid = mdc.AddCustomField("WfiWordform", "LoneSurrogateProp" + Guid.NewGuid().ToString("N"),
+				CellarPropertyType.String, 0);
+			IWfiWordform wf = null;
+			InUow(() =>
+			{
+				wf = Cache.ServiceLocator.GetInstance<IWfiWordformFactory>().Create();
+				Cache.DomainDataByFlid.SetString(wf.Hvo, flid,
+					TsStringUtils.MakeString("c" + High + "d" + Low + "\u00E9", Cache.DefaultVernWs));
+			});
+			Assert.That(Cache.DomainDataByFlid.get_StringProp(wf.Hvo, flid).Text,
+				Is.EqualTo("c" + Fffd + "d" + Fffd + "e\u0301"));
+		}
+
+		[Test]
 		public void DomainDataByFlid_SetString_ReplacesLoneSurrogate()
 		{
 			var para = AddPara(TsStringUtils.MakeString("x", Cache.DefaultVernWs));
@@ -125,7 +143,7 @@ namespace SIL.LCModel.DomainServices
 		public void ParagraphParser_Fuzz_NeverThrows()
 		{
 			var rng = new Random(414);
-			string[] alphabet = { "a", "b", "c", " ", ".", "é", "́", "\U0001F98A", High, Low, "\uDBFF", "\uDFFF" };
+			string[] alphabet = { "a", "b", "c", " ", ".", "\u00E9", "\u0301", "\U0001F98A", High, Low, "\uDBFF", "\uDFFF" };
 			var para = AddPara(TsStringUtils.MakeString("placeholder", Cache.DefaultVernWs));
 			for (int n = 0; n < 150; n++)
 			{
@@ -196,7 +214,7 @@ namespace SIL.LCModel.DomainServices
 				textBefore = para.Contents.Text;
 				offsetsBefore = para.SegmentsOS.Select(s => s.BeginOffset).ToArray();
 				baselinesBefore = para.SegmentsOS.Select(s => s.BaselineText.Text).ToArray();
-				Assert.That(textBefore, Is.EqualTo("One a�b two. Three four. Five six."));
+				Assert.That(textBefore, Is.EqualTo("One a\uFFFDb two. Three four. Five six."));
 				Assert.That(offsetsBefore, Is.EqualTo(new[] { 0, 13, 25 }), "sanity: three segments");
 
 				cache.ServiceLocator.GetInstance<IUndoStackManager>().Save();

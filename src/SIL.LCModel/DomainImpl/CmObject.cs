@@ -2921,6 +2921,11 @@ namespace SIL.LCModel.DomainImpl
 				//	break;
 				// case CellarPropertyType.Image: // Not in model.
 				// case CellarPropertyType.Numeric: // Not in model.
+				case CellarPropertyType.String:
+					// Same input rules as a model String property: NFD, and no unpaired surrogates.
+					if (newValue is ITsString newTss)
+						newValue = TsStringUtils.NormalizeNfd(newTss);
+					break;
 				case CellarPropertyType.Guid:
 					if (newValue == null)
 						newValue = Guid.Empty;
