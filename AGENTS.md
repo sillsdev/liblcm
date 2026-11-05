@@ -41,6 +41,7 @@ Failure signature (both commands): GitVersion.MsBuild (netcoreapp3.1 gitversion.
 
 ### Known prerequisites and gotchas
 - GitVersion.MsBuild is used across projects; it requires git metadata. CI checks out with fetch-depth 0.
+- Building from a detached HEAD (e.g. a review worktree) makes GitVersion fail; set the environment variable `DisableGitVersionTask=true` (an environment variable, not `-p:`, so the nested GenerateKernelCs build sees it).
 - net462 builds on Windows require the .NET Framework 4.6.1 targeting pack (CI installs it).
 - ICU data generation requires ICU binaries (CI installs icu-fw on Ubuntu).
 - Some projects warn on NU1701; treat as warnings unless build breaks.

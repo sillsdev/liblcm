@@ -148,10 +148,10 @@ namespace SIL.LCModel.Core.Text
 				// ktptTabDef is not written: tabs are not supported and the readers have always
 				// ignored the attribute.
 				case FwTextPropType.ktptLineHeight:
-					// negative millipoints means "exact" internally; other variations keep their sign
-					// (long, so that int.MinValue can be negated)
-					writer.WriteAttributeString("lineHeight", (var == FwTextPropVar.ktpvMilliPoint ? Math.Abs((long) value) : value)
-						.ToString(CultureInfo.InvariantCulture));
+					// negative millipoints means "exact" internally (long, so that int.MinValue can
+					// be negated); older readers reject a negative number here, so no sign is
+					// written for any variation
+					writer.WriteAttributeString("lineHeight", Math.Abs((long) value).ToString(CultureInfo.InvariantCulture));
 					writer.WriteAttributeString("lineHeightUnit", GetVariationString(var));
 					if (var == FwTextPropVar.ktpvMilliPoint)
 						writer.WriteAttributeString("lineHeightType", value < 0 ? "exact" : "atLeast");
@@ -326,7 +326,11 @@ namespace SIL.LCModel.Core.Text
 					byte[] bytes = Encoding.Unicode.GetBytes(value);
 					int guidCount = bytes.Length / guidLength;
 					if (guidCount == 0)
-						break; // nothing but an incomplete GUID: malformed, leave it out
+					{
+						// nothing but an incomplete GUID: malformed, leave it out
+						Debug.WriteLine("TsPropsSerializer: ktptTags value shorter than one GUID is not written.");
+						break;
+					}
 					var sb = new StringBuilder();
 					for (int i = 0; i < guidCount; i++)
 					{
@@ -378,7 +382,11 @@ namespace SIL.LCModel.Core.Text
 				}
 
 				if (i + 2 > bulNumFontInfo.Length)
-					break; // truncated: leave out the incomplete property rather than fail the save
+				{
+					// truncated: leave out the incomplete property rather than fail the save
+					Debug.WriteLine("TsPropsSerializer: truncated ktptBulNumFontInfo value; the incomplete property is not written.");
+					break;
+				}
 
 				int value = bulNumFontInfo[i] + (bulNumFontInfo[i + 1] << 16);
 				i += 2;
@@ -471,6 +479,12 @@ namespace SIL.LCModel.Core.Text
 				WriteStringProperty(writer, tpt, value);
 		}
 
+		private static IDictionary<int, WSStyleInfo> MalformedWsStyles(IDictionary<int, WSStyleInfo> complete)
+		{
+			Debug.WriteLine("TsPropsSerializer: truncated ktptWsStyle value; the incomplete entry is not written.");
+			return complete;
+		}
+
 		private static IDictionary<int, WSStyleInfo> DecodeWSStyles(string wsStyles)
 		{
 			// A truncated (malformed) entry is left out rather than failing the whole save.
@@ -479,7 +493,7 @@ namespace SIL.LCModel.Core.Text
 			while (i < wsStyles.Length)
 			{
 				if (i + 3 > wsStyles.Length)
-					break;
+					return MalformedWsStyles(results);
 				int ws = wsStyles[i] | (wsStyles[i + 1] << 16);
 				i += 2;
 
@@ -488,7 +502,7 @@ namespace SIL.LCModel.Core.Text
 				int len = wsStyles[i];
 				i++;
 				if (i + len + 1 > wsStyles.Length)
-					break;
+					return MalformedWsStyles(results);
 				if (len > 0)
 					wsStyleInfo.FontFamily = ConvertSpecialFontNames(wsStyles.Substring(i, len));
 				i += len;
@@ -503,27 +517,27 @@ namespace SIL.LCModel.Core.Text
 					for (int j = propCount; j < 0; j++)
 					{
 						if (i + 2 > wsStyles.Length)
-							return results;
+							return MalformedWsStyles(results);
 						var tpt = (FwTextPropType) wsStyles[i];
 						i++;
 						len = wsStyles[i];
 						i++;
 						if (i + len > wsStyles.Length)
-							return results;
+							return MalformedWsStyles(results);
 						if (tpt == FwTextPropType.ktptFontVariations)
 							wsStyleInfo.FontVariations = wsStyles.Substring(i, len);
 						i += len;
 					}
 
 					if (i + 1 > wsStyles.Length)
-						return results;
+						return MalformedWsStyles(results);
 					propCount = (short) wsStyles[i];
 					i++;
 				}
 
 				// Integer properties
 				if (propCount < 0 || i + propCount * 4 > wsStyles.Length)
-					break;
+					return MalformedWsStyles(results);
 				for (int j = 0; j < propCount; j++)
 				{
 					var tpt = (FwTextPropType) wsStyles[i];
@@ -774,7 +788,10 @@ namespace SIL.LCModel.Core.Text
 		{
 			const int guidLength = 8; // in UTF-16 characters
 			if (objData.Length < 1 + guidLength)
+			{
+				Debug.WriteLine("TsPropsSerializer: ktptObjData value too short to hold a GUID is not written.");
 				return;
+			}
 			Guid guid = MiscUtils.GetGuidFromObjData(objData.Substring(1));
 			writer.WriteAttributeString(attrName, guid.ToString());
 		}
@@ -785,7 +802,7 @@ namespace SIL.LCModel.Core.Text
 		/// </summary>
 		private static string GetXmlSafeString(string value)
 		{
-			return TsStringSerializer.StripInvalidXmlChars(Normalizer.Normalize(value, Normalizer.UNormalizationMode.UNORM_NFC));
+			return TsStringSerializer.GetXmlSafeText(value);
 		}
 
 		#endregion
@@ -863,6 +880,13 @@ namespace SIL.LCModel.Core.Text
 					&& int.TryParse(attr.Name.LocalName.Substring(BulNumFontInfoOtherPropPrefix.Length), NumberStyles.None,
 						CultureInfo.InvariantCulture, out otherType))
 				{
+					// The encoding holds the property number in one character, so the writer never
+					// writes a number above 0xFFFF; skip one rather than store a different property.
+					if (otherType > ushort.MaxValue)
+					{
+						Debug.WriteLine("TsPropsSerializer: BulNumFontInfo attribute " + attr.Name.LocalName + " is out of range and was skipped.");
+						continue;
+					}
 					otherProps.Add(new KeyValuePair<int, int>(otherType, GetIntValueFromStr(attr.Value)));
 				}
 				else
@@ -1589,7 +1613,7 @@ namespace SIL.LCModel.Core.Text
 						break;
 					case "atLeast":
 						break; // This is the default value
-				default:
+					default:
 						throw new XmlSchemaException("Invalid type specified: " + typeAttr.Value);
 				}
 			}
@@ -1717,8 +1741,9 @@ namespace SIL.LCModel.Core.Text
 				case "mpt": return (int)FwTextPropVar.ktpvMilliPoint;
 				case "rel": return (int)FwTextPropVar.ktpvRelative;
 				default:
-					if (TryGetEnumNumber(attr.Value, out int value))
-						return value; // the writer writes other variations as numbers
+					// The writer writes other variations as numbers; a variation is never negative.
+					if (int.TryParse(attr.Value, NumberStyles.None, CultureInfo.InvariantCulture, out int value))
+						return value;
 					throw new XmlSchemaException("Invalid value for unit type: " + attr.Value);
 			}
 		}

@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Xml.Schema;
 using NUnit.Framework;
 using SIL.LCModel.Core.KernelInterfaces;
 using SIL.LCModel.Utils;
@@ -181,14 +182,14 @@ namespace SIL.LCModel.Core.Text
 		/// Properties deliberately not persisted. The writer must leave them out (and a reader
 		/// must still load an old file that has them, see <see cref="OldFileAttributes_Load"/>).
 		/// </summary>
-		private static readonly Dictionary<string, string> NotPersisted = new Dictionary<string, string>
+		private static readonly Dictionary<string, (bool IsString, string Reason)> NotPersisted = new Dictionary<string, (bool, string)>
 		{
-			{ nameof(FwTextPropType.ktptCharStyle), "obsolete, superseded by namedStyle; the reader has always ignored it" },
-			{ nameof(FwTextPropType.ktptParaStyle), "obsolete, superseded by namedStyle; the reader has always ignored it" },
-			{ nameof(FwTextPropType.ktptTabList), "tabs are not supported; the reader has always ignored it" },
-			{ nameof(FwTextPropType.ktptTabDef), "tabs are not supported; the reader has always ignored it" },
-			{ nameof(FwTextPropType.ktptEditable), "a view-construction property; the run reader has always ignored it, so persisting it would make existing text read-only" },
-			{ nameof(FwTextPropType.ktptTableRule), "a view-construction property never written; a new attribute name would make older readers reject the record" },
+			{ nameof(FwTextPropType.ktptCharStyle), (true, "obsolete, superseded by namedStyle; the reader has always ignored it") },
+			{ nameof(FwTextPropType.ktptParaStyle), (true, "obsolete, superseded by namedStyle; the reader has always ignored it") },
+			{ nameof(FwTextPropType.ktptTabList), (true, "tabs are not supported; the reader has always ignored it") },
+			{ nameof(FwTextPropType.ktptTabDef), (false, "tabs are not supported; the reader has always ignored it") },
+			{ nameof(FwTextPropType.ktptEditable), (false, "a view-construction property; the run reader has always ignored it, so persisting it would make existing text read-only") },
+			{ nameof(FwTextPropType.ktptTableRule), (false, "a view-construction property never written; a new attribute name would make older readers reject the record") },
 		};
 
 		/// <summary>Members that are not stored as text property attributes at all.</summary>
@@ -344,8 +345,7 @@ namespace SIL.LCModel.Core.Text
 		public void NotPersisted_IsLeftOutAndLoads(string name)
 		{
 			FwTextPropType tpt = Tpt(name);
-			bool isString = name == nameof(FwTextPropType.ktptCharStyle) || name == nameof(FwTextPropType.ktptParaStyle)
-				|| name == nameof(FwTextPropType.ktptTabList);
+			bool isString = NotPersisted[name].IsString;
 
 			ITsPropsBldr bldr = TsStringUtils.MakePropsBldr();
 			bldr.SetIntPropValues((int)FwTextPropType.ktptWs, 0, EnWS);
@@ -440,6 +440,30 @@ namespace SIL.LCModel.Core.Text
 			}
 		}
 
+		[TestCase(FwTextPropType.ktptWs)]
+		[TestCase(FwTextPropType.ktptBaseWs)]
+		public void AnyWsValue_Loads(FwTextPropType tpt)
+		{
+			// An unknown handle is not covered: it is written as ws="", which the readers reject.
+			foreach (int value in new[] { EnWS, EsWS, 0, -1, int.MinValue })
+			{
+				foreach (FwTextPropVar var in new[] { FwTextPropVar.ktpvDefault, FwTextPropVar.ktpvEnum })
+				{
+					ITsPropsBldr bldr = TsStringUtils.MakePropsBldr();
+					bldr.SetIntPropValues((int)FwTextPropType.ktptWs, 0, EnWS);
+					try
+					{
+						bldr.SetIntPropValues((int)tpt, (int)var, value);
+					}
+					catch (ArgumentOutOfRangeException)
+					{
+						continue; // text props cannot hold this value, so it can never be written
+					}
+					AssertWrittenXmlLoads(bldr.GetTextProps(), $"{tpt}, var {var}, value {value}");
+				}
+			}
+		}
+
 		[TestCaseSource(nameof(AnyIntValueCases))]
 		public void AnyIntValue_Loads(int tpt, FwTextPropVar var, int[] values)
 		{
@@ -457,7 +481,8 @@ namespace SIL.LCModel.Core.Text
 			string[] values =
 			{
 				"x", "ab", "abc", "\u0001", "\u0001\u0002\u0003", "\u0006\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008",
-				"\u0003\u0001", "\u0003\u0001\u0002\u0003\u0004\u0005\u0006\u0007", "￿￿￿", "\u0002\u0002\u0002\u0002"
+				"\u0003\u0001", "\u0003\u0001\u0002\u0003\u0004\u0005\u0006\u0007", "\uFFFF\uFFFF\uFFFF", "\u0002\u0002\u0002\u0002",
+				"a\uD800b", "\uDC00x", "x\uD800", "\U0001F600 paired"
 			};
 			IEnumerable<int> numbers = Enum.GetValues(typeof(FwTextPropType)).Cast<int>().Distinct().Concat(new[] { 1000, 30000 });
 			foreach (int tpt in numbers)
@@ -489,7 +514,7 @@ namespace SIL.LCModel.Core.Text
 				bldr.SetIntPropValues((int)FwTextPropType.ktptWs, 0, EnWS);
 				bldr.SetIntPropValues((int)FwTextPropType.ktptLeadingIndent, (int)FwTextPropVar.ktpvMilliPoint, -1000);
 				bldr.SetIntPropValues((int)FwTextPropType.ktptOffset, (int)FwTextPropVar.ktpvMilliPoint, -3000);
-				bldr.SetIntPropValues((int)FwTextPropType.ktptLineHeight, (int)FwTextPropVar.ktpvRelative, -5);
+				bldr.SetIntPropValues((int)FwTextPropType.ktptLineHeight, (int)FwTextPropVar.ktpvMilliPoint, -12000);
 				AssertStyleRulesRoundTrip(bldr.GetTextProps());
 				AssertRunRoundTrip(bldr.GetTextProps(), "text");
 			}
@@ -497,6 +522,61 @@ namespace SIL.LCModel.Core.Text
 			{
 				Thread.CurrentThread.CurrentCulture = oldCulture;
 			}
+		}
+
+		[Test]
+		public void NegativeRelativeLineHeight_IsWrittenWithoutSign()
+		{
+			// Older readers reject a negative line height, and a negative relative height means
+			// nothing to Views, so the writer keeps writing the absolute value as it always has.
+			ITsPropsBldr bldr = TsStringUtils.MakePropsBldr();
+			bldr.SetIntPropValues((int)FwTextPropType.ktptLineHeight, (int)FwTextPropVar.ktpvRelative, -5000);
+			string xml = TsPropsSerializer.SerializePropsToXml(bldr.GetTextProps(), WritingSystemManager);
+			Assert.That(StripNewLines(xml), Is.EqualTo("<Prop lineHeight=\"5000\" lineHeightUnit=\"rel\"></Prop>"));
+		}
+
+		// Built in code: attribute arguments cannot carry an unpaired surrogate (it becomes U+FFFD).
+		private static readonly string[][] SurrogateCases =
+		{
+			new[] { "a\uD800b", "ab" },
+			new[] { "\uDC00a", "a" },
+			new[] { "a\uD800", "a" },
+			new[] { "a\uDC00\uD800b", "ab" },
+			new[] { "a\U0001F600b", "a\U0001F600b" },
+		};
+
+		[TestCase(0)]
+		[TestCase(1)]
+		[TestCase(2)]
+		[TestCase(3)]
+		[TestCase(4)]
+		public void UnpairedSurrogates_AreStrippedFromStringProperties(int index)
+		{
+			string value = SurrogateCases[index][0], expected = SurrogateCases[index][1];
+			ITsPropsBldr bldr = TsStringUtils.MakePropsBldr();
+			bldr.SetStrPropValue((int)FwTextPropType.ktptCustomBullet, value);
+			string xml = TsPropsSerializer.SerializePropsToXml(bldr.GetTextProps(), WritingSystemManager);
+			ITsTextProps props = TsPropsSerializer.DeserializePropsFromXml(xml, WritingSystemManager);
+			Assert.That(props.GetStrPropValue((int)FwTextPropType.ktptCustomBullet), Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void BulNumFontInfo_PropertyNumberAboveCharRange_IsSkipped()
+		{
+			// Only hand-made data has this; storing it would renumber it to another property.
+			ITsTextProps props = TsPropsSerializer.DeserializePropsFromXml(
+				"<Prop><BulNumFontInfo bold='on' prop_99999='1' prop_138='500'/></Prop>", WritingSystemManager);
+			Assert.That(props.GetStrPropValue((int)FwTextPropType.ktptBulNumFontInfo),
+				Is.EqualTo(Bul(FwTextPropType.ktptBold, 1) + Bul(FwTextPropType.ktptBorderTop, 500)));
+		}
+
+		[TestCase("-1")]
+		[TestCase("-3")]
+		public void NegativeUnit_IsRejected(string unit)
+		{
+			// No writer emits a negative variation, and setting one would remove the property.
+			Assert.That(() => TsPropsSerializer.DeserializePropsFromXml($"<Prop fontsize='10' fontsizeUnit='{unit}'/>", WritingSystemManager),
+				Throws.TypeOf<XmlSchemaException>());
 		}
 
 		[Test]
