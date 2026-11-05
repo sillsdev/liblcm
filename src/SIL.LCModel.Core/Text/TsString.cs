@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016 SIL International
+// Copyright (c) 2016 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -289,7 +289,7 @@ namespace SIL.LCModel.Core.Text
 			int i = 0;
 			while (i < Text.Length)
 			{
-				int codepoint = Char.ConvertToUtf32(Text, i);
+				int codepoint = Surrogates.CodePointAt(Text, i);
 				if (icuNormalizer.HasBoundaryBefore(codepoint) && i > 0)
 				{
 					yield return i;
@@ -302,7 +302,7 @@ namespace SIL.LCModel.Core.Text
 		/// <summary>
 		/// Helper function used in MatchUpIndexesAfterNormalization, itself a helper function for get_NormalizedForm
 		/// </summary>
-		/// <param name="s">String to convert to UTF32 codepoints. Must not be null, and must not end with an unpaired surrogate.</param>
+		/// <param name="s">String to convert to UTF32 codepoints. Must not be null, and may contain unpaired surrogates, which are reported as their own code unit value.</param>
 		/// <returns>A sequence of KeyValuePairs where the key is the index (in chars) of this codepoint in the original string, and the value is the Unicode codepoint at that index.</returns>
 		private List<KeyValuePair<int, int>> CodepointsByIndex(string s)
 		{
@@ -310,7 +310,7 @@ namespace SIL.LCModel.Core.Text
 			var result = new List<KeyValuePair<int, int>>(len);
 			for (int i = 0; i < len; i++)
 			{
-				int codePoint = Char.ConvertToUtf32(s, i);
+				int codePoint = Surrogates.CodePointAt(s, i);
 				result.Add(new KeyValuePair<int, int>(i, codePoint));
 				if (codePoint > 0xffff)
 					i++; // Skip second half of a surrogate pair
@@ -359,7 +359,9 @@ namespace SIL.LCModel.Core.Text
 			{
 				int origIdx = indexAndCodePoint.Key;
 				int origCodePoint = indexAndCodePoint.Value;
-				var normalizedStringFromOrigCodePoint = icuNormalizer.GetDecomposition(origCodePoint) ?? char.ConvertFromUtf32(origCodePoint);
+				var normalizedStringFromOrigCodePoint = icuNormalizer.GetDecomposition(origCodePoint) ?? (origCodePoint >= 0xD800 && origCodePoint <= 0xDFFF
+						? ((char)origCodePoint).ToString() // unpaired surrogate (see Surrogates.CodePointAt)
+						: char.ConvertFromUtf32(origCodePoint));
 				foreach (KeyValuePair<int, int> indexAndResultingCodePoint in CodepointsByIndex(normalizedStringFromOrigCodePoint))
 				{
 					int resultingCodePoint = indexAndResultingCodePoint.Value;
@@ -485,7 +487,7 @@ namespace SIL.LCModel.Core.Text
 						{
 							ITsTextProps origProperties = get_PropertiesAt(segmentMin + mapping.origIdx);
 							int outputIdx = outputLenSoFar + mapping.normIdx;
-							int size = Char.IsSurrogate(normalizedSegment, mapping.normIdx) ? 2 : 1;
+							int size = Char.IsSurrogatePair(normalizedSegment, mapping.normIdx) ? 2 : 1;
 							resultBuilder.SetProperties(outputIdx, outputIdx + size, origProperties);
 							// And if we also need to fix up offsets at the end, we keep track of the ones we'll need
 							if (willFixOffsets && mapping.isFirstCharOfDecomposition)

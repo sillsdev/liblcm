@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.LCModel] Add GetCaptionOrHeadword() to CmPicture
 - [SIL.LCModel] `LCModelStrings.NotSure` to allow clients to know if a grammatical category is the placeholder
 - [SIL.LCModel.Utils] `DateTime` extension method `ToLCMTimeFormatWithMillisString()` (replaces `ReadWriteServices.FormatDateTime`)
+- [SIL.LCModel.Utils] `Surrogates.CodePointAt(string, int)`, a variant of `char.ConvertToUtf32` that tolerates unpaired surrogates
 
 ### Fixed
 
@@ -39,6 +40,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.LCModel.Core] Copy `SIL.LCModel.Core.dll.config` to output directory
 - [SIL.LCModel] Use `CaseFunctions` (to use the `WritingSystemDefinition.CaseAlias`, if any)
 - [SIL.LCModel.Core] Use the `WritingSystemDefinition.CaseAlias`, if any, in `CaseFunctions`
+- [SIL.LCModel.Core] Text containing an unpaired (lone) surrogate no longer makes `TsString` normalization, `TsStringSerializer.SerializeTsStringToXml`, or `TextExtensions.CharAt`/`IsCharWordForming` throw. Normalization passes the surrogate through; the serializer drops it (`StripInvalidXmlChars` now strips unpaired surrogates) so the XML reloads
 
 ### Changed
 

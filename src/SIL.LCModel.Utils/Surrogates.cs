@@ -28,6 +28,19 @@ namespace SIL.LCModel.Utils
 		}
 
 		/// <summary>
+		/// Return the full code point starting at index ich of the string. Unlike char.ConvertToUtf32(string, int),
+		/// this does not throw when the char at ich is an unpaired surrogate (which can occur in pasted or
+		/// imported text): the surrogate code unit itself is returned.
+		/// </summary>
+		public static int CodePointAt(string st, int ich)
+		{
+			char ch = st[ich];
+			if (IsLeadSurrogate(ch) && ich < st.Length - 1 && IsTrailSurrogate(st[ich + 1]))
+				return char.ConvertToUtf32(ch, st[ich + 1]);
+			return ch;
+		}
+
+		/// <summary>
 		/// Return a full 32-bit character value from the surrogate pair.
 		/// </summary>
 		public static int Int32FromSurrogates(char ch1, char ch2)

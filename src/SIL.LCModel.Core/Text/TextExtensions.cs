@@ -359,7 +359,7 @@ namespace SIL.LCModel.Core.Text
 			if (char.IsLowSurrogate(tss.Text[ich]))
 				--ich;
 			int wsHandle = tss.get_WritingSystemAt(ich);
-			int ch = char.ConvertToUtf32(tss.Text, ich);
+			int ch = Surrogates.CodePointAt(tss.Text, ich);
 			return TsStringUtils.IsWordForming(ch, wsf, wsHandle);
 		}
 
@@ -371,7 +371,7 @@ namespace SIL.LCModel.Core.Text
 			if (ich < 0 || ich >= tss.Length)
 				throw new ArgumentOutOfRangeException("ich");
 
-			return char.ConvertToUtf32(tss.Text, ich);
+			return Surrogates.CodePointAt(tss.Text, ich);
 		}
 
 		/// <summary>

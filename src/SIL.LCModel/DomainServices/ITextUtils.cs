@@ -1560,7 +1560,7 @@ namespace SIL.LCModel.DomainServices
 		/// <returns></returns>
 		public bool IsWhite(int ich)
 		{
-			int ch = char.ConvertToUtf32(m_st, ich);
+			int ch = Surrogates.CodePointAt(m_st, ich);
 			return Character.GetCharType(ch) == Character.UCharCategory.SPACE_SEPARATOR || ch == AnalysisOccurrence.KchZws;
 		}
 
