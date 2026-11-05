@@ -1,4 +1,4 @@
-// Copyright (c) 2016 SIL International
+﻿// Copyright (c) 2016 SIL International
 // This software is licensed under the LGPL, version 2.1 or later
 // (http://www.gnu.org/licenses/lgpl-2.1.html)
 
@@ -359,9 +359,7 @@ namespace SIL.LCModel.Core.Text
 			{
 				int origIdx = indexAndCodePoint.Key;
 				int origCodePoint = indexAndCodePoint.Value;
-				var normalizedStringFromOrigCodePoint = icuNormalizer.GetDecomposition(origCodePoint) ?? (origCodePoint >= 0xD800 && origCodePoint <= 0xDFFF
-						? ((char)origCodePoint).ToString() // unpaired surrogate (see Surrogates.CodePointAt)
-						: char.ConvertFromUtf32(origCodePoint));
+				var normalizedStringFromOrigCodePoint = icuNormalizer.GetDecomposition(origCodePoint) ?? Surrogates.StringFromCodePointOrLoneSurrogate(origCodePoint);
 				foreach (KeyValuePair<int, int> indexAndResultingCodePoint in CodepointsByIndex(normalizedStringFromOrigCodePoint))
 				{
 					int resultingCodePoint = indexAndResultingCodePoint.Value;

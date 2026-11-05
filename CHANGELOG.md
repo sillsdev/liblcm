@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.LCModel] Add GetCaptionOrHeadword() to CmPicture
 - [SIL.LCModel] `LCModelStrings.NotSure` to allow clients to know if a grammatical category is the placeholder
 - [SIL.LCModel.Utils] `DateTime` extension method `ToLCMTimeFormatWithMillisString()` (replaces `ReadWriteServices.FormatDateTime`)
-- [SIL.LCModel.Utils] `Surrogates.CodePointAt(string, int)`, a variant of `char.ConvertToUtf32` that tolerates unpaired surrogates
+- [SIL.LCModel.Utils] `Surrogates.CodePointAt(string, int)` (a `char.ConvertToUtf32` that tolerates unpaired surrogates), `HasLoneSurrogate`, `ReplaceLoneSurrogates` and `StringFromCodePointOrLoneSurrogate`; [SIL.LCModel.Core] `TsStringUtils.ReplaceLoneSurrogates(ITsString)`
 
 ### Fixed
 
@@ -40,10 +40,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.LCModel.Core] Copy `SIL.LCModel.Core.dll.config` to output directory
 - [SIL.LCModel] Use `CaseFunctions` (to use the `WritingSystemDefinition.CaseAlias`, if any)
 - [SIL.LCModel.Core] Use the `WritingSystemDefinition.CaseAlias`, if any, in `CaseFunctions`
-- [SIL.LCModel.Core] Text containing an unpaired (lone) surrogate no longer makes `TsString` normalization, `TsStringSerializer.SerializeTsStringToXml`, or `TextExtensions.CharAt`/`IsCharWordForming` throw. Normalization passes the surrogate through; the serializer drops it (`StripInvalidXmlChars` now strips unpaired surrogates) so the XML reloads
+- [SIL.LCModel.Core] Text containing an unpaired (lone) surrogate no longer makes `TsString` normalization, `TsStringSerializer.SerializeTsStringToXml`, `TextExtensions.CharAt`, `TextExtensions.IsCharWordForming` or `WordMaker.IsWhite` throw. Normalization passes the surrogate through unchanged, as ICU does. `IsCharWordForming` no longer treats a lone low surrogate as the second half of a pair, so it is no longer classified by the character before it. `TsStringSerializer` writes a lone surrogate as U+FFFD (it used to throw), so the written text is as long as the text in memory, and decides `xml:space` from the text it writes
 
 ### Changed
 
+- [SIL.LCModel.Core] `TsStringUtils.NormalizeNfd(ITsString)` replaces each unpaired surrogate with U+FFFD, so the TsString setters (String, MultiString and MultiUnicode properties, `MultiAccessor.set_String`, `IDomainDataByFlid.SetString` and `SetMultiStringAlt`) now store U+FFFD instead of throwing for text containing one. Plain `Unicode` properties still throw
 - [SIL.LCModel] The domain-model `Generated*.cs` sources are now produced at compile time by the new `SIL.LCModel.SourceGenerators` Roslyn source generator, instead of the `LcmGenerate` MSBuild task running the NVelocity templates in a child MSBuild process. The NVelocity engine and model wrappers moved to a shared `SIL.LCModel.ModelGeneration` project used by both the source generator and the (retained) `LcmGenerate` task, which still renders other templates from the model (e.g. the FieldWorks C++ cellar-constants header). Templates and generated output are byte-for-byte identical. No public API change.
 - [SIL.LCModel] Replaced the internal StructureMap (`structuremap.patched`) IoC container with `Microsoft.Extensions.DependencyInjection` (8.x). No public API change.
 - [SIL.LCModel] Trim 12 overwordy semantic domain descriptions and fix 22 punctuation/whitespace issues in the SemDom.xml template, matching sillsdev/FwLocalizations#5 and sillsdev/FwLocalizations#7

@@ -356,7 +356,8 @@ namespace SIL.LCModel.Core.Text
 			if (ich < 0 || ich >= tss.Length)
 				throw new ArgumentOutOfRangeException("ich");
 
-			if (char.IsLowSurrogate(tss.Text[ich]))
+			// Step back only over the second half of a real pair; a lone low surrogate is a character of its own.
+			if (ich > 0 && char.IsLowSurrogate(tss.Text[ich]) && char.IsHighSurrogate(tss.Text[ich - 1]))
 				--ich;
 			int wsHandle = tss.get_WritingSystemAt(ich);
 			int ch = Surrogates.CodePointAt(tss.Text, ich);

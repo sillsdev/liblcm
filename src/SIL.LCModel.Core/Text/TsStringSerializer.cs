@@ -9,7 +9,6 @@
 // </remarks>
 
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -171,11 +170,11 @@ namespace SIL.LCModel.Core.Text
 					}
 					else
 					{
-						string runText = normalizedTss.get_RunText(i) ?? string.Empty;
-						if (runText != string.Empty && runText.All(char.IsWhiteSpace))
+						string writtenText = GetXmlSafeText(normalizedTss.get_RunText(i) ?? string.Empty);
+						if (writtenText != string.Empty && writtenText.All(char.IsWhiteSpace))
 							writer.WriteAttributeString("xml", "space", "", "preserve");
 						// TODO: should we escape quotation marks? this is not necessary but different than the behavior of the C++ implementation
-						writer.WriteString(GetXmlSafeText(runText));
+						writer.WriteString(writtenText);
 					}
 
 					writer.WriteEndElement();
@@ -189,30 +188,28 @@ namespace SIL.LCModel.Core.Text
 			return xml.ToString();
 		}
 
-		// Characters not allowed in XML, including UTF-16 surrogates that are not part of a pair.
-		// Documented here: https://en.wikipedia.org/wiki/Valid_characters_in_XML
-		private static readonly Regex InvalidXmlRegex = new Regex(
-			@"[\x00-\x08\x0B\x0C\x0E-\x1F\uFFFE\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]",
-			RegexOptions.Compiled);
+		private static readonly Regex InvalidXmlRegex = new Regex(@"[\x00-\x08\x0B\x0C\x0E-\x1F\uFFFE\uFFFF]", RegexOptions.Compiled);
 		public static string StripInvalidXmlChars(string text)
 		{
 			// Remove characters not allowed in XML
+			// Documented here: https://en.wikipedia.org/wiki/Valid_characters_in_XML
 			return InvalidXmlRegex.Replace(text, string.Empty);
 		}
 
 		/// <summary>
-		/// Gets the NFC form of text for writing to XML, without the characters XML cannot
-		/// represent. They are removed before normalizing too, because ICU cannot encode an
-		/// unpaired surrogate.
+		/// Gets the NFC form of text for writing to XML, without the characters XML cannot represent.
+		/// Unpaired surrogates are replaced with U+FFFD rather than removed, so that the written text is
+		/// as long as the text in memory (offsets of segments, analyses and notes index into it).
+		/// (Model setters already replace them via <see cref="TsStringUtils.NormalizeNfd(ITsString)"/>;
+		/// this covers TsStrings that never went through the model.)
+		/// Characters are cleaned before normalizing because a lone surrogate is a starter: removing it
+		/// after NFC could leave an uncomposed sequence such as "e" + U+0301.
 		/// </summary>
 		internal static string GetXmlSafeText(string text)
 		{
-			string stripped = StripInvalidXmlChars(text);
-			if (stripped.Length != text.Length)
-				Debug.WriteLine("TsStringSerializer: characters XML cannot represent were removed from text being written.");
-			return StripInvalidXmlChars(Normalizer.Normalize(stripped, Normalizer.UNormalizationMode.UNORM_NFC));
+			string cleaned = Surrogates.ReplaceLoneSurrogates(StripInvalidXmlChars(text));
+			return StripInvalidXmlChars(Normalizer.Normalize(cleaned, Normalizer.UNormalizationMode.UNORM_NFC));
 		}
-
 		#endregion
 
 		#region Serialization Helper Methods

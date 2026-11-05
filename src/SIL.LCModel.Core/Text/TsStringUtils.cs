@@ -557,12 +557,35 @@ namespace SIL.LCModel.Core.Text
 		/// ------------------------------------------------------------------------------------
 		public static ITsString NormalizeNfd(ITsString source)
 		{
+			// An unpaired surrogate cannot be stored (it cannot be written to XML). Replace it up front, with a
+			// same-length character, so that the stored text always equals the in-memory text.
+			source = ReplaceLoneSurrogates(source);
 			if (source == null || source.Length == 0 || source.get_IsNormalizedForm(FwNormalizationMode.knmNFD))
 			{
 				return source;
 				// No need to normalize
 			}
 			return source.get_NormalizedForm(FwNormalizationMode.knmNFD);
+		}
+
+		/// <summary>
+		/// Replaces each unpaired surrogate in the string with U+FFFD, keeping the text properties of its run
+		/// and the length of the string. Returns the same object if there is nothing to replace.
+		/// </summary>
+		public static ITsString ReplaceLoneSurrogates(ITsString source)
+		{
+			if (source == null || !Surrogates.HasLoneSurrogate(source.Text))
+				return source;
+			string text = source.Text;
+			ITsStrBldr bldr = source.GetBldr();
+			for (int i = 0; i < text.Length; i++)
+			{
+				if (char.IsHighSurrogate(text[i]) && i < text.Length - 1 && char.IsLowSurrogate(text[i + 1]))
+					i++;
+				else if (char.IsSurrogate(text[i]))
+					bldr.Replace(i, i + 1, "\uFFFD", source.get_PropertiesAt(i));
+			}
+			return bldr.GetString();
 		}
 
 		#region ORC-related methods
