@@ -99,7 +99,7 @@ namespace SIL.LCModel.Core.Text
 						// An unknown handle has no id. Writing it as ws="" would produce XML that no reader accepts
 						// (the property is optional, so it is safer to leave it out).
 						if (string.IsNullOrEmpty(id))
-							Debug.WriteLine("TsPropsSerializer: omitting '" + attrName + "' attribute for unknown writing system handle " + value);
+							Trace.TraceWarning("TsPropsSerializer: omitting '" + attrName + "' attribute for unknown writing system handle " + value);
 						else
 							writer.WriteAttributeString(attrName, Normalizer.Normalize(id, Normalizer.UNormalizationMode.UNORM_NFC));
 					}

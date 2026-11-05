@@ -3114,6 +3114,10 @@ namespace SIL.LCModel.DomainImpl
 						var tsString = (ITsString)data;
 						int temp;
 						var wsHvo = tsString.get_Properties(0).GetIntPropValues((int)FwTextPropType.ktptWs, out temp);
+						// A first run in an unknown ws cannot be the ws of an <AStr>; write a <Str> and let each run
+						// get a fallback ws instead.
+						if (wsHvo > 0 && string.IsNullOrEmpty(wsf.GetStrFromWs(wsHvo)))
+							wsHvo = 0;
 						writer.WriteRaw(TsStringUtils.GetXmlRep(tsString, wsf, wsHvo));
 						break;
 					case CellarPropertyType.Binary:
