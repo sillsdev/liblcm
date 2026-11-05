@@ -228,6 +228,19 @@ namespace SIL.LCModel.Core.Text
 			AssertAllRunsHaveKnownWs(read2);
 		}
 
+		[TestCase("123")]
+		[TestCase("en_US")]
+		[TestCase("qaa-x-")]
+		public void DeserializeString_AStrWsThatCannotBeCreated_StillLoadsWhenNoFallbackIsNeeded(string astrWs)
+		{
+			// The ws of the <AStr> is only needed as a fallback for a run with an empty ws. Master ignores it when
+			// the runs have their own, so such records must keep loading.
+			string xml = "<AStr ws=\"" + astrWs + "\"><Run ws=\"en\">te</Run><Run ws=\"en\" bold=\"on\">xt</Run></AStr>";
+			ITsString result = null;
+			Assert.That(() => result = TsStringSerializer.DeserializeTsStringFromXml(xml, WritingSystemManager), Throws.Nothing);
+			Assert.That(result.Text, Is.EqualTo("text"));
+		}
+
 		[Test]
 		public void DeserializeString_EmptyRunWithEmptyWs_ResavesAndLoads()
 		{

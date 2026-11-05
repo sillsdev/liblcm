@@ -311,14 +311,16 @@ namespace SIL.LCModel.Core.Text
 
 			var strBldr = TsStringUtils.MakeIncStrBldr();
 
-			// The ws of the enclosing <AStr>, if it has one: the best fallback for a run whose ws is empty.
-			int enclosingWs = 0;
+			// The ws of the enclosing <AStr>, if it has one, is the best fallback for a run whose ws is empty. It is
+			// resolved lazily, only when a fallback is needed: resolving it can create the ws or fail, and records
+			// whose runs all have a ws must load exactly as they always did.
+			string enclosingWsId = null;
 			bool enclosingWsMissing = false;
 			if (xml.Name.LocalName == "AStr")
 			{
 				XAttribute astrWs = xml.Attribute("ws");
 				if (astrWs != null && astrWs.Value.Length > 0)
-					enclosingWs = GetWsForId(astrWs.Value, lgwsf);
+					enclosingWsId = astrWs.Value;
 				else
 					enclosingWsMissing = true;
 			}
@@ -348,6 +350,18 @@ namespace SIL.LCModel.Core.Text
 					// it can be saved again. If the enclosing <AStr> has no ws either, the run's ws would become the key
 					// of the alternative (see MultiAccessor.ReadAstrElementOfMultiString), so do not invent one then:
 					// that could overwrite a real alternative.
+					int enclosingWs = 0;
+					if (enclosingWsId != null)
+					{
+						try
+						{
+							enclosingWs = GetWsForId(enclosingWsId, lgwsf);
+						}
+						catch (XmlSchemaException)
+						{
+							// not usable as a fallback; try the next choice
+						}
+					}
 					int fallbackWs = enclosingWs > 0 ? enclosingWs : previousWs > 0 ? previousWs :
 						(enclosingWsMissing ? 0 : GetFallbackWs(lgwsf, 0, 0));
 					Trace.TraceWarning("TsStringSerializer: run has an empty ws; " + (fallbackWs > 0
@@ -424,6 +438,8 @@ namespace SIL.LCModel.Core.Text
 				if (candidate > 0 && !string.IsNullOrEmpty(lgwsf.GetStrFromWs(candidate)))
 					return candidate;
 			}
+			// The user ws is the established default. In FieldWorks it is always set. A factory with no user ws
+			// creates one ("en") here; that is preferable to failing the save, which would block the whole project.
 			int userWs = lgwsf.UserWs;
 			return userWs > 0 && !string.IsNullOrEmpty(lgwsf.GetStrFromWs(userWs)) ? userWs : 0;
 		}
