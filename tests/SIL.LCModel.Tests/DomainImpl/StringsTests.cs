@@ -329,6 +329,24 @@ namespace SIL.LCModel.DomainImpl
 		}
 
 		/// <summary>
+		/// The same for a MultiUnicode (&lt;AUni&gt;) alternative.
+		/// </summary>
+		[Test]
+		public void ToXml_UnicodeAlternativeWithUnknownWs_IsSkipped()
+		{
+			var english = Cache.LangProject.CurrentAnalysisWritingSystems.First();
+			var country = Cache.LangProject.MainCountry;
+			country.set_String(english.Handle, TsStringUtils.MakeString("Real", english.Handle));
+			((MultiAccessor)country).Add(UnknownWs, TsStringUtils.MakeString("Stale", UnknownWs));
+
+			string xml = null;
+			Assert.That(() => xml = ToXml(country), Throws.Nothing);
+
+			Assert.That(xml, Does.Contain("<AUni ws=\"en\">Real</AUni>"));
+			Assert.That(xml, Does.Not.Contain("Stale"));
+		}
+
+		/// <summary>
 		/// A run with an empty ws, written by older versions, is loaded with the ws of its alternative, and what is
 		/// saved from it can be loaded again.
 		/// </summary>

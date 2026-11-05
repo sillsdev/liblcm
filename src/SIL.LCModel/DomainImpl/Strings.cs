@@ -906,6 +906,13 @@ namespace SIL.LCModel.DomainImpl
 			if (string.IsNullOrEmpty(text))
 				return; // Skip writing TsStrings with no content.
 
+			// An alternative whose ws the factory does not know has no id to write. Skip it rather than fail the whole save.
+			if (string.IsNullOrEmpty(wsf.GetStrFromWs(ws)))
+			{
+				Trace.TraceWarning("MultiUnicodeAccessor: skipping alternative with unknown writing system handle " + ws);
+				return;
+			}
+
 			writer.WriteStartElement("AUni");
 			writer.WriteAttributeString("ws", m_object.Services.WritingSystemManager.Get(ws).Id);
 			text = TsStringSerializer.StripInvalidXmlChars(Normalizer.Normalize(text, Normalizer.UNormalizationMode.UNORM_NFC));
