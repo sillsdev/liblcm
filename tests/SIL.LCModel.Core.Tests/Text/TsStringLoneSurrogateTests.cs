@@ -334,7 +334,7 @@ namespace SIL.LCModel.Core.Text
 				Assert.DoesNotThrow(() => TsStringSerializer.DeserializeTsStringFromXml(
 					TsStringSerializer.SerializeTsStringToXml(tss, WritingSystemManager), WritingSystemManager), failure);
 				ITsString clean = TsStringUtils.NormalizeNfd(tss);
-				Assert.That(clean.Text ?? string.Empty, Is.EqualTo(Replaced(text).Normalize(NormalizationForm.FormD)), failure);
+				Assert.That(clean.Text ?? string.Empty, Is.EqualTo(Icu.Normalizer.Normalize(Replaced(text), Icu.Normalizer.UNormalizationMode.UNORM_NFD)), failure); // ICU: .NET Framework rejects unassigned code points such as a D800+DFFF pair
 				for (int i = 0; i < tss.Length; i++)
 				{
 					int ich = i;
