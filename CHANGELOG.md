@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- [SIL.LCModel.Core] Text property XML no longer writes what its own reader rejects (#409); a custom bullet (LT-16341) is now saved.
 - [SIL.LCModel] BaseStyleInfo now loads default font features (ktptFontVariations) from style rules, fixing font features set as style defaults being dropped on reload (LT-22351)
 - [SIL.LCModel] BaseStyleInfo no longer clobbers ws-specific font overrides inherited from a based-on style with the default font info's merely-inherited values; only explicitly-set default properties are propagated to ws overrides (LT-22351)
 - [SIL.LCModel] BulletInfo now decodes all properties of an encoded bullet font info instead of stopping at the first string property, fixing bullet font features (ktptFontVariations) being lost when a bullet font name was also set (LT-22351)
@@ -42,6 +43,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- [SIL.LCModel.Core] The text property XML reader accepts negative and numeric values and `MarginTop`; the writer writes `marginTop`, and no longer writes tabDef, tabList, charStyle, paraStyle or editable.
 - [SIL.LCModel] The domain-model `Generated*.cs` sources are now produced at compile time by the new `SIL.LCModel.SourceGenerators` Roslyn source generator, instead of the `LcmGenerate` MSBuild task running the NVelocity templates in a child MSBuild process. The NVelocity engine and model wrappers moved to a shared `SIL.LCModel.ModelGeneration` project used by both the source generator and the (retained) `LcmGenerate` task, which still renders other templates from the model (e.g. the FieldWorks C++ cellar-constants header). Templates and generated output are byte-for-byte identical. No public API change.
 - [SIL.LCModel] Replaced the internal StructureMap (`structuremap.patched`) IoC container with `Microsoft.Extensions.DependencyInjection` (8.x). No public API change.
 - [SIL.LCModel] Trim 12 overwordy semantic domain descriptions and fix 22 punctuation/whitespace issues in the SemDom.xml template, matching sillsdev/FwLocalizations#5 and sillsdev/FwLocalizations#7

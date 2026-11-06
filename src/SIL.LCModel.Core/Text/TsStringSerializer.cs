@@ -9,6 +9,7 @@
 // </remarks>
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -77,7 +78,11 @@ namespace SIL.LCModel.Core.Text
 					}
 
 					string runFieldName;
-					if (textProps.TryGetStringValue(FwTextPropType.ktptFieldName, out runFieldName) && fieldName != runFieldName)
+					bool hasFieldName = textProps.TryGetStringValue(FwTextPropType.ktptFieldName, out runFieldName);
+					// A name that is only characters XML cannot hold is no name: a Field element with an empty name does not load.
+					if (hasFieldName && runFieldName != null)
+						runFieldName = StripInvalidXmlChars(runFieldName);
+					if (hasFieldName && fieldName != runFieldName)
 					{
 						if (!string.IsNullOrEmpty(fieldName))
 							writer.WriteEndElement();
@@ -174,7 +179,7 @@ namespace SIL.LCModel.Core.Text
 						if (runText != string.Empty && runText.All(char.IsWhiteSpace))
 							writer.WriteAttributeString("xml", "space", "", "preserve");
 						// TODO: should we escape quotation marks? this is not necessary but different than the behavior of the C++ implementation
-						writer.WriteString(StripInvalidXmlChars(Normalizer.Normalize(runText, Normalizer.UNormalizationMode.UNORM_NFC)));
+						writer.WriteString(GetXmlSafeText(runText));
 					}
 
 					writer.WriteEndElement();
@@ -188,12 +193,28 @@ namespace SIL.LCModel.Core.Text
 			return xml.ToString();
 		}
 
-		private static readonly Regex InvalidXmlRegex = new Regex(@"[\x00-\x08\x0B\x0C\x0E-\x1F\uFFFE\uFFFF]", RegexOptions.Compiled);
+		// Characters not allowed in XML, including UTF-16 surrogates that are not part of a pair.
+		// Documented here: https://en.wikipedia.org/wiki/Valid_characters_in_XML
+		private static readonly Regex InvalidXmlRegex = new Regex(
+			@"[\x00-\x08\x0B\x0C\x0E-\x1F\uFFFE\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]",
+			RegexOptions.Compiled);
 		public static string StripInvalidXmlChars(string text)
 		{
 			// Remove characters not allowed in XML
-			// Documented here: https://en.wikipedia.org/wiki/Valid_characters_in_XML
 			return InvalidXmlRegex.Replace(text, string.Empty);
+		}
+
+		/// <summary>
+		/// Gets the NFC form of text for writing to XML, without the characters XML cannot
+		/// represent. They are removed before normalizing too, because ICU cannot encode an
+		/// unpaired surrogate.
+		/// </summary>
+		internal static string GetXmlSafeText(string text)
+		{
+			string stripped = StripInvalidXmlChars(text);
+			if (stripped.Length != text.Length)
+				Debug.WriteLine("TsStringSerializer: characters XML cannot represent were removed from text being written.");
+			return StripInvalidXmlChars(Normalizer.Normalize(stripped, Normalizer.UNormalizationMode.UNORM_NFC));
 		}
 
 		#endregion
