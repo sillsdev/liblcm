@@ -20,9 +20,9 @@ namespace SIL.LCModel.DomainImpl
 		{
 			var entry = Cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
 			Assert.That(() => entry.LiftResidue = "a\uD800b", Throws.Nothing);
-			Assert.That(entry.LiftResidue, Is.EqualTo("a�b"));
+			Assert.That(entry.LiftResidue, Is.EqualTo("a\uFFFDb"));
 			entry.LiftResidue = "\uDC00x\uD800";
-			Assert.That(entry.LiftResidue, Is.EqualTo("�x�"));
+			Assert.That(entry.LiftResidue, Is.EqualTo("\uFFFDx\uFFFD"));
 		}
 
 		/// <summary>WfiWordformRepository.TryGetObject used to normalize the target text with string.Normalize.</summary>

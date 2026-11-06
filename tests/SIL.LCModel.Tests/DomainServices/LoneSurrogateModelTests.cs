@@ -187,6 +187,28 @@ namespace SIL.LCModel.DomainServices
 		}
 
 		[Test]
+		public void CustomUnicodeField_LoneSurrogate_DoesNotBreakSave()
+		{
+			var projectName = "LoneSurrogateCustom" + new Random().Next(1000000);
+			var path = Path.Combine(m_projectsFolder.Path, LcmFileHelper.GetXmlDataFileName(projectName));
+			var projectId = new TestProjectId(BackendProviderType.kXMLWithMemoryOnlyWsMgr, path);
+			using (var cache = LcmCache.CreateCacheWithNewBlankLangProj(projectId, "en", "fr", "en",
+				new DummyLcmUI(), m_lcmDirectories, new LcmSettings()))
+			{
+				var mdc = cache.ServiceLocator.GetInstance<IFwMetaDataCacheManaged>();
+				int flid = mdc.AddCustomField("LexEntry", "LoneSurrogateUnicode", CellarPropertyType.Unicode, 0);
+				ILexEntry entry = null;
+				UndoableUnitOfWorkHelper.Do("doit", "undoit", cache.ActionHandlerAccessor, () =>
+				{
+					entry = cache.ServiceLocator.GetInstance<ILexEntryFactory>().Create();
+					cache.DomainDataByFlid.set_UnicodeProp(entry.Hvo, flid, "a\uD800b");
+				});
+				Assert.That(cache.DomainDataByFlid.get_UnicodeProp(entry.Hvo, flid), Is.EqualTo("a\uFFFDb"));
+				Assert.DoesNotThrow(() => cache.ServiceLocator.GetInstance<IUndoStackManager>().Save());
+			}
+		}
+
+		[Test]
 		public void ParsedParagraphWithLoneSurrogate_SegmentOffsetsSurviveSaveAndReload()
 		{
 			var projectName = "LoneSurrogate" + new Random().Next(1000000);
