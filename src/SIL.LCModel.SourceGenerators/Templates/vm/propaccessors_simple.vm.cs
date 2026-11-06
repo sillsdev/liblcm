@@ -236,7 +236,8 @@ $propNotes
 				var newValue = value;
 				Validate${prop.NiuginianPropName}(ref newValue);
 				if (!string.IsNullOrEmpty(newValue))
-					newValue = newValue.Normalize(NormalizationForm.FormD); // Store it as NFD in LCM.
+					// Store it as NFD in LCM. An unpaired surrogate (which Normalize rejects) becomes U+FFFD.
+					newValue = SIL.LCModel.Utils.Surrogates.ReplaceLoneSurrogates(newValue).Normalize(NormalizationForm.FormD);
 				var originalValue = m_$prop.NiuginianPropName;
 				if (newValue == originalValue)
 					return;

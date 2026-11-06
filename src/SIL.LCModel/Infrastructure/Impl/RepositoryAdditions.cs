@@ -888,11 +888,11 @@ namespace SIL.LCModel.Infrastructure.Impl
 					{
 						ITsString tssKey = wfT.Form.get_String(ws);
 						if (tssKey.Length > 0)
-							lookupTable[tssKey.Text.Normalize(NormalizationForm.FormD)] = wfT;
+							lookupTable[Surrogates.ReplaceLoneSurrogates(tssKey.Text).Normalize(NormalizationForm.FormD)] = wfT;
 					}
 				}
 			}
-			return lookupTable.TryGetValue(tssTarget.Text.Normalize(NormalizationForm.FormD), out wf);
+			return lookupTable.TryGetValue(Surrogates.ReplaceLoneSurrogates(tssTarget.Text).Normalize(NormalizationForm.FormD), out wf);
 		}
 
 		void IWfiWordformRepositoryInternal.UpdateForm(ITsString oldForm, IWfiWordform wf, int ws)
