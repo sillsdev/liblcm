@@ -323,6 +323,8 @@ namespace SIL.LCModel.Core.Text
 					writer.WriteAttributeString("fontVariations", GetXmlSafeString(value));
 					break;
 				case FwTextPropType.ktptTags:
+					if (string.IsNullOrEmpty(value))
+						break;
 					const int guidLength = 16;
 					byte[] bytes = Encoding.Unicode.GetBytes(value);
 					int guidCount = bytes.Length / guidLength;
@@ -813,6 +815,9 @@ namespace SIL.LCModel.Core.Text
 		/// </remarks>
 		private static string GetXmlSafeString(string value)
 		{
+			// liblcm stores an empty string property as null; there is nothing to clean.
+			if (string.IsNullOrEmpty(value))
+				return value;
 			string stripped = TsStringSerializer.StripInvalidXmlChars(UnpairedSurrogateRegex.Replace(value, string.Empty));
 			if (stripped.Length != value.Length)
 				Debug.WriteLine("TsPropsSerializer: characters XML cannot represent were removed from a string property.");

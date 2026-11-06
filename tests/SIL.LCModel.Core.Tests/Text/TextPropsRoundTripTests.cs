@@ -560,6 +560,60 @@ namespace SIL.LCModel.Core.Text
 			Assert.That(props.GetStrPropValue((int)FwTextPropType.ktptCustomBullet), Is.EqualTo(expected));
 		}
 
+		/// <summary>
+		/// A string property whose value is empty, or becomes empty once the characters XML cannot hold are
+		/// removed, is stored as null by liblcm. It must write, read back and write again without throwing.
+		/// </summary>
+		public static IEnumerable<TestCaseData> EmptyStrValueCases()
+		{
+			foreach (int tpt in Enum.GetValues(typeof(FwTextPropType)).Cast<int>().Distinct())
+				yield return new TestCaseData(tpt).SetName($"{{m}}({tpt})");
+		}
+
+		private static readonly int[] PlainTextStrProps =
+		{
+			(int)FwTextPropType.ktptFontFamily, (int)FwTextPropType.ktptNamedStyle, (int)FwTextPropType.ktptBulNumTxtBef,
+			(int)FwTextPropType.ktptBulNumTxtAft, (int)FwTextPropType.ktptCustomBullet, (int)FwTextPropType.ktptFontVariations
+		};
+
+		[TestCaseSource(nameof(EmptyStrValueCases))]
+		public void EmptyStrValue_SavesAgainThroughStyleRules(int tpt)
+		{
+			foreach (string value in new[] { string.Empty, "" })
+			{
+				ITsPropsBldr bldr = TsStringUtils.MakePropsBldr();
+				bldr.SetStrPropValue(tpt, value);
+				string xml = null;
+				Assert.DoesNotThrow(() =>
+				{
+					xml = TsPropsSerializer.SerializePropsToXml(bldr.GetTextProps(), WritingSystemManager);
+					ITsTextProps back = TsPropsSerializer.DeserializePropsFromXml(xml, WritingSystemManager);
+					TsPropsSerializer.SerializePropsToXml(back, WritingSystemManager);
+					if (Array.IndexOf(PlainTextStrProps, tpt) >= 0)
+						Assert.That(back.GetStrPropValue(tpt), Is.Null.Or.Empty);
+				}, $"tpt {tpt}, value {Escape(value)}, xml {xml}");
+			}
+		}
+
+		[TestCaseSource(nameof(EmptyStrValueCases))]
+		public void EmptyStrValue_SavesAgainThroughStringRun(int tpt)
+		{
+			foreach (string value in new[] { string.Empty, "" })
+			{
+				ITsPropsBldr bldr = TsStringUtils.MakePropsBldr();
+				bldr.SetIntPropValues((int)FwTextPropType.ktptWs, 0, EnWS);
+				bldr.SetStrPropValue(tpt, value);
+				string xml = null;
+				Assert.DoesNotThrow(() =>
+				{
+					ITsString back = RunRoundTrip(bldr.GetTextProps(), "text", out xml);
+					TsStringSerializer.SerializeTsStringToXml(back, WritingSystemManager);
+					if (Array.IndexOf(PlainTextStrProps, tpt) >= 0)
+						Assert.That(back.get_Properties(0).GetStrPropValue(tpt), Is.Null.Or.Empty);
+				}, $"tpt {tpt}, value {Escape(value)}, xml {xml}");
+			}
+		}
+
 		[Test]
 		public void BulNumFontInfo_PropertyNumberAboveCharRange_IsSkipped()
 		{

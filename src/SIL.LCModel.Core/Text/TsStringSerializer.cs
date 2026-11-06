@@ -78,14 +78,18 @@ namespace SIL.LCModel.Core.Text
 					}
 
 					string runFieldName;
-					if (textProps.TryGetStringValue(FwTextPropType.ktptFieldName, out runFieldName) && fieldName != runFieldName)
+					bool hasFieldName = textProps.TryGetStringValue(FwTextPropType.ktptFieldName, out runFieldName);
+					// A name that is only characters XML cannot hold is no name: a Field element with an empty name does not load.
+					if (hasFieldName && runFieldName != null)
+						runFieldName = StripInvalidXmlChars(runFieldName);
+					if (hasFieldName && fieldName != runFieldName)
 					{
 						if (!string.IsNullOrEmpty(fieldName))
 							writer.WriteEndElement();
 						if (!string.IsNullOrEmpty(runFieldName))
 						{
 							writer.WriteStartElement("Field");
-							writer.WriteAttributeString("name", StripInvalidXmlChars(runFieldName));
+							writer.WriteAttributeString("name", runFieldName);
 						}
 						fieldName = runFieldName;
 					}
