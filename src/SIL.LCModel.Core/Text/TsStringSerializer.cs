@@ -170,11 +170,11 @@ namespace SIL.LCModel.Core.Text
 					}
 					else
 					{
-						string runText = normalizedTss.get_RunText(i) ?? string.Empty;
-						if (runText != string.Empty && runText.All(char.IsWhiteSpace))
+						string writtenText = GetXmlSafeText(normalizedTss.get_RunText(i) ?? string.Empty);
+						if (writtenText != string.Empty && writtenText.All(char.IsWhiteSpace))
 							writer.WriteAttributeString("xml", "space", "", "preserve");
 						// TODO: should we escape quotation marks? this is not necessary but different than the behavior of the C++ implementation
-						writer.WriteString(StripInvalidXmlChars(Normalizer.Normalize(runText, Normalizer.UNormalizationMode.UNORM_NFC)));
+						writer.WriteString(writtenText);
 					}
 
 					writer.WriteEndElement();
@@ -196,6 +196,23 @@ namespace SIL.LCModel.Core.Text
 			return InvalidXmlRegex.Replace(text, string.Empty);
 		}
 
+		/// <summary>
+		/// Gets the NFC form of text for writing to XML, without the characters XML cannot represent.
+		/// Unpaired surrogates are replaced with U+FFFD rather than removed, so that the written text is
+		/// as long as the text in memory (offsets of segments, analyses and notes index into it).
+		/// (Model setters already replace them via <see cref="TsStringUtils.NormalizeNfd(ITsString)"/>;
+		/// this covers TsStrings that never went through the model.)
+		/// Characters are cleaned before normalizing because a lone surrogate is a starter: removing it
+		/// after NFC could leave an uncomposed sequence such as "e" + U+0301.
+		/// </summary>
+		internal static string GetXmlSafeText(string text)
+		{
+			// Replace lone surrogates first: removing a control character can bring a high and a low surrogate
+			// together into a "pair" that was never one, and the result must not depend on whether
+			// StripInvalidXmlChars itself removes lone surrogates.
+			string cleaned = StripInvalidXmlChars(Surrogates.ReplaceLoneSurrogates(text));
+			return StripInvalidXmlChars(Normalizer.Normalize(cleaned, Normalizer.UNormalizationMode.UNORM_NFC));
+		}
 		#endregion
 
 		#region Serialization Helper Methods

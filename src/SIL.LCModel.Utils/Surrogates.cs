@@ -28,6 +28,68 @@ namespace SIL.LCModel.Utils
 		}
 
 		/// <summary>
+		/// Return the full code point starting at index ich of the string. A high surrogate followed by a
+		/// low surrogate gives the supplementary code point. Anything else gives the char itself: that includes
+		/// an unpaired surrogate, and also a low surrogate that is the second half of a pair when ich points at
+		/// it (so the pair is not re-read from its middle). Unlike char.ConvertToUtf32(string, int), this never
+		/// throws on an unpaired surrogate (which can occur in pasted or imported text).
+		/// </summary>
+		public static int CodePointAt(string st, int ich)
+		{
+			char ch = st[ich];
+			if (IsLeadSurrogate(ch) && ich < st.Length - 1 && IsTrailSurrogate(st[ich + 1]))
+				return char.ConvertToUtf32(ch, st[ich + 1]);
+			return ch;
+		}
+
+		/// <summary>
+		/// Gives the string for a code point as returned by <see cref="CodePointAt"/>: unlike
+		/// <see cref="StringFromCodePoint"/>, an unpaired surrogate code unit gives that one char instead of throwing.
+		/// </summary>
+		public static string StringFromCodePointOrLoneSurrogate(int codepoint)
+		{
+			if (codepoint >= kMinLeadSurrogate && codepoint <= 0xDFFF)
+				return ((char)codepoint).ToString();
+			return char.ConvertFromUtf32(codepoint);
+		}
+
+		/// <summary>
+		/// Whether the string contains a surrogate that is not half of a valid high+low pair.
+		/// </summary>
+		public static bool HasLoneSurrogate(string st)
+		{
+			if (st == null)
+				return false;
+			for (int i = 0; i < st.Length; i++)
+			{
+				if (IsLeadSurrogate(st[i]) && i < st.Length - 1 && IsTrailSurrogate(st[i + 1]))
+					i++;
+				else if (IsLeadSurrogate(st[i]) || IsTrailSurrogate(st[i]))
+					return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Replace each surrogate that is not half of a valid pair with U+FFFD REPLACEMENT CHARACTER.
+		/// The length of the string never changes, so offsets into it stay valid.
+		/// </summary>
+		public static string ReplaceLoneSurrogates(string st)
+		{
+			if (!HasLoneSurrogate(st))
+				return st;
+			var chars = st.ToCharArray();
+			for (int i = 0; i < chars.Length; i++)
+			{
+				if (IsLeadSurrogate(chars[i]) && i < chars.Length - 1 && IsTrailSurrogate(chars[i + 1]))
+					i++;
+				else if (IsLeadSurrogate(chars[i]) || IsTrailSurrogate(chars[i]))
+					chars[i] = '\uFFFD';
+			}
+			return new string(chars);
+		}
+
+		/// <summary>
 		/// Return a full 32-bit character value from the surrogate pair.
 		/// </summary>
 		public static int Int32FromSurrogates(char ch1, char ch2)
