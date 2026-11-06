@@ -579,7 +579,7 @@ namespace SIL.LCModel.Core.Text
 		[TestCaseSource(nameof(EmptyStrValueCases))]
 		public void EmptyStrValue_SavesAgainThroughStyleRules(int tpt)
 		{
-			foreach (string value in new[] { string.Empty, "" })
+			foreach (string value in new[] { string.Empty, "\u0001" })
 			{
 				ITsPropsBldr bldr = TsStringUtils.MakePropsBldr();
 				bldr.SetStrPropValue(tpt, value);
@@ -598,7 +598,7 @@ namespace SIL.LCModel.Core.Text
 		[TestCaseSource(nameof(EmptyStrValueCases))]
 		public void EmptyStrValue_SavesAgainThroughStringRun(int tpt)
 		{
-			foreach (string value in new[] { string.Empty, "" })
+			foreach (string value in new[] { string.Empty, "\u0001" })
 			{
 				ITsPropsBldr bldr = TsStringUtils.MakePropsBldr();
 				bldr.SetIntPropValues((int)FwTextPropType.ktptWs, 0, EnWS);

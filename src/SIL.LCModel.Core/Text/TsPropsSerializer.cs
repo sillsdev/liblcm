@@ -805,7 +805,7 @@ namespace SIL.LCModel.Core.Text
 		/// <summary>
 		/// Gets the NFC form of a string attribute value, without unpaired surrogates or other
 		/// characters XML cannot represent. Unpaired surrogates are removed before normalizing,
-		/// because ICU cannot encode them.
+		/// because an unpaired surrogate blocks composition and is not valid in XML.
 		/// </summary>
 		/// <remarks>
 		/// Deliberately separate from the run-text handling in <see cref="TsStringSerializer"/>:
