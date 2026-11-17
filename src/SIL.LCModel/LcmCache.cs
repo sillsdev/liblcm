@@ -472,7 +472,7 @@ namespace SIL.LCModel
 
 				cache.ActionHandlerAccessor.BeginNonUndoableTask();
 				InitializeAnthroList(cache.LangProject,
-									cache.WritingSystemFactory.GetWsFromStr(analWrtSys != null ? analWrtSys.IcuLocale : userIcuLocale),
+									cache.WritingSystemFactory.GetWsFromStr(analWrtSys != null ? analWrtSys.Id : userIcuLocale),
 									(parameters.Length > 8) ? (string) parameters[8] : null);
 				ImportLocalizedLists(cache, dirs.TemplateDirectory, progressDlg);
 				cache.ActionHandlerAccessor.EndNonUndoableTask();

@@ -147,6 +147,40 @@ namespace SIL.LCModel
 			}
 		}
 
+		/// <summary>
+		/// The empty Anthropology Categories list is named in the default analysis writing system. That must work
+		/// when the writing system's ICU locale differs from its language tag ("pt_BR" vs "pt-BR").
+		/// </summary>
+		[Test]
+		public void CreateNewLangProject_DefaultAnalysisWsWithIcuLocaleDifferentFromTag()
+		{
+			const string dbName = "AnthroListPtBrTest";
+			SureRemoveDb(dbName);
+			var preExistingDirs = new List<string>(Directory.GetDirectories(m_projectsDirectory));
+			try
+			{
+				var analWs = new CoreWritingSystemDefinition("pt-BR") { Id = "pt-BR" };
+				Assert.AreNotEqual(analWs.LanguageTag, analWs.IcuLocale, "Test setup: the tag and ICU locale should differ");
+				string dbFileName = LcmCache.CreateNewLangProj(new DummyProgressDlg(), dbName, m_lcmDirectories,
+					new SingleThreadedSynchronizeInvoke(), analWs, new CoreWritingSystemDefinition("fr") { Id = "fr" }, "en",
+					new HashSet<CoreWritingSystemDefinition>(), new HashSet<CoreWritingSystemDefinition>(), null);
+
+				var projectId = new TestProjectId(BackendProviderType.kXMLWithMemoryOnlyWsMgr, dbFileName);
+				using (var cache = LcmCache.CreateCacheFromExistingData(projectId, "en", m_ui, m_lcmDirectories, new LcmSettings(),
+					new DummyProgressDlg()))
+				{
+					var ptBr = cache.ServiceLocator.WritingSystemManager.Get("pt-BR");
+					Assert.AreEqual(ptBr, cache.LangProject.DefaultAnalysisWritingSystem);
+					Assert.AreEqual(Strings.ksAnthropologyCategories, cache.LangProject.AnthroListOA.Name.get_String(ptBr.Handle).Text);
+					Assert.AreEqual(Strings.ksAnth, cache.LangProject.AnthroListOA.Abbreviation.get_String(ptBr.Handle).Text);
+				}
+			}
+			finally
+			{
+				RemoveTestDirs(preExistingDirs, Directory.GetDirectories(m_projectsDirectory));
+			}
+		}
+
 		#region Private helper methods
 		/// <summary>
 		/// Removes a FW DB directory, and ensures the location is promptly available for reuse
